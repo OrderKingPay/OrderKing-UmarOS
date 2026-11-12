@@ -23,6 +23,7 @@ import {
 } from "./types";
 import { buildOfficialAirlineDeepLink, extractAirportCode, isDomesticIndianRoute } from "./airline-deep-links";
 import { getTravelpayoutsMarker } from "./travelpayouts-config";
+import { searchFlightsTBO, getTboCredentials, type TboFlightSearchQuery } from "./tbo-client";
 
 // ============================================================================
 // CARRIER & STATION LOOKUP MAPS
@@ -128,6 +129,68 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
 
   const isDomestic = isDomesticIndianRoute(origin, destination);
 
+  // --- Connector 0: TBO Air API (#187051 - Live Domestic & Global GDS) ---
+  const queryTbo = async (): Promise<FlightOption[] | null> => {
+    const creds = getTboCredentials();
+    if (!creds) return null;
+    try {
+      const tboQuery: TboFlightSearchQuery = {
+        origin,
+        destination,
+        adultCount: passengers,
+        cabinClass: cabinClass === "BUSINESS" ? "Business" : "Economy",
+        journeyType: "OneWay",
+        preferredDepartureTime: `${departureDate}T00:00:00`,
+      };
+      const res = await searchFlightsTBO(tboQuery);
+      if (res.success && Array.isArray(res.flights) && res.flights.length > 0) {
+        return res.flights.map((f: any, idx: number) => {
+          const seg = f.Segments?.[0]?.[0] || {};
+          const carrierCode = f.AirlineCode || seg.Airline?.AirlineCode || "6E";
+          const carrierName = f.AirlineName || seg.Airline?.AirlineName || AIRLINE_NAMES[carrierCode] || "Carrier Partner";
+          const flightNum = f.FlightNumber || seg.Airline?.FlightNumber || `${idx + 101}`;
+          const flightNumber = `${carrierCode} ${flightNum}`;
+          const depIso = seg.Origin?.DepTime || `${departureDate}T06:00:00`;
+          const arrIso = seg.Destination?.ArrTime || `${departureDate}T08:15:00`;
+          const durationMins = seg.Duration || 135;
+          const pricePaise = f.Fare?.PublishedPrice
+            ? Math.round(Number(f.Fare.PublishedPrice) * 100)
+            : f.Fare?.OfferedFare
+            ? Math.round(Number(f.Fare.OfferedFare) * 100)
+            : 0;
+
+          const deepLink = buildOfficialAirlineDeepLink({
+            carrierCode,
+            from: origin,
+            to: destination,
+            departureDate,
+            passengers,
+            cabinClass,
+          });
+
+          return {
+            id: res.traceId ? `fl-tbo-${res.traceId}-${f.ResultIndex || idx}` : `fl-tbo-${carrierCode}-${idx}`,
+            carrierName,
+            carrierCode,
+            flightNumber,
+            departureTime: depIso,
+            arrivalTime: arrIso,
+            durationMinutes: durationMins,
+            pricePaise,
+            directStops: seg.StopOver ? 1 : 0,
+            cabinClass,
+            seatsAvailable: seg.NoOfSeatAvailable ?? 9,
+            bookingUrl: deepLink.bookingUrl,
+            aircraftType: seg.Craft || "Airbus / Boeing",
+          };
+        });
+      }
+    } catch (err) {
+      console.warn("[TravelConnectors] TBO API query failed:", err);
+    }
+    return null;
+  };
+
   // --- Connector 1: Duffel v2 Flights API (Best for International GDS Routes) ---
   const queryDuffel = async (): Promise<FlightOption[] | null> => {
     if (!duffelToken) return null;
@@ -173,7 +236,7 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
             const arrIso = lastSegment?.arriving_at || `${departureDate}T08:15:00`;
             const durationMins = parseIsoDurationMinutes(firstSlice?.duration);
             const rawAmount = parseFloat(offer.total_amount);
-            const pricePaise = !isNaN(rawAmount) && rawAmount > 0 ? Math.round(rawAmount * 100) : 450000;
+            const pricePaise = !isNaN(rawAmount) && rawAmount > 0 ? Math.round(rawAmount * 100) : 0;
             const stops = Math.max(0, (firstSlice?.segments?.length || 1) - 1);
 
             return {
@@ -448,26 +511,30 @@ export async function searchLiveBuses(req: BusSearchRequest): Promise<BusSearchR
       if (res.ok) {
         const json = await res.json();
         if (json && Array.isArray(json.availableTrips) && json.availableTrips.length > 0) {
-          const buses: BusOption[] = json.availableTrips.map((trip: any, idx: number) => ({
-            id: trip.id || `rb-${idx}`,
-            operatorName: trip.travels || "Partner Express",
-            busType: trip.busType || "Volvo AC Sleeper (2+1)",
-            departureTime: trip.departureTime || "21:00",
-            arrivalTime: trip.arrivalTime || "06:30 (+1)",
-            durationMinutes: trip.duration ? parseInt(trip.duration, 10) : 570,
-            sourceCity,
-            destinationCity,
-            boardingPoints: Array.isArray(trip.boardingTimes) ? trip.boardingTimes.map((b: any) => b.location) : ["Majestic", "Madiwala"],
-            droppingPoints: Array.isArray(trip.dropTimes) ? trip.dropTimes.map((d: any) => d.location) : ["Panaji", "Mapusa"],
-            rating: trip.rating ? parseFloat(trip.rating) : 4.6,
-            ratingsCount: 340,
-            totalSeats: trip.totalSeats || 36,
-            availableSeats: trip.availableSeats || 14,
-            farePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
-            startingFarePaise: Math.round(Number(trip.fares?.[0] || 1200) * 100),
-            amenities: ["Live GPS", "AC", "Charging Port", "Blanket", "Water Bottle"],
-            bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(String(sourceCity ?? ""))}-to-${encodeURIComponent(String(destinationCity ?? ""))}`,
-          }));
+          const buses: BusOption[] = json.availableTrips.map((trip: any, idx: number) => {
+            const rawFare = Number(Array.isArray(trip.fares) ? trip.fares[0] : trip.fares);
+            const farePaise = Number.isFinite(rawFare) && rawFare > 0 ? Math.round(rawFare * 100) : 0;
+            return {
+              id: trip.id || `rb-${idx}`,
+              operatorName: trip.travels || "Intercity Bus Operator",
+              busType: trip.busType || "Coach",
+              departureTime: trip.departureTime || "",
+              arrivalTime: trip.arrivalTime || "",
+              durationMinutes: trip.duration ? parseInt(trip.duration, 10) : 0,
+              sourceCity,
+              destinationCity,
+              boardingPoints: Array.isArray(trip.boardingTimes) ? trip.boardingTimes.map((b: any) => b.location).filter(Boolean) : [],
+              droppingPoints: Array.isArray(trip.dropTimes) ? trip.dropTimes.map((d: any) => d.location).filter(Boolean) : [],
+              rating: Number.isFinite(Number(trip.rating)) ? parseFloat(trip.rating) : 0,
+              ratingsCount: Number.isFinite(Number(trip.ratingsCount)) ? Number(trip.ratingsCount) : 0,
+              totalSeats: Number.isFinite(Number(trip.totalSeats)) ? Number(trip.totalSeats) : 0,
+              availableSeats: Number.isFinite(Number(trip.availableSeats)) ? Number(trip.availableSeats) : 0,
+              farePaise,
+              startingFarePaise: farePaise,
+              amenities: Array.isArray(trip.amenities) ? trip.amenities : [],
+              bookingUrl: `https://www.redbus.in/bus-tickets/${encodeURIComponent(String(sourceCity ?? ""))}-to-${encodeURIComponent(String(destinationCity ?? ""))}`,
+            };
+          });
 
           return {
             success: true,
@@ -527,23 +594,27 @@ export async function searchLiveHotels(req: HotelSearchRequest): Promise<HotelSe
         const json = await res.json();
         const results = json?.results?.hotels;
         if (Array.isArray(results) && results.length > 0) {
-          const hotels: HotelOption[] = results.map((h: any, idx: number) => ({
-            id: `ht-tp-${h.id || idx}`,
-            hotelName: h.label || h.fullName || `${city} Hotel`,
-            starRating: h.stars || 4,
-            userRating: 8.8,
-            reviewCount: 150,
-            address: h.locationName || city,
-            city,
-            thumbnailUrl: "",
-            nightlyRatePaise: 350000,
-            totalFarePaise: 392000,
-            roomType: "Deluxe Room",
-            freeCancellation: true,
-            breakfastIncluded: true,
-            bookingUrl: `https://tp.media/r?marker=${marker}&p=4115&u=${encodeURIComponent(`https://hotellook.com/search/${encodeURIComponent(String(city ?? ""))}`)}`,
-            provider: "partner_wholesale",
-          }));
+          const hotels: HotelOption[] = results.map((h: any, idx: number) => {
+            const rawMinPrice = Number(h.minPrice ?? h.priceFrom);
+            const ratePaise = Number.isFinite(rawMinPrice) && rawMinPrice > 0 ? Math.round(rawMinPrice * 100) : 0;
+            return {
+              id: `ht-tp-${h.id || idx}`,
+              hotelName: h.label || h.fullName || `${city} Hotel`,
+              starRating: Number.isFinite(Number(h.stars)) ? Number(h.stars) : 0,
+              userRating: Number.isFinite(Number(h.rating)) ? Number(h.rating) : 0,
+              reviewCount: Number.isFinite(Number(h.reviewsCount)) ? Number(h.reviewsCount) : 0,
+              address: h.locationName || city,
+              city,
+              thumbnailUrl: "",
+              nightlyRatePaise: ratePaise,
+              totalFarePaise: ratePaise,
+              roomType: h.roomType || "Standard Room",
+              freeCancellation: Boolean(h.freeCancellation),
+              breakfastIncluded: Boolean(h.breakfastIncluded),
+              bookingUrl: `https://tp.media/r?marker=${marker}&p=4115&u=${encodeURIComponent(`https://hotellook.com/search/${encodeURIComponent(String(city ?? ""))}`)}`,
+              provider: "partner_wholesale",
+            };
+          });
           return {
             success: true,
             data: hotels,

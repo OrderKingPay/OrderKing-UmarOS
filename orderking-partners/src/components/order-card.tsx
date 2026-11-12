@@ -643,7 +643,7 @@ export function OrderCard({
             </div>
           ) : (
             <div className="text-[10px] text-muted">
-              Accept order within 120 seconds to maintain 100% kitchen fulfillment score.
+              Accept order within 120 seconds to avoid auto-cancellation.
             </div>
           )}
         </div>

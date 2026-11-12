@@ -33,7 +33,7 @@ export class AutonomousScheduleManager {
         nextScheduledAt: "Every 60 minutes",
         enabled: true,
         status: "IDLE",
-        lastRunSummary: "Discovered 4 legitimate opportunities across Direct Client and Regional Registries.",
+        lastRunSummary: "Awaiting scheduled execution.",
       },
       {
         id: "SCHED-02",
@@ -43,7 +43,7 @@ export class AutonomousScheduleManager {
         nextScheduledAt: "Every 4 hours",
         enabled: true,
         status: "IDLE",
-        lastRunSummary: "Identified 2 high-volume restaurant & e-commerce prospects.",
+        lastRunSummary: "Awaiting scheduled execution.",
       },
       {
         id: "SCHED-03",
@@ -53,7 +53,7 @@ export class AutonomousScheduleManager {
         nextScheduledAt: "Daily at 08:00 AM",
         enabled: true,
         status: "IDLE",
-        lastRunSummary: "All projects healthy. 1 invoice pending payment.",
+        lastRunSummary: "Awaiting scheduled execution.",
       },
       {
         id: "SCHED-04",
@@ -63,7 +63,7 @@ export class AutonomousScheduleManager {
         nextScheduledAt: "Every Monday at 09:00 AM",
         enabled: true,
         status: "IDLE",
-        lastRunSummary: "Weekly net margin calculated at 89%. Zero unverified claims.",
+        lastRunSummary: "Awaiting scheduled execution.",
       },
       {
         id: "SCHED-05",
@@ -73,7 +73,7 @@ export class AutonomousScheduleManager {
         nextScheduledAt: "1st of every month",
         enabled: true,
         status: "IDLE",
-        lastRunSummary: "Ledger integrity 100% verified. 50% repeat client rate.",
+        lastRunSummary: "Awaiting scheduled execution.",
       },
     ];
 

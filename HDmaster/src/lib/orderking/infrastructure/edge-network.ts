@@ -66,7 +66,7 @@ export class ExtremeNetworkEngine {
     }
 
     console.log(`Syncing ${this.offlineQueue.length} offline orders...`);
-    
+
     const queueCopy = [...this.offlineQueue];
     this.offlineQueue = [];
     this.saveOfflineQueue();
@@ -90,7 +90,7 @@ export class ExtremeNetworkEngine {
   public compressPayloadFor2G(payload: OrderPayload): string {
     // A mathematical compression function to minimize bytes before transmitting over slow networks
     const jsonString = JSON.stringify(payload);
-    
+
     // Simple dictionary substitution to minimize common keys
     const dictionary = {
       '"id":': '"i":',
@@ -99,17 +99,17 @@ export class ExtremeNetworkEngine {
       '"customerInfo":': '"c":',
       '"timestamp":': '"s":'
     };
-    
+
     let compressedString = jsonString;
     for (const [key, value] of Object.entries(dictionary)) {
-        compressedString = compressedString.replace(new RegExp(key, 'g'), value);
+      compressedString = compressedString.replace(new RegExp(key, 'g'), value);
     }
-    
+
     // Convert to base64 for transmission
     if (typeof btoa !== 'undefined') {
-        return btoa(unescape(encodeURIComponent(String(compressedString ?? ""))));
+      return btoa(unescape(encodeURIComponent(String(compressedString ?? ""))));
     }
-    
+
     return Buffer.from(compressedString).toString('base64');
   }
 

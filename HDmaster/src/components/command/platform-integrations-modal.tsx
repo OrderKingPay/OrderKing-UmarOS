@@ -194,7 +194,7 @@ export function PlatformIntegrationsModal({
 
           <div className="text-[11px] font-mono text-emerald-400 font-bold hidden sm:flex items-center gap-1.5">
             <ShieldCheck className="size-3.5" />
-            <span>Zero-Token Leak Shield Active · 100% Safe</span>
+            <span>Scoped Credentials Active</span>
           </div>
         </div>
 

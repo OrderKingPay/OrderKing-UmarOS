@@ -241,7 +241,7 @@ export class PersistentKotPrinterManager {
     if (this.server?.connected) {
       try {
         this.server.disconnect();
-      } catch {}
+      } catch { }
     }
     this.characteristic = null;
     this.server = null;
@@ -379,7 +379,7 @@ export class PersistentKotPrinterManager {
     if (this.wakeLock) {
       try {
         await this.wakeLock.release();
-      } catch {}
+      } catch { }
       this.wakeLock = null;
       this.isWakeLockHeld = false;
     }
@@ -469,14 +469,14 @@ export class PersistentKotPrinterManager {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate([400, 200, 400, 200, 800]);
-      } catch {}
+      } catch { }
 
       if (!this.vibrationInterval) {
         this.vibrationInterval = setInterval(() => {
           if (this.isSirenPlaying && typeof navigator !== "undefined" && "vibrate" in navigator) {
             try {
               navigator.vibrate([400, 200, 400, 200, 800]);
-            } catch {}
+            } catch { }
           }
         }, 2200);
       }
@@ -494,17 +494,17 @@ export class PersistentKotPrinterManager {
 
     try {
       if (this.sirenOsc1) {
-        try { this.sirenOsc1.stop(); } catch {}
+        try { this.sirenOsc1.stop(); } catch { }
         this.sirenOsc1.disconnect();
         this.sirenOsc1 = null;
       }
       if (this.sirenOsc2) {
-        try { this.sirenOsc2.stop(); } catch {}
+        try { this.sirenOsc2.stop(); } catch { }
         this.sirenOsc2.disconnect();
         this.sirenOsc2 = null;
       }
       if (this.sirenLfo) {
-        try { this.sirenLfo.stop(); } catch {}
+        try { this.sirenLfo.stop(); } catch { }
         this.sirenLfo.disconnect();
         this.sirenLfo = null;
       }
@@ -532,7 +532,7 @@ export class PersistentKotPrinterManager {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate(0);
-      } catch {}
+      } catch { }
     }
 
     this.isSirenPlaying = false;
@@ -568,8 +568,8 @@ export class PersistentKotPrinterManager {
     const bytes = this.buildEscPosKotBytes(order, options);
     const orderNumber = String(
       order.orderNumber ||
-        order.order_number ||
-        (order.id ? `OK-${String(order.id).slice(-4).toUpperCase()}` : "OK-0000")
+      order.order_number ||
+      (order.id ? `OK-${String(order.id).slice(-4).toUpperCase()}` : "OK-0000")
     );
     const timestamp = new Date().toISOString();
 
@@ -619,7 +619,7 @@ export class PersistentKotPrinterManager {
             },
           })
         );
-      } catch {}
+      } catch { }
     }
 
     console.log(
@@ -664,7 +664,7 @@ export class PersistentKotPrinterManager {
         if (this.audioCtx && this.audioCtx.state === "suspended") {
           try {
             await this.audioCtx.resume();
-          } catch {}
+          } catch { }
         }
       }
     });

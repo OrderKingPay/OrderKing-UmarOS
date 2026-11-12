@@ -174,8 +174,8 @@ function ReviewsPage() {
             type="button"
             onClick={() => setActiveTab("COMPLAINTS")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${activeTab === "COMPLAINTS"
-                ? "bg-[#E23744] text-white shadow-xs"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-[#E23744] text-white shadow-xs"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
               }`}
           >
             <ShieldAlert className="size-4" />
@@ -191,8 +191,8 @@ function ReviewsPage() {
             type="button"
             onClick={() => setActiveTab("RATINGS")}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${activeTab === "RATINGS"
-                ? "bg-[#E23744] text-white shadow-xs"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-[#E23744] text-white shadow-xs"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
               }`}
           >
             <Star className="size-4" />
@@ -261,8 +261,8 @@ function ReviewsPage() {
                   type="button"
                   onClick={() => setComplaintFilter(pill.id as ComplaintFilter)}
                   className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${complaintFilter === pill.id
-                      ? "bg-[#E23744] text-white shadow-xs"
-                      : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                    ? "bg-[#E23744] text-white shadow-xs"
+                    : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                 >
                   {pill.label}
@@ -447,8 +447,8 @@ function ReviewsPage() {
                     type="button"
                     onClick={() => setReviewFilter(pill.id as ReviewFilter)}
                     className={`rounded-full px-3.5 py-1 text-xs font-bold transition cursor-pointer ${reviewFilter === pill.id
-                        ? "bg-[#E23744] text-white shadow-xs"
-                        : "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
+                      ? "bg-[#E23744] text-white shadow-xs"
+                      : "border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100"
                       }`}
                   >
                     {pill.label}
@@ -607,10 +607,10 @@ function ReviewCard({
         <div className="flex items-center gap-2">
           <span
             className={`rounded-md px-2 py-0.5 font-bold ${review.rating >= 4
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                : review.rating === 3
-                  ? "bg-amber-50 text-amber-700 border border-amber-200"
-                  : "bg-rose-50 text-rose-700 border border-rose-200"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+              : review.rating === 3
+                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                : "bg-rose-50 text-rose-700 border border-rose-200"
               }`}
           >
             {review.rating} / 5

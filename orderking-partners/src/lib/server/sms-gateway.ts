@@ -419,36 +419,36 @@ export async function sendViaWhatsAppCloudApi(
     const templateName = process.env.WHATSAPP_OTP_TEMPLATE;
     const bodyPayload = templateName
       ? {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "template",
-          template: {
-            name: templateName,
-            language: { code: "en" },
-            components: [
-              {
-                type: "body",
-                parameters: [{ type: "text", text: otp }],
-              },
-              {
-                type: "button",
-                sub_type: "url",
-                index: "0",
-                parameters: [{ type: "text", text: otp }],
-              },
-            ],
-          },
-        }
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "template",
+        template: {
+          name: templateName,
+          language: { code: "en" },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", text: otp }],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "0",
+              parameters: [{ type: "text", text: otp }],
+            },
+          ],
+        },
+      }
       : {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "text",
-          text: {
-            body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
-          },
-        };
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "text",
+        text: {
+          body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
+        },
+      };
 
     const res = await fetch(
       `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
@@ -1039,7 +1039,7 @@ export async function handleVerifyPartnerOtp(data: {
         const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
         if (tfJson.Status === "Success") finalMatched = true;
       }
-    } catch {}
+    } catch { }
   }
   if (!finalMatched) {
     if (record && record.expiresAt <= Date.now()) {

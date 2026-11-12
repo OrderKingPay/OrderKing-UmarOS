@@ -163,7 +163,7 @@ function MyTripsPage() {
               {FILTERS.map((filter) => (
                 <button key={filter} type="button" onClick={() => setView(filter)} aria-pressed={view === filter}
                   className={"shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition " +
-                  (filter === view ? "border-emerald-700 bg-emerald-700 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-500")}>
+                    (filter === view ? "border-emerald-700 bg-emerald-700 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-emerald-500")}>
                   {filter}
                 </button>
               ))}
@@ -328,7 +328,7 @@ function MyTripsPage() {
               <h2 className="flex items-center gap-2 font-bold"><TrainFront className="size-5 text-emerald-700" /> Train PNR Live Verification</h2>
               <label htmlFor="trip-pnr" className="block text-xs font-medium text-slate-600">10-digit Indian Railways PNR</label>
               <div className="flex gap-2">
-                <input id="trip-pnr" type="text" inputMode="numeric" maxLength={10} value={pnr} onChange={(e) => setPnr(e.target.value.replace(/\D/g,""))}
+                <input id="trip-pnr" type="text" inputMode="numeric" maxLength={10} value={pnr} onChange={(e) => setPnr(e.target.value.replace(/\D/g, ""))}
                   placeholder="Enter 10-digit PNR" className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-emerald-600 font-mono font-bold" />
                 <button
                   type="button"

@@ -310,7 +310,7 @@ export const GENUINE_SUBSIDIES_REGISTRY: GovernmentSubsidyProgram[] = [
       "Company Profile on Startup India or LinkedIn",
       "Google Cloud Project ID",
     ],
-    directBankPayoutMethod: "100% zero cloud bills; saves founder cash from server expenses.",
+    directBankPayoutMethod: "Cloud billing credits; saves founder cash on server expenses.",
   },
   {
     id: "sub_aws_activate",
@@ -325,7 +325,7 @@ export const GENUINE_SUBSIDIES_REGISTRY: GovernmentSubsidyProgram[] = [
       "Active AWS Account ID",
       "Company URL and product overview",
     ],
-    directBankPayoutMethod: "100% server infrastructure bill waiver.",
+    directBankPayoutMethod: "Server infrastructure bill credit.",
   },
   {
     id: "sub_microsoft_founders_hub",
@@ -340,7 +340,7 @@ export const GENUINE_SUBSIDIES_REGISTRY: GovernmentSubsidyProgram[] = [
       "LinkedIn Profile of Founder",
       "Working web application link",
     ],
-    directBankPayoutMethod: "100% OpenAI API and Azure cloud cost coverage.",
+    directBankPayoutMethod: "OpenAI API and Azure cloud cost credits.",
   },
   {
     id: "sub_dst_nidhi_prayas",

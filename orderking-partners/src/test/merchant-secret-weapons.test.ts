@@ -366,8 +366,8 @@ describe("Merchant Secret Weapons & Operational Resilience Suite", () => {
       // 5. Total debited deductions = Commission + Commission GST + Gateway fee with GST
       expect(summary.totalDebitedDeductionsPaise).toBe(
         summary.platformCommissionPaise +
-          summary.commissionGstPaise +
-          summary.totalGatewayFeeWithGstPaise
+        summary.commissionGstPaise +
+        summary.totalGatewayFeeWithGstPaise
       );
 
       // 6. Net Estimated Payout = Net Taxable Supply - Total Debited Deductions

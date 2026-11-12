@@ -58,10 +58,10 @@ export function LiveDeliveryMap({
     status === "DELIVERED"
       ? 1
       : status === "ON_THE_WAY"
-      ? 0.75
-      : status === "PICKED_UP"
-      ? 0.5
-      : 0.25;
+        ? 0.75
+        : status === "PICKED_UP"
+          ? 0.5
+          : 0.25;
 
   const currentProgress =
     riderProgressOverride !== undefined ? Math.max(0, Math.min(1, riderProgressOverride)) : statusProgress;
@@ -99,18 +99,16 @@ export function LiveDeliveryMap({
             <button
               type="button"
               onClick={() => setViewMode("3d_vector")}
-              className={`px-2 py-0.5 rounded-md transition ${
-                viewMode === "3d_vector" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
-              }`}
+              className={`px-2 py-0.5 rounded-md transition ${viewMode === "3d_vector" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
+                }`}
             >
               3D Map
             </button>
             <button
               type="button"
               onClick={() => setViewMode("2d_route")}
-              className={`px-2 py-0.5 rounded-md transition ${
-                viewMode === "2d_route" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
-              }`}
+              className={`px-2 py-0.5 rounded-md transition ${viewMode === "2d_route" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
+                }`}
             >
               Route
             </button>
@@ -210,9 +208,8 @@ export function LiveDeliveryMap({
           {/* Destination Customer Pin */}
           <div className="absolute right-6 top-1/2 -translate-y-1/2 text-center">
             <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md ${
-                isDelivered ? "bg-emerald-600" : "bg-stone-700"
-              }`}
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-white shadow-md ${isDelivered ? "bg-emerald-600" : "bg-stone-700"
+                }`}
             >
               <MapPin className="size-4" />
             </div>

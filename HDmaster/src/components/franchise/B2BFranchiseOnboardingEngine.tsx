@@ -382,8 +382,8 @@ export function B2BFranchiseOnboardingEngine() {
           <button
             onClick={() => setActiveTab("ledger")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "ledger"
-                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
               }`}
           >
             <Receipt className="h-4 w-4 text-blue-600" />
@@ -396,8 +396,8 @@ export function B2BFranchiseOnboardingEngine() {
           <button
             onClick={() => setActiveTab("generator")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "generator"
-                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
               }`}
           >
             <FileSignature className="h-4 w-4 text-emerald-600" />
@@ -410,8 +410,8 @@ export function B2BFranchiseOnboardingEngine() {
           <button
             onClick={() => setActiveTab("playbook")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "playbook"
-                ? "bg-white text-slate-900 shadow-xs border border-slate-200"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+              ? "bg-white text-slate-900 shadow-xs border border-slate-200"
+              : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
               }`}
           >
             <Briefcase className="h-4 w-4 text-indigo-600" />
@@ -544,10 +544,10 @@ export function B2BFranchiseOnboardingEngine() {
                             <td className="py-4 px-4 align-top">
                               <span
                                 className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${c.tier === "EXECUTIVE_FLAGSHIP"
-                                    ? "bg-purple-100 text-purple-900 border border-purple-200"
-                                    : c.tier === "PRIORITY_PARTNER"
-                                      ? "bg-blue-100 text-blue-900 border border-blue-200"
-                                      : "bg-slate-100 text-slate-900 border border-slate-200"
+                                  ? "bg-purple-100 text-purple-900 border border-purple-200"
+                                  : c.tier === "PRIORITY_PARTNER"
+                                    ? "bg-blue-100 text-blue-900 border border-blue-200"
+                                    : "bg-slate-100 text-slate-900 border border-slate-200"
                                   }`}
                               >
                                 {c.tier === "EXECUTIVE_FLAGSHIP"
@@ -742,8 +742,8 @@ export function B2BFranchiseOnboardingEngine() {
                 <div
                   onClick={() => handleTierChange("STANDARD_MERCHANT")}
                   className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "STANDARD_MERCHANT"
-                      ? "border-slate-900 bg-slate-50/80 shadow-sm"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-slate-900 bg-slate-50/80 shadow-sm"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -764,8 +764,8 @@ export function B2BFranchiseOnboardingEngine() {
                 <div
                   onClick={() => handleTierChange("PRIORITY_PARTNER")}
                   className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "PRIORITY_PARTNER"
-                      ? "border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                 >
                   <div className="absolute -top-2.5 right-4 rounded-full bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 tracking-wider uppercase">
@@ -789,8 +789,8 @@ export function B2BFranchiseOnboardingEngine() {
                 <div
                   onClick={() => handleTierChange("EXECUTIVE_FLAGSHIP")}
                   className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "EXECUTIVE_FLAGSHIP"
-                      ? "border-purple-600 bg-purple-50/50 shadow-sm ring-1 ring-purple-600"
-                      : "border-slate-200 bg-white hover:border-slate-300"
+                    ? "border-purple-600 bg-purple-50/50 shadow-sm ring-1 ring-purple-600"
+                    : "border-slate-200 bg-white hover:border-slate-300"
                     }`}
                 >
                   <div className="flex items-center justify-between mb-2">

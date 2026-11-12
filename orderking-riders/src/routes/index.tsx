@@ -272,9 +272,8 @@ function RiderPublicLanding() {
                   >
                     <span>{faq.question}</span>
                     <ChevronDown
-                      className={`size-4 text-slate-400 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-emerald-400" : ""
-                      }`}
+                      className={`size-4 text-slate-400 transition-transform duration-200 ${isOpen ? "rotate-180 text-emerald-400" : ""
+                        }`}
                     />
                   </button>
                   {isOpen && (

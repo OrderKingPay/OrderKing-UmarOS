@@ -317,7 +317,7 @@ export async function executeAutonomousRefundCore(params: {
   let sql: any = null;
   try {
     sql = await getSql();
-  } catch (_e) {}
+  } catch (_e) { }
 
   let orderTotalPaise = claim.claimedAmountPaise;
   let orderStatus = "DELIVERED";
@@ -337,7 +337,7 @@ export async function executeAutonomousRefundCore(params: {
         SELECT count(*)::text as count FROM refunds WHERE order_id = ${claim.orderId}
       `;
       existingRefundCount = parseInt(refundRows[0]?.count || "0", 10);
-    } catch (_e) {}
+    } catch (_e) { }
   }
 
   // Validate with Anti-Fraud Shield
@@ -462,7 +462,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
   let sql: any = null;
   try {
     sql = await getSql();
-  } catch (_e) {}
+  } catch (_e) { }
   const normalized = cmd.toLowerCase();
 
   // 1. Dispatch Command
@@ -501,7 +501,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
         gmvStr = orders[0]?.gmv || "0";
         onlineStr = riders[0]?.online || "0";
         unassignedStr = unassigned[0]?.count || "0";
-      } catch (_e) {}
+      } catch (_e) { }
     }
 
     const executionMs = Date.now() - startTime;
@@ -535,7 +535,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     if (sql) {
       try {
         finance = await auditFinancialIntegrity(sql);
-      } catch (_e) {}
+      } catch (_e) { }
     }
     const executionMs = Date.now() - startTime;
     return {
@@ -556,7 +556,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     if (sql) {
       try {
         breaches = await auditKitchenDelays(sql);
-      } catch (_e) {}
+      } catch (_e) { }
     }
     const executionMs = Date.now() - startTime;
     return {
@@ -582,7 +582,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
         `;
         count = parseInt(refunds[0]?.count || "0", 10);
         amountInr = parseInt(refunds[0]?.amount || "0", 10) / 100;
-      } catch (_e) {}
+      } catch (_e) { }
     }
     const shieldReport = militaryAntiFraudShield.getAuditReport();
     const executionMs = Date.now() - startTime;
@@ -625,7 +625,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
           SELECT count(*)::text as count FROM rider_documents
         `;
         proofCount = parseInt(rows[0]?.count || "0", 10);
-      } catch (_e) {}
+      } catch (_e) { }
     }
     const executionMs = Date.now() - startTime;
     return {
@@ -656,7 +656,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
         `;
         last24hOrders = parseInt(rows[0]?.total_24h || "0", 10);
         deliveredOrders = parseInt(rows[0]?.delivered_24h || "0", 10);
-      } catch (_e) {}
+      } catch (_e) { }
     }
     const executionMs = Date.now() - startTime;
     return {
@@ -711,7 +711,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     return {
       status: "SUCCESS",
       title: "UMAR OS World Technology Registry",
-      response: `World Technology Registry: 100% Verified (${summary.totalTechnologies} technologies across ${summary.totalCategories} categories). Cloud Infrastructure (3), Payments & Banking (5), Communication (3), Maps & Logistics (4), AI & Foundation Models (5). Average network latency: ${summary.averageLatencyMs}ms. Integrity status: ${integrity.isValid ? "100% HEALTHY" : "DEGRADED"}.`,
+      response: `World Technology Registry: ${summary.totalTechnologies} technologies across ${summary.totalCategories} categories. Cloud Infrastructure (3), Payments & Banking (5), Communication (3), Maps & Logistics (4), AI & Foundation Models (5). Average network latency: ${summary.averageLatencyMs}ms. Integrity status: ${integrity.isValid ? "HEALTHY" : "DEGRADED"}.`,
       toolExecuted: "query_world_tech_registry",
       executionMs,
       data: {

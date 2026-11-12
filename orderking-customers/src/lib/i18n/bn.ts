@@ -54,7 +54,7 @@ export const bn: MessageTree = {
     reorder: "আবার অর্ডার",
     favourites: "পছন্দের",
     sampleBanner:
-      "১০০% যাচাইকৃত কিচেন। তালিকাভুক্ত সব রেস্তোরাঁ FSSAI নিবন্ধিত এবং লাইভ ভেন্ডর।",
+      "তালিকাভুক্ত সব রেস্তোরাঁ FSSAI নিবন্ধিত এবং লাইভ ভেন্ডর।",
     noResults: "এই ফিল্টারে কোনো কিচেন নেই।",
     etaMin: "{n} মিনিট",
     deliveryFrom: "ডেলিভারি {fee}",

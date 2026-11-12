@@ -114,18 +114,18 @@ export function mapOrderToReceiptData(order: any, restaurantName = "OrderKing Pa
   const packingPaise = Number(order.prices?.packingPaise ?? order.packing_paise ?? 0);
   const discountPaise = Number(
     (order.prices?.restaurantDiscountPaise ?? 0) +
-      (order.prices?.platformFundedDiscountPaise ?? 0) +
-      (order.restaurant_discount_paise ?? 0)
+    (order.prices?.platformFundedDiscountPaise ?? 0) +
+    (order.restaurant_discount_paise ?? 0)
   );
   const taxPaise = Number(order.prices?.taxPaise ?? order.tax_paise ?? 0);
   const cgstPaise = Math.floor(taxPaise / 2);
   const sgstPaise = taxPaise - cgstPaise;
   const totalPaise = Number(
     order.prices?.customerTotalPaise ??
-      order.customer_total_paise ??
-      order.prices?.restaurantPayablePaise ??
-      order.restaurant_payable_paise ??
-      subtotalPaise + packingPaise + taxPaise - discountPaise
+    order.customer_total_paise ??
+    order.prices?.restaurantPayablePaise ??
+    order.restaurant_payable_paise ??
+    subtotalPaise + packingPaise + taxPaise - discountPaise
   );
 
   return {

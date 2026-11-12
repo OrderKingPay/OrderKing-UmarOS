@@ -71,16 +71,16 @@ export const deductKingpayMoney = createServerFn({ method: "POST" })
   .handler(async ({ data }: any) => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");
-    
+
     const cfg = await loadConfig();
-    
+
     if (cfg.marketplace.launchMode === "live") {
-       throw new Error("Financial Security: Wallet deductions require backend cryptographic validation in live mode.");
+      throw new Error("Financial Security: Wallet deductions require backend cryptographic validation in live mode.");
     }
 
     const sql = await getSql();
     const amountPaise = Math.round(data.amount * 100);
-    
+
     await sql.transaction(async (tx) => {
       const rows = await tx<{ balance_paise: number }>`SELECT balance_paise FROM kingpay_wallets WHERE user_id = ${user.id} FOR UPDATE`;
       if (rows.length === 0 || rows[0].balance_paise < amountPaise) {

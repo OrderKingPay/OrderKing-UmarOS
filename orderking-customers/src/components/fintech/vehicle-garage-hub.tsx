@@ -22,22 +22,22 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
         <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-500 mb-6">
           <Car className="size-10" />
         </div>
-        
+
         <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 px-4 py-1.5 text-xs font-black text-red-500 ring-1 ring-red-500/40 mb-4">
           <AlertTriangle className="size-4 animate-pulse" />
           <span>MoRTH Radar Active</span>
         </div>
-        
+
         <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4">
           Vehicle Garage & RTO
         </h2>
-        
+
         <p className="text-muted text-sm sm:text-base max-w-2xl mx-auto mb-8">
           Manage your vehicles effortlessly. Check traffic e-challans, get 0-paperwork insurance renewals, track PUC expiry, and recharge FASTag instantly.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
-          <Button 
+          <Button
             onClick={handleFastag}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
           >
@@ -48,7 +48,7 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
             </div>
           </Button>
 
-          <Button 
+          <Button
             onClick={handleInsurance}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
           >
@@ -59,18 +59,18 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
             </div>
           </Button>
 
-          <Button 
+          <Button
             onClick={handleAcko}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-purple-500/30 text-fg justify-start"
           >
             <Shield className="mr-3 size-5 text-purple-400" />
             <div className="flex flex-col items-start">
               <span className="font-bold">Renew Insurance (Acko)</span>
-              <span className="text-xs text-muted font-normal">Zero Paperwork Direct</span>
+              <span className="text-xs text-muted font-normal">Direct Digital Renewal</span>
             </div>
           </Button>
 
-          <Button 
+          <Button
             onClick={handleChallan}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
           >
@@ -81,7 +81,7 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
             </div>
           </Button>
 
-          <Button 
+          <Button
             onClick={handlePuc}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
           >

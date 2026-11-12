@@ -48,7 +48,8 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
   return { model: "sovereign-ultra", reason: "Auto-routed to OrderKing Core flagship executive reasoning engine." };
 }
 
-export interface ChatAttachment { content?: string;
+export interface ChatAttachment {
+  content?: string;
   id: string;
   name: string;
   type: "image" | "video" | "audio" | "document" | "code" | "archive";
@@ -151,25 +152,25 @@ export type PremiumAiMessage = {
   };
   actionCard?: {
     type:
-      | "lead_pitch"
-      | "invoice_pay"
-      | "enterprise_blueprint"
-      | "remote_gig_bid"
-      | "income_payout"
-      | "media_generator"
-      | "storage_purifier"
-      | "image_video_studio"
-      | "cache_purifier"
-      | "platform_connector"
-      | "video_editor_studio"
-      | "system_settings"
-      | "module_separator"
-      | "smart_cleaner"
-      | "ensemble_consensus"
-      | "instant_deploy"
-      | "model_updates"
-      | "geofence_status"
-      | "auto_clean";
+    | "lead_pitch"
+    | "invoice_pay"
+    | "enterprise_blueprint"
+    | "remote_gig_bid"
+    | "income_payout"
+    | "media_generator"
+    | "storage_purifier"
+    | "image_video_studio"
+    | "cache_purifier"
+    | "platform_connector"
+    | "video_editor_studio"
+    | "system_settings"
+    | "module_separator"
+    | "smart_cleaner"
+    | "ensemble_consensus"
+    | "instant_deploy"
+    | "model_updates"
+    | "geofence_status"
+    | "auto_clean";
     data: any;
   };
 };
@@ -289,9 +290,9 @@ export function generateFounderClientInvoice(params: {
   const invNum = `INV-${Date.now().toString().slice(-6)}`;
   const advance = Math.round(params.amountInr * 0.5);
   const upiLink = `upi://pay?pa=${encodeURIComponent(String(vpa ?? ""))}&pn=OrderKingPay&am=${advance}&tn=${encodeURIComponent(String(
-// @ts-ignore
+    // @ts-ignore
     `Advance-${invNum}`
-   ?? ""))}&cu=INR`;
+    ?? ""))}&cu=INR`;
   const qrPayload = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(String(upiLink ?? ""))}`;
 
   const dueDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString("en-IN", {
@@ -337,20 +338,20 @@ export async function getEnterpriseBlueprints(): Promise<Record<string, Enterpri
 }
 export async function parseFounderQuery(query: string, founderUpiVpa: string = "9395065587@ybl"): Promise<{
   intent:
-    | "client_sales"
-    | "remote_jobs"
-    | "enterprise_blueprint"
-    | "invoice_pay"
-    | "general_executive"
-    | "media_generation"
-    | "storage_purifier"
-    | "platform_connector"
-    | "video_editor_studio"
-    | "system_settings"
-    | "module_separator"
-    | "smart_cleaner"
-    | "ensemble_consensus"
-    | "instant_deploy";
+  | "client_sales"
+  | "remote_jobs"
+  | "enterprise_blueprint"
+  | "invoice_pay"
+  | "general_executive"
+  | "media_generation"
+  | "storage_purifier"
+  | "platform_connector"
+  | "video_editor_studio"
+  | "system_settings"
+  | "module_separator"
+  | "smart_cleaner"
+  | "ensemble_consensus"
+  | "instant_deploy";
   detectedLanguage: string;
   responseMarkdown: string;
   voiceSpokenText: string;
@@ -363,25 +364,25 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
   };
   actionCard?: {
     type:
-      | "lead_pitch"
-      | "invoice_pay"
-      | "enterprise_blueprint"
-      | "remote_gig_bid"
-      | "income_payout"
-      | "media_generator"
-      | "storage_purifier"
-      | "image_video_studio"
-      | "cache_purifier"
-      | "platform_connector"
-      | "video_editor_studio"
-      | "system_settings"
-      | "module_separator"
-      | "smart_cleaner"
-      | "ensemble_consensus"
-      | "instant_deploy"
-      | "model_updates"
-      | "geofence_status"
-      | "auto_clean";
+    | "lead_pitch"
+    | "invoice_pay"
+    | "enterprise_blueprint"
+    | "remote_gig_bid"
+    | "income_payout"
+    | "media_generator"
+    | "storage_purifier"
+    | "image_video_studio"
+    | "cache_purifier"
+    | "platform_connector"
+    | "video_editor_studio"
+    | "system_settings"
+    | "module_separator"
+    | "smart_cleaner"
+    | "ensemble_consensus"
+    | "instant_deploy"
+    | "model_updates"
+    | "geofence_status"
+    | "auto_clean";
     data: any;
   };
 }> {
@@ -425,8 +426,8 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cac
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
-      ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-      : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
+        ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
+        : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
 
     return {
       intent: "storage_purifier",
@@ -458,11 +459,11 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cac
       .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
 
     const seed = Math.floor(Math.random() * 999999);
-// @ts-ignore
+    // @ts-ignore
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
-// @ts-ignore
+      // @ts-ignore
       rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
-     ?? ""))}?width=1024&height=1024&nologo=true&seed=${seed}`;
+      ?? ""))}?width=1024&height=1024&nologo=true&seed=${seed}`;
 
     // Auto-save to Media Storage Vault
     mediaStorageVault.addItem({
@@ -492,8 +493,8 @@ You can download or copy the image link below.`;
     const voiceSpokenText = isHindi
       ? `Maine aapke liye AI image prepare kar diya hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-      ? `Ami apnar jonno AI image toiri korechi ebong media vault e save hoyeche.`
-      : `AI image prepared and saved to your Media Vault.`;
+        ? `Ami apnar jonno AI image toiri korechi ebong media vault e save hoyeche.`
+        : `AI image prepared and saved to your Media Vault.`;
 
     return {
       intent: "media_generation",
@@ -586,8 +587,8 @@ Ready to lock this contract and receive the advance payment immediately into you
     const voiceSpokenText = isHindi
       ? `Maine ${lead.businessName} ke liye high-ticket proposal tayyar kar liya hai. Deal ki total value ₹${lead.projectBudget.toLocaleString("en-IN")} hai, aur 50% advance invoice ready hai jo sidhe aapke UPI account me aayega.`
       : isBengali
-      ? `Ami ${lead.businessName} er jonno high-value proposal toiri korechi. Deal er value ₹${lead.projectBudget.toLocaleString("en-IN")} ebong 50% advance invoice ready ache.`
-      : `I have isolated a premier high-ticket client for you: ${lead.businessName}. The total contract value is ₹${lead.projectBudget.toLocaleString("en-IN")} with a 50% advance invoice generated directly to your founder UPI account.`;
+        ? `Ami ${lead.businessName} er jonno high-value proposal toiri korechi. Deal er value ₹${lead.projectBudget.toLocaleString("en-IN")} ebong 50% advance invoice ready ache.`
+        : `I have isolated a premier high-ticket client for you: ${lead.businessName}. The total contract value is ₹${lead.projectBudget.toLocaleString("en-IN")} with a 50% advance invoice generated directly to your founder UPI account.`;
 
     return {
       intent: "client_sales",
@@ -636,8 +637,8 @@ ${gig.proposalTemplate}
     const voiceSpokenText = isHindi
       ? `Aapke liye ek $${gig.hourlyRateUsd} prati ghanta ka high-paying remote contract match hua hai. Iski fixed value lagbhag $${gig.fixedBudgetUsd} dollar hai. Maine custom proposal generate kar diya hai.`
       : isBengali
-      ? `Apnar jonno ekta $${gig.hourlyRateUsd} per hour high-paying remote contract paowa geche. Fixed value $${gig.fixedBudgetUsd} dollars. Ami proposal ready korechi.`
-      : `I have secured a high-paying remote contract opportunity paying $${gig.hourlyRateUsd} per hour or a $${gig.fixedBudgetUsd?.toLocaleString()} fixed milestone. The proposal with your production credentials is ready to submit.`;
+        ? `Apnar jonno ekta $${gig.hourlyRateUsd} per hour high-paying remote contract paowa geche. Fixed value $${gig.fixedBudgetUsd} dollars. Ami proposal ready korechi.`
+        : `I have secured a high-paying remote contract opportunity paying $${gig.hourlyRateUsd} per hour or a $${gig.fixedBudgetUsd?.toLocaleString()} fixed milestone. The proposal with your production credentials is ready to submit.`;
 
     return {
       intent: "remote_jobs",
@@ -666,8 +667,8 @@ ${gig.proposalTemplate}
     const bp = q.includes("hospital")
       ? (await getEnterpriseBlueprints()).hospital_erp
       : q.includes("fintech") || q.includes("ledger")
-      ? (await getEnterpriseBlueprints()).fintech_ledger
-      : (await getEnterpriseBlueprints()).multi_vendor_marketplace;
+        ? (await getEnterpriseBlueprints()).fintech_ledger
+        : (await getEnterpriseBlueprints()).multi_vendor_marketplace;
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Architecting Domain Model", status: "COMPLETED", detail: `Designed schema for ${bp.targetOrganization}` },
@@ -697,8 +698,8 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     const voiceSpokenText = isHindi
       ? `Maine ${bp.title} ka complete enterprise architecture, multi-file code aur live interactive preview sandbox scaffold kar diya hai. Iski market value ₹${bp.commercialValueInr.toLocaleString("en-IN")} hai.`
       : isBengali
-      ? `Ami ${bp.title} er full enterprise code, database schema ebong live interactive preview toiri korechi. Er market value ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`
-      : `I have autonomously scaffolded the enterprise architecture, multi-file production code, and an interactive live sandbox for ${bp.title}. The commercial valuation is ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`;
+        ? `Ami ${bp.title} er full enterprise code, database schema ebong live interactive preview toiri korechi. Er market value ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`
+        : `I have autonomously scaffolded the enterprise architecture, multi-file production code, and an interactive live sandbox for ${bp.title}. The commercial valuation is ₹${bp.commercialValueInr.toLocaleString("en-IN")}.`;
 
     return {
       intent: "enterprise_blueprint",
@@ -751,8 +752,8 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     const voiceSpokenText = isHindi
       ? `Aapke liye ₹${inv.amountInr.toLocaleString("en-IN")} ka direct UPI invoice generate ho gaya hai. 50% advance payment sidhe aapke bank account me transfer hoga.`
       : isBengali
-      ? `Apnar jonno ₹${inv.amountInr.toLocaleString("en-IN")} er direct UPI invoice toiri hoyeche. 50% advance taka direct apnar account e joma hobe.`
-      : `I have generated an instant ₹${inv.amountInr.toLocaleString("en-IN")} invoice. The 50% advance payment link and QR code are ready to collect funds directly into your founder account.`;
+        ? `Apnar jonno ₹${inv.amountInr.toLocaleString("en-IN")} er direct UPI invoice toiri hoyeche. 50% advance taka direct apnar account e joma hobe.`
+        : `I have generated an instant ₹${inv.amountInr.toLocaleString("en-IN")} invoice. The 50% advance payment link and QR code are ready to collect funds directly into your founder account.`;
 
     return {
       intent: "invoice_pay",
@@ -798,25 +799,25 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
       { stepNumber: 2, totalSteps: 5, label: "Validating HMAC-SHA256 Security Guardrails", status: "COMPLETED", detail: "Zero Token Leak Sandbox active · Automated rollback snapshot created" },
       { stepNumber: 3, totalSteps: 5, label: "Auditing Active Platform Permissions", status: "COMPLETED", detail: `${matchedPlatform.authMethod} authenticated · Latency: ${matchedPlatform.apiLatencyMs}ms` },
       { stepNumber: 4, totalSteps: 5, label: "Arming Force-Execution Engine", status: "COMPLETED", detail: `${matchedPlatform.supportedActions.length} strict actions ready for founder execution` },
-      { stepNumber: 5, totalSteps: 5, label: "Founder Safety Protocol Engaged", status: "COMPLETED", detail: "100% data loss prevention active · Results piped directly back to founder" },
+      { stepNumber: 5, totalSteps: 5, label: "Founder Safety Protocol Engaged", status: "COMPLETED", detail: "Data loss prevention active · Results piped directly back to founder" },
     ];
 
     const responseMarkdown = `### Universal Platform & App Connector Active: **${matchedPlatform.name}**
 - **Connection Status**: **${matchedPlatform.status}** (Latency: \`${matchedPlatform.apiLatencyMs}ms\` · Auth: \`${matchedPlatform.authMethod}\`)
-- **Safety Guardrail**: **100% Verified** (Zero data leak, automatic rollback snapshot, rate-limit protector active)
+- **Safety Guardrail**: **Active** (Scoped credentials, rollback snapshot, rate-limit protector active)
 - **Available Actions to Enforce**:
 ${matchedPlatform.supportedActions.map((a) => `  - **${a.label}** (\`${a.safetyLevel}\`): ${a.description}`).join("\n")}
 
 > [!NOTE]
-> **Founder Safety Shield**: All external apps and APIs are forced to execute within our isolated sandbox. If an external service throws an error or rate limit, our automated rollback restores state in **sub-10ms** with zero business impact.
+> **Founder Safety Shield**: All external apps and APIs execute within our isolated sandbox with automated rollback snapshots enabled on upstream errors or rate limits.
 
 Use the interactive card below to force task execution on **${matchedPlatform.name}** or browse other connected platforms.`;
 
     const voiceSpokenText = isHindi
       ? `Maine ${matchedPlatform.name} ke saath sovereign integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
       : isBengali
-      ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
-      : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
+        ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
+        : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
 
     return {
       intent: "platform_connector",
@@ -961,8 +962,8 @@ Select any module below to **preview standalone source code, download full ZIP p
     const voiceSpokenText = isHindi
       ? `Aap HDmaster ke kisi bhi section ko alag karke ek nayi website ya standalone app bana sakte hain. Maine 7 separable modules tayyar kar diye hain jo 1-click download ya deploy ke liye ready hain.`
       : isBengali
-      ? `Apni HDmaster er je kono section ke alada kore notun website ba standalone app toiri korte paren. Ami 7 ti separable modules ready korechi.`
-      : `You can separate and extract any section of HDmaster into an independent website or standalone application. All 7 modules have their own package configurations, live subdomains, and 1-click download bundles ready.`;
+        ? `Apni HDmaster er je kono section ke alada kore notun website ba standalone app toiri korte paren. Ami 7 ti separable modules ready korechi.`
+        : `You can separate and extract any section of HDmaster into an independent website or standalone application. All 7 modules have their own package configurations, live subdomains, and 1-click download bundles ready.`;
 
     return {
       intent: "module_separator",
@@ -1330,72 +1331,72 @@ export function synthesizeOpenWorldCognitiveResponse(
     const symptomSummary = isChest
       ? "Acute Chest Pain / Cardiovascular Discomfort"
       : isHeadache
-      ? "Cephalea / Acute & Recurrent Headache Evaluation"
-      : isStomach
-      ? "Abdominal Pain / Gastrointestinal Distress"
-      : isFever
-      ? "Pyrexia / Upper & Lower Respiratory Infectious Syndrome"
-      : isMetabolic
-      ? "Endocrine & Hemodynamic Dysregulation (Glycemic / Vascular)"
-      : "Multi-System Symptom Evaluation & Clinical Diagnostic Workup";
+        ? "Cephalea / Acute & Recurrent Headache Evaluation"
+        : isStomach
+          ? "Abdominal Pain / Gastrointestinal Distress"
+          : isFever
+            ? "Pyrexia / Upper & Lower Respiratory Infectious Syndrome"
+            : isMetabolic
+              ? "Endocrine & Hemodynamic Dysregulation (Glycemic / Vascular)"
+              : "Multi-System Symptom Evaluation & Clinical Diagnostic Workup";
 
     const triageLevel = isChest
       ? "LEVEL 1 — IMMEDIATE EMERGENCY EVALUATION (Stat Cardiac Triage)"
       : isHeadache && (q.includes("severe") || q.includes("worst") || q.includes("sudden"))
-      ? "LEVEL 1 — EMERGENT THUNDERCLAP PROTOCOL (Rule-out SAH)"
-      : "LEVEL 2 — URGENT CLINICAL EVALUATION (Requires In-Person Medical Examination)";
+        ? "LEVEL 1 — EMERGENT THUNDERCLAP PROTOCOL (Rule-out SAH)"
+        : "LEVEL 2 — URGENT CLINICAL EVALUATION (Requires In-Person Medical Examination)";
 
     const primaryDdx = isChest
       ? "**Primary Differential**: Non-ST Elevation Acute Coronary Syndrome (NSTE-ACS) vs Stable Angina vs Acute Pericarditis."
       : isHeadache
-      ? "**Primary Differential**: Migraine with/without Aura vs Tension-Type Headache vs Cervicogenic Cephalea."
-      : isStomach
-      ? "**Primary Differential**: Acute Gastritis / Peptic Ulcer Disease (PUD) vs Acute Cholecystitis / Biliary Colic."
-      : isFever
-      ? "**Primary Differential**: Viral Upper Respiratory Tract Infection (Influenza / RSV / COVID-19) vs Community-Acquired Bacterial Pneumonia."
-      : isMetabolic
-      ? "**Primary Differential**: Type 2 Diabetes Mellitus with Metabolic Syndrome vs Essential Stage 1/2 Hypertension."
-      : "**Primary Differential**: Acute Inflammatory / Reactive Syndrome secondary to environmental, microbial, or musculoskeletal factors.";
+        ? "**Primary Differential**: Migraine with/without Aura vs Tension-Type Headache vs Cervicogenic Cephalea."
+        : isStomach
+          ? "**Primary Differential**: Acute Gastritis / Peptic Ulcer Disease (PUD) vs Acute Cholecystitis / Biliary Colic."
+          : isFever
+            ? "**Primary Differential**: Viral Upper Respiratory Tract Infection (Influenza / RSV / COVID-19) vs Community-Acquired Bacterial Pneumonia."
+            : isMetabolic
+              ? "**Primary Differential**: Type 2 Diabetes Mellitus with Metabolic Syndrome vs Essential Stage 1/2 Hypertension."
+              : "**Primary Differential**: Acute Inflammatory / Reactive Syndrome secondary to environmental, microbial, or musculoskeletal factors.";
 
     const criticalRuleOuts = isChest
       ? "1. **ST-Elevation Myocardial Infarction (STEMI)**\n2. **Acute Aortic Dissection (Stanford Type A/B)**\n3. **Pulmonary Embolism (PE with RV Strain)**\n4. **Tension Pneumothorax / Esophageal Rupture (Boerhaave Syndrome)**"
       : isHeadache
-      ? "1. **Subarachnoid Hemorrhage (Aneurysmal Rupture / Thunderclap)**\n2. **Bacterial / Viral Meningitis & Encephalitis**\n3. **Cerebral Venous Sinus Thrombosis (CVST)**\n4. **Giant Cell (Temporal) Arteritis (>50 yo; risk of permanent visual loss)**"
-      : isStomach
-      ? "1. **Acute Appendicitis with perforation risk**\n2. **Acute Necrotizing Pancreatitis**\n3. **Viscus Perforation (Pneumoperitoneum)**\n4. **Acute Mesenteric Ischemia / Ectopic Pregnancy**"
-      : isFever
-      ? "1. **Systemic Sepsis / Septic Shock (qSOFA criteria)**\n2. **Severe Bacterial Sepsis / Meningococcemia**\n3. **Acute Respiratory Distress Syndrome (ARDS)**\n4. **Acute Pyelonephritis / Bacterial Endocarditis**"
-      : "1. **Diabetic Ketoacidosis (DKA) / Hyperosmolar Hyperglycemic State (HHS)**\n2. **Hypertensive Emergency with Acute Target Organ Damage**\n3. **Acute Coronary / Cerebrovascular Event**\n4. **Acute Kidney Injury (AKI)**";
+        ? "1. **Subarachnoid Hemorrhage (Aneurysmal Rupture / Thunderclap)**\n2. **Bacterial / Viral Meningitis & Encephalitis**\n3. **Cerebral Venous Sinus Thrombosis (CVST)**\n4. **Giant Cell (Temporal) Arteritis (>50 yo; risk of permanent visual loss)**"
+        : isStomach
+          ? "1. **Acute Appendicitis with perforation risk**\n2. **Acute Necrotizing Pancreatitis**\n3. **Viscus Perforation (Pneumoperitoneum)**\n4. **Acute Mesenteric Ischemia / Ectopic Pregnancy**"
+          : isFever
+            ? "1. **Systemic Sepsis / Septic Shock (qSOFA criteria)**\n2. **Severe Bacterial Sepsis / Meningococcemia**\n3. **Acute Respiratory Distress Syndrome (ARDS)**\n4. **Acute Pyelonephritis / Bacterial Endocarditis**"
+            : "1. **Diabetic Ketoacidosis (DKA) / Hyperosmolar Hyperglycemic State (HHS)**\n2. **Hypertensive Emergency with Acute Target Organ Damage**\n3. **Acute Coronary / Cerebrovascular Event**\n4. **Acute Kidney Injury (AKI)**";
 
     const labsAndImaging = isChest
       ? "- **Stat ECG**: 12-lead Electrocardiogram within 10 minutes of presentation (evaluate ST elevations/depressions, T-wave inversions, new LBBB).\n- **Biomarkers**: High-sensitivity Cardiac Troponin (hs-cTnI / hs-cTnT) at 0h, 1h, and 3h serial intervals; D-Dimer quantitative assay.\n- **Imaging**: Chest Radiograph (PA & Lateral) to assess mediastinal widening and cardiomegaly; Point-of-Care Ultrasound (POCUS) / Echocardiography."
       : isHeadache
-      ? "- **Neuroimaging**: Non-Contrast Cranial CT within 6 hours of onset (evaluates acute blood/SAH); MRI Brain with MRA if atypical.\n- **Lumbar Puncture**: CSF opening pressure, cell count with differential, protein, glucose, and spectrophotometric xanthochromia if CT is negative but clinical suspicion of SAH remains high.\n- **Inflammatory Markers**: Erythrocyte Sedimentation Rate (ESR) and C-Reactive Protein (CRP) for temporal arteritis."
-      : isStomach
-      ? "- **Laboratory Panels**: Complete Blood Count (CBC) with differential (leukocytosis, bandemia), Serum Lipase & Amylase (>3x ULN confirms pancreatitis), Liver Function Tests (Total/Direct Bilirubin, ALT, AST, Alkaline Phosphatase), Urinalysis, Serum Beta-hCG.\n- **Imaging Modalities**: Abdominal Ultrasound (RUQ for gallstones/cholecystitis) or Contrast-Enhanced Abdominopelvic CT."
-      : isFever
-      ? "- **Infectious Disease Workup**: Complete Blood Count (CBC with diff), High-Sensitivity CRP, Serum Procalcitonin (differentiates bacterial from viral etiology).\n- **Microbiology**: Blood cultures x2 sites prior to antimicrobial initiation, Sputum culture & Gram stain, Multiplex Respiratory Viral PCR Panel (Influenza A/B, COVID-19, RSV), Urinalysis & Urine culture.\n- **Radiology**: Chest Radiograph (PA & Lateral) to identify consolidation, cavitation, or pleural effusion."
-      : "- **Metabolic Panels**: Glycated Hemoglobin (HbA1c), Fasting Plasma Glucose, Comprehensive Metabolic Panel (Serum Creatinine, eGFR, BUN, Electrolytes).\n- **Cardiovascular Biomarkers**: Fasting Lipid Profile (Total Cholesterol, LDL-C, HDL-C, Triglycerides), Spot Urine Albumin-to-Creatinine Ratio (UACR).\n- **Diagnostic Modalities**: 12-lead resting ECG, 24-hour Ambulatory Blood Pressure Monitoring (ABPM).";
+        ? "- **Neuroimaging**: Non-Contrast Cranial CT within 6 hours of onset (evaluates acute blood/SAH); MRI Brain with MRA if atypical.\n- **Lumbar Puncture**: CSF opening pressure, cell count with differential, protein, glucose, and spectrophotometric xanthochromia if CT is negative but clinical suspicion of SAH remains high.\n- **Inflammatory Markers**: Erythrocyte Sedimentation Rate (ESR) and C-Reactive Protein (CRP) for temporal arteritis."
+        : isStomach
+          ? "- **Laboratory Panels**: Complete Blood Count (CBC) with differential (leukocytosis, bandemia), Serum Lipase & Amylase (>3x ULN confirms pancreatitis), Liver Function Tests (Total/Direct Bilirubin, ALT, AST, Alkaline Phosphatase), Urinalysis, Serum Beta-hCG.\n- **Imaging Modalities**: Abdominal Ultrasound (RUQ for gallstones/cholecystitis) or Contrast-Enhanced Abdominopelvic CT."
+          : isFever
+            ? "- **Infectious Disease Workup**: Complete Blood Count (CBC with diff), High-Sensitivity CRP, Serum Procalcitonin (differentiates bacterial from viral etiology).\n- **Microbiology**: Blood cultures x2 sites prior to antimicrobial initiation, Sputum culture & Gram stain, Multiplex Respiratory Viral PCR Panel (Influenza A/B, COVID-19, RSV), Urinalysis & Urine culture.\n- **Radiology**: Chest Radiograph (PA & Lateral) to identify consolidation, cavitation, or pleural effusion."
+            : "- **Metabolic Panels**: Glycated Hemoglobin (HbA1c), Fasting Plasma Glucose, Comprehensive Metabolic Panel (Serum Creatinine, eGFR, BUN, Electrolytes).\n- **Cardiovascular Biomarkers**: Fasting Lipid Profile (Total Cholesterol, LDL-C, HDL-C, Triglycerides), Spot Urine Albumin-to-Creatinine Ratio (UACR).\n- **Diagnostic Modalities**: 12-lead resting ECG, 24-hour Ambulatory Blood Pressure Monitoring (ABPM).";
 
     const pharmacotherapy = isChest
       ? "- **Antiplatelet Therapy**: Chewable non-enteric Aspirin 325 mg immediately unless active anaphylaxis or life-threatening hemorrhage.\n- **Nitrates**: Sublingual Nitroglycerin 0.4 mg every 5 min (max 3 doses). *Absolute Contraindication*: PDE-5 inhibitors (e.g. Sildenafil within 24h) or suspect Right Ventricular Infarction.\n- **Anticoagulation & Statin**: Low-molecular-weight heparin (Enoxaparin 1 mg/kg SC q12h) + High-intensity Statin (Atorvastatin 80 mg PO)."
       : isHeadache
-      ? "- **Acute Abortive Therapy (Migraine)**: Sumatriptan 50–100 mg PO or Rizatriptan 10 mg PO (5-HT1B/1D agonist) at headache onset, combined with Naproxen Sodium 500 mg PO. *Contraindication*: Ischemic heart disease, stroke, or uncontrolled hypertension.\n- **Antiemetic & Gastric Prokinetic**: Metoclopramide 10 mg IV/PO or Ondansetron 4–8 mg ODT for accompanying nausea and gastric stasis.\n- **Supportive Care**: Dark quiet room, adequate oral hydration with electrolytes, cold compress to forehead."
-      : isStomach
-      ? "- **Acid Suppression**: Pantoprazole 40 mg IV/PO once daily or Esomeprazole 40 mg PO (Proton Pump Inhibitor for mucosal healing).\n- **Antispasmodic**: Drotaverine HCl 40–80 mg PO TID or Hyoscine Butylbromide 10–20 mg PO for smooth muscle spasm relief.\n- **Hydration Protocol**: Oral Rehydration Salts (WHO formulation) or balanced crystalloid infusion (Ringer's Lactate) if vomiting is present. *Avoid NSAIDs* due to gastrointestinal ulceration risk."
-      : isFever
-      ? "- **Antipyresis & Analgesia**: Paracetamol (Acetaminophen) 650 mg PO every 6 hours as needed (do not exceed 3,000 mg in 24 hours); Ibuprofen 400 mg PO with meals as an adjunct.\n- **Targeted Antimicrobial Regimen**: *Only if bacterial infection is clinically/microbiologically confirmed*: Amoxicillin-Clavulanate 875/125 mg PO BID or Azithromycin 500 mg day 1 then 250 mg daily for atypical pulmonary coverage.\n- **Fluid Balance**: 2.5–3.5 Liters/day oral hydration; saline nasal irrigation for upper airway congestion."
-      : "- **Antihypertensive First-Line**: Telmisartan 40–80 mg PO once daily (Angiotensin Receptor Blocker) or Amlodipine 5–10 mg PO once daily (Calcium Channel Blocker).\n- **Antihyperglycemic First-Line**: Metformin 500 mg PO with meals, titrated up to 1,000 mg BID (monitor renal function; hold if eGFR < 30 mL/min); SGLT2-inhibitor (Empagliflozin 10–25 mg daily) for proven renal and cardiovascular risk reduction.\n- **Lifestyle Protocol**: Dietary Approaches to Stop Hypertension (DASH diet), sodium restriction < 2,000 mg/day, structured aerobic exercise 150 min/week.";
+        ? "- **Acute Abortive Therapy (Migraine)**: Sumatriptan 50–100 mg PO or Rizatriptan 10 mg PO (5-HT1B/1D agonist) at headache onset, combined with Naproxen Sodium 500 mg PO. *Contraindication*: Ischemic heart disease, stroke, or uncontrolled hypertension.\n- **Antiemetic & Gastric Prokinetic**: Metoclopramide 10 mg IV/PO or Ondansetron 4–8 mg ODT for accompanying nausea and gastric stasis.\n- **Supportive Care**: Dark quiet room, adequate oral hydration with electrolytes, cold compress to forehead."
+        : isStomach
+          ? "- **Acid Suppression**: Pantoprazole 40 mg IV/PO once daily or Esomeprazole 40 mg PO (Proton Pump Inhibitor for mucosal healing).\n- **Antispasmodic**: Drotaverine HCl 40–80 mg PO TID or Hyoscine Butylbromide 10–20 mg PO for smooth muscle spasm relief.\n- **Hydration Protocol**: Oral Rehydration Salts (WHO formulation) or balanced crystalloid infusion (Ringer's Lactate) if vomiting is present. *Avoid NSAIDs* due to gastrointestinal ulceration risk."
+          : isFever
+            ? "- **Antipyresis & Analgesia**: Paracetamol (Acetaminophen) 650 mg PO every 6 hours as needed (do not exceed 3,000 mg in 24 hours); Ibuprofen 400 mg PO with meals as an adjunct.\n- **Targeted Antimicrobial Regimen**: *Only if bacterial infection is clinically/microbiologically confirmed*: Amoxicillin-Clavulanate 875/125 mg PO BID or Azithromycin 500 mg day 1 then 250 mg daily for atypical pulmonary coverage.\n- **Fluid Balance**: 2.5–3.5 Liters/day oral hydration; saline nasal irrigation for upper airway congestion."
+            : "- **Antihypertensive First-Line**: Telmisartan 40–80 mg PO once daily (Angiotensin Receptor Blocker) or Amlodipine 5–10 mg PO once daily (Calcium Channel Blocker).\n- **Antihyperglycemic First-Line**: Metformin 500 mg PO with meals, titrated up to 1,000 mg BID (monitor renal function; hold if eGFR < 30 mL/min); SGLT2-inhibitor (Empagliflozin 10–25 mg daily) for proven renal and cardiovascular risk reduction.\n- **Lifestyle Protocol**: Dietary Approaches to Stop Hypertension (DASH diet), sodium restriction < 2,000 mg/day, structured aerobic exercise 150 min/week.";
 
     const redFlags = isChest
       ? "- Crushing substernal pressure radiating to left arm, neck, or jaw.\n- Unexplained diaphoresis (cold sweats), severe dyspnea, nausea, or presyncope.\n- Tearing pain radiating through to the interscapular region of the back."
       : isHeadache
-      ? "- Sudden explosive onset reaching maximal peak intensity within 60 seconds ('thunderclap').\n- Fever accompanied by severe neck stiffness (nuchal rigidity) and confusion.\n- New neurological deficits (unilateral weakness, facial droop, dysphasia, visual field defects)."
-      : isStomach
-      ? "- Involuntary abdominal wall rigidity, severe guarding, or rebound tenderness (peritonitis).\n- Hematemesis (vomiting fresh blood or coffee-ground material) or melena (black tarry stools).\n- Persistent high fever, dizziness, fainting, or signs of hypovolemic shock."
-      : isFever
-      ? "- Peripheral oxygen saturation (SpO2) < 93% on room air.\n- Respiratory rate > 28 breaths per minute or severe accessory muscle retractions.\n- Altered mental status, extreme lethargy, confusion, or non-blanching petechial skin rash."
-      : "- Systolic BP > 180 mmHg or Diastolic BP > 120 mmHg with severe headache, visual blurring, or chest tightness.\n- Blood glucose > 300 mg/dL accompanied by nausea, vomiting, sweet fruity breath odor, or tachypnea (DKA suspicion).\n- Sudden focal weakness, numbness, or slurred speech.";
+        ? "- Sudden explosive onset reaching maximal peak intensity within 60 seconds ('thunderclap').\n- Fever accompanied by severe neck stiffness (nuchal rigidity) and confusion.\n- New neurological deficits (unilateral weakness, facial droop, dysphasia, visual field defects)."
+        : isStomach
+          ? "- Involuntary abdominal wall rigidity, severe guarding, or rebound tenderness (peritonitis).\n- Hematemesis (vomiting fresh blood or coffee-ground material) or melena (black tarry stools).\n- Persistent high fever, dizziness, fainting, or signs of hypovolemic shock."
+          : isFever
+            ? "- Peripheral oxygen saturation (SpO2) < 93% on room air.\n- Respiratory rate > 28 breaths per minute or severe accessory muscle retractions.\n- Altered mental status, extreme lethargy, confusion, or non-blanching petechial skin rash."
+            : "- Systolic BP > 180 mmHg or Diastolic BP > 120 mmHg with severe headache, visual blurring, or chest tightness.\n- Blood glucose > 300 mg/dL accompanied by nausea, vomiting, sweet fruity breath odor, or tachypnea (DKA suspicion).\n- Sudden focal weakness, numbness, or slurred speech.";
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Clinical Symptom & Acuity Triage", status: "COMPLETED", detail: `Stratified: ${triageLevel.slice(0, 48)}` },
@@ -1449,8 +1450,8 @@ ${redFlags}
     const voiceSpokenText = isHindi
       ? `Maine aapke lakshano ka poora medical evaluation aur clinical differential diagnosis taiyyar kar diya hai. Sambhavit kaaran, zaruri blood tests, standard dawaaiyon ke protocols aur emergency warning signs screen par detailed hain.`
       : isBengali
-      ? `Ami apnar shomosshar ekti shompurno clinical differential diagnosis toiri korechi. Shombhabo karon, proyojonio lab test, oshudh er guideline ebong emergency warning signs screen-e bistarito dewa holo.`
-      : `I have conducted a comprehensive clinical differential evaluation for your inquiry. I have outlined the primary and critical differentials, essential diagnostic lab workups, evidence-based medication protocols, and emergency red flags to watch for. Please review the clinical breakdown on your screen.`;
+        ? `Ami apnar shomosshar ekti shompurno clinical differential diagnosis toiri korechi. Shombhabo karon, proyojonio lab test, oshudh er guideline ebong emergency warning signs screen-e bistarito dewa holo.`
+        : `I have conducted a comprehensive clinical differential evaluation for your inquiry. I have outlined the primary and critical differentials, essential diagnostic lab workups, evidence-based medication protocols, and emergency red flags to watch for. Please review the clinical breakdown on your screen.`;
 
     return {
       intent: "general_executive",
@@ -1525,7 +1526,7 @@ if __name__ == "__main__":
     test_production_engine()
 \`\`\``
       : isSql
-      ? `\`\`\`sql
+        ? `\`\`\`sql
 -- Enterprise Scalable PostgreSQL Schema with Indivisible Invariants
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -1559,7 +1560,7 @@ CREATE TRIGGER trg_system_records_update
 BEFORE UPDATE ON system_records
 FOR EACH ROW EXECUTE FUNCTION update_timestamp_column();
 \`\`\``
-      : `\`\`\`typescript
+        : `\`\`\`typescript
 /**
  * Production-Grade Resilient Implementation
  * Strict Typing, Memory Safety, Defensive Edge Handling, and Zero-Leak Policy.
@@ -1661,8 +1662,8 @@ ${codeSnippet}
     const voiceSpokenText = isHindi
       ? `Maine poora production-ready code, architecture, Big-O complexity aur edge cases ke saath taiyyar kar diya hai. Screen par code available hai.`
       : isBengali
-      ? `Ami production-grade code, architecture, complexity ebong unit test shohokare toiri korechi. Code-ti screen-e available achhe.`
-      : `I have synthesized the complete production-grade implementation, complete with architectural analysis, Big-O complexity, and edge-case handling. You can review and copy the full code on your screen.`;
+        ? `Ami production-grade code, architecture, complexity ebong unit test shohokare toiri korechi. Code-ti screen-e available achhe.`
+        : `I have synthesized the complete production-grade implementation, complete with architectural analysis, Big-O complexity, and edge-case handling. You can review and copy the full code on your screen.`;
 
     return {
       intent: "general_executive",
@@ -1718,8 +1719,8 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
     const voiceSpokenText = isHindi
       ? `Maine ganitiya aur vaigyanik roop se poora step-by-step derivation solve kar diya hai. Poora solution screen par uplabdh hai.`
       : isBengali
-      ? `Ami shompurno first-principles mathematical ebong scientific derivation toiri korechi. Shob calculation screen-e dewa holo.`
-      : `I have derived the complete first-principles mathematical and scientific solution step by step. You can examine the full derivation and proof on your screen.`;
+        ? `Ami shompurno first-principles mathematical ebong scientific derivation toiri korechi. Shob calculation screen-e dewa holo.`
+        : `I have derived the complete first-principles mathematical and scientific solution step by step. You can examine the full derivation and proof on your screen.`;
 
     return {
       intent: "general_executive",
@@ -1775,8 +1776,8 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
     const voiceSpokenText = isHindi
       ? `Maine aapke sawal par ek clear decision matrix aur practical 3-phase action plan taiyyar kiya hai. Screen par poora roadmap dekh sakte hain.`
       : isBengali
-      ? `Ami apnar shomosshar ekti clear decision matrix ebong 3-phase action plan toiri korechi. Screen-e shob dekhun.`
-      : `I have structured a high-leverage strategic decision matrix and a phased action roadmap for your situation. Please review the breakdown on your screen.`;
+        ? `Ami apnar shomosshar ekti clear decision matrix ebong 3-phase action plan toiri korechi. Screen-e shob dekhun.`
+        : `I have structured a high-leverage strategic decision matrix and a phased action roadmap for your situation. Please review the breakdown on your screen.`;
 
     return {
       intent: "general_executive",
@@ -1822,8 +1823,8 @@ $$\\mathcal{L}(x, t) = \\nabla \\cdot \\mathbf{F}(x, t) + \\sigma(x, t)$$
     const voiceSpokenText = isHindi
       ? `Maine is vishay par ek vistrit aitihasik aur darshanik vishleshan taiyyar kiya hai. Poora context screen par uplabdh hai.`
       : isBengali
-      ? `Ami ei bishoye ekti bistarito aitihashik ebong darshonik analysis toiri korechi. Screen-e shob dewa holo.`
-      : `I have synthesized a deep historical and philosophical breakdown with structural catalysts, multi-perspective analysis, and modern lessons.`;
+        ? `Ami ei bishoye ekti bistarito aitihashik ebong darshonik analysis toiri korechi. Screen-e shob dewa holo.`
+        : `I have synthesized a deep historical and philosophical breakdown with structural catalysts, multi-perspective analysis, and modern lessons.`;
 
     return {
       intent: "general_executive",
@@ -1871,8 +1872,8 @@ This subject connects foundational principles of systems theory, human incentive
   const voiceSpokenText = isHindi
     ? `Maine aapke sawal ka poora vishleshan aur saaf uttar taiyyar kar diya hai. Poora breakdown screen par uplabdh hai.`
     : isBengali
-    ? `Ami apnar proshner ekti shompurno bistarito uttor toiri korechi. Screen-e shob dewa holo.`
-    : `I have synthesized a comprehensive, multi-perspective answer for your inquiry. The full breakdown is available on your screen.`;
+      ? `Ami apnar proshner ekti shompurno bistarito uttor toiri korechi. Screen-e shob dewa holo.`
+      : `I have synthesized a comprehensive, multi-perspective answer for your inquiry. The full breakdown is available on your screen.`;
 
   return {
     intent: "general_executive",

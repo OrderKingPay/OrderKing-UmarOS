@@ -175,8 +175,10 @@ export function getTboCredentials(customEnv?: Record<string, string>): TboCreden
   };
 
   const agencyCode =
+    getEnv("TBO_AGENCY_ID") ||
     getEnv("TBO_CLIENT_ID") ||
     getEnv("TBO_AGENCY_CODE") ||
+    getEnv("VITE_TBO_AGENCY_ID") ||
     getEnv("VITE_TBO_CLIENT_ID") ||
     getEnv("VITE_TBO_AGENCY_CODE") ||
     TBO_APPLICATION_ID;
@@ -474,6 +476,8 @@ export function calculateTboFounderMargin(
 
 /**
  * Authenticates with TBO API Gateway using registered agency credentials.
+ * POST to `${endpoint}/SharedServices/SharedData.svc/rest/Authenticate`
+ * with `{ ClientId: agencyCode, UserName: userName, Password: password, EndUserIp: "127.0.0.1" }`
  */
 export async function authenticateTbo(
   creds?: TboCredentials | null,
@@ -491,7 +495,8 @@ export async function authenticateTbo(
   }
 
   try {
-    const authUrl = `${credentials.endpoint}/SharedServices/SharedData.svc/rest/Authenticate`;
+    const base = credentials.endpoint.replace(/\/+$/, "");
+    const authUrl = `${base}/SharedServices/SharedData.svc/rest/Authenticate`;
     const payload = serializeTboAuthRequest(credentials, endUserIp);
 
     const res = await fetch(authUrl, {
@@ -509,12 +514,13 @@ export async function authenticateTbo(
     }
 
     const data: any = await res.json();
-    if (data?.Status === 1 && data?.TokenId) {
+    const tokenId = data?.TokenId || data?.tokenId;
+    if ((data?.Status === 1 || data?.Status === "1" || tokenId) && tokenId) {
       return {
         authenticated: true,
-        token: data.TokenId,
-        memberId: data.Member?.MemberId,
-        agencyId: data.Member?.AgencyId,
+        token: tokenId,
+        memberId: data.Member?.MemberId || data.MemberId,
+        agencyId: data.Member?.AgencyId || data.AgencyId,
         status: "active",
         message: "TBO Session Authenticated successfully.",
       };
@@ -535,9 +541,15 @@ export async function authenticateTbo(
 }
 
 /**
- * Live Flight Search via TBO Air API.
+ * Standard alias for authenticateTbo
  */
-export async function searchTboFlights(
+export const authenticateTBO = authenticateTbo;
+
+/**
+ * Live Flight Search via TBO Air API.
+ * POST to `${endpoint}/AirService.svc/rest/Search` with auth token
+ */
+export async function searchFlightsTBO(
   query: TboFlightSearchQuery,
   token?: string,
   endUserIp = DEFAULT_END_USER_IP
@@ -566,21 +578,47 @@ export async function searchTboFlights(
   }
 
   try {
-    const searchUrl = `${creds.endpoint}/BookingEngineService_Air/AirService.svc/rest/Search`;
+    const base = creds.endpoint.replace(/\/+$/, "");
     const payload = serializeTboFlightSearchRequest(query, authToken, endUserIp);
 
-    const res = await fetch(searchUrl, {
+    // Primary endpoint: ${endpoint}/AirService.svc/rest/Search
+    let searchUrl = `${base}/AirService.svc/rest/Search`;
+    let res = await fetch(searchUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
+    // Fallback if 404: try BookingEngineService_Air prefix
+    if (res.status === 404) {
+      searchUrl = `${base}/BookingEngineService_Air/AirService.svc/rest/Search`;
+      res = await fetch(searchUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    }
 
     if (!res.ok) {
       return { success: false, flights: [], error: `TBO Search returned HTTP ${res.status}` };
     }
 
     const data: any = await res.json();
-    const results = data?.Response?.Results?.[0] || [];
+    if (data?.Response?.Error?.ErrorCode && data.Response.Error.ErrorCode !== 0) {
+      return {
+        success: false,
+        flights: [],
+        error: data.Response.Error.ErrorMessage || "Carrier returned search error",
+      };
+    }
+
+    const rawResults = data?.Response?.Results;
+    const results = Array.isArray(rawResults?.[0])
+      ? rawResults[0]
+      : Array.isArray(rawResults)
+      ? rawResults
+      : [];
+
     return {
       success: true,
       flights: results,
@@ -590,6 +628,11 @@ export async function searchTboFlights(
     return { success: false, flights: [], error: err?.message || "TBO flight search error" };
   }
 }
+
+/**
+ * Standard alias for backward compatibility
+ */
+export const searchTboFlights = searchFlightsTBO;
 
 /**
  * Re-validates pricing, seat availability, and baggage/meal allowances before booking.

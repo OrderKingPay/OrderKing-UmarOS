@@ -323,7 +323,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       monthlyGrossRevenuePaise: totalFinancialAffiliatesPaise,
       grossMarginPercentage: "100.0%",
       legalBasis: "RBI Digital Lending Guidelines 2022/2023 (LSP Partnership)",
-      participantMutualBenefit: "Pre-approved loans and cards with zero paperwork and instant WhatsApp disbursal.",
+      participantMutualBenefit: "Credit card and lending partner referrals subject to lender KYC and eligibility.",
     },
     {
       streamId: "stream_7_bajaj_finserv",

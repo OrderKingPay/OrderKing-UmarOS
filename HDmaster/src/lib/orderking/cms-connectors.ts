@@ -188,12 +188,12 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   supportEscalationButtonLabel: "Request Executive Escalation Officer",
   fssaiComplianceBannerText: "Food Safety and Standards Authority of India (FSSAI) verified merchant network.",
   grievanceOfficerContactText: "Designated Grievance Redressal Officer: compliance@orderkingpay.com (SLA 24 Hours)",
-  refundGuaranteeNotice: "100% Instant Resolution Guarantee: Immediate wallet reimbursement for missing or compromised items.",
+  refundGuaranteeNotice: "Immediate wallet reimbursement for verified missing or damaged items.",
 
   // 6. Growth, Referrals & Loyalty
   referralHeadline: "Invite Neighborhood Friends & Earn Cash Credits",
   referralShareBodyTemplate: "Order authentic food directly from local kitchens on OrderKing: {LINK}",
-  goldPassMembershipTitle: "Gold Priority Pass: Zero-Surge Guarantee & Priority Dispatch Allocation",
+  goldPassMembershipTitle: "Gold Priority Pass: Zero Surge & Priority Dispatch Allocation",
   dailySpecialsSectionTitle: "Curated Chef Specials & Direct-from-Kitchen Selections",
 
   // 7. Connectors Hub & Global Integrations Copy

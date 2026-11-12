@@ -225,11 +225,10 @@ function VideoOutputCard({ item }: { item: RichMediaOutput }) {
           </div>
         </div>
         <span
-          className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
-            connected
+          className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${connected
               ? "bg-emerald-100 text-emerald-900 border-emerald-300"
               : "bg-rose-100 text-rose-900 border-rose-300"
-          }`}
+            }`}
         >
           {connected ? "GATEWAY CONFIGURED" : "NOT CONNECTED"}
         </span>
@@ -253,7 +252,7 @@ function VideoOutputCard({ item }: { item: RichMediaOutput }) {
  */
 function SettingsWidgetCard({ item, onToggleSetting }: { item: RichMediaOutput, onToggleSetting: (key: string) => void }) {
   const [localState, setLocalState] = useState(item.data.settingValue);
-  
+
   const handleToggle = () => {
     const newState = !localState;
     setLocalState(newState);
@@ -368,12 +367,12 @@ export function UmarOS_AI_Terminal() {
       e.preventDefault();
       e.stopPropagation();
     }
-    
+
     if (isListening) {
       if (speechRecognitionRef.current) {
         try {
           speechRecognitionRef.current.stop();
-        } catch (_) {}
+        } catch (_) { }
       }
       setIsListening(false);
       toast.info("Voice Processing stopped.");
@@ -577,8 +576,8 @@ export function UmarOS_AI_Terminal() {
           ? normalized.includes("/video") || normalized.includes("video") || normalized.includes("cctv")
             ? "cctv_motion_tracking"
             : normalized.includes("/charts") || normalized.includes("chart")
-            ? "query_throughput_curves"
-            : "multimodal_vision_audit"
+              ? "query_throughput_curves"
+              : "multimodal_vision_audit"
           : res.toolExecuted,
         executionMs: res.executionMs,
         data: res.data,
@@ -809,11 +808,10 @@ export function UmarOS_AI_Terminal() {
       <div className="flex border-b border-slate-200 bg-slate-50 px-6">
         <button
           onClick={() => setActiveTab("terminal")}
-          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-            activeTab === "terminal"
+          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${activeTab === "terminal"
               ? "border-slate-900 text-slate-900 bg-white"
               : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-          }`}
+            }`}
         >
           <Terminal className="h-4 w-4 text-emerald-600" />
           <span>Multimodal AI Terminal</span>
@@ -824,11 +822,10 @@ export function UmarOS_AI_Terminal() {
 
         <button
           onClick={() => setActiveTab("orchestrator")}
-          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-            activeTab === "orchestrator"
+          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${activeTab === "orchestrator"
               ? "border-slate-900 text-slate-900 bg-white"
               : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-          }`}
+            }`}
         >
           <Sliders className="h-4 w-4 text-blue-600" />
           <span>Autonomous Operations Engine</span>
@@ -839,11 +836,10 @@ export function UmarOS_AI_Terminal() {
 
         <button
           onClick={() => setActiveTab("telemetry")}
-          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-            activeTab === "telemetry"
+          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${activeTab === "telemetry"
               ? "border-slate-900 text-slate-900 bg-white"
               : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-          }`}
+            }`}
         >
           <Activity className="h-4 w-4 text-purple-600" />
           <span>Live Autonomous Telemetry & Audits</span>
@@ -851,11 +847,10 @@ export function UmarOS_AI_Terminal() {
 
         <button
           onClick={() => setActiveTab("tech_registry")}
-          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${
-            activeTab === "tech_registry"
+          className={`flex items-center gap-2 py-3 px-4 font-bold text-xs uppercase tracking-wider border-b-2 transition-all cursor-pointer ${activeTab === "tech_registry"
               ? "border-slate-900 text-slate-900 bg-white"
               : "border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100/50"
-          }`}
+            }`}
         >
           <Layers className="h-4 w-4 text-emerald-600" />
           <span>World Tech Registry</span>
@@ -966,9 +961,8 @@ export function UmarOS_AI_Terminal() {
                   {/* Sender Label & Timestamp */}
                   <div className="flex items-center gap-2 mb-1 px-1">
                     <span
-                      className={`text-[10px] font-bold uppercase tracking-wider ${
-                        m.role === "founder" ? "text-blue-800" : "text-emerald-800"
-                      }`}
+                      className={`text-[10px] font-bold uppercase tracking-wider ${m.role === "founder" ? "text-blue-800" : "text-emerald-800"
+                        }`}
                     >
                       {m.role === "founder" ? "Founder | Multimodal Input" : "UmarOS Multimodal AI"}
                     </span>
@@ -980,11 +974,10 @@ export function UmarOS_AI_Terminal() {
 
                   {/* Message Bubble */}
                   <div
-                    className={`max-w-[88%] rounded-xl p-4 text-sm leading-relaxed ${
-                      m.role === "founder"
+                    className={`max-w-[88%] rounded-xl p-4 text-sm leading-relaxed ${m.role === "founder"
                         ? "bg-slate-900 text-white font-mono shadow-xs"
                         : "bg-white border border-slate-300 text-slate-900 shadow-xs"
-                    }`}
+                      }`}
                   >
                     {/* User-Attached Media Gallery */}
                     {m.attachments && m.attachments.length > 0 && (
@@ -1153,7 +1146,7 @@ export function UmarOS_AI_Terminal() {
                         >
                           <X className="h-3 w-3" />
                         </button>
-                        
+
                         {/* Thumbnail */}
                         {media.type === "image" && media.previewUrl ? (
                           <img src={media.previewUrl} alt={media.name} className="h-16 w-16 rounded object-cover border border-slate-200" />
@@ -1212,9 +1205,8 @@ export function UmarOS_AI_Terminal() {
                     type="button"
                     onClick={() => setShowPlusMenu((prev) => !prev)}
                     title="Add multimodal input or operational proof"
-                    className={`h-11 w-11 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 shadow-2xs transition-colors cursor-pointer ${
-                      showPlusMenu ? "ring-2 ring-slate-900 border-slate-900" : ""
-                    }`}
+                    className={`h-11 w-11 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 shadow-2xs transition-colors cursor-pointer ${showPlusMenu ? "ring-2 ring-slate-900 border-slate-900" : ""
+                      }`}
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -1243,7 +1235,7 @@ export function UmarOS_AI_Terminal() {
                 {/* Input Text Box */}
                 <div className="relative flex-1">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-emerald-600 font-bold select-none">
-                    
+
                   </span>
                   <input
                     type="text"
@@ -1260,11 +1252,10 @@ export function UmarOS_AI_Terminal() {
                   type="button"
                   onClick={handleToggleVoice}
                   title={isListening ? "Stop Voice Processing" : "Voice Processing: Dictate command via Voice-to-Text"}
-                  className={`h-11 w-11 rounded-xl border flex items-center justify-center shrink-0 shadow-2xs transition-all cursor-pointer ${
-                    isListening
+                  className={`h-11 w-11 rounded-xl border flex items-center justify-center shrink-0 shadow-2xs transition-all cursor-pointer ${isListening
                       ? "bg-rose-600 text-white border-rose-600 ring-2 ring-rose-400 animate-pulse"
                       : "bg-white hover:bg-slate-100 border-slate-300 text-slate-800"
-                  }`}
+                    }`}
                 >
                   {isListening ? (
                     <MicOff className="h-4 w-4 animate-bounce" />
@@ -1339,14 +1330,12 @@ export function UmarOS_AI_Terminal() {
                     <button
                       type="button"
                       onClick={() => handleToggleSetting("aiAutomatedRefunds")}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                        engineSettings.aiAutomatedRefunds ? "bg-emerald-600" : "bg-slate-300"
-                      }`}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${engineSettings.aiAutomatedRefunds ? "bg-emerald-600" : "bg-slate-300"
+                        }`}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          engineSettings.aiAutomatedRefunds ? "translate-x-5" : "translate-x-0"
-                        }`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${engineSettings.aiAutomatedRefunds ? "translate-x-5" : "translate-x-0"
+                          }`}
                       />
                     </button>
                   </div>
@@ -1393,14 +1382,12 @@ export function UmarOS_AI_Terminal() {
                     <button
                       type="button"
                       onClick={() => handleToggleSetting("aiRiderDispatch")}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                        engineSettings.aiRiderDispatch ? "bg-emerald-600" : "bg-slate-300"
-                      }`}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${engineSettings.aiRiderDispatch ? "bg-emerald-600" : "bg-slate-300"
+                        }`}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          engineSettings.aiRiderDispatch ? "translate-x-5" : "translate-x-0"
-                        }`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${engineSettings.aiRiderDispatch ? "translate-x-5" : "translate-x-0"
+                          }`}
                       />
                     </button>
                   </div>
@@ -1453,14 +1440,12 @@ export function UmarOS_AI_Terminal() {
                     <button
                       type="button"
                       onClick={() => handleToggleSetting("aiCustomerSupport")}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                        engineSettings.aiCustomerSupport ? "bg-emerald-600" : "bg-slate-300"
-                      }`}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${engineSettings.aiCustomerSupport ? "bg-emerald-600" : "bg-slate-300"
+                        }`}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                          engineSettings.aiCustomerSupport ? "translate-x-5" : "translate-x-0"
-                        }`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${engineSettings.aiCustomerSupport ? "translate-x-5" : "translate-x-0"
+                          }`}
                       />
                     </button>
                   </div>
@@ -1471,7 +1456,7 @@ export function UmarOS_AI_Terminal() {
                   <div className="space-y-2.5 text-xs border-t border-slate-200 pt-3">
                     <div className="flex justify-between items-center text-slate-800">
                       <span>L1 Inquiries (Tracking/ETA):</span>
-                      <span className="font-mono font-bold text-emerald-800">100% Instant DB Query</span>
+                      <span className="font-mono font-bold text-emerald-800">PostgreSQL Query</span>
                     </div>
                     <div className="flex justify-between items-center text-slate-800">
                       <span>L2 Complaints (Spill/Missing):</span>
@@ -1513,14 +1498,12 @@ export function UmarOS_AI_Terminal() {
                 <button
                   type="button"
                   onClick={() => handleToggleSetting("aiDynamicSurge")}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                    engineSettings.aiDynamicSurge ? "bg-emerald-600" : "bg-slate-300"
-                  }`}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${engineSettings.aiDynamicSurge ? "bg-emerald-600" : "bg-slate-300"
+                    }`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                      engineSettings.aiDynamicSurge ? "translate-x-5" : "translate-x-0"
-                    }`}
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${engineSettings.aiDynamicSurge ? "translate-x-5" : "translate-x-0"
+                      }`}
                   />
                 </button>
               </div>
@@ -1539,14 +1522,12 @@ export function UmarOS_AI_Terminal() {
                 <button
                   type="button"
                   onClick={() => handleToggleSetting("aiLedgerAuditor")}
-                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${
-                    engineSettings.aiLedgerAuditor ? "bg-emerald-600" : "bg-slate-300"
-                  }`}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden ${engineSettings.aiLedgerAuditor ? "bg-emerald-600" : "bg-slate-300"
+                    }`}
                 >
                   <span
-                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                      engineSettings.aiLedgerAuditor ? "translate-x-5" : "translate-x-0"
-                    }`}
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${engineSettings.aiLedgerAuditor ? "translate-x-5" : "translate-x-0"
+                      }`}
                   />
                 </button>
               </div>
@@ -1622,13 +1603,12 @@ export function UmarOS_AI_Terminal() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            z.status === "critical"
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${z.status === "critical"
                               ? "bg-rose-100 text-rose-800"
                               : z.status === "strained"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
-                          }`}>
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-emerald-100 text-emerald-800"
+                            }`}>
                             {z.recommendedSurge}x Surge ({z.status})
                           </span>
                         </div>

@@ -82,8 +82,8 @@ export function MultimodelBenchmarkDashboard() {
     testCategory === "support"
       ? settings.supportModel
       : testCategory === "menu"
-      ? settings.menuPhotoModel
-      : settings.businessAdviceModel;
+        ? settings.menuPhotoModel
+        : settings.businessAdviceModel;
 
   const activeModel = FRONTIER_MODELS[activeModelId] || FRONTIER_MODELS["gemini-2.5-flash"];
 
@@ -421,8 +421,8 @@ export function MultimodelBenchmarkDashboard() {
                       {model.inputCostPerMillionUsd === 0
                         ? "Free local offline backup"
                         : model.inputCostPerMillionUsd <= 0.5
-                        ? "Fast daily support & menu text"
-                        : "Deep business reports & planning"}
+                          ? "Fast daily support & menu text"
+                          : "Deep business reports & planning"}
                     </td>
                   </tr>
                 );
@@ -447,11 +447,10 @@ export function MultimodelBenchmarkDashboard() {
                 key={cat}
                 type="button"
                 onClick={() => setTestCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize ${
-                  testCategory === cat
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize ${testCategory === cat
                     ? "bg-emerald-600 text-white"
                     : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
-                }`}
+                  }`}
               >
                 {cat === "support" ? "Support" : cat === "menu" ? "Menu Copy" : "Business Advice"}
               </button>

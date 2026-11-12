@@ -46,7 +46,10 @@ export interface QaSuiteRun {
 export class SelfQaEngine {
   private runs: QaSuiteRun[] = [];
 
-  runVerificationSuite(projectId: string, executeFailureKey?: QaCheckType): QaSuiteRun {
+  async runVerificationSuite(
+    projectId: string,
+    executors?: Partial<Record<QaCheckType, () => Promise<{ passed: boolean; diagnosticDetail?: string }>>>
+  ): Promise<QaSuiteRun> {
     const runId = `QA-${Date.now().toString().slice(-4)}`;
     const results: QaCheckResult[] = [];
 
@@ -67,28 +70,38 @@ export class SelfQaEngine {
       { type: "PERFORMANCE_CHECKS", label: "Lighthouse LCP < 1.2s, FID < 50ms, CLS < 0.05" },
     ];
 
-    let healedAny = false;
-
     for (const check of standardChecks) {
-      const isexecutedFail = executeFailureKey === check.type;
-      if (isexecutedFail) {
-        // FAIL -> DIAGNOSE -> FIX -> TEST loop
+      const fn = executors?.[check.type];
+      if (!fn) {
         results.push({
           checkType: check.type,
           label: check.label,
-          passed: true, // Successfully resolved after heal
-          durationMs: 420,
-          diagnosticDetail: `Initial check failed: assertion mismatch in ${check.type}. Diagnosed root cause.`,
-          fixApplied: `Self-healing applied: patched handler and re-tested successfully.`,
-          attemptCount: 2,
+          passed: false,
+          durationMs: 0,
+          diagnosticDetail: `Executor not attached for ${check.type}; run empirical verification suite.`,
+          attemptCount: 0,
         });
-        healedAny = true;
-      } else {
+        continue;
+      }
+
+      const start = Date.now();
+      try {
+        const outcome = await fn();
         results.push({
           checkType: check.type,
           label: check.label,
-          passed: true,
-          durationMs: Math.floor(Math.random() * 180) + 40,
+          passed: Boolean(outcome.passed),
+          durationMs: Math.max(0, Date.now() - start),
+          diagnosticDetail: outcome.diagnosticDetail,
+          attemptCount: 1,
+        });
+      } catch (err) {
+        results.push({
+          checkType: check.type,
+          label: check.label,
+          passed: false,
+          durationMs: Math.max(0, Date.now() - start),
+          diagnosticDetail: err instanceof Error ? err.message : String(err),
           attemptCount: 1,
         });
       }
@@ -104,7 +117,7 @@ export class SelfQaEngine {
       passedCount,
       failedCount,
       results,
-      overallStatus: failedCount > 0 ? "FAILED" : healedAny ? "HEALED_AND_PASSED" : "PASSED",
+      overallStatus: failedCount === 0 ? "PASSED" : "FAILED",
       timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
       canDeliverToClient: failedCount === 0,
     };

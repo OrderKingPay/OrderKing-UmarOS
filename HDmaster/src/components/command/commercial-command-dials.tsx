@@ -2226,7 +2226,7 @@ function TravelPartnerGovernanceSection() {
                   {form.promoRail40Active !== false ? "ACTIVE" : "PAUSED"}
                 </Badge>
               </div>
-              <p className="text-[11px] text-slate-300 mt-1 font-medium">100% Zero Convenience Fee on Rail</p>
+              <p className="text-[11px] text-slate-300 mt-1 font-medium">Zero Convenience Fee on Rail</p>
               <p className="text-[10px] text-muted mt-0.5">Flat ₹40 waiver on IRCTC bookings</p>
             </div>
             <Button
@@ -2283,8 +2283,8 @@ function TravelPartnerGovernanceSection() {
             state?.tboAuthStatus === "AUTHENTICATED"
               ? "border-emerald-500/40 bg-emerald-950/60 text-emerald-300"
               : state?.tboAuthStatus === "PENDING_CREDENTIALS"
-              ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
-              : "border-rose-500/40 bg-rose-950/60 text-rose-300"
+                ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
+                : "border-rose-500/40 bg-rose-950/60 text-rose-300"
           )}>
             Status: {state?.tboAuthStatus || "AUTHENTICATED"}
           </Badge>
@@ -2533,8 +2533,8 @@ export function CustomerSupportDisputeQueueSection() {
                         d.priority === "CRITICAL"
                           ? "bg-rose-950 border-rose-500 text-rose-300"
                           : d.priority === "HIGH"
-                          ? "bg-amber-950 border-amber-500 text-amber-300"
-                          : "bg-zinc-900 border-zinc-700 text-zinc-300"
+                            ? "bg-amber-950 border-amber-500 text-amber-300"
+                            : "bg-zinc-900 border-zinc-700 text-zinc-300"
                       )}>
                         {d.priority} PRIORITY
                       </Badge>

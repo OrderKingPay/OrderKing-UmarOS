@@ -54,7 +54,7 @@ export const hi: MessageTree = {
     reorder: "फिर ऑर्डर",
     favourites: "पसंदीदा",
     sampleBanner:
-      "100% सत्यापित रसोई। सूचीबद्ध सभी रेस्तरां FSSAI पंजीकृत और लाइव विक्रेता हैं।",
+      "सूचीबद्ध सभी रेस्तरां FSSAI पंजीकृत और लाइव विक्रेता हैं।",
     noResults: "इन फ़िल्टर से कोई रसोई नहीं मिली।",
     etaMin: "{n} मिनट",
     deliveryFrom: "डिलीवरी {fee}",

@@ -78,33 +78,30 @@ export const GigWorkerComplianceCenter: React.FC = () => {
           <button
             type="button"
             onClick={() => setActiveTab('overview')}
-            className={`px-3.5 py-1.5 rounded-lg transition ${
-              activeTab === 'overview'
+            className={`px-3.5 py-1.5 rounded-lg transition ${activeTab === 'overview'
                 ? 'bg-slate-900 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             Statutory Overview
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('contracts')}
-            className={`px-3.5 py-1.5 rounded-lg transition ${
-              activeTab === 'contracts'
+            className={`px-3.5 py-1.5 rounded-lg transition ${activeTab === 'contracts'
                 ? 'bg-slate-900 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             Agreements Registry ({contractsList.length})
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('agreement_viewer')}
-            className={`px-3.5 py-1.5 rounded-lg transition ${
-              activeTab === 'agreement_viewer'
+            className={`px-3.5 py-1.5 rounded-lg transition ${activeTab === 'agreement_viewer'
                 ? 'bg-slate-900 text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
-            }`}
+              }`}
           >
             13-Section Contract Inspector
           </button>
@@ -211,84 +208,82 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                 No executed rider agreements loaded. Delivery partners sign digitally during KYC onboarding on the Rider Portal.
               </div>
             ) : (
-            <table className="min-w-full divide-y divide-slate-200 text-xs text-left">
-              <thead className="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
-                <tr>
-                  <th className="px-4 py-3">Contract Reference</th>
-                  <th className="px-4 py-3">Partner Entity</th>
-                  <th className="px-4 py-3">Statutory Framework</th>
-                  <th className="px-4 py-3">Digital Assent</th>
-                  <th className="px-4 py-3">UmarOS Legal Approval</th>
-                  <th className="px-4 py-3 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 bg-white">
-                {contractsList.map((contract) => (
-                  <tr key={contract.contractId} className="hover:bg-slate-50/80 transition">
-                    <td className="px-4 py-3 font-mono font-semibold text-slate-900">
-                      {contract.contractId}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-slate-800">
-                      {contract.entityId}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">
-                      <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-medium border border-emerald-200">
-                        Code on Social Security, 2020
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold ${
-                          contract.status === 'SIGNED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {contract.status === 'SIGNED' ? (
-                          <>
-                            <CheckCircle2 className="size-3" />
-                            <span>Signed (OTP)</span>
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="size-3" />
-                            <span>Pending Sign</span>
-                          </>
-                        )}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${
-                          contract.umarOsApprovalStatus === 'APPROVED'
-                            ? 'bg-slate-900 text-white'
-                            : 'bg-amber-50 text-amber-900 border border-amber-200'
-                        }`}
-                      >
-                        {contract.umarOsApprovalStatus === 'APPROVED'
-                          ? 'Approved by UmarOS'
-                          : 'Pending Audit Review'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {contract.umarOsApprovalStatus !== 'APPROVED' ? (
-                        <button
-                          type="button"
-                          onClick={() => handleApproveContract(contract.contractId)}
-                          className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-bold transition text-[11px]"
-                        >
-                          Approve via UmarOS
-                        </button>
-                      ) : (
-                        <span className="text-slate-400 font-semibold text-[11px]">
-                          Audited &amp; Active
-                        </span>
-                      )}
-                    </td>
+              <table className="min-w-full divide-y divide-slate-200 text-xs text-left">
+                <thead className="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                  <tr>
+                    <th className="px-4 py-3">Contract Reference</th>
+                    <th className="px-4 py-3">Partner Entity</th>
+                    <th className="px-4 py-3">Statutory Framework</th>
+                    <th className="px-4 py-3">Digital Assent</th>
+                    <th className="px-4 py-3">UmarOS Legal Approval</th>
+                    <th className="px-4 py-3 text-right">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100 bg-white">
+                  {contractsList.map((contract) => (
+                    <tr key={contract.contractId} className="hover:bg-slate-50/80 transition">
+                      <td className="px-4 py-3 font-mono font-semibold text-slate-900">
+                        {contract.contractId}
+                      </td>
+                      <td className="px-4 py-3 font-medium text-slate-800">
+                        {contract.entityId}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-medium border border-emerald-200">
+                          Code on Social Security, 2020
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold ${contract.status === 'SIGNED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-amber-100 text-amber-800'
+                            }`}
+                        >
+                          {contract.status === 'SIGNED' ? (
+                            <>
+                              <CheckCircle2 className="size-3" />
+                              <span>Signed (OTP)</span>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="size-3" />
+                              <span>Pending Sign</span>
+                            </>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${contract.umarOsApprovalStatus === 'APPROVED'
+                              ? 'bg-slate-900 text-white'
+                              : 'bg-amber-50 text-amber-900 border border-amber-200'
+                            }`}
+                        >
+                          {contract.umarOsApprovalStatus === 'APPROVED'
+                            ? 'Approved by UmarOS'
+                            : 'Pending Audit Review'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {contract.umarOsApprovalStatus !== 'APPROVED' ? (
+                          <button
+                            type="button"
+                            onClick={() => handleApproveContract(contract.contractId)}
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded font-bold transition text-[11px]"
+                          >
+                            Approve via UmarOS
+                          </button>
+                        ) : (
+                          <span className="text-slate-400 font-semibold text-[11px]">
+                            Audited &amp; Active
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
         </div>
@@ -345,31 +340,27 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                   key={sec.sectionNumber}
                   type="button"
                   onClick={() => setSelectedSectionIndex(idx)}
-                  className={`w-full text-left p-3 rounded-xl border transition ${
-                    selectedSectionIndex === idx
+                  className={`w-full text-left p-3 rounded-xl border transition ${selectedSectionIndex === idx
                       ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
                       : 'border-slate-200 bg-slate-50/70 text-slate-700 hover:bg-slate-100'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span
-                      className={`text-[10px] font-bold uppercase tracking-wider ${
-                        selectedSectionIndex === idx ? 'text-slate-300' : 'text-slate-500'
-                      }`}
+                      className={`text-[10px] font-bold uppercase tracking-wider ${selectedSectionIndex === idx ? 'text-slate-300' : 'text-slate-500'
+                        }`}
                     >
                       Section {sec.sectionNumber}
                     </span>
                     <ChevronRight
-                      className={`size-3.5 ${
-                        selectedSectionIndex === idx ? 'text-white' : 'text-slate-400'
-                      }`}
+                      className={`size-3.5 ${selectedSectionIndex === idx ? 'text-white' : 'text-slate-400'
+                        }`}
                     />
                   </div>
                   <p className="font-bold text-xs mt-0.5 truncate">{sec.title}</p>
                   <p
-                    className={`text-[11px] mt-1 line-clamp-1 ${
-                      selectedSectionIndex === idx ? 'text-slate-300' : 'text-slate-500'
-                    }`}
+                    className={`text-[11px] mt-1 line-clamp-1 ${selectedSectionIndex === idx ? 'text-slate-300' : 'text-slate-500'
+                      }`}
                   >
                     {sec.summary}
                   </p>

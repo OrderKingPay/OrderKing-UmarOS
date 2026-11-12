@@ -54,7 +54,7 @@ export const as: MessageTree = {
     reorder: "পুনৰ অৰ্ডাৰ",
     favourites: "আপোনাৰ পছন্দ",
     sampleBanner:
-      "১০০% প্ৰমাণিত ৰান্ধনিঘৰ। তালিকাভুক্ত সকলো ৰেস্তোৰাঁ FSSAI পঞ্জীয়নভুক্ত।",
+      "তালিকাভুক্ত সকলো ৰেস্তোৰাঁ FSSAI পঞ্জীয়নভুক্ত।",
     noResults: "এই ফিল্টাৰত কোনো ৰান্ধনিঘৰ নাই।",
     etaMin: "{n} মিনিট",
     deliveryFrom: "ডেলিভাৰী {fee}",

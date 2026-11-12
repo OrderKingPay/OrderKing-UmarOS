@@ -64,7 +64,7 @@ export function StoragePurifierModal({ isOpen, onClose }: StoragePurifierModalPr
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
-          <StoragePurifierView onPurgeCompleted={() => {}} />
+          <StoragePurifierView onPurgeCompleted={() => { }} />
         </div>
       </div>
     </div>
@@ -104,11 +104,11 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
 
     setIsPurging(false);
     setPurgeSuccess(true);
-      const freedMb = (result.freedBytes / (1024 * 1024)).toFixed(2);
-      setLastFreedMb(freedMb);
-      refreshInspection();
-      toast.success(`Storage optimization completed. Freed ${freedMb} MB of temporary files.`);
-      if (onPurgeCompleted) onPurgeCompleted();
+    const freedMb = (result.freedBytes / (1024 * 1024)).toFixed(2);
+    setLastFreedMb(freedMb);
+    refreshInspection();
+    toast.success(`Storage optimization completed. Freed ${freedMb} MB of temporary files.`);
+    if (onPurgeCompleted) onPurgeCompleted();
   };
 
   const handleDeleteSingleItem = (id: string) => {

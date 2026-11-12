@@ -468,19 +468,19 @@ export async function executePartnerBankingPayout(params: {
   const mode = isUpi ? "UPI" : params.amountPaise <= 50000000 ? "IMPS" : "NEFT";
   const fundAccount = isUpi
     ? {
-        account_type: "vpa",
-        vpa: { address: params.vpa!.trim() },
-        contact: { name: params.name.trim() || "Restaurant Beneficiary", type: "vendor" },
-      }
+      account_type: "vpa",
+      vpa: { address: params.vpa!.trim() },
+      contact: { name: params.name.trim() || "Restaurant Beneficiary", type: "vendor" },
+    }
     : {
-        account_type: "bank_account",
-        bank_account: {
-          name: params.name.trim() || "Restaurant Beneficiary",
-          ifsc: (params.ifsc || "").toUpperCase().trim(),
-          account_number: (params.accountNumber || "").trim(),
-        },
-        contact: { name: params.name.trim() || "Restaurant Beneficiary", type: "vendor" },
-      };
+      account_type: "bank_account",
+      bank_account: {
+        name: params.name.trim() || "Restaurant Beneficiary",
+        ifsc: (params.ifsc || "").toUpperCase().trim(),
+        account_number: (params.accountNumber || "").trim(),
+      },
+      contact: { name: params.name.trim() || "Restaurant Beneficiary", type: "vendor" },
+    };
 
   const payload = {
     account_number: accountNumber,

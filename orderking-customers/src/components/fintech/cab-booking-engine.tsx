@@ -7,7 +7,6 @@ import {
   MapPin,
   Calendar,
   Clock,
-  Star,
   CheckCircle2,
   Navigation,
   ArrowLeftRight,
@@ -364,27 +363,18 @@ export function CabBookingEngine({
                     <span className="text-xs font-black px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900">
                       {q.vehicleType}
                     </span>
-                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                      ETA {q.etaMinutes} mins
+                    <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
+                      {q.seatingCapacity} Seats · AC
                     </span>
                   </div>
 
                   <h4 className="text-base font-black text-slate-900">
                     {q.title}
                   </h4>
-                  <p className="text-xs text-slate-500 mt-0.5">{q.vehicleModel} · Up to {q.seatingCapacity} Passengers</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{q.vehicleModel}</p>
 
-                  {/* Driver dispatch badge */}
-                  <div className="mt-3 p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
-                    <div>
-                      <span className="font-bold text-slate-900 block">{q.driverName}</span>
-                      <span className="text-slate-500 text-[11px] font-mono">{q.vehiclePlate}</span>
-                    </div>
-                    <div className="text-right">
-                      <span className="inline-flex items-center gap-1 font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">
-                        <Star className="size-3 fill-amber-500" /> {q.driverRating}
-                      </span>
-                    </div>
+                  <div className="mt-3 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                    Driver &amp; vehicle details are assigned on dispatch with 4-digit pickup PIN.
                   </div>
                 </div>
 
@@ -393,8 +383,8 @@ export function CabBookingEngine({
                     <span className="text-xl font-black font-mono text-slate-900 block">
                       {formatPaise(totalFare)}
                     </span>
-                    <span className="text-[10px] text-emerald-700 font-bold block">
-                      Save ₹{(q.otaBenchmarkFeePaise / 100).toFixed(0)} vs Rideshare Surge
+                    <span className="text-[10px] text-slate-500 font-semibold block">
+                      Incl. 5% GST · No surge
                     </span>
                   </div>
 

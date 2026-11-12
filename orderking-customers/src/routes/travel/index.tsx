@@ -1,13 +1,23 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
 import { TravelQuotationModal } from "@/components/fintech/travel-quotation-modal";
+import { CabBookingEngine } from "@/components/fintech/cab-booking-engine";
 import {
   type SovereignETicket,
   getStoredETickets,
 } from "@/lib/travel/in-app-booking-service";
-import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
+import {
+  buildOfficialAirlineDeepLink,
+  extractAirportCode,
+} from "@/lib/travel/airline-deep-links";
+import type {
+  FlightOption,
+  TrainOption,
+  BusOption,
+  HotelOption,
+} from "@/lib/travel/types";
 import {
   Plane,
   Train,
@@ -15,7 +25,6 @@ import {
   Building2,
   Car,
   ShieldCheck,
-  Sparkles,
   ArrowLeftRight,
   MapPin,
   Calendar,
@@ -29,6 +38,7 @@ import {
   ExternalLink,
   Crown,
   Globe,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -222,321 +232,6 @@ const OFFICIAL_AIRLINES = [
   { code: "SG", name: "SpiceJet", portal: "spicejet.com", color: "amber" },
 ];
 
-export interface DomesticFlightSchedule {
-  id: string;
-  carrierCode: "6E" | "AI" | "QP" | "SG";
-  carrierName: string;
-  flightNumber: string;
-  aircraftType: string;
-  departureTime: string;
-  arrivalTime: string;
-  duration: string;
-  fromCode: string;
-  toCode: string;
-  terminalDep: string;
-  terminalArr: string;
-  baseFarePaise: number;
-  taxesPaise: number;
-  baggage: string;
-  stops: string;
-}
-
-const AUTHENTIC_FLIGHTS: DomesticFlightSchedule[] = [
-  {
-    id: "fl-6e-2051",
-    carrierCode: "6E",
-    carrierName: "IndiGo",
-    flightNumber: "6E-2051",
-    aircraftType: "Airbus A321neo",
-    departureTime: "06:15",
-    arrivalTime: "08:30",
-    duration: "2h 15m",
-    fromCode: "DEL",
-    toCode: "BOM",
-    terminalDep: "Terminal 3 (T3)",
-    terminalArr: "Terminal 2 (T2)",
-    baseFarePaise: 419900,
-    taxesPaise: 45100,
-    baggage: "15 kg Check-in · 7 kg Cabin",
-    stops: "Non-Stop",
-  },
-  {
-    id: "fl-ai-887",
-    carrierCode: "AI",
-    carrierName: "Air India",
-    flightNumber: "AI-887",
-    aircraftType: "Boeing 777-300ER",
-    departureTime: "08:00",
-    arrivalTime: "10:15",
-    duration: "2h 15m",
-    fromCode: "DEL",
-    toCode: "BOM",
-    terminalDep: "Terminal 3 (T3)",
-    terminalArr: "Terminal 2 (T2)",
-    baseFarePaise: 485000,
-    taxesPaise: 55000,
-    baggage: "25 kg Check-in · 7 kg Cabin (Hot Meal)",
-    stops: "Non-Stop",
-  },
-  {
-    id: "fl-qp-1102",
-    carrierCode: "QP",
-    carrierName: "Akasa Air",
-    flightNumber: "QP-1102",
-    aircraftType: "Boeing 737 MAX 8",
-    departureTime: "11:30",
-    arrivalTime: "13:45",
-    duration: "2h 15m",
-    fromCode: "DEL",
-    toCode: "BOM",
-    terminalDep: "Terminal 2 (T2)",
-    terminalArr: "Terminal 1 (T1)",
-    baseFarePaise: 389000,
-    taxesPaise: 40000,
-    baggage: "15 kg Check-in · 7 kg Cabin",
-    stops: "Non-Stop",
-  },
-  {
-    id: "fl-sg-8153",
-    carrierCode: "SG",
-    carrierName: "SpiceJet",
-    flightNumber: "SG-8153",
-    aircraftType: "Boeing 737-800",
-    departureTime: "17:40",
-    arrivalTime: "19:55",
-    duration: "2h 15m",
-    fromCode: "DEL",
-    toCode: "BOM",
-    terminalDep: "Terminal 1 (T1)",
-    terminalArr: "Terminal 1 (T1)",
-    baseFarePaise: 405000,
-    taxesPaise: 40000,
-    baggage: "15 kg Check-in · 7 kg Cabin",
-    stops: "Non-Stop",
-  },
-];
-
-export interface RailwaySchedule {
-  trainNumber: string;
-  trainName: string;
-  fromCode: string;
-  fromName: string;
-  toCode: string;
-  toName: string;
-  departureTime: string;
-  arrivalTime: string;
-  duration: string;
-  speedType: string;
-  halts: string[];
-  pantry: string;
-  classes: Array<{
-    code: "1A" | "2A" | "3A" | "SL" | "CC" | "EC";
-    name: string;
-    fareInr: number;
-    quotaAvailability: string;
-  }>;
-}
-
-const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
-  {
-    trainNumber: "12952 / 12951",
-    trainName: "Mumbai Tejas Rajdhani Express",
-    fromCode: "NDLS",
-    fromName: "New Delhi",
-    toCode: "MMCT",
-    toName: "Mumbai Central",
-    departureTime: "16:55",
-    arrivalTime: "08:35 (next day)",
-    duration: "15h 40m",
-    speedType: "Superfast LHB Tejas (130 km/h)",
-    halts: ["Kota Jn (KOTA)", "Vadodara Jn (BRC)", "Surat (ST)", "Borivali (BVI)"],
-    pantry: "Complimentary Dynamic Hot Catering & Mineral Water",
-    classes: [
-      { code: "1A", name: "First AC (Coupe)", fareInr: 4850, quotaAvailability: "Check on IRCTC" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 3120, quotaAvailability: "Check on IRCTC" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 2240, quotaAvailability: "Check on IRCTC" },
-    ],
-  },
-  {
-    trainNumber: "12302 / 12301",
-    trainName: "Howrah Rajdhani Express (via Gaya)",
-    fromCode: "NDLS",
-    fromName: "New Delhi",
-    toCode: "HWH",
-    toName: "Howrah Jn",
-    departureTime: "16:50",
-    arrivalTime: "09:55 (next day)",
-    duration: "17h 05m",
-    speedType: "Superfast LHB Rake (130 km/h)",
-    halts: ["Kanpur Central (CNB)", "Pt. Deen Dayal Upadhyaya (DDU)", "Gaya Jn (GAYA)", "Dhanbad Jn (DHN)", "Asansol Jn (ASN)"],
-    pantry: "Standard IRCTC Continental & North Indian Catering",
-    classes: [
-      { code: "1A", name: "First AC", fareInr: 4980, quotaAvailability: "Check on IRCTC" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 3210, quotaAvailability: "Check on IRCTC" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 2290, quotaAvailability: "Check on IRCTC" },
-    ],
-  },
-  {
-    trainNumber: "20608 / 20607",
-    trainName: "Chennai - Mysuru Vande Bharat Express",
-    fromCode: "MAS",
-    fromName: "Chennai Central",
-    toCode: "MYS",
-    toName: "Mysuru via SBC Bengaluru",
-    departureTime: "05:50",
-    arrivalTime: "12:20",
-    duration: "6h 30m",
-    speedType: "Semi-High Speed Trainset (160 km/h)",
-    halts: ["Katpadi Jn (KPD)", "KSR Bengaluru (SBC 10:20)", "Mysuru Jn (MYS 12:20)"],
-    pantry: "On-Seat Welcome Drink & Fresh Breakfast Included",
-    classes: [
-      { code: "EC", name: "Executive Chair Car", fareInr: 2350, quotaAvailability: "Check on IRCTC" },
-      { code: "CC", name: "AC Chair Car", fareInr: 1270, quotaAvailability: "Check on IRCTC" },
-    ],
-  },
-  {
-    trainNumber: "22436 / 22435",
-    trainName: "Varanasi Vande Bharat Express",
-    fromCode: "NDLS",
-    fromName: "New Delhi",
-    toCode: "BSB",
-    toName: "Varanasi Jn",
-    departureTime: "06:00",
-    arrivalTime: "14:00",
-    duration: "8h 00m",
-    speedType: "Semi-High Speed Trainset (160 km/h)",
-    halts: ["Kanpur Central (CNB)", "Prayagraj Jn (PRYJ)"],
-    pantry: "Pure Vegetarian Indian Hospitality Meal Included",
-    classes: [
-      { code: "EC", name: "Executive Chair Car", fareInr: 3300, quotaAvailability: "Check on IRCTC" },
-      { code: "CC", name: "AC Chair Car", fareInr: 1750, quotaAvailability: "Check on IRCTC" },
-    ],
-  },
-  {
-    trainNumber: "12925 / 12926",
-    trainName: "Paschim Superfast Express",
-    fromCode: "MMCT",
-    fromName: "Mumbai Central",
-    toCode: "ASR",
-    toName: "Amritsar via NDLS",
-    departureTime: "11:25",
-    arrivalTime: "20:10 (next day)",
-    duration: "32h 45m (MMCT to NDLS 23h 15m)",
-    speedType: "Classic Western Railway Trunk Route",
-    halts: ["Surat (ST)", "Vadodara (BRC)", "Ratlam (RTM)", "Kota (KOTA)", "New Delhi (NDLS 10:40)", "Ambala Cantt", "Ludhiana Jn"],
-    pantry: "Attached Pantry Car with Fresh Thali & Regional Meals",
-    classes: [
-      { code: "1A", name: "First AC", fareInr: 3920, quotaAvailability: "Check on IRCTC" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 2380, quotaAvailability: "Check on IRCTC" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 1680, quotaAvailability: "Check on IRCTC" },
-      { code: "SL", name: "Sleeper Class", fareInr: 640, quotaAvailability: "Check on IRCTC" },
-    ],
-  },
-];
-
-export interface LuxuryHotelProperty {
-  id: string;
-  name: string;
-  brand: string;
-  city: string;
-  locationDetail: string;
-  tariffPerNightInr: number;
-  roomType: string;
-  amenities: string[];
-  tag: string;
-}
-
-const AUTHENTIC_LUXURY_HOTELS: LuxuryHotelProperty[] = [
-  {
-    id: "ht-taj-lake-palace",
-    name: "Taj Lake Palace",
-    brand: "Taj Luxury Heritage",
-    city: "Udaipur",
-    locationDetail: "Lake Pichola, Udaipur, Rajasthan",
-    tariffPerNightInr: 42500,
-    roomType: "Luxury Palace Lake View Suite",
-    amenities: ["Private Boat Arrival", "Royal Butler Service", "Mewar Spa", "Heritage Dining"],
-    tag: "Floating Marble Palace",
-  },
-  {
-    id: "ht-oberoi-udaivilas",
-    name: "The Oberoi Udaivilas",
-    brand: "The Oberoi Group",
-    city: "Udaipur",
-    locationDetail: "Haridas Ji Ki Magri, Lake Pichola, Udaipur",
-    tariffPerNightInr: 38000,
-    roomType: "Premier Room with Semi-Private Pool",
-    amenities: ["Mewar Architecture", "Peacock Gardens", "Ayurvedic Spa", "Lakefront Pavilions"],
-    tag: "Lakefront Heritage Resort",
-  },
-  {
-    id: "ht-rambagh-palace",
-    name: "Rambagh Palace",
-    brand: "Taj Luxury",
-    city: "Jaipur",
-    locationDetail: "Bhawani Singh Road, Jaipur, Rajasthan",
-    tariffPerNightInr: 45000,
-    roomType: "Historical Royal Palace Suite",
-    amenities: ["Royal Maharaja Residence", "Polo Lounge", "Peacock Courtyard", "Jiva Grande Spa"],
-    tag: "Royal Palace Estate",
-  },
-  {
-    id: "ht-taj-mahal-mumbai",
-    name: "The Taj Mahal Palace",
-    brand: "Taj Flagship",
-    city: "Mumbai",
-    locationDetail: "Apollo Bunder, Colaba, Mumbai",
-    tariffPerNightInr: 24000,
-    roomType: "Heritage Sea-Facing Grand Luxury Room",
-    amenities: ["Gateway of India Panorama", "24/7 Butler", "Wasabi by Morimoto", "Sea Lounge"],
-    tag: "Historic Colaba Flagship",
-  },
-  {
-    id: "ht-leela-palace-blr",
-    name: "The Leela Palace",
-    brand: "The Leela Palaces",
-    city: "Bengaluru",
-    locationDetail: "Old Airport Road, Kodihalli, Bengaluru",
-    tariffPerNightInr: 18500,
-    roomType: "Royal Premier Balcony Suite",
-    amenities: ["Vijayanagara Grandeur", "Citrus Restaurant", "Spa by ESPA", "Lush Gardens"],
-    tag: "Bengaluru Heritage Architecture",
-  },
-  {
-    id: "ht-taj-falaknuma",
-    name: "Taj Falaknuma Palace",
-    brand: "Taj Luxury Heritage",
-    city: "Hyderabad",
-    locationDetail: "Engine Bowli, Fatima Nagar, Falaknuma, Hyderabad",
-    tariffPerNightInr: 35000,
-    roomType: "Nizam Royal Palace Suite",
-    amenities: ["Italian Marble Palace", "Horse-Drawn Carriage Arrival", "Jade Room", "101-Dining Table"],
-    tag: "Nizam Heritage Palace",
-  },
-  {
-    id: "ht-w-goa",
-    name: "W Goa",
-    brand: "W Hotels & Resorts",
-    city: "Goa",
-    locationDetail: "Vagator Beach, Bardez, North Goa",
-    tariffPerNightInr: 19500,
-    roomType: "Marvelous Beach Chalet & Garden Villa",
-    amenities: ["Cliffside Sunsets", "Rockpool Lounge", "AWAY Spa", "Direct Beach Access"],
-    tag: "Vagator Coastal Luxury",
-  },
-  {
-    id: "ht-itc-grand-chola",
-    name: "ITC Grand Chola",
-    brand: "ITC Luxury Collection",
-    city: "Chennai",
-    locationDetail: "Mount Road, Guindy, Chennai",
-    tariffPerNightInr: 12000,
-    roomType: "Executive Club Room",
-    amenities: ["Chola Dynasty Stone Carvings", "Peshawri Dining", "Kaya Kalp Spa", "LEED Platinum"],
-    tag: "South Indian Architectural Wonder",
-  },
-];
-
 export function TravelPage() {
   const searchTab = useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined;
   const sectionHash = (useRouterState({ select: (s) => s?.location?.hash }) as unknown as string) ?? "";
@@ -620,12 +315,28 @@ export function TravelPage() {
   const [hotelNights, setHotelNights] = useState(2);
   const [hotelRooms, setHotelRooms] = useState(1);
 
+  // Live Search Results State
+  const [flightOffers, setFlightOffers] = useState<FlightOption[]>([]);
+  const [flightsLoading, setFlightsLoading] = useState(false);
+  const [flightsSearched, setFlightsSearched] = useState(false);
+  const [flightSource, setFlightSource] = useState<string | null>(null);
+
+  const [trainOffers, setTrainOffers] = useState<TrainOption[]>([]);
+  const [trainsLoading, setTrainsLoading] = useState(false);
+  const [trainsSearched, setTrainsSearched] = useState(false);
+  const [pnrOfficialUrl, setPnrOfficialUrl] = useState<string | null>(null);
+
+  const [busOffers, setBusOffers] = useState<BusOption[]>([]);
+  const [busesLoading, setBusesLoading] = useState(false);
+  const [busesSearched, setBusesSearched] = useState(false);
+
+  const [hotelOffers, setHotelOffers] = useState<HotelOption[]>([]);
+  const [hotelsLoading, setHotelsLoading] = useState(false);
+  const [hotelsSearched, setHotelsSearched] = useState(false);
+
   // Cab Search State
-  const [cabPickup, setCabPickup] = useState("Terminal 3, IGI Airport (DEL)");
-  const [cabDrop, setCabDrop] = useState("Connaught Place, New Delhi");
-  const [cabPackageHours, setCabPackageHours] = useState("Airport Point-to-Point");
-  const [cabVehicleClass, setCabVehicleClass] = useState<"mini" | "sedan" | "suv">("sedan");
-  const [cabDistanceKm, setCabDistanceKm] = useState(35);
+  const [cabPickup] = useState("Terminal 3, IGI Airport (DEL)");
+  const [cabDrop] = useState("Connaught Place, New Delhi");
 
   // Holiday Tours & Spiritual Tour Desk State
   const [toursSubCategory, setToursSubCategory] = useState<"holidays" | "pilgrimage">("holidays");
@@ -690,9 +401,141 @@ export function TravelPage() {
     setTrainTo(temp);
   };
 
-  const handleLaunchFlightSearch = () => {
-    toast.success(`Showing airline schedules & official portals for ${flightFrom} to ${flightTo}`);
-  };
+  const handleLaunchFlightSearch = useCallback(async () => {
+    const origin = extractAirportCode(flightFrom, "DEL");
+    const destination = extractAirportCode(flightTo, "BOM");
+    setFlightsLoading(true);
+    setFlightsSearched(true);
+    try {
+      const res = await fetch("/api/travel/flight-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          origin,
+          destination,
+          departureDate: flightDate,
+          passengers: flightPassengers,
+          cabinClass: flightClass,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      const list = Array.isArray(json?.data) ? (json.data as FlightOption[]) : [];
+      setFlightOffers(list);
+      setFlightSource(json?.source || null);
+      if (list.length > 0) {
+        toast.success(`Found ${list.length} live flights from ${origin} to ${destination}.`);
+      } else {
+        toast.info(`No live GDS offers returned for ${origin} -> ${destination}. Use official airline portals below.`);
+      }
+    } catch {
+      setFlightOffers([]);
+      toast.error("Flight search service unavailable. Please use official airline portals below.");
+    } finally {
+      setFlightsLoading(false);
+    }
+  }, [flightFrom, flightTo, flightDate, flightPassengers, flightClass]);
+
+  const handleSearchTrains = useCallback(async () => {
+    const fromCode = extractAirportCode(trainFrom, "NDLS");
+    const toCode = extractAirportCode(trainTo, "MMCT");
+    setTrainsLoading(true);
+    setTrainsSearched(true);
+    try {
+      const quotaCode = trainQuota.includes("TQ") ? "TQ" : trainQuota.includes("LD") ? "LD" : "GN";
+      const res = await fetch("/api/travel/train-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fromStation: fromCode,
+          toStation: toCode,
+          travelDate: trainDate,
+          quota: quotaCode,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      const list = Array.isArray(json?.data) ? (json.data as TrainOption[]) : [];
+      setTrainOffers(list);
+      if (list.length > 0) {
+        toast.success(`Loaded ${list.length} trains for ${fromCode} to ${toCode}.`);
+      } else {
+        toast.info(`Use official IRCTC portal for live ${fromCode} -> ${toCode} seat availability.`);
+      }
+    } catch {
+      setTrainOffers([]);
+      toast.error("Rail API unreachable. Use official IRCTC portal below.");
+    } finally {
+      setTrainsLoading(false);
+    }
+  }, [trainFrom, trainTo, trainDate, trainQuota]);
+
+  const handleSearchHotels = useCallback(async () => {
+    setHotelsLoading(true);
+    setHotelsSearched(true);
+    try {
+      const checkInObj = new Date(hotelCheckIn);
+      checkInObj.setDate(checkInObj.getDate() + Math.max(1, hotelNights));
+      const checkOutDate = checkInObj.toISOString().split("T")[0];
+      const guestsMatch = hotelGuests.match(/\d+/);
+      const guestCount = guestsMatch ? Number(guestsMatch[0]) : 2;
+
+      const res = await fetch("/api/travel/hotel-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cityOrLocation: hotelCity.trim() || "Goa",
+          checkInDate: hotelCheckIn,
+          checkOutDate,
+          guests: guestCount,
+          rooms: hotelRooms,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      const list = Array.isArray(json?.data) ? (json.data as HotelOption[]) : [];
+      setHotelOffers(list);
+      if (list.length > 0) {
+        toast.success(`Loaded ${list.length} properties in ${hotelCity || "India"}.`);
+      } else {
+        toast.info(`No live hotel API inventory returned for ${hotelCity}. Use partner search or request a quote.`);
+      }
+    } catch {
+      setHotelOffers([]);
+      toast.error("Hotel search unavailable. Try partner checkout or request a quote.");
+    } finally {
+      setHotelsLoading(false);
+    }
+  }, [hotelCity, hotelCheckIn, hotelNights, hotelGuests, hotelRooms]);
+
+  const handleSearchBuses = useCallback(async () => {
+    const cleanSource = busFrom.replace(/\(.*\)/, "").trim();
+    const cleanDest = busTo.replace(/\(.*\)/, "").trim();
+    setBusesLoading(true);
+    setBusesSearched(true);
+    try {
+      const res = await fetch("/api/travel/bus-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sourceCity: cleanSource,
+          destinationCity: cleanDest,
+          journeyDate: busDate,
+          busType: busClass,
+        }),
+      });
+      const json = await res.json().catch(() => null);
+      const list = Array.isArray(json?.data) ? (json.data as BusOption[]) : [];
+      setBusOffers(list);
+      if (list.length > 0) {
+        toast.success(`Found ${list.length} live buses from ${cleanSource} to ${cleanDest}.`);
+      } else {
+        toast.info(`Opening redBus is recommended for live ${cleanSource} -> ${cleanDest} seats.`);
+      }
+    } catch {
+      setBusOffers([]);
+      toast.error("Bus API unavailable. Use redBus direct search below.");
+    } finally {
+      setBusesLoading(false);
+    }
+  }, [busFrom, busTo, busDate, busClass]);
 
   const handleSaveTripReference = (e: React.FormEvent) => {
     e.preventDefault();
@@ -770,6 +613,7 @@ export function TravelPage() {
     }
     setCheckingPnr(true);
     setPnrLiveResult(null);
+    setPnrOfficialUrl(null);
     try {
       const res = await fetch("/api/travel/pnr-status?pnr=" + encodeURIComponent(String(clean ?? "")), { cache: "no-store" });
       const result = await res.json().catch(() => null);
@@ -777,9 +621,11 @@ export function TravelPage() {
         setPnrLiveResult(result.data);
         toast.success("Verified CRIS PNR status retrieved.");
       } else {
+        setPnrOfficialUrl(result?.officialPortalUrl || `https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?pnrno=${clean}`);
         toast.error(result?.error || "Verified railway PNR status is temporarily unavailable.");
       }
     } catch {
+      setPnrOfficialUrl(`https://www.indianrail.gov.in/enquiry/PNR/PnrEnquiry.html?pnrno=${clean}`);
       toast.error("Railway PNR verification service is temporarily unreachable.");
     } finally {
       setCheckingPnr(false);
@@ -1126,11 +972,12 @@ export function TravelPage() {
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
+                  disabled={flightsLoading}
                   onClick={handleLaunchFlightSearch}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 flex items-center justify-center gap-2"
                 >
-                  <Search className="size-4" />
-                  Search Airline Portals
+                  {flightsLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+                  {flightsLoading ? "Searching Live Airlines..." : "Search Live Flights"}
                 </Button>
               </div>
 
@@ -1163,118 +1010,157 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* SCHEDULED DOMESTIC FLIGHT CORRIDORS (Direct Official Carrier Portals) */}
+              {/* LIVE FLIGHT RESULTS (Real GDS / Travelpayouts / Direct Carrier Portals) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Plane className="size-4 text-sky-600" />
-                    <span>Reference Flight Schedules ({AUTHENTIC_FLIGHTS.length})</span>
-                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      Official Carrier Portals
+                    <span>
+                      {flightsLoading
+                        ? "Fetching Live Airline Fares..."
+                        : `Live Flight Offers (${flightOffers.length})`}
                     </span>
+                    {flightSource && (
+                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                        {flightSource === "duffel_v2" ? "Duffel GDS" : flightSource === "travelpayouts" ? "Travelpayouts" : flightSource}
+                      </span>
+                    )}
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    Scheduled Carrier Flight Numbers &amp; Timings
+                    {extractAirportCode(flightFrom, "DEL")} to {extractAirportCode(flightTo, "BOM")}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
-                  {AUTHENTIC_FLIGHTS.map((flight) => {
-                    const totalPaise = flight.baseFarePaise + flight.taxesPaise;
-                    const carrierPortal = buildOfficialAirlineDeepLink({
-                      carrierCode: flight.carrierCode,
-                      from: flight.fromCode,
-                      to: flight.toCode,
-                      departureDate: flightDate,
-                      passengers: flightPassengers,
-                      cabinClass: flightClass,
-                    });
-                    return (
-                      <div
-                        key={flight.id}
-                        className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-sky-300 hover:shadow-md transition p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
-                      >
-                        <div className="space-y-2">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2.5 py-0.5 rounded-md font-black text-xs bg-slate-900 text-white">
-                              {flight.carrierCode} — {flight.carrierName}
-                            </span>
-                            <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
-                              {flight.flightNumber}
-                            </span>
-                            <span className="text-xs text-slate-500">· {flight.aircraftType}</span>
-                            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-                              {flight.stops}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-4 text-sm">
-                            <div>
-                              <span className="text-lg font-black font-mono text-slate-900">{flight.departureTime}</span>
-                              <span className="text-xs text-slate-500 block font-bold">{flight.fromCode} ({flight.terminalDep})</span>
+                {flightsLoading ? (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-xs font-bold text-slate-600 flex items-center justify-center gap-2">
+                    <Loader2 className="size-4 animate-spin text-sky-600" />
+                    <span>Querying live airline availability and fare feed...</span>
+                  </div>
+                ) : flightOffers.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-3">
+                    {flightOffers.map((flight) => {
+                      const depTime = flight.departureTime.includes("T") ? flight.departureTime.slice(11, 16) : flight.departureTime;
+                      const arrTime = flight.arrivalTime.includes("T") ? flight.arrivalTime.slice(11, 16) : flight.arrivalTime;
+                      const hrs = Math.floor(flight.durationMinutes / 60);
+                      const mins = flight.durationMinutes % 60;
+                      const originCode = extractAirportCode(flightFrom, "DEL");
+                      const destCode = extractAirportCode(flightTo, "BOM");
+                      return (
+                        <div
+                          key={flight.id}
+                          className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-sky-300 hover:shadow-md transition p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="px-2.5 py-0.5 rounded-md font-black text-xs bg-slate-900 text-white">
+                                {flight.carrierCode} — {flight.carrierName}
+                              </span>
+                              <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
+                                {flight.flightNumber}
+                              </span>
+                              {flight.aircraftType && (
+                                <span className="text-xs text-slate-500">· {flight.aircraftType}</span>
+                              )}
+                              <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                                {flight.directStops === 0 ? "Non-Stop" : `${flight.directStops} Stop`}
+                              </span>
                             </div>
-                            <div className="flex flex-col items-center">
-                              <span className="text-[10px] text-slate-400 font-bold">{flight.duration}</span>
-                              <div className="w-16 h-0.5 bg-slate-300 my-1 relative">
-                                <span className="size-1.5 rounded-full bg-sky-600 absolute right-0 -top-0.5" />
+
+                            <div className="flex items-center gap-4 text-sm">
+                              <div>
+                                <span className="text-lg font-black font-mono text-slate-900">{depTime}</span>
+                                <span className="text-xs text-slate-500 block font-bold">{originCode}</span>
+                              </div>
+                              <div className="flex flex-col items-center">
+                                <span className="text-[10px] text-slate-400 font-bold">{hrs}h {mins}m</span>
+                                <div className="w-16 h-0.5 bg-slate-300 my-1 relative">
+                                  <span className="size-1.5 rounded-full bg-sky-600 absolute right-0 -top-0.5" />
+                                </div>
+                              </div>
+                              <div>
+                                <span className="text-lg font-black font-mono text-slate-900">{arrTime}</span>
+                                <span className="text-xs text-slate-500 block font-bold">{destCode}</span>
                               </div>
                             </div>
+
+                            {flight.baggageAllowance && (
+                              <p className="text-[11px] text-slate-500">
+                                Baggage: <strong>{flight.baggageAllowance}</strong>
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="flex flex-col md:items-end justify-between gap-2.5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-200">
                             <div>
-                              <span className="text-lg font-black font-mono text-slate-900">{flight.arrivalTime}</span>
-                              <span className="text-xs text-slate-500 block font-bold">{flight.toCode} ({flight.terminalArr})</span>
+                              <span className="text-[10px] text-slate-500 block">Live Supplier Fare</span>
+                              <span className="text-xl font-black font-mono text-slate-900">
+                                {flight.pricePaise > 0 ? formatPaise(flight.pricePaise) : "Check airline portal"}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={flight.bookingUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => {
+                                  toast.success(`Opening ${flight.carrierName} checkout...`);
+                                }}
+                                className="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 inline-flex items-center gap-1.5 transition"
+                              >
+                                <span>Book on {flight.carrierName}</span>
+                                <ExternalLink className="size-3.5" />
+                              </a>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  setQuotationModal({
+                                    isOpen: true,
+                                    category: "FLIGHT",
+                                    origin: originCode,
+                                    destination: destCode,
+                                  });
+                                }}
+                                className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
+                              >
+                                Request Quote
+                              </Button>
                             </div>
                           </div>
-
-                          <p className="text-[11px] text-slate-500">
-                            Baggage: <strong>{flight.baggage}</strong>
-                          </p>
                         </div>
-
-                        <div className="flex flex-col md:items-end justify-between gap-2.5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-200">
-                          <div>
-                            <span className="text-[10px] text-slate-500 block">Indicative Base + Tax</span>
-                            <span className="text-xl font-black font-mono text-slate-900">
-                              {formatPaise(totalPaise)}
-                            </span>
-                            <span className="text-[10px] font-bold text-emerald-700 block">
-                              Reference Tariff · Check Live Fare on Airline Portal
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-2">
-                            <a
-                              href={carrierPortal.bookingUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={() => {
-                                toast.success(`Opening official ${flight.carrierName} portal (${carrierPortal.portalName})...`);
-                              }}
-                              className="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 inline-flex items-center gap-1.5 transition"
-                            >
-                              <span>Book on {flight.carrierName}</span>
-                              <ExternalLink className="size-3.5" />
-                            </a>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => {
-                                setQuotationModal({
-                                  isOpen: true,
-                                  category: "FLIGHT",
-                                  origin: flight.fromCode,
-                                  destination: flight.toCode,
-                                });
-                              }}
-                              className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
-                            >
-                              Request Quote
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-black text-slate-900">
+                        {flightsSearched
+                          ? `No live airline inventory feed returned for ${extractAirportCode(flightFrom, "DEL")} -> ${extractAirportCode(flightTo, "BOM")}.`
+                          : "Search live fares above or open direct carrier portals below."}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        Use the official airline portals below for real-time schedules and seat inventory, or request a concierge quote.
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setQuotationModal({
+                          isOpen: true,
+                          category: "FLIGHT",
+                          origin: extractAirportCode(flightFrom, "DEL"),
+                          destination: extractAirportCode(flightTo, "BOM"),
+                        });
+                      }}
+                      className="h-9 px-3.5 rounded-xl border-slate-200 hover:bg-white text-slate-800 text-xs font-bold shrink-0"
+                    >
+                      Request Flight Quote
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {/* Direct Official Carrier Checkout Cards */}
@@ -1515,132 +1401,115 @@ export function TravelPage() {
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
-                  onClick={() => toast.success(`Railway schedules loaded for ${trainFrom} to ${trainTo}`)}
+                  disabled={trainsLoading}
+                  onClick={handleSearchTrains}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs shadow-md shadow-indigo-700/20 flex items-center justify-center gap-2"
                 >
-                  <Search className="size-4" />
-                  Search Official Railway Desk Schedules
+                  {trainsLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+                  {trainsLoading ? "Checking Rail Feeds..." : "Search Official Railway Schedules"}
                 </Button>
               </div>
 
-              {/* REFERENCE CORRIDOR TRAIN SCHEDULES (Direct Official IRCTC Handoff) */}
+              {/* LIVE RAIL SEARCH / DIRECT OFFICIAL IRCTC PORTAL */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Train className="size-4 text-indigo-600" />
-                    <span>Premier Express Corridors ({AUTHENTIC_RAILWAY_SCHEDULES.length})</span>
-                    <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
-                      Reference Schedule · Check Live Availability on IRCTC
-                    </span>
+                    <span>Indian Railways Direct Booking</span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    1A · 2A · 3A · SL · EC · CC Guide
+                    {extractAirportCode(trainFrom, "NDLS")} to {extractAirportCode(trainTo, "MMCT")}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3.5">
-                  {AUTHENTIC_RAILWAY_SCHEDULES.map((trainItem) => (
-                    <div
-                      key={trainItem.trainNumber}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-indigo-300 hover:shadow-md transition p-4 sm:p-5 space-y-3.5"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2.5 py-0.5 rounded-md font-black text-xs bg-indigo-900 text-white">
-                              {trainItem.trainNumber}
-                            </span>
-                            <h4 className="text-base font-black text-slate-900">
-                              {trainItem.trainName}
-                            </h4>
-                            <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
-                              {trainItem.speedType}
-                            </span>
-                          </div>
-                          <p className="text-xs text-slate-500 mt-1">
-                            Pantry: <strong>{trainItem.pantry}</strong>
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-4 text-sm self-start sm:self-auto">
+                {trainOffers.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-3.5">
+                    {trainOffers.map((trainItem) => (
+                      <div
+                        key={trainItem.trainNumber}
+                        className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-indigo-300 hover:shadow-md transition p-4 sm:p-5 space-y-3.5"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-3">
                           <div>
-                            <span className="text-lg font-black font-mono text-slate-900">{trainItem.departureTime}</span>
-                            <span className="text-xs text-slate-500 block font-bold">{trainItem.fromCode}</span>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <span className="text-[10px] text-slate-400 font-bold">{trainItem.duration}</span>
-                            <div className="w-16 h-0.5 bg-slate-300 my-1 relative">
-                              <span className="size-1.5 rounded-full bg-indigo-600 absolute right-0 -top-0.5" />
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="px-2.5 py-0.5 rounded-md font-black text-xs bg-indigo-900 text-white">
+                                {trainItem.trainNumber}
+                              </span>
+                              <h4 className="text-base font-black text-slate-900">
+                                {trainItem.trainName}
+                              </h4>
                             </div>
                           </div>
-                          <div>
-                            <span className="text-lg font-black font-mono text-slate-900">{trainItem.arrivalTime}</span>
-                            <span className="text-xs text-slate-500 block font-bold">{trainItem.toCode}</span>
+                          <div className="flex items-center gap-4 text-sm self-start sm:self-auto">
+                            <div>
+                              <span className="text-lg font-black font-mono text-slate-900">{trainItem.departureTime}</span>
+                              <span className="text-xs text-slate-500 block font-bold">{trainItem.fromStation}</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <span className="text-[10px] text-slate-400 font-bold">{Math.floor(trainItem.durationMinutes / 60)}h {trainItem.durationMinutes % 60}m</span>
+                              <div className="w-16 h-0.5 bg-slate-300 my-1" />
+                            </div>
+                            <div>
+                              <span className="text-lg font-black font-mono text-slate-900">{trainItem.arrivalTime}</span>
+                              <span className="text-xs text-slate-500 block font-bold">{trainItem.toStation}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Halts */}
-                      <div className="text-[11px] text-slate-500 flex flex-wrap items-center gap-1.5">
-                        <span className="font-bold text-slate-700">Key Halts:</span>
-                        {trainItem.halts.map((halt) => (
-                          <span key={halt} className="bg-white border border-slate-200 px-2 py-0.5 rounded">
-                            {halt}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Reference Class Fares & Direct IRCTC Redirect */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                        {trainItem.classes.map((cls) => (
-                          <button
-                            key={cls.code}
-                            type="button"
-                            onClick={() => {
-                              const irctcUrl = `https://www.irctc.co.in/nget/train-search?from=${trainItem.fromCode}&to=${trainItem.toCode}&date=${trainDate}`;
-                              toast.info("OrderKing does not issue railway tickets directly. Redirecting to official IRCTC portal...");
-                              window.open(irctcUrl, "_blank", "noopener,noreferrer");
-                            }}
-                            className="p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 transition text-left group"
+                        <div className="flex items-center justify-between pt-1">
+                          <span className="text-[10px] text-slate-400">Official IRCTC Direct Ticket Availability</span>
+                          <a
+                            href={`https://www.irctc.co.in/nget/train-search?from=${trainItem.fromStation}&to=${trainItem.toStation}&date=${trainDate}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
                           >
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="text-xs font-black text-indigo-950 group-hover:text-indigo-600">
-                                {cls.code} · {cls.name}
-                              </span>
-                              <span className="text-[10px] font-bold text-slate-500">
-                                {cls.quotaAvailability}
-                              </span>
-                            </div>
-                            <div className="mt-1 flex items-baseline justify-between">
-                              <span className="text-sm font-black font-mono text-slate-900">
-                                ₹{cls.fareInr.toLocaleString("en-IN")}
-                              </span>
-                              <span className="text-[10px] font-bold text-indigo-600">
-                                Check on IRCTC
-                              </span>
-                            </div>
-                          </button>
-                        ))}
+                            <span>Open on IRCTC Portal</span>
+                            <ExternalLink className="size-3" />
+                          </a>
+                        </div>
                       </div>
-
-                      {/* External IRCTC Search URL fallback */}
-                      <div className="flex items-center justify-between pt-1">
-                        <span className="text-[10px] text-slate-400">
-                          Official IRCTC Direct Ticket Availability
-                        </span>
-                        <a
-                          href={`https://www.irctc.co.in/nget/train-search?from=${trainItem.fromCode}&to=${trainItem.toCode}&date=${trainDate}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-                        >
-                          <span>Open on IRCTC Portal</span>
-                          <ExternalLink className="size-3" />
-                        </a>
-                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-slate-200 bg-indigo-50/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs font-black text-slate-900">
+                        {trainsSearched
+                          ? `IRCTC direct authentication is required for live seat availability (${extractAirportCode(trainFrom, "NDLS")} -> ${extractAirportCode(trainTo, "MMCT")}).`
+                          : "Live berth inventory and Tatkal booking open directly on IRCTC."}
+                      </p>
+                      <p className="text-[11px] text-slate-600">
+                        Open IRCTC for live trains, classes ({trainClass}), and real-time fares with zero synthetic schedules.
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      <a
+                        href={`https://www.irctc.co.in/nget/train-search?from=${encodeURIComponent(extractAirportCode(trainFrom, "NDLS"))}&to=${encodeURIComponent(extractAirportCode(trainTo, "MMCT"))}&date=${encodeURIComponent(trainDate)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-10 px-4 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs inline-flex items-center gap-1.5 shadow-sm"
+                      >
+                        <span>Open IRCTC Portal</span>
+                        <ExternalLink className="size-3.5" />
+                      </a>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setQuotationModal({
+                            isOpen: true,
+                            category: "TRAIN",
+                            origin: extractAirportCode(trainFrom, "NDLS"),
+                            destination: extractAirportCode(trainTo, "MMCT"),
+                          });
+                        }}
+                        className="h-10 px-3 rounded-xl border-slate-200 hover:bg-white text-slate-800 text-xs font-bold"
+                      >
+                        Request Rail Quote
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Live 10-Digit IRCTC PNR Status Bar */}
@@ -1683,6 +1552,23 @@ export function TravelPage() {
                     {checkingPnr ? "Checking CRIS..." : "Check Live PNR Status"}
                   </Button>
                 </form>
+
+                {pnrOfficialUrl && !pnrLiveResult && (
+                  <div className="rounded-xl border border-indigo-200 bg-white p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <span className="text-xs font-semibold text-slate-700">
+                      Indian Railways requires government captcha verification for direct PNR lookup.
+                    </span>
+                    <a
+                      href={pnrOfficialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-9 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs inline-flex items-center gap-1.5 shrink-0"
+                    >
+                      <span>Open Official IndianRail PNR Portal</span>
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  </div>
+                )}
 
                 {/* Live CRIS PNR Status Result */}
                 {pnrLiveResult && (
@@ -1863,122 +1749,145 @@ export function TravelPage() {
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
-                  onClick={() => toast.success(`Hotels updated for ${hotelCity || "all destinations"}`)}
+                  disabled={hotelsLoading}
+                  onClick={handleSearchHotels}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-2"
                 >
-                  <Search className="size-4" />
-                  Search Hotels
+                  {hotelsLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+                  {hotelsLoading ? "Searching Live Stays..." : "Search Live Hotels"}
                 </Button>
               </div>
 
-              {/* FEATURED ACCOMMODATIONS (Booking.com / Direct Quote) */}
+              {/* LIVE ACCOMMODATIONS (Real Aggregator Feed / Booking.com Direct Search) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Building2 className="size-4 text-amber-600" />
-                    <span>Available Accommodations ({
-                      AUTHENTIC_LUXURY_HOTELS.filter((h) =>
-                        !hotelCity.trim() ||
-                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                        h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                        h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
-                      ).length || AUTHENTIC_LUXURY_HOTELS.length
-                    })</span>
+                    <span>
+                      {hotelsLoading
+                        ? "Fetching Properties..."
+                        : `Live Accommodations (${hotelOffers.length})`}
+                    </span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    Published Reference Tariffs
+                    Live Availability &amp; Rates
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(
-                    AUTHENTIC_LUXURY_HOTELS.filter((h) =>
-                      !hotelCity.trim() ||
-                      h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                      h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                      h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
-                    ).length > 0
-                      ? AUTHENTIC_LUXURY_HOTELS.filter((h) =>
-                        !hotelCity.trim() ||
-                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                        h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                        h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
-                      )
-                      : AUTHENTIC_LUXURY_HOTELS
-                  ).map((hotel) => (
-                    <div
-                      key={hotel.id}
-                      className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-amber-300 hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between gap-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 block">
-                              {hotel.brand} · {hotel.city}
-                            </span>
-                            <h4 className="text-base font-black text-slate-900 mt-0.5">
-                              {hotel.name}
-                            </h4>
-                            <p className="text-xs text-slate-500 mt-0.5">{hotel.locationDetail}</p>
-                          </div>
-                          <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[10px] shrink-0">
-                            5-Star Hotel
-                          </span>
-                        </div>
-
-                        <div className="bg-white p-2.5 rounded-xl border border-slate-200">
-                          <span className="text-xs font-bold text-slate-900 block">{hotel.roomType}</span>
-                          <div className="flex flex-wrap gap-1.5 mt-1.5">
-                            {hotel.amenities.map((a) => (
-                              <span key={a} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
-                                {a}
+                {hotelsLoading ? (
+                  <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-xs font-bold text-slate-600 flex items-center justify-center gap-2">
+                    <Loader2 className="size-4 animate-spin text-amber-600" />
+                    <span>Querying hotel availability in {hotelCity || "India"}...</span>
+                  </div>
+                ) : hotelOffers.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {hotelOffers.map((hotel) => (
+                      <div
+                        key={hotel.id}
+                        className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-amber-300 hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between gap-4"
+                      >
+                        <div className="space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 block">
+                                {hotel.city}
                               </span>
-                            ))}
+                              <h4 className="text-base font-black text-slate-900 mt-0.5">
+                                {hotel.hotelName}
+                              </h4>
+                              <p className="text-xs text-slate-500 mt-0.5">{hotel.address}</p>
+                            </div>
+                            {hotel.starRating > 0 && (
+                              <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[10px] shrink-0">
+                                {hotel.starRating}-Star Hotel
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="bg-white p-2.5 rounded-xl border border-slate-200">
+                            <span className="text-xs font-bold text-slate-900 block">{hotel.roomType}</span>
+                          </div>
+                        </div>
+
+                        <div className="border-t border-slate-200/80 pt-3 flex items-center justify-between gap-2">
+                          <div>
+                            <span className="text-xs text-slate-400 block">Nightly Rate</span>
+                            <span className="text-lg font-black font-mono text-slate-900">
+                              {hotel.nightlyRatePaise > 0 ? formatPaise(hotel.nightlyRatePaise) : "Check live rate"}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <a
+                              href={hotel.bookingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => {
+                                toast.info(`Checking live room rates for ${hotel.hotelName}...`);
+                              }}
+                              className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 inline-flex items-center gap-1.5 transition"
+                            >
+                              <span>Check Live Rates</span>
+                              <ExternalLink className="size-3.5" />
+                            </a>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setQuotationModal({
+                                  isOpen: true,
+                                  category: "HOLIDAY",
+                                  destination: `${hotel.hotelName}, ${hotel.city}`,
+                                });
+                              }}
+                              className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
+                            >
+                              Request Quote
+                            </Button>
                           </div>
                         </div>
                       </div>
-
-                      <div className="border-t border-slate-200/80 pt-3 flex items-center justify-between gap-2">
-                        <div>
-                          <span className="text-xs text-slate-400 block">Reference Tariff / Night</span>
-                          <span className="text-lg font-black font-mono text-slate-900">
-                            ₹{hotel.tariffPerNightInr.toLocaleString("en-IN")}
-                          </span>
-                          <span className="text-[10px] text-slate-500 block">+18% Hotel GST</span>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <a
-                            href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(`${hotel.name}, ${hotel.city}`)}&checkin=${encodeURIComponent(hotelCheckIn)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => {
-                              toast.info(`Checking live room rates for ${hotel.name} on Booking.com...`);
-                            }}
-                            className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 inline-flex items-center gap-1.5 transition"
-                          >
-                            <span>Check Live Rates</span>
-                            <ExternalLink className="size-3.5" />
-                          </a>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                              setQuotationModal({
-                                isOpen: true,
-                                category: "HOLIDAY",
-                                destination: `${hotel.name}, ${hotel.city}`,
-                              });
-                            }}
-                            className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
-                          >
-                            Request Quote
-                          </Button>
-                        </div>
-                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-slate-200 bg-amber-50/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs font-black text-slate-900">
+                        {hotelsSearched
+                          ? `No live API hotel offers returned for ${hotelCity || "destination"}.`
+                          : "Search live stays above or open partner checkout for instant room inventory."}
+                      </p>
+                      <p className="text-[11px] text-slate-600">
+                        Compare verified room tariffs directly on Booking.com or request a concierge hotel booking quote.
+                      </p>
                     </div>
-                  ))}
-                </div>
+                    <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      <a
+                        href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotelCity || "Goa")}&checkin=${encodeURIComponent(hotelCheckIn)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 shadow-sm"
+                      >
+                        <span>Search Booking.com</span>
+                        <ExternalLink className="size-3.5" />
+                      </a>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setQuotationModal({
+                            isOpen: true,
+                            category: "HOLIDAY",
+                            destination: hotelCity || "India",
+                          });
+                        }}
+                        className="h-10 px-3 rounded-xl border-slate-200 hover:bg-white text-slate-800 text-xs font-bold"
+                      >
+                        Request Hotel Quote
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
@@ -2079,8 +1988,17 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* Action Buttons: redBus Handoff + Save */}
+              {/* Action Buttons: Live Bus API Search + redBus Handoff + Save */}
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <Button
+                  type="button"
+                  disabled={busesLoading}
+                  onClick={handleSearchBuses}
+                  className="h-12 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-sm flex items-center justify-center gap-2"
+                >
+                  {busesLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
+                  <span>{busesLoading ? "Searching Buses..." : "Search Live Buses"}</span>
+                </Button>
                 <Button
                   type="button"
                   onClick={() => {
@@ -2119,6 +2037,47 @@ export function TravelPage() {
                 </Button>
               </div>
 
+              {busesSearched && (
+                <div className="space-y-3 pt-2">
+                  {busOffers.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-3">
+                      {busOffers.map((bus) => (
+                        <div
+                          key={bus.id}
+                          className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        >
+                          <div>
+                            <h4 className="text-sm font-black text-slate-900">{bus.operatorName}</h4>
+                            <p className="text-xs text-slate-500">
+                              {bus.busType} · {bus.departureTime} to {bus.arrivalTime}
+                              {bus.availableSeats > 0 ? ` · ${bus.availableSeats} seats left` : ""}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-black font-mono text-slate-900">
+                              {bus.farePaise > 0 ? formatPaise(bus.farePaise) : "Check on redBus"}
+                            </span>
+                            <a
+                              href={bus.bookingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="h-9 px-3.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs inline-flex items-center gap-1"
+                            >
+                              <span>Book Seat</span>
+                              <ExternalLink className="size-3.5" />
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-3">
+                      No direct RedBus B2B operator inventory feed active. Use <strong>Search on redBus</strong> above for live seat selection.
+                    </p>
+                  )}
+                </div>
+              )}
+
             </div>
           )}
 
@@ -2127,7 +2086,6 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "cabs" && (
             <div className="space-y-6">
-
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
@@ -2138,130 +2096,11 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full self-start">
-                  Ride-Hailing &amp; Transfer Links
+                  PostgreSQL Live Cab Dispatch · UPI &amp; Cash
                 </span>
               </div>
 
-              {/* Working Cab Inputs */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:bg-white transition">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Pickup Terminal / Address
-                  </label>
-                  <input
-                    type="text"
-                    value={cabPickup}
-                    onChange={(e) => setCabPickup(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                    placeholder="e.g. Terminal 3, IGI Airport (DEL)"
-                  />
-                </div>
-
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:bg-white transition">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Drop Destination / City
-                  </label>
-                  <input
-                    type="text"
-                    value={cabDrop}
-                    onChange={(e) => setCabDrop(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                    placeholder="e.g. Connaught Place, New Delhi"
-                  />
-                </div>
-
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:bg-white transition">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Trip Mode / Slab
-                  </label>
-                  <select
-                    value={cabPackageHours}
-                    onChange={(e) => setCabPackageHours(e.target.value)}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none cursor-pointer"
-                  >
-                    <option value="Airport Point-to-Point">Airport Point-to-Point</option>
-                    <option value="Outstation Round-Trip">Outstation Round-Trip (250 km/day)</option>
-                    <option value="4 Hrs · 40 km">Hourly Rental: 4 Hrs · 40 km</option>
-                    <option value="8 Hrs · 80 km">Hourly Rental: 8 Hrs · 80 km</option>
-                    <option value="12 Hrs · 120 km">Hourly Rental: 12 Hrs · 120 km</option>
-                  </select>
-                </div>
-
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-emerald-500 focus-within:bg-white transition">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                    Vehicle Class
-                  </label>
-                  <select
-                    value={cabVehicleClass}
-                    onChange={(e) => setCabVehicleClass(e.target.value as "mini" | "sedan" | "suv")}
-                    className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none cursor-pointer"
-                  >
-                    <option value="mini">Mini / Hatchback (~₹11/km)</option>
-                    <option value="sedan">Prime Sedan (~₹14/km)</option>
-                    <option value="suv">Luxury SUV (~₹19/km)</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Distance Slider */}
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    Estimated Trip Distance: <strong className="text-emerald-700 font-mono text-sm">{cabDistanceKm} km</strong>
-                  </label>
-                  <span className="text-[11px] text-slate-500">
-                    Billed at actual odometer reading
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={5}
-                  max={150}
-                  step={5}
-                  value={cabDistanceKm}
-                  onChange={(e) => setCabDistanceKm(Number(e.target.value))}
-                  className="w-full accent-emerald-600"
-                />
-              </div>
-
-              {/* Action Buttons: Uber/Chauffeur Handoff + Save */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button
-                  type="button"
-                  onClick={() => {
-                    const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(cabDrop ?? ""))}`;
-                    toast.success(`Opening provider checkout for ${cabPickup} to ${cabDrop}...`);
-                    window.open(uberUrl, "_blank", "noopener,noreferrer");
-                  }}
-                  className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
-                >
-                  <Car className="size-4" />
-                  <span>Check Fare &amp; Book with Provider</span>
-                  <ExternalLink className="size-3.5 opacity-80" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    const newTrip: SavedTripReference = {
-                      id: `trip-${Date.now()}`,
-                      bookingType: "Cab",
-                      providerName: `Chauffeur (${cabVehicleClass.toUpperCase()})`,
-                      bookingRef: "PLANNED-CAB",
-                      travelDate: new Date().toISOString().split("T")[0],
-                      routeOrLocation: `${cabPickup} to ${cabDrop}`,
-                      notes: `${cabDistanceKm} km · Mode: ${cabPackageHours}`,
-                      createdAt: new Date().toISOString(),
-                    };
-                    persistTrips([newTrip, ...savedTrips]);
-                    toast.success("Saved cab journey to My Trips & Bookings.");
-                  }}
-                  className="h-12 rounded-xl border-slate-200 text-slate-800 font-bold text-xs"
-                >
-                  Save Cab to My Trips
-                </Button>
-              </div>
-
+              <CabBookingEngine initialPickup={cabPickup} initialDrop={cabDrop} />
             </div>
           )}
 
@@ -2340,7 +2179,7 @@ export function TravelPage() {
                       }}
                       className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold transition active:scale-95 shadow-sm cursor-pointer shrink-0"
                     >
-                      <Sparkles className="size-3.5 text-amber-400" />
+                      <Compass className="size-3.5 text-amber-400" />
                       <span>+ Customize My Trip</span>
                     </button>
                   </div>
@@ -2553,12 +2392,12 @@ export function TravelPage() {
                         <div className="mt-3 pt-2.5 border-t border-slate-100 space-y-2">
                           <div className="flex items-baseline justify-between">
                             <div>
-                              <span className="text-base font-black text-slate-900">
-                                From {formatPaise(pkg.orderkingPrice)}
+                              <span className="text-xs font-black text-slate-700">
+                                Custom Quotation · Concierge Pricing
                               </span>
                             </div>
-                            <span className="text-[9px] font-bold text-slate-500">
-                              indicative / person
+                            <span className="text-[10px] font-bold text-slate-500">
+                              {pkg.departureCity}
                             </span>
                           </div>
                           <Button
@@ -2867,11 +2706,11 @@ export function TravelPage() {
                             <div className="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
                               <div className="flex items-baseline justify-between">
                                 <div>
-                                  <span className="text-lg font-black text-slate-900">
-                                    From {formatPaise(pkg.orderkingPrice)}
+                                  <span className="text-xs font-black text-slate-700">
+                                    Custom Quotation · Concierge Pricing
                                   </span>
                                   <span className="text-[10px] text-slate-500 block font-medium">
-                                    Indicative tariff per person
+                                    Departure: {pkg.departureCity}
                                   </span>
                                 </div>
                               </div>

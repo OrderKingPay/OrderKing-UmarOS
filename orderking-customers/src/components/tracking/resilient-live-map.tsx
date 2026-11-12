@@ -38,9 +38,9 @@ export function calculateHaversineDistance(
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return EARTH_RADIUS_KM * c;
 }
@@ -706,18 +706,16 @@ export function ResilientLiveMap({
             <button
               type="button"
               onClick={() => setTileProvider("carto_voyager")}
-              className={`px-2 py-0.5 rounded-lg transition ${
-                tileProvider === "carto_voyager" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
-              }`}
+              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "carto_voyager" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
+                }`}
             >
               Carto
             </button>
             <button
               type="button"
               onClick={() => setTileProvider("osm")}
-              className={`px-2 py-0.5 rounded-lg transition ${
-                tileProvider === "osm" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
-              }`}
+              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "osm" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
+                }`}
             >
               OSM
             </button>
@@ -747,9 +745,8 @@ export function ResilientLiveMap({
             type="button"
             onClick={handleRecenterRider}
             title="Recenter on Delivery Rider"
-            className={`p-1.5 rounded-xl text-stone-300 hover:text-white hover:bg-stone-800 transition ${
-              followRider ? "text-emerald-400 bg-emerald-500/20" : ""
-            }`}
+            className={`p-1.5 rounded-xl text-stone-300 hover:text-white hover:bg-stone-800 transition ${followRider ? "text-emerald-400 bg-emerald-500/20" : ""
+              }`}
           >
             <RotateCcw className="size-4" />
           </button>

@@ -291,10 +291,7 @@ export function MetaOmnichannelHub({
     setLiveStreamLogs([]);
 
     try {
-      // Simulate stepped real-time dispatch progress
-      const progressTimer = setInterval(() => {
-        setBlastProgress((prev) => (prev < 90 ? prev + 15 : prev));
-      }, 350);
+      setBlastProgress(35);
 
       const res = await dispatchMetaOmnichannelGeoBlastFn({
         data: {
@@ -316,7 +313,6 @@ export function MetaOmnichannelHub({
         },
       });
 
-      clearInterval(progressTimer);
       setBlastProgress(100);
 
       if (res.ok) {
