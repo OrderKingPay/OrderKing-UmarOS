@@ -1,10 +1,13 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Crown, ShieldCheck, Sparkles } from "lucide-react";
 import { KingPayShell, type KingPaySection } from "@/components/fintech/kingpay-shell";
 import { CustomerConciergeDrawer } from "@/components/ai/customer-concierge-drawer";
 
-export const Route = createFileRoute("/king-pay/assist")({ component: KingAssistPage });
+export const Route = createFileRoute("/king-pay/assist")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  }, component: KingAssistPage });
 
 function KingAssistPage() {
   const navigate = useNavigate();

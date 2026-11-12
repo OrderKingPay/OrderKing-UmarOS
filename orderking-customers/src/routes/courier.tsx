@@ -1,9 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { PorterParcelEngine } from "@/components/courier/porter-parcel-engine";
 import { AppErrorComponent } from "@/lib/error-component";
 
 export const Route = createFileRoute("/courier")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
   component: CourierPage,
   errorComponent: AppErrorComponent,
   head: () => ({

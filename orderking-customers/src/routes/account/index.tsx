@@ -215,12 +215,12 @@ function AccountPage() {
               </Link>
 
               <Link
-                to="/king-pay"
+                to="/travel"
                 className="flex flex-col items-center justify-center p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs transition text-center no-underline"
               >
                 <CreditCard className="size-5 text-emerald-600 mb-1" />
-                <span className="text-xs font-bold text-slate-900">KingPay</span>
-                <span className="text-[10px] text-slate-500">UPI & Wallet</span>
+                <span className="text-xs font-bold text-slate-900">Travel</span>
+                <span className="text-[10px] text-slate-500">Flights and hotels</span>
               </Link>
 
               <Link

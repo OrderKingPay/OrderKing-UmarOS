@@ -1,11 +1,14 @@
-import { Buffer } from "buffer";
+
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },import { Buffer } from "buffer";
 if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
   (globalThis as any).Buffer = Buffer;
 }
 if (typeof window !== "undefined" && !(window as any).Buffer) {
   (window as any).Buffer = Buffer;
 }
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import {
   Wallet,
   ArrowRight,

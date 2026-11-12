@@ -44,10 +44,10 @@ function DiningPage() {
                 </span>
               </div>
               <h1 className="font-display text-2xl sm:text-4xl font-black text-white tracking-tight">
-                Table Reservations &amp; Dining
+                Book a table
               </h1>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                Discover table reservations and dining experiences in {location.cityName || "your city"}. Dine-in restaurant partner onboarding is actively underway across operating hubs.
+                Same restaurants. Pick one and send a table request.
               </p>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">

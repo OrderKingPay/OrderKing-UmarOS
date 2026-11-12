@@ -5,11 +5,14 @@ if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
 if (typeof window !== "undefined" && !(window as any).Buffer) {
   (window as any).Buffer = Buffer;
 }
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } redirect } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
 import { UtilitiesBillEngine } from "@/components/fintech/utilities-bill-engine";
 
 export const Route = createFileRoute("/kingpay-bbps")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
   component: KingPayBBPS,
 });
 

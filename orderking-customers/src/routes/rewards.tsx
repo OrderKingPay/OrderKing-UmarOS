@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, CreditCard, MapPin, Tag } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
@@ -11,7 +11,10 @@ import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
-export const Route = createFileRoute("/rewards")({ component: RewardsPage });
+export const Route = createFileRoute("/rewards")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  }, component: RewardsPage });
 
 function RewardsPage() {
   const { user } = useCurrentUserState();

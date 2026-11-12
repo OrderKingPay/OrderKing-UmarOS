@@ -1,10 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } redirect } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { TutorJobsHub } from "@/components/tutor-jobs/tutor-jobs-hub";
 import { AppErrorComponent } from "@/lib/error-component";
 import { History, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/tutor-jobs/")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
   component: TutorJobsIndexPage,
   errorComponent: AppErrorComponent,
 });

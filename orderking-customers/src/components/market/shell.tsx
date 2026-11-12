@@ -58,18 +58,14 @@ const SEARCH_PLACEHOLDERS = [
 ];
 
 export const SOVEREIGN_ECOSYSTEM_TABS = [
-  { id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
+  { id: "food", name: "Order", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v)) },
-  { id: "tutor", name: "King Tutor", icon: GraduationCap, iconGradient: "from-emerald-400 to-emerald-700", to: "/tutor",
-    match: (p: string) => p.startsWith("/tutor") && !p.startsWith("/tutor-jobs") },
-  { id: "jobs", name: "King Job", icon: Briefcase, iconGradient: "from-purple-400 to-purple-700", to: "/tutor-jobs",
-    match: (p: string) => p.startsWith("/tutor-jobs") },
-  { id: "travel", name: "Travel", icon: Plane, iconGradient: "from-sky-400 to-sky-700", to: "/travel",
-    match: (p: string) => p.startsWith("/travel") },
-  { id: "kingpay", name: "KingPay", icon: Wallet, iconGradient: "from-amber-400 to-amber-700", to: "/kingpay",
-    match: (p: string) => ["/kingpay", "/king-pay", "/news", "/earn"].some((v) => p.startsWith(v)) },
-  { id: "orders", name: "Orders & Passes", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
+  { id: "dining", name: "Go Out", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/dining",
+    match: (p: string) => p.startsWith("/dining") },
+  { id: "orders", name: "Orders", icon: ShoppingBag, iconGradient: "from-rose-500 to-rose-800", to: "/orders",
     match: (p: string) => p.startsWith("/orders") },
+  { id: "account", name: "Account", icon: Wallet, iconGradient: "from-slate-400 to-slate-700", to: "/account",
+    match: (p: string) => ["/account", "/profile", "/settings", "/travel", "/tutor"].some((v) => p.startsWith(v)) },
 ];
 
 export const PLATFORM_ECOSYSTEM_TABS = SOVEREIGN_ECOSYSTEM_TABS;
@@ -184,7 +180,7 @@ export function CustomerShell({
 
   const currentPlaceholder =
     SEARCH_PLACEHOLDERS[searchPlaceholderIndex % SEARCH_PLACEHOLDERS.length] || "What are you hungry for?";
-  const isKingPayDomain = path.startsWith("/travel") || path.startsWith("/kingpay") || path.startsWith("/king-pay");
+  const isKingPayDomain = false;
   const hasSearchRow = path === "/" ||
     ["/restaurants", "/menu", "/r/", "/dining", "/cart"].some((prefix) => path.startsWith(prefix));
 
@@ -215,27 +211,10 @@ export function CustomerShell({
         <div className="flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Row 1 Left: OrderKing or KingPay Logo (context-aware) + Delivery Address Selector */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            {isKingPayDomain ? (
-              <Link to="/travel" className="flex items-center gap-1.5 no-underline group shrink-0">
-                <div className="relative">
-                  <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-                </div>
-                <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-amber-300" : "text-amber-950")}>
-                  KingPay
-                </span>
+            <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
+                <OrderKingMark className="size-8 sm:size-9" />
+                <span className="text-base font-bold hidden xs:inline">OrderKing</span>
               </Link>
-            ) : (
-              <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
-                <div className="relative">
-                  <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-                </div>
-                <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-white" : "text-gray-950")}>
-                  OrderKing
-                </span>
-              </Link>
-            )}
 
             {/* Delivery Address Selector (Location Pin): strictly for food delivery, hidden on KingPay/Travel */}
             {!isKingPayDomain && (
@@ -268,50 +247,9 @@ export function CustomerShell({
             )}
           </div>
 
-          {/* Row 1 Center: Fork & Spoon "Food" and KingPay Travel & Tutor Pill */}
-          <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-            {/* Minimal Micro-Pill 1: Food Delivery */}
-            <Link
-              to="/"
-              title="OrderKing Food Delivery"
-              aria-label="OrderKing Food Delivery"
-              className={cn(
-                "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
-                  ? isDark
-                    ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
-                    : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-amber-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
-              )}
-            >
-              <UtensilsCrossed className="size-3.5 sm:size-4 shrink-0" aria-hidden="true" />
-              <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
-            </Link>
-
-            {/* KingPay Mode: Travel & AI Tutor */}
-            <Link
-              to="/travel"
-              title="KingPay Super-App (Flights, Trains, AI Tutor)"
-              aria-label="Flights, Trains, AI Tutor"
-              className={cn(
-                "inline-flex items-center justify-center px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                isKingPayDomain || path.startsWith("/tutor")
-                  ? isDark
-                    ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
-                    : "border-sky-500 bg-gradient-to-b from-sky-100 to-indigo-100 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
-                  : isDark
-                    ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
-                    : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
-              )}
-            >
-              <span className="inline-flex items-center gap-1.5 leading-none select-none" aria-hidden="true">
-                <Plane className="size-3.5 shrink-0" />
-                <Train className="size-3.5 shrink-0" />
-                <GraduationCap className="size-3.5 shrink-0" />
-              </span>
-            </Link>
+          <nav aria-label="Core" className="flex items-center gap-1.5 shrink-0">
+            <Link to="/" className="px-2.5 py-1.5 rounded-full border text-xs font-semibold no-underline">Order</Link>
+            <Link to="/dining" className="px-2.5 py-1.5 rounded-full border text-xs font-semibold no-underline">Go Out</Link>
           </nav>
 
           {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
@@ -335,22 +273,8 @@ export function CustomerShell({
               </span>
             </button>
 
-            {/* Gold Crown Wallet - Direct link to KingPay */}
-            <Link
-              to="/kingpay"
-              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/15 border border-amber-400/80 text-amber-300 hover:border-amber-300 shadow-2xs hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
-              title="OrderKing Gold Crown Wallet &amp; KingPay"
-              aria-label="Gold Crown Wallet"
-            >
-              <Crown className="size-3.5 text-amber-300 fill-amber-400" />
-              <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
-                Wallet
-              </span>
-            </Link>
-
             {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
-            {!isKingPayDomain && (
-              <Link
+            <Link
                 to="/cart"
                 className={cn(
                   "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
@@ -368,7 +292,6 @@ export function CustomerShell({
                   </span>
                 )}
               </Link>
-            )}
 
             {/* User profile avatar / standard top-right user menu with fallback avatar */}
             {isPending ? (
@@ -438,34 +361,15 @@ export function CustomerShell({
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                       >
                         <Package className="size-4 text-amber-600" />
-                        <span>My Orders &amp; Passes</span>
+                        <span>Orders</span>
                       </Link>
-
-                      <Link
-                        to="/kingpay"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
-                      >
-                        <CreditCard className="size-4 text-amber-600" />
-                        <span>KingPay &amp; Crowns</span>
+                      <Link to="/travel" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl no-underline">
+                        <Plane className="size-4" />
+                        <span>Travel</span>
                       </Link>
-
-                      <Link
-                        to="/tutor"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
-                      >
-                        <GraduationCap className="size-4 text-amber-600" />
-                        <span>King Tutor &amp; Solutions</span>
-                      </Link>
-
-                      <Link
-                        to="/tutor-jobs"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
-                      >
-                        <Briefcase className="size-4 text-amber-600" />
-                        <span>King Job &amp; Careers</span>
+                      <Link to="/tutor" onClick={() => setUserMenuOpen(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-xl no-underline">
+                        <GraduationCap className="size-4" />
+                        <span>Tutor</span>
                       </Link>
 
                       <Link

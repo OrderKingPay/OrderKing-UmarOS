@@ -5,12 +5,15 @@ if (typeof globalThis !== "undefined" && !(globalThis as any).Buffer) {
 if (typeof window !== "undefined" && !(window as any).Buffer) {
   (window as any).Buffer = Buffer;
 }
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { KingPayExperience } from "@/components/fintech/supreme-kingpay-experience";
 import { AppErrorComponent } from "@/lib/error-component";
 
 export const Route = createFileRoute("/king-pay")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
   component: OrderKingPayPage,
   errorComponent: AppErrorComponent,
   head: () => ({

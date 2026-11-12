@@ -1,9 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { LocalParcelEstimator } from "@/components/parcel/local-parcel-estimator";
 import { AppErrorComponent } from "@/lib/error-component";
 
 export const Route = createFileRoute("/parcel")({
+  beforeLoad: () => {
+    throw redirect({ to: "/account" });
+  },
   component: ParcelRoutePage,
   errorComponent: AppErrorComponent,
 });

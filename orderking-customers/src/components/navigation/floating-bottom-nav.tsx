@@ -11,16 +11,13 @@ import {
   ClipboardList,
   Luggage,
   LayoutGrid,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type ActivePlatform = "delivery" | "kingpay" | "travel" | "tutor";
 export type ActiveVertical = "orderking" | "tutor-jobs" | "kingpay" | "travel";
 
-/**
- * Resolves the active vertical category from current pathname or router state.
- * 100% resilient to null, undefined, or empty path inputs.
- */
 export function resolveActiveVertical(
   pathname?: string | null,
   state?: { platform?: string }
@@ -33,27 +30,12 @@ export function resolveActiveVertical(
   }
   if (!pathname || typeof pathname !== "string") return "orderking";
   const p = pathname.toLowerCase();
-  if (p.startsWith("/tutor-jobs") || p.startsWith("/tutor")) {
-    return "tutor-jobs";
-  }
-  if (
-    p.startsWith("/king-pay") ||
-    p.startsWith("/kingpay") ||
-    p.startsWith("/wallet") ||
-    p.startsWith("/earn")
-  ) {
-    return "kingpay";
-  }
-  if (p.startsWith("/travel")) {
-    return "travel";
-  }
+  if (p.startsWith("/tutor-jobs") || p.startsWith("/tutor")) return "tutor-jobs";
+  if (p.startsWith("/king-pay") || p.startsWith("/kingpay") || p.startsWith("/wallet") || p.startsWith("/earn")) return "kingpay";
+  if (p.startsWith("/travel")) return "travel";
   return "orderking";
 }
 
-/**
- * Resolves the active platform ecosystem context from the pathname.
- * Fully guarded against null, undefined, and malformed state.
- */
 export function resolvePlatformContext(
   pathname?: string | null,
   state?: { platform?: string }
@@ -100,22 +82,14 @@ export const BENCHMARK_TUTOR_TABS = [
   { id: "applied", label: "Applications", to: "/tutor?tab=applied" },
 ];
 
-/** Permanent benchmark tabs preserved for test suite invariants */
 export const CUSTOMER_PRIMARY_TABS = [
-  { id: "food", label: "Food", to: "/", icon: UtensilsCrossed },
-  { id: "learn", label: "Learn", to: "/tutor", icon: GraduationCap },
-  { id: "pay", label: "KingPay", to: "/king-pay", icon: Wallet },
-  { id: "travel", label: "Travel", to: "/travel", icon: Plane },
+  { id: "food", label: "Order", to: "/", icon: UtensilsCrossed },
+  { id: "dining", label: "Go Out", to: "/dining", icon: UtensilsCrossed },
   { id: "orders", label: "Orders", to: "/orders", icon: ShoppingBag },
+  { id: "account", label: "Account", to: "/account", icon: User },
 ] as const;
 
-/** 4 Permanent Primary Foundation Tabs */
-export const DYNAMIC_PRIMARY_TABS = [
-  { id: "orderking", label: "OrderKing", to: "/", icon: UtensilsCrossed },
-  { id: "tutor-jobs", label: "Tutor & Jobs", to: "/tutor", icon: GraduationCap },
-  { id: "kingpay", label: "KingPay", to: "/king-pay", icon: Wallet },
-  { id: "travel", label: "Travel", to: "/travel", icon: Plane },
-] as const;
+export const DYNAMIC_PRIMARY_TABS = CUSTOMER_PRIMARY_TABS;
 
 export interface DynamicHistoryTabConfig {
   id: string;
@@ -125,36 +99,11 @@ export interface DynamicHistoryTabConfig {
   icon: typeof ShoppingBag;
 }
 
-/** Dynamic Tab 5 Configurations tailored to each active vertical */
 export const DYNAMIC_HISTORY_CONFIG: Record<ActiveVertical, DynamicHistoryTabConfig> = {
-  orderking: {
-    id: "orders",
-    label: "My Orders",
-    to: "/orders",
-    badge: "Food & Mart",
-    icon: ShoppingBag,
-  },
-  "tutor-jobs": {
-    id: "classes-jobs",
-    label: "My Classes & Jobs",
-    to: "/tutor-jobs/history",
-    badge: "Applied & Booked",
-    icon: Briefcase,
-  },
-  kingpay: {
-    id: "passbook",
-    label: "Passbook",
-    to: "/kingpay/passbook",
-    badge: "UPI & Remit",
-    icon: Receipt,
-  },
-  travel: {
-    id: "trips",
-    label: "My Trips",
-    to: "/travel/trips",
-    badge: "PNR & Tickets",
-    icon: Ticket,
-  },
+  orderking: { id: "orders", label: "Orders", to: "/orders", badge: "", icon: ShoppingBag },
+  "tutor-jobs": { id: "orders", label: "Orders", to: "/orders", badge: "", icon: ShoppingBag },
+  kingpay: { id: "orders", label: "Orders", to: "/orders", badge: "", icon: ShoppingBag },
+  travel: { id: "orders", label: "Orders", to: "/orders", badge: "", icon: ShoppingBag },
 };
 
 export interface FloatingBottomNavProps {
@@ -162,54 +111,40 @@ export interface FloatingBottomNavProps {
   onOpenAi?: () => void;
 }
 
-/**
- * Dynamic 5-Tab Floating Bottom Navigation
- * [1: OrderKing | 2: Tutor & Jobs | 3: KingPay | 4: Travel | 5: Dynamic History]
- * Tab 5 automatically shifts its label, destination route, and badge according to the active vertical.
- */
-/** Three bottom destinations. The right-hand tab follows the active ecosystem. */
 export const THREE_TAB_CUSTOMER_NAV = [
-  { id: "food", label: "OrderKing", to: "/", icon: UtensilsCrossed },
-  { id: "kingpay", label: "KingPay", to: "/kingpay", icon: Wallet },
+  { id: "food", label: "Order", to: "/", icon: UtensilsCrossed },
+  { id: "dining", label: "Go Out", to: "/dining", icon: UtensilsCrossed },
 ] as const;
 
 export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
   const pathname = (useRouterState({ select: (s) => s?.location?.pathname }) as unknown as string) ?? "/";
-  const search = (useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined) ?? "";
-  const inKingPay = /^\/(?:kingpay|king-pay)(?:\/|$)/.test(pathname);
-  const inTravel = pathname.startsWith("/travel");
-  const isSuperApp = inKingPay || inTravel || pathname.startsWith("/tutor") || pathname.startsWith("/tutor-jobs");
-  const inActivity =
-    (inTravel && (search === "trips" || pathname.includes("/trips"))) ||
-    pathname.startsWith("/orders") ||
-    pathname.startsWith("/kingpay/passbook") ||
-    pathname.startsWith("/tutor-jobs/history");
-  const inFood = !isSuperApp && !inActivity;
-  const activeId = inActivity ? "activity" : inKingPay ? "kingpay" : inFood ? "food" : isSuperApp ? "kingpay" : null;
-
-  // Contextual Dynamic Tab 3: Food Orders vs Travel Bookings & PNRs (Zero layout shift)
-  const rightTab = isSuperApp
-    ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
-    : { id: "activity", label: "My Food Orders", displayLabel: "My Food Orders", to: "/orders", icon: ClipboardList };
+  const activeId = pathname.startsWith("/dining")
+    ? "dining"
+    : pathname.startsWith("/orders")
+      ? "orders"
+      : pathname.startsWith("/account") || pathname.startsWith("/profile") || pathname.startsWith("/settings") || pathname.startsWith("/travel") || pathname.startsWith("/tutor")
+        ? "account"
+        : "food";
 
   const tabs = [
-    { id: "food", label: "OrderKing", displayLabel: "OrderKing", to: "/", icon: UtensilsCrossed },
-    { id: "kingpay", label: "KingPay", displayLabel: "KingPay", to: "/kingpay", icon: Wallet },
-    rightTab,
+    { id: "food", label: "Order", to: "/", icon: UtensilsCrossed },
+    { id: "dining", label: "Go Out", to: "/dining", icon: UtensilsCrossed },
+    { id: "orders", label: "Orders", to: "/orders", icon: ClipboardList },
+    { id: "account", label: "Account", to: "/account", icon: User },
   ] as const;
 
   return (
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4 transform-gpu will-change-transform [contain:paint]",
+        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4",
         className
       )}
     >
       <ul
         role="list"
         data-testid="customer-bottom-nav"
-        className="pointer-events-auto grid w-full max-w-lg md:max-w-[560px] grid-cols-3 gap-1.5 sm:gap-2 rounded-[24px] border border-amber-400/60 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-1.5 sm:p-2 shadow-[0_18px_50px_rgba(15,12,10,0.5),0_0_0_1px_rgba(245,158,11,0.2)] backdrop-blur-2xl overflow-hidden transform-gpu"
+        className="pointer-events-auto grid w-full max-w-lg grid-cols-4 gap-1 rounded-2xl border border-stone-200 bg-white p-1 shadow-lg"
       >
         {tabs.map(({ id, label, to, icon: Icon }) => {
           const selected = id === activeId;
@@ -221,24 +156,12 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 aria-label={label}
                 aria-current={selected ? "page" : undefined}
                 className={cn(
-                  "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs transform-gpu will-change-transform",
-                  selected ? "bg-gradient-to-br from-[#ffedaf] via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_20px_rgba(245,158,11,0.32)]" :
-                  id === "kingpay" ? "border border-amber-400/50 bg-gradient-to-b from-amber-400/20 to-amber-500/10 text-amber-100 hover:bg-amber-400/25" :
-                  "text-stone-200 hover:bg-white/10 hover:text-white",
-                  id === "kingpay" && "-translate-y-1 ring-1 ring-amber-400/35"
+                  "flex min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1 text-[11px] font-semibold no-underline",
+                  selected ? "bg-stone-900 text-white" : "text-stone-600 hover:bg-stone-100"
                 )}
               >
                 <Icon className="size-5 shrink-0" aria-hidden="true" />
-                <span className="block w-full truncate text-center leading-tight">
-                  <span className="xs:hidden">
-                    {id === "activity"
-                      ? (isSuperApp ? "Bookings" : "Orders")
-                      : label}
-                  </span>
-                  <span className="hidden xs:inline">
-                    {(tabs.find((t) => t.id === id) as any)?.displayLabel || label}
-                  </span>
-                </span>
+                <span className="block w-full truncate text-center leading-tight">{label}</span>
               </Link>
             </li>
           );
