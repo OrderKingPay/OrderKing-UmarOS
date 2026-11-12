@@ -1,9 +1,13 @@
 import https from "node:https";
 import pg from "../node_modules/.pnpm/pg@8.23.0/node_modules/pg/lib/index.js";
 
-const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY || "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
-const TWOFACTOR_API_KEY = process.env.TWOFACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
-const DATABASE_URL = process.env.DATABASE_URL || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify&connection_limit=10";
+const FAST2SMS_API_KEY = process.env.FAST2SMS_API_KEY || "";
+const TWOFACTOR_API_KEY = process.env.TWOFACTOR_API_KEY || "";
+const DATABASE_URL = process.env.DATABASE_URL || "";
+if (!FAST2SMS_API_KEY || !DATABASE_URL) {
+  console.error("Set FAST2SMS_API_KEY and DATABASE_URL. Nothing was checked.");
+  process.exit(1);
+}
 
 function fetchJson(url, options = {}) {
   return new Promise((resolve, reject) => {
