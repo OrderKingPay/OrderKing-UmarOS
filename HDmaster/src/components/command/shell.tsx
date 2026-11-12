@@ -657,7 +657,7 @@ export function CommandShell() {
             >
               <Settings className="size-4 text-amber-400 shrink-0" />
               <span className="hidden sm:inline">Page Settings &amp; Customize</span>
-              <span className="sm:hidden">⚙️ Settings</span>
+              <span className="sm:hidden">Settings</span>
             </button>
 
             {/* 6-Tier Founder Notification & Auto-Remediation Bell */}

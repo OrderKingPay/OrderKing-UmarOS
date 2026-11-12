@@ -139,7 +139,7 @@ export class EnsembleConsensusEngine {
     const connectedModels = verdicts.filter((v) => v.connectionStatus === "CONNECTED");
     const auditProof = `HMAC-SHA256-CONSENSUS-${Date.now().toString(16).toUpperCase()}`;
 
-    const unifiedSynthesis = `### 🧠 Multi-Model Consensus: Strategic & Technical Verification
+    const unifiedSynthesis = `### Multi-Model Consensus: Strategic & Technical Verification
 **Objective**: "${q}"
 
 **Active Models Evaluated**:

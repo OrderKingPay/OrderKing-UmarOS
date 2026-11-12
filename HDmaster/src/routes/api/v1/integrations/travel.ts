@@ -10,14 +10,16 @@ export const SOVEREIGN_TRAVEL_DISCLAIMER = TRAVEL_CONCIERGE_DISCLAIMER;
 
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
   GET: async () => {
+    const waNum = (process.env.SUPPORT_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+    const directPhone = (process.env.LEGAL_PHONE || "").trim();
     return new Response(
       JSON.stringify({
         success: true,
         service: "OrderKing Travel Concierge",
         status: "OPERATIONAL",
         conciergeDesk: {
-          whatsappDesk: "https://wa.me/919876543210",
-          directPhone: "+91 98765 43210",
+          whatsappDesk: waNum ? `https://wa.me/${waNum}` : null,
+          directPhone: directPhone || null,
           responseWindow: "Within 15 minutes by Senior Flight & Charter Specialist",
           supportedCategories: [
             "Private Aviation & Jet Charters",
@@ -78,19 +80,21 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
         const travelDateStr = String(travelDate || date || new Date().toISOString().split("T")[0]);
         const pax = Math.max(1, Number(passengers || paxCount || 1));
 
-        const requestId = `VIP-REQ-${Math.random().toString(36).substring(2, 7).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+        const requestId = `VIP-REQ-${crypto.randomUUID().replace(/-/g, "").slice(0, 6).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+        const waNum = (process.env.SUPPORT_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+        const directPhone = (process.env.LEGAL_PHONE || "").trim();
         
         const summaryText = `VIP Request ${requestId}: ${selectedCategory} for ${pax} guest(s) on ${travelDateStr} (${originCity} to ${destCity})`;
         const waEncoded = encodeURIComponent(
           `*OrderKing Travel Concierge Inquiry*\n` +
-          `• *Request ID:* ${requestId}\n` +
-          `• *Guest Name:* ${guestName}\n` +
-          `• *Service:* ${selectedCategory}\n` +
-          `• *Route:* ${originCity} ➔ ${destCity}\n` +
-          `• *Departure Date:* ${travelDateStr}${returnDate ? `\n• *Return Date:* ${returnDate}` : ""}\n` +
-          `• *Guests / Pax:* ${pax}\n` +
-          (preferredVehicleOrProperty ? `• *Preference:* ${preferredVehicleOrProperty}\n` : "") +
-          (specialRequests ? `• *Special Notes:* ${specialRequests}\n` : "") +
+          `| *Request ID:* ${requestId}\n` +
+          `| *Guest Name:* ${guestName}\n` +
+          `| *Service:* ${selectedCategory}\n` +
+          `| *Route:* ${originCity} -> ${destCity}\n` +
+          `| *Departure Date:* ${travelDateStr}${returnDate ? `\n| *Return Date:* ${returnDate}` : ""}\n` +
+          `| *Guests / Pax:* ${pax}\n` +
+          (preferredVehicleOrProperty ? `| *Preference:* ${preferredVehicleOrProperty}\n` : "") +
+          (specialRequests ? `| *Special Notes:* ${specialRequests}\n` : "") +
           `\nPlease connect me with the Senior Charter Specialist for live quote & slot reservation.`
         );
 
@@ -117,8 +121,8 @@ export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
           },
           consultantAssigned: "Senior Flight & Heritage Charter Specialist",
           estimatedResponseTime: "Within 15 minutes by Senior Flight & Charter Specialist",
-          whatsappDeskUrl: `https://wa.me/919876543210?text=${waEncoded}`,
-          directPhone: "+91 98765 43210",
+          whatsappDeskUrl: waNum ? `https://wa.me/${waNum}?text=${waEncoded}` : null,
+          directPhone: directPhone || null,
           disclaimer: TRAVEL_CONCIERGE_DISCLAIMER,
         };
 

@@ -30,7 +30,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
       expect(FIVE_DAY_CUMULATIVE_QUOTAS).toHaveLength(5);
 
       const [day1, day2, day3, day4, day5] = FIVE_DAY_CUMULATIVE_QUOTAS;
-      
+
       // Day 1
       expect(day1.cumulativeRestaurants).toBe(3);
       expect(day1.cumulativeRiders).toBe(4);
@@ -272,7 +272,7 @@ describe("5-Day Hyperlocal Launch Playbook & Economics Engine", () => {
 
       expect(obj1?.founderResponseHinglish).toContain("Counter par ek aur machine rakhne ki zaroorat bilkul nahi hai");
       expect(obj2?.operationalCommitment).toContain("3-minute rider assignment SLA");
-      expect(obj3?.operationalCommitment).toContain("100% ₹0 onboarding fee guarantee");
+      expect(obj3?.operationalCommitment).toContain("Strictly ₹0 onboarding fee under signed agreement");
     });
   });
 

@@ -441,7 +441,7 @@ function Login() {
                         required
                         value={mobileNumber}
                         onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="9876543210"
+                        placeholder="Enter 10-digit mobile"
                         className="pl-12 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono tracking-wider text-sm"
                       />
                     </div>
@@ -592,7 +592,7 @@ function Login() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     autoComplete="username"
-                    placeholder="9876543210 or owner@restaurant.com"
+                    placeholder="Mobile number or restaurant email"
                     className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                   />
                 </div>

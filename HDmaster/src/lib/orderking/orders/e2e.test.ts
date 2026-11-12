@@ -57,6 +57,6 @@ describe('Real End-to-End Database Lifecycle Test', () => {
     const fo = await sql.query(`SELECT status FROM orders WHERE id = '${orderId}'`) as any;
     assert.equal(fo[0].status, 'DELIVERED');
     
-    console.log("✅ REAL END-TO-END DATABASE LIFECYCLE COMPLETED SUCCESSFULLY.");
+    console.log("REAL END-TO-END DATABASE LIFECYCLE COMPLETED SUCCESSFULLY.");
   });
 });

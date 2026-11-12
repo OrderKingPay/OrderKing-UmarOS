@@ -311,7 +311,7 @@ export function RiderOnboardingPage() {
                       maxLength={10}
                       value={phone}
                       onChange={(e) => { setPhone(e.target.value.replace(/\D/g, "").slice(0, 10)); setError(null); }}
-                      placeholder="9876543210"
+                      placeholder="Enter 10-digit mobile"
                       className="bg-background border-border text-foreground h-11 pl-12 font-mono"
                     />
                   </div>
@@ -543,7 +543,7 @@ export function RiderOnboardingPage() {
                     maxLength={11}
                     value={ifsc}
                     onChange={(e) => { setIfsc(e.target.value.toUpperCase().slice(0, 11)); setError(null); }}
-                    placeholder="SBIN0001234"
+                    placeholder="Enter 11-char IFSC"
                     className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                   />
                 </div>

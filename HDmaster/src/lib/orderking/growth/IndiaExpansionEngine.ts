@@ -36,14 +36,14 @@ const TIER_THRESHOLDS = {
 };
 
 const LOCALIZED_TEMPLATES: Record<RegionalLanguage, (refereeReward: number, pincode: string, progress: number, url: string) => string> = {
-  en: (reward, pin, prog, url) => `Support your local restaurants directly. We are bringing OrderKing to ${pin}! We are ${prog}% unlocked. Sign up here to push us to 100% and we both get ₹${reward} direct to UPI upon launch! 🚀🍔 ${url}`,
-  hi: (reward, pin, prog, url) => `Legacy aggregators ko chhodo! Hum ${pin} me OrderKing la rahe hain. Area ${prog}% unlock ho chuka hai. Link se sign up karo, launch par hum dono ko ₹${reward} UPI me milenge! 🚀🍔 ${url}`,
-  ta: (reward, pin, prog, url) => `Legacy aggregators ஐ விடுங்கள்! ${pin} இல் OrderKing ஐக் கொண்டு வருகிறோம். ${prog}% திறக்கப்பட்டுவிட்டது. இப்போதே இணையுங்கள், ₹${reward} UPI இல் பெறுங்கள்! 🚀🍔 ${url}`,
-  te: (reward, pin, prog, url) => `Legacy aggregators వదిలేయండి! మేము ${pin} లో OrderKing తెస్తున్నాము. ${prog}% అన్‌లాక్ అయింది. లింక్ ద్వారా చేరండి, ₹${reward} UPI పొందండి! 🚀🍔 ${url}`,
-  mr: (reward, pin, prog, url) => `Legacy aggregators सोडा! आम्ही ${pin} मध्ये OrderKing आणत आहोत. ${prog}% अनलॉक झाले आहे. आत्ताच साइन अप करा आणि ₹${reward} UPI मिळवा! 🚀🍔 ${url}`,
-  bn: (reward, pin, prog, url) => `Legacy aggregators ছাড়ুন! আমরা ${pin} এ OrderKing আনছি। ${prog}% আনলক হয়েছে। সাইন আপ করুন এবং ₹${reward} UPI পান! 🚀🍔 ${url}`,
-  kn: (reward, pin, prog, url) => `Legacy aggregators ಬಿಡಿ! ನಾವು ${pin} ಗೆ OrderKing ತರುತ್ತಿದ್ದೇವೆ. ${prog}% ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಈಗಲೇ ಸೇರಿ, ₹${reward} UPI ಪಡೆಯಿರಿ! 🚀🍔 ${url}`,
-  gu: (reward, pin, prog, url) => `Legacy aggregators છોડો! અમે ${pin} માં OrderKing લાવી રહ્યા છીએ. ${prog}% અનલૉક થયું છે. સાઇન અપ કરો અને ₹${reward} UPI મેળવો! 🚀🍔 ${url}`,
+  en: (reward, pin, prog, url) => `Support your local restaurants directly. We are bringing OrderKing to ${pin}! We are ${prog}% unlocked. Sign up here to push us to 100% and we both get ₹${reward} direct to UPI upon launch! ${url}`,
+  hi: (reward, pin, prog, url) => `Legacy aggregators ko chhodo! Hum ${pin} me OrderKing la rahe hain. Area ${prog}% unlock ho chuka hai. Link se sign up karo, launch par hum dono ko ₹${reward} UPI me milenge! ${url}`,
+  ta: (reward, pin, prog, url) => `Legacy aggregators ஐ விடுங்கள்! ${pin} இல் OrderKing ஐக் கொண்டு வருகிறோம். ${prog}% திறக்கப்பட்டுவிட்டது. இப்போதே இணையுங்கள், ₹${reward} UPI இல் பெறுங்கள்! ${url}`,
+  te: (reward, pin, prog, url) => `Legacy aggregators వదిలేయండి! మేము ${pin} లో OrderKing తెస్తున్నాము. ${prog}% అన్‌లాక్ అయింది. లింక్ ద్వారా చేరండి, ₹${reward} UPI పొందండి! ${url}`,
+  mr: (reward, pin, prog, url) => `Legacy aggregators सोडा! आम्ही ${pin} मध्ये OrderKing आणत आहोत. ${prog}% अनलॉक झाले आहे. आत्ताच साइन अप करा आणि ₹${reward} UPI मिळवा! ${url}`,
+  bn: (reward, pin, prog, url) => `Legacy aggregators ছাড়ুন! আমরা ${pin} এ OrderKing আনছি। ${prog}% আনলক হয়েছে। সাইন আপ করুন এবং ₹${reward} UPI পান! ${url}`,
+  kn: (reward, pin, prog, url) => `Legacy aggregators ಬಿಡಿ! ನಾವು ${pin} ಗೆ OrderKing ತರುತ್ತಿದ್ದೇವೆ. ${prog}% ಅನ್‌ಲಾಕ್ ಆಗಿದೆ. ಈಗಲೇ ಸೇರಿ, ₹${reward} UPI ಪಡೆಯಿರಿ! ${url}`,
+  gu: (reward, pin, prog, url) => `Legacy aggregators છોડો! અમે ${pin} માં OrderKing લાવી રહ્યા છીએ. ${prog}% અનલૉક થયું છે. સાઇન અપ કરો અને ₹${reward} UPI મેળવો! ${url}`,
 };
 
 export class IndiaExpansionEngine {

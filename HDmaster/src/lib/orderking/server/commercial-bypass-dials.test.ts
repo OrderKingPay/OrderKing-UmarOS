@@ -10,7 +10,7 @@ import { ForbiddenError, type AccessContext } from "@/lib/orderking/rbac";
 import type { Workspace } from "./workspace.server";
 import { DEFAULT_SETTINGS } from "@/lib/orderking/types";
 
-describe("👑 SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", () => {
+describe("SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", () => {
   const orgId = "org_orderking";
   const founderUserId = "usr_founder_bypass_test";
   const founderEmployeeId = "emp_founder_bypass_test";

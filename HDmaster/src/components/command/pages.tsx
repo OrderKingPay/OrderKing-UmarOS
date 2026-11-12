@@ -117,7 +117,6 @@ import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 
 const EcosystemCMS = lazyWithRetry(() => import("../dashboard/EcosystemCMS"), "EcosystemCMS");
 const PluginConnectors = lazyWithRetry(() => import("../dashboard/PluginConnectors"), "PluginConnectors");
-const WorldTechCommandCenter = lazyWithRetry(() => import("../dashboard/WorldTechCommandCenter"), "WorldTechCommandCenter");
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -162,7 +161,7 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
-  if (module === "tech-registry" || module === "world-tech") return <AdminErrorBoundary inline sectionName="World Tech Command"><Suspense fallback={<WorldSkeleton world="tech" />}><WorldTechCommandCenter /></Suspense></AdminErrorBoundary>;
+  if (module === "tech-registry" || module === "world-tech") return <AdminErrorBoundary inline sectionName="World Tech Command"><Suspense fallback={<WorldSkeleton world="tech" />}><PluginConnectors /></Suspense></AdminErrorBoundary>;
       if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
   if (module === "meta-dm") return <AdminErrorBoundary inline sectionName="Meta Omnichannel"><Suspense fallback={<WorldSkeleton world="omnichannel" />}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense></AdminErrorBoundary>;
   if (module === "wifi-portal" || module === "captive-portal") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
@@ -176,7 +175,7 @@ export function DashboardPage() {
   const tick = useMutation({
     mutationFn: () => tickSim(),
     onSuccess: (r) => {
-      if (r.ok) toast.message(`execution advanced ${r.advanced} orders`);
+      if (r.ok) toast.message(`Order lifecycle advanced (${r.advanced} orders)`);
       else toast.error(r.error);
     },
   });
@@ -199,7 +198,7 @@ export function DashboardPage() {
             Refresh
           </Button>
           <Button size="sm" onClick={() => tick.mutate()} disabled={tick.isPending}>
-            Advance execution
+            Advance Order Lifecycle
           </Button>
         </div>
       </header>
@@ -240,21 +239,21 @@ export function DashboardPage() {
                   params={{ module: "dispatch" }}
                   className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
                 >
-                  Open Dispatch →
+                  Open Dispatch
                 </Link>
                 <Link
                   to="/app/$module"
                   params={{ module: "orders" }}
                   className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
                 >
-                  Check Orders →
+                  Check Orders
                 </Link>
                 <Link
                   to="/app/$module"
                   params={{ module: "approvals" }}
                   className="rounded-lg border border-border bg-surface px-2.5 py-1 font-semibold hover:bg-elevated"
                 >
-                  Approvals →
+                  Approvals
                 </Link>
               </div>
             </div>
@@ -272,21 +271,21 @@ export function DashboardPage() {
                   params={{ module: "settings" }}
                   className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
                 >
-                  ⚙️ Fees &amp; SLA
+                  Fees &amp; SLA
                 </Link>
                 <Link
                   to="/app/$module"
                   params={{ module: "zones" }}
                   className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
                 >
-                  🗺️ Map Zones
+                  Map Zones
                 </Link>
                 <Link
                   to="/app/$module"
                   params={{ module: "flags" }}
                   className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
                 >
-                  🚩 Feature Switches
+                  Feature Switches
                 </Link>
               </div>
             </div>
@@ -341,7 +340,7 @@ export function DashboardPage() {
                         {money(z.deliveryFeePaise)} · {z.etaMinutes}m
                       </p>
                       <span className="inline-block rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-600">
-                        ⚡ 1.0x Normal
+                        1.0x Normal
                       </span>
                     </div>
                   </div>
@@ -420,7 +419,7 @@ function CeoPage() {
       </header>
 
       {tab === "dials" && <CommercialCommandDials />}
-      {tab === "profit" && <LiveFounderProfitDashboard />}
+      {tab === "profit" && <FounderEconomics />}
       {tab === "economics" && <FounderEconomics />}
       {tab === "terminal" && <UmarOS_AI_Terminal />}
     </div>
@@ -594,7 +593,7 @@ function OrderDetail({ id }: { id: string }) {
   const riderList = riders.data && riders.data.ok ? riders.data.data : [];
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "orders" }} className="text-sm text-muted">← Orders</Link>
+      <Link to="/app/$module" params={{ module: "orders" }} className="text-sm text-muted">Back to Orders</Link>
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="font-mono text-xs text-muted">{o.id}</p>
@@ -677,7 +676,7 @@ function OrderDetail({ id }: { id: string }) {
         <ol className="space-y-2 text-sm">
           {o.events.map((e, i) => (
             <li key={i} className="flex justify-between gap-3">
-              <span>{e.action} {e.from ? `${e.from} → ${e.to}` : ""}</span>
+              <span>{e.action} {e.from ? `${e.from} to ${e.to}` : ""}</span>
               <span className="text-muted">{relativeTime(e.at ?? undefined)}</span>
             </li>
           ))}
@@ -736,7 +735,7 @@ function RestaurantDetail({ id }: { id: string }) {
   if (!r) return <p className="text-muted">Loading…</p>;
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "restaurants" }} className="text-sm text-muted">← Restaurants</Link>
+      <Link to="/app/$module" params={{ module: "restaurants" }} className="text-sm text-muted">Back to Restaurants</Link>
       <h1 className="font-display text-3xl">{String(r.name)}</h1>
       <div className="flex flex-wrap gap-2">
         <StatusBadge value={String(r.status)} />
@@ -814,7 +813,7 @@ function RiderDetail({ id }: { id: string }) {
   if (!r) return <p className="text-muted">Loading…</p>;
   return (
     <div className="space-y-4">
-      <Link to="/app/$module" params={{ module: "riders" }} className="text-sm text-muted">← Riders</Link>
+      <Link to="/app/$module" params={{ module: "riders" }} className="text-sm text-muted">Back to Riders</Link>
       <h1 className="font-display text-3xl">{r.name}</h1>
       <StatusBadge value={r.status} />
       <p className="text-sm text-muted">{r.vehicle} · {r.phoneMasked} · rating {r.rating.toFixed(1)}</p>
@@ -942,7 +941,7 @@ export function DispatchPage() {
           <ul className="space-y-2 text-sm">
             {d?.requests.map((r) => (
               <li key={r.id} className="flex justify-between gap-3">
-                <span className="font-mono text-xs">{r.orderId} → {r.riderId ?? "any"}</span>
+                <span className="font-mono text-xs">{r.orderId} to {r.riderId ?? "any"}</span>
                 <span className="text-muted">{r.status} · {r.reason}</span>
               </li>
             ))}
@@ -1610,7 +1609,7 @@ function PromosPage() {
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-sm tracking-wide text-red-300 uppercase">
-                      ⚠️ MANDATORY LOSS WARNING: NEGATIVE UNIT ECONOMICS DETECTED
+                      MANDATORY LOSS WARNING: NEGATIVE UNIT ECONOMICS DETECTED
                     </span>
                     <Badge variant="destructive" className="bg-red-600 text-white font-mono text-xs">
                       -₹{(econ.lossAmountPaise / 100).toFixed(2)} / Order
@@ -1621,7 +1620,7 @@ function PromosPage() {
                   </p>
                   {econ.breakEvenAovPaise !== null && (
                     <div className="rounded-md bg-red-900/40 border border-red-500/40 px-3 py-1.5 text-xs text-red-300 font-mono">
-                      💡 Minimum break-even order value needed: <span className="font-bold text-white">₹{(econ.breakEvenAovPaise / 100).toFixed(2)}</span> (at {(econ.commissionBps / 100).toFixed(1)}% take-rate)
+                      Minimum break-even order value needed: <span className="font-bold text-white">₹{(econ.breakEvenAovPaise / 100).toFixed(2)}</span> (at {(econ.commissionBps / 100).toFixed(1)}% take-rate)
                     </div>
                   )}
                 </div>
@@ -1634,7 +1633,7 @@ function PromosPage() {
                 <div className="space-y-1 flex-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-sm text-emerald-300">
-                      ✅ PROFITABLE CAMPAIGN: Net platform margin of ₹{(econ.netUnitMarginPaise / 100).toFixed(2)} per transaction ({econ.netYieldPercent.toFixed(1)}% net yield).
+                      PROFITABLE CAMPAIGN: Net platform margin of ₹{(econ.netUnitMarginPaise / 100).toFixed(2)} per transaction ({econ.netYieldPercent.toFixed(1)}% net yield).
                     </span>
                     <Badge className="bg-emerald-600 text-white font-mono text-xs">
                       +₹{(econ.netUnitMarginPaise / 100).toFixed(2)} Yield
@@ -1871,7 +1870,7 @@ function MarketingPage() {
 
 
       {/* /* Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard */}
-      <Panel title="🏛️ Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
+      <Panel title="Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
             <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
@@ -1899,7 +1898,7 @@ function MarketingPage() {
           {/* Subsidies & Grants Table */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">🏛️ Government Subsidies &amp; Global Cloud Grants Registry</h3>
+              <h3 className="font-semibold text-sm">Government Subsidies &amp; Global Cloud Grants Registry</h3>
               <span className="text-xs text-emerald-600 font-medium">Verified &amp; Direct Bank Wire</span>
             </div>
             <div className="overflow-x-auto">
@@ -1922,7 +1921,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">Direct Bank RTGS (Escrow)</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">READY TO CLAIM</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("DPIIT Recognition dossier opened for Assam MAS application")}>Apply MAS</button>
+                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Apply MAS", details: "DPIIT Recognition dossier opened for Assam MAS application", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("DPIIT Recognition dossier opened for Assam MAS application (copied)"); }}>Apply MAS</button>
                     </td>
                   </tr>
                   <tr>
@@ -1932,7 +1931,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">Incubator Milestone Release</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">INCUBATOR LINKED</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("SISFS application via IIM Calcutta Innovation Park prepared")}>Apply SISFS</button>
+                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Apply SISFS", details: "SISFS application via IIM Calcutta Innovation Park prepared", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("SISFS application via IIM Calcutta Innovation Park prepared (copied)"); }}>Apply SISFS</button>
                     </td>
                   </tr>
                   <tr>
@@ -1942,7 +1941,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">100% Retained Net Profit</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">DPIIT PRE-REQUISITE</span></td>
                     <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => toast.info("Form 1 Section 80-IAC filing template downloaded")}>View Form</button>
+                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "View Form", details: "Form 1 Section 80-IAC filing template downloaded", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.info("Form 1 Section 80-IAC filing template downloaded (copied)"); }}>View Form</button>
                     </td>
                   </tr>
                   <tr>
@@ -1952,7 +1951,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">Direct PG Monthly Credit</td>
                     <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">AUTOMATIC</span></td>
                     <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => toast.success("MeitY PG auto-reimbursement verified")}>Verify PG</button>
+                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Verify PG", details: "MeitY PG auto-reimbursement verified", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("MeitY PG auto-reimbursement verified (copied)"); }}>Verify PG</button>
                     </td>
                   </tr>
                   <tr>
@@ -1962,7 +1961,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">GCP Billing Credit Offset</td>
                     <td className="py-2.5"><span className="rounded bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-600">DPIIT ELIGIBLE</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-blue-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("Google for Startups application payload generated")}>Claim GCP</button>
+                      <button className="rounded bg-blue-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim GCP", details: "Google for Startups application payload generated", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Google for Startups application payload generated (copied)"); }}>Claim GCP</button>
                     </td>
                   </tr>
                   <tr>
@@ -1972,7 +1971,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">AWS Compute / DB Credits</td>
                     <td className="py-2.5"><span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-600">INCUBATOR ORG CODE</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-amber-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("AWS Activate org package linked")}>Claim AWS</button>
+                      <button className="rounded bg-amber-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim AWS", details: "AWS Activate org package linked", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("AWS Activate org package linked (copied)"); }}>Claim AWS</button>
                     </td>
                   </tr>
                   <tr>
@@ -1982,7 +1981,7 @@ function MarketingPage() {
                     <td className="py-2.5 text-muted">Azure + OpenAI GPT API Credits</td>
                     <td className="py-2.5"><span className="rounded bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-600">OPEN APPLICATION</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-purple-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => toast.success("Microsoft Founders Hub LinkedIn verification opened")}>Claim Azure</button>
+                      <button className="rounded bg-purple-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim Azure", details: "Microsoft Founders Hub LinkedIn verification opened", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Microsoft Founders Hub LinkedIn verification opened (copied)"); }}>Claim Azure</button>
                     </td>
                   </tr>
                 </tbody>
@@ -1996,7 +1995,7 @@ function MarketingPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="inline-block h-2 w-2 rounded-full bg-teal-500 animate-ping" />
-                  <h3 className="font-semibold text-sm text-foreground">🛰️ Master AI Opportunity Radar (25+ Government, Trust &amp; University Calls Scanned)</h3>
+                  <h3 className="font-semibold text-sm text-foreground">Master AI Opportunity Radar (25+ Government, Trust &amp; University Calls Scanned)</h3>
                 </div>
                 <p className="mt-0.5 text-muted text-[11px]">
                   Autonomous radar auto-reserves earliest registration slots and compiles legally-audited application dossiers for direct bank payout.
@@ -2016,9 +2015,8 @@ function MarketingPage() {
                             grantAmount: "₹50,00,000 Cash",
                             applicant: {
                               founder: "Hasan",
-                              entity: "OrderKing Technologies Private Limited",
-                              udyam: "UDYAM-AS-03-0012345",
-                              dpiit: "DIPP123456",
+                              entity: "Orderkingpay",
+                              gstin: "18AFXPH9838M1Z9",
                               bank: "SBI Karimganj (RTGS Direct Disbursal)",
                             },
                             pitch: "Direct food delivery & 2G offline resilience employing 50+ local youth.",
@@ -2031,7 +2029,7 @@ function MarketingPage() {
                     }
                   }}
                 >
-                  ⚡ 1-Click Auto-Book Top ₹50L Grant
+                  1-Click Auto-Book Top ₹50L Grant
                 </Button>
               </div>
             </div>
@@ -2056,7 +2054,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">98 / 100</Badge></td>
                     <td className="py-2 text-muted">Rolling Quarterly</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("Assam MAS ₹50L Dossier Generated & Ready for RTGS")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "Assam MAS ₹50L Dossier Generated & Ready for RTGS", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: Assam MAS ₹50L Dossier Generated & Ready for RTGS"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2066,7 +2064,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">96 / 100</Badge></td>
                     <td className="py-2 text-muted">Quarterly Board</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("Tata Trusts ₹35L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "Tata Trusts ₹35L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: Tata Trusts ₹35L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2076,7 +2074,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">94 / 100</Badge></td>
                     <td className="py-2 text-muted">Quarterly Review</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("MeitY TIDE ₹30L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "MeitY TIDE ₹30L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: MeitY TIDE ₹30L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2086,7 +2084,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">93 / 100</Badge></td>
                     <td className="py-2 text-muted">Annual Window</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("HDFC Parivartan ₹25L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "HDFC Parivartan ₹25L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: HDFC Parivartan ₹25L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2096,7 +2094,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">95 / 100</Badge></td>
                     <td className="py-2 text-muted">Open All Year</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("DPIIT SISFS ₹20L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "DPIIT SISFS ₹20L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: DPIIT SISFS ₹20L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2106,7 +2104,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">90 / 100</Badge></td>
                     <td className="py-2 text-muted">Annual Call</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("MSME Hackathon ₹15L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "MSME Hackathon ₹15L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: MSME Hackathon ₹15L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2116,7 +2114,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">92 / 100</Badge></td>
                     <td className="py-2 text-muted">Bi-Annual Call</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("DST NIDHI-PRAYAS ₹10L Dossier Generated")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "DST NIDHI-PRAYAS ₹10L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: DST NIDHI-PRAYAS ₹10L Dossier Generated"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2126,7 +2124,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">99 / 100</Badge></td>
                     <td className="py-2 text-muted">Annual Cycle</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("National Startup Awards Nomination Dossier Ready")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "National Startup Awards Nomination Dossier Ready", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: National Startup Awards Nomination Dossier Ready"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                   <tr>
@@ -2136,7 +2134,7 @@ function MarketingPage() {
                     <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">97 / 100</Badge></td>
                     <td className="py-2 text-muted">Annual Cycle</td>
                     <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => toast.success("National MSME Award Nomination Ready")}>⚡ Auto-Book</button>
+                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "National MSME Award Nomination Ready", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: National MSME Award Nomination Ready"); }}>Copy Dossier</button>
                     </td>
                   </tr>
                 </tbody>
@@ -2148,7 +2146,7 @@ function MarketingPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-sm">🎓 University Keynotes &amp; Founder Prestige</h4>
+                <h4 className="font-semibold text-sm">University Keynotes &amp; Founder Prestige</h4>
                 <span className="text-[10px] font-bold uppercase text-purple-600">High Media Impact</span>
               </div>
               <ul className="space-y-2 text-muted">
@@ -2184,13 +2182,13 @@ function MarketingPage() {
                   }
                 }}
               >
-                📋 Copy Official Institutional Pitch Dossier (IIT/NIT)
+                Copy Official Institutional Pitch Dossier (IIT/NIT)
               </Button>
             </div>
 
             <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-sm">📍 Meta &amp; Google Local Ad Engine</h4>
+                <h4 className="font-semibold text-sm">Meta &amp; Google Local Ad Engine</h4>
                 <span className="text-[10px] font-bold uppercase text-blue-600">100% Geofenced</span>
               </div>
               <div className="space-y-1.5 text-muted">
@@ -2224,7 +2222,7 @@ function MarketingPage() {
                     }
                   }}
                 >
-                  📱 Copy Meta Ad JSON
+                  Copy Meta Ad JSON
                 </Button>
                 <Button
                   size="sm"
@@ -2249,7 +2247,7 @@ function MarketingPage() {
                     }
                   }}
                 >
-                  🔍 Copy SEO Schema
+                  Copy SEO Schema
                 </Button>
               </div>
             </div>
@@ -2746,7 +2744,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
               activeTab === "growth" ? "bg-amber-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
             )}
           >
-            <span>🏛️</span> Growth &amp; Grants Vault
+            Growth &amp; Grants Vault
           </button>
         </div>
       </header>
@@ -2790,21 +2788,21 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
               onClick={() => setActiveTab("governance")}
               className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
             >
-              ⚙️ AI Safety Rules
+              AI Safety Rules
             </button>
             <Link
               to="/app/$module"
               params={{ module: "approvals" }}
               className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
             >
-              ✅ Approvals
+              Approvals
             </Link>
             <Link
               to="/app/$module"
               params={{ module: "settings" }}
               className="rounded-lg border border-border bg-elevated px-2.5 py-1 font-semibold hover:bg-surface"
             >
-              ⚙️ Master Settings
+              Master Settings
             </Link>
           </div>
         </div>
@@ -3131,25 +3129,25 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 transition-all"
-                  onClick={() => runPreset("onboard_restaurant: Onboard 'Karimganj Biryani House' in Karimganj Central with North Indian & Biryani cuisine, 10% commission, 10:00-23:00 hours, phone 9876543210, address Main Road", "restaurant_ops")}
+                  onClick={() => runPreset("onboard_restaurant: Onboard restaurant partner (provide name, city zone, cuisine, commission %, opening hours, verified phone, and street address)", "restaurant_ops")}
                 >
-                  <span className="font-semibold">🏪 Onboard Restaurant Partner</span>
+                  <span className="font-semibold">Onboard Restaurant Partner</span>
                   <p className="text-[11px] text-muted">Activate new kitchen partner with commission & hours.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-800 dark:text-blue-300 transition-all"
-                  onClick={() => runPreset("onboard_rider: Onboard and KYC-verify delivery partner 'Kabir Ahmed', motorcycle, Karimganj Central, phone 9876501234, upi kabir@okaxis", "rider_ops")}
+                  onClick={() => runPreset("onboard_rider: Onboard delivery partner (provide full name, vehicle type, city zone, verified phone, and UPI handle)", "rider_ops")}
                 >
-                  <span className="font-semibold">🛵 Onboard & Verify Delivery Partner</span>
+                  <span className="font-semibold">Onboard & Verify Delivery Partner</span>
                   <p className="text-[11px] text-muted">Verify rider KYC, vehicle details, and bank account.</p>
                 </button>
                 <button
                   type="button"
                   className="w-full text-left rounded-lg p-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-800 dark:text-purple-300 transition-all"
-                  onClick={() => runPreset("generate_menu: Generate full menu for Karimganj Biryani House with authentic culinary dish images, FSSAI diet tags, and realistic market pricing", "product")}
+                  onClick={() => runPreset("generate_menu: Sync menu catalog with dish pricing and FSSAI diet tags for an onboarded restaurant ID", "product")}
                 >
-                  <span className="font-semibold">📋 Generate Menu from Catalog</span>
+                  <span className="font-semibold">Generate Menu from Catalog</span>
                   <p className="text-[11px] text-muted">Categorized dishes, prices, and FSSAI diet tags.</p>
                 </button>
                 <button
@@ -3157,7 +3155,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   className="w-full text-left rounded-lg p-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-800 dark:text-rose-300 transition-all"
                   onClick={() => runPreset("auto_diagnose_and_prepare_fix: Scan delayed orders and dispatch bottlenecks, and prepare remedial fixes with owner turn-on/off approval controls", "debugger")}
                 >
-                  <span className="font-semibold">🛠️ Diagnose Delayed Orders</span>
+                  <span className="font-semibold">Diagnose Delayed Orders</span>
                   <p className="text-[11px] text-muted">Inspect active bottlenecks and rider delivery SLA.</p>
                 </button>
                 <button
@@ -3165,7 +3163,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
                   onClick={() => runPreset("generate_scheduled_report: Generate Wednesday weekly settlement statement with statutory GST, TCS, TDS, and strict tenant data isolation", "payments")}
                 >
-                  <span className="font-semibold">📊 Weekly Settlement Statement</span>
+                  <span className="font-semibold">Weekly Settlement Statement</span>
                   <p className="text-[11px] text-muted">Statutory GST/TCS/TDS reconciliation & payout report.</p>
                 </button>
                 <button
@@ -3173,7 +3171,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   className="w-full text-left rounded-lg p-2 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-800 dark:text-indigo-300 transition-all"
                   onClick={() => runPreset("Audit client identity binding: ensure riderId and customerId cannot be forged, and check HMAC-SHA256 signatures.", "security")}
                 >
-                  <span className="font-semibold">🔒 Security & Webhook Audit</span>
+                  <span className="font-semibold">Security & Webhook Audit</span>
                   <p className="text-[11px] text-muted">Verify HMAC webhook signatures, API tokens, and role permissions.</p>
                 </button>
               </div>
@@ -3256,7 +3254,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                           <div className="rounded-[16px] border border-amber-500/40 bg-amber-500/10 p-3 space-y-2">
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-                                ⚠️ Approval Required for High-Risk Mutation
+                                Approval Required for High-Risk Mutation
                               </span>
                               <Badge tone="warning">GOVERNANCE GATE</Badge>
                             </div>
@@ -3696,7 +3694,7 @@ function SettingsPage() {
       <div className="rounded-xl border border-indigo-500/30 bg-indigo-950/20 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-indigo-300 flex items-center gap-2">
-            <span>🌙</span> 3-Tier Delivery Windows &amp; Night Safety Switchboard
+            3-Tier Delivery Windows &amp; Night Safety Switchboard
           </h3>
           <span className="text-[11px] rounded bg-indigo-500/20 px-2 py-0.5 text-indigo-300 font-mono">
             Autonomous 24/7 Radius Control
@@ -3744,11 +3742,11 @@ function SettingsPage() {
         </div>
       </div>
 
-      {/* ⚡ Dynamic Demand & Off-Peak Sales Stimulator */}
+      {/* Dynamic Demand & Off-Peak Sales Stimulator */}
       <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-amber-300 flex items-center gap-2">
-            <span>⚡</span> Dynamic Demand &amp; Off-Peak Sales Stimulator
+            Dynamic Demand &amp; Off-Peak Sales Stimulator
           </h3>
           <span className="text-[11px] rounded bg-amber-500/20 px-2 py-0.5 text-amber-300 font-mono">
             Algorithmic Revenue Optimization
@@ -3767,7 +3765,7 @@ function SettingsPage() {
                   variant={(cur.dynamicAlgorithmMode ?? "AUTO") === mode ? "primary" : "secondary"}
                   onClick={() => set("dynamicAlgorithmMode" as any, mode as any)}
                 >
-                  {mode === "AUTO" ? "🤖 Auto (Time-Driven)" : mode === "FORCE_OFF_PEAK" ? "🔥 Force Budget Boost" : mode === "FORCE_PEAK" ? "⚡ Force Peak Velocity" : "Off"}
+                  {mode === "AUTO" ? "Auto (Time-Driven)" : mode === "FORCE_OFF_PEAK" ? "Force Budget Boost" : mode === "FORCE_PEAK" ? "Force Peak Velocity" : "Off"}
                 </Button>
               ))}
             </div>
@@ -3782,11 +3780,11 @@ function SettingsPage() {
         </div>
       </div>
 
-      {/* 🚀 Strategic Nearest-Rider Cascading Dispatch */}
+      {/* Strategic Nearest-Rider Cascading Dispatch */}
       <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-emerald-300 flex items-center gap-2">
-            <span>🎯</span> Strategic Nearest-Rider Cascading Dispatch
+            Strategic Nearest-Rider Cascading Dispatch
           </h3>
           <span className="text-[11px] rounded bg-emerald-500/20 px-2 py-0.5 text-emerald-300 font-mono">
             GPS Proximity Radius
@@ -3943,10 +3941,10 @@ function GoLivePage() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" onClick={() => diag.mutate()}>
-            🔍 Run Full Diagnostics
+            Run Full Diagnostics
           </Button>
           <Button variant="primary" onClick={() => save.mutate()}>
-            💾 Save All Configurations
+            Save All Configurations
           </Button>
         </div>
       </header>
@@ -3997,7 +3995,7 @@ function GoLivePage() {
         {/* Critical Blockers Alert */}
         {report && report.criticalBlockers.length > 0 && (
           <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-red-400">⚠️ Critical Go-Live Blockers Detected</h3>
+            <h3 className="text-sm font-semibold text-red-400">Critical Go-Live Blockers Detected</h3>
             <ul className="list-disc list-inside text-xs text-red-300 space-y-1">
               {report.criticalBlockers.map((b, i) => (
                 <li key={i}>{b}</li>
@@ -4012,7 +4010,7 @@ function GoLivePage() {
         title="Priority 1: Cloud Infrastructure & Database"
         action={
           <Button size="sm" variant="secondary" onClick={() => testComp.mutate("database")}>
-            ⚡ Test DB Ping
+            Test DB Ping
           </Button>
         }
       >
@@ -4136,7 +4134,7 @@ function GoLivePage() {
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">
-                🌐 How to Make https://orderking.in Live Right Now
+                How to Make https://orderking.in Live Right Now
               </h4>
               <span className="text-[11px] text-muted">Estimated time: 3–5 minutes</span>
             </div>
@@ -4154,7 +4152,7 @@ function GoLivePage() {
                     rel="noreferrer"
                     className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-surface-elevated border border-border"
                   >
-                    Hostinger (₹399/yr) ↗
+                    Hostinger (₹399/yr)
                   </a>
                   <a
                     href="https://www.godaddy.com/en-in/domainsearch/find?checkAvail=1&domainToCheck=orderking.in"
@@ -4162,7 +4160,7 @@ function GoLivePage() {
                     rel="noreferrer"
                     className="inline-flex items-center rounded-md bg-surface-raised px-2.5 py-1 text-[11px] font-medium text-foreground hover:bg-surface-elevated border border-border"
                   >
-                    GoDaddy (₹499/yr) ↗
+                    GoDaddy (₹499/yr)
                   </a>
                 </div>
               </div>
@@ -4180,7 +4178,7 @@ function GoLivePage() {
             </div>
 
             <div className="rounded-lg border border-border bg-surface p-3 space-y-2 text-xs">
-              <p className="font-semibold text-foreground">⚡ Instant Free Live Hosting via Google Cloud Run (Using your $300 credit)</p>
+              <p className="font-semibold text-foreground">Instant Free Live Hosting via Google Cloud Run (Using your $300 credit)</p>
               <p className="text-muted leading-relaxed">
                 If you haven't bought the domain yet, deploy to Google Cloud Run in 1 command to get an instant live HTTPS link (<code>https://orderking-web-xxxx.a.run.app</code>) that you can use immediately in applications:
               </p>
@@ -4198,13 +4196,13 @@ function GoLivePage() {
         action={
           <div className="flex gap-2">
             <Button size="sm" variant="secondary" onClick={() => testComp.mutate("paymentGateway")}>
-              💳 Test PG
+              Test PG
             </Button>
             <Button size="sm" variant="secondary" onClick={() => testComp.mutate("smsGateway")}>
-              📲 Test SMS
+              Test SMS
             </Button>
             <Button size="sm" variant="secondary" onClick={() => testComp.mutate("maps")}>
-              🗺️ Test Maps
+              Test Maps
             </Button>
           </div>
         }
@@ -4224,7 +4222,7 @@ function GoLivePage() {
                 <option value="PHONEPE_PG">PhonePe Payment Gateway</option>
                 <option value="PAYTM_PG">Paytm PG</option>
                 <option value="ICICI_EAZYPAY">ICICI Eazypay</option>
-                <option value="execution">Local execution (Dev)</option>
+                <option value="SANDBOX">Sandbox / Test Mode</option>
               </select>
             </Field>
             <Field label="Gateway Mode">
@@ -4298,7 +4296,7 @@ function GoLivePage() {
                 <option value="TWILIO">Twilio</option>
                 <option value="GUPSHUP">Gupshup</option>
                 <option value="EXOTEL">Exotel</option>
-                <option value="execution">Local execution</option>
+                <option value="SANDBOX">Sandbox / Test Mode</option>
               </select>
             </Field>
             <Field label="Sender ID (Header)">
@@ -4448,7 +4446,7 @@ function GoLivePage() {
               <Input
                 value={cur.legal.upiVpaHandle}
                 onChange={(e) => updateLegal({ upiVpaHandle: e.target.value })}
-                placeholder="orderking@hdfcbank"
+                placeholder="orderking@ybl"
               />
             </div>
           </Field>
@@ -4480,9 +4478,9 @@ function GoLivePage() {
               value={cur.capacity.mode}
               onChange={(e) => updateCapacity({ mode: e.target.value as any })}
             >
-              <option value="PILOT_DISTRICT">🎯 Pilot District Mode (Recommended for Launch)</option>
-              <option value="PAN_INDIA_SYNTHETIC">🧪 Pan-India Synthetic execution</option>
-              <option value="PAN_INDIA_PRODUCTION">🚀 Pan-India Live Production</option>
+              <option value="PILOT_DISTRICT">Pilot District Mode (Recommended for Launch)</option>
+              <option value="PAN_INDIA_SYNTHETIC">Pan-India Staged Rollout</option>
+              <option value="PAN_INDIA_PRODUCTION">Pan-India Live Production</option>
             </select>
           </Field>
           <Field label="Pilot District / City">
@@ -5085,7 +5083,7 @@ export function ApprovalsPage() {
             {verifyMut.data && verifyMut.data.ok && (
               <div className="rounded-xl bg-subtle/30 p-3 font-mono text-xs space-y-1">
                 <p className={verifyMut.data.data.verified ? "text-emerald-500 font-bold" : "text-rose-500 font-bold"}>
-                  {verifyMut.data.data.verified ? "✅ Verification PASSED: Zero Discrepancy" : `⚠️ Verification FAILED: Discrepancy of ${verifyMut.data.data.discrepancyPaise} paise`}
+                  {verifyMut.data.data.verified ? "Verification PASSED: Zero Discrepancy" : `Verification FAILED: Discrepancy of ${verifyMut.data.data.discrepancyPaise} paise`}
                 </p>
                 <p className="text-muted">Reconciliation Record ID: {verifyMut.data.data.id}</p>
               </div>

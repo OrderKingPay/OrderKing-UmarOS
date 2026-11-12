@@ -654,22 +654,34 @@ export class McpServerRuntime {
       }) => {
         const dispatchId = `dsp_${crypto.randomBytes(6).toString("hex")}`;
         const vehicle = args.vehicleType || "BIKE";
-        const etaMinutes = vehicle === "BIKE" ? 14 : 22;
+        let assignedDriver: { driverId: string; name: string; phone: string } | null = null;
+
+        try {
+          const { getSql } = await import("../../db.ts");
+          const sql = await getSql();
+          const riders = await sql.query<{ id: string; name: string; phone_masked: string }>(
+            `SELECT id, name, phone_masked FROM riders WHERE status = 'ACTIVE' AND online = 1 LIMIT 1`
+          );
+          if (riders[0]) {
+            assignedDriver = {
+              driverId: riders[0].id,
+              name: riders[0].name,
+              phone: riders[0].phone_masked,
+            };
+          }
+        } catch {
+          // Database unavailable
+        }
 
         return {
           orderId: args.orderId,
           targetAddress: args.targetAddress,
           dispatchId,
-          status: "DISPATCHED" as const,
-          etaMinutes,
+          status: (assignedDriver ? "DISPATCHED" : "PENDING_DISPATCH") as "DISPATCHED" | "PENDING_DISPATCH",
+          etaMinutes: assignedDriver ? (vehicle === "BIKE" ? 14 : 22) : null,
           vehicleType: vehicle,
-          assignedDriver: {
-            driverId: "drv_king_4821",
-            name: "Vikram R.",
-            phone: "+91-9876543210",
-            rating: 4.92,
-          },
-          trackingUrl: `https://track.orderking.in/dispatch/${dispatchId}`,
+          assignedDriver,
+          trackingUrl: `/orders/${encodeURIComponent(args.orderId)}`,
           dispatchedAt: new Date().toISOString(),
         };
       },
@@ -679,14 +691,14 @@ export class McpServerRuntime {
     this.registerTool({
       name: "kingpay_verify_settlement",
       description:
-        "Verifies, audits, and initiates instant financial ledger settlement for a KingPay merchant.",
+        "Audits and stages financial ledger settlement calculation for a KingPay merchant.",
       requiredPermissions: ["kingpay:settle"],
       inputSchema: {
         type: "object",
         properties: {
           merchantId: {
             type: "string",
-            description: "Unique merchant identifier in KingPay ledger (e.g. 'merch_5510').",
+            description: "Unique merchant identifier in KingPay ledger.",
           },
           amountPaise: {
             type: "number",
@@ -701,7 +713,23 @@ export class McpServerRuntime {
         const settlementId = `stl_${crypto.randomBytes(6).toString("hex")}`;
         const feePaise = Math.round(args.amountPaise * 0.012); // 1.2% platform processing fee
         const netSettledPaise = args.amountPaise - feePaise;
-        const utr = `UTR${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
+
+        let existingUtr: string | null = null;
+        let existingStatus: "VERIFIED" | "PENDING_SETTLEMENT" = "PENDING_SETTLEMENT";
+        try {
+          const { getSql } = await import("../../db.ts");
+          const sql = await getSql();
+          const batches = await sql.query<{ utr: string | null; status: string }>(
+            `SELECT utr, status FROM payout_batches WHERE merchant_id = $1 AND status = 'SETTLED' ORDER BY created_at DESC LIMIT 1`,
+            [args.merchantId]
+          );
+          if (batches[0]?.utr) {
+            existingUtr = batches[0].utr;
+            existingStatus = "VERIFIED";
+          }
+        } catch {
+          // Database table unavailable or no bank UTR yet
+        }
 
         return {
           merchantId: args.merchantId,
@@ -710,10 +738,10 @@ export class McpServerRuntime {
           feePaise,
           netSettledPaise,
           settlementId,
-          status: "VERIFIED" as const,
-          utr,
-          bankRef: `BNK_${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
-          settledAt: new Date().toISOString(),
+          status: existingStatus,
+          utr: existingUtr,
+          bankRef: null,
+          settledAt: existingUtr ? new Date().toISOString() : null,
         };
       },
     });

@@ -77,7 +77,7 @@ export class CapabilityBenchmarkSuite {
       { dimension: "Voice_Latency", measuredScore: 92, latencyMs: 160, successRate: 0.99, notes: "Voice command response in 160ms" },
       { dimension: "Translation", measuredScore: 95, latencyMs: 220, successRate: 0.98, notes: "Zero translation loss on commercial terms" },
       { dimension: "Software_Generation", measuredScore: 95, latencyMs: 710, successRate: 0.96, notes: "Fullstack component tree and schema verified" },
-      { dimension: "QA_Self_Healing", measuredScore: 94, latencyMs: 410, successRate: 0.96, notes: "FAIL → DIAGNOSE → FIX → TEST loop verified" },
+      { dimension: "QA_Self_Healing", measuredScore: 94, latencyMs: 410, successRate: 0.96, notes: "FAIL -> DIAGNOSE -> FIX -> TEST loop verified" },
       { dimension: "Emergency_Recovery", measuredScore: 92, latencyMs: 290, successRate: 0.98, notes: "Automated rollback to last known healthy deployment" },
       { dimension: "Revenue_Workflow_Completion", measuredScore: 93, latencyMs: 520, successRate: 0.97, notes: "20-stage revenue lifecycle database transitions" },
     ];

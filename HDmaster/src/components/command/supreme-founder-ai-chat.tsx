@@ -196,12 +196,12 @@ const TRENDING_DISCOVERY_ITEMS = [
   { label: "Cricket Live Score", query: "Give me live cricket match updates and telemetric scores" },
   { label: "India Vs Japan Suzuki Cup 2026 Live", query: "Provide real-time broadcast telemetry for India vs Japan Suzuki Cup 2026 match" },
   { label: "Disha Salian", query: "Summarize official verified news and statutory legal status regarding Disha Salian updates" },
-  { label: "🎯 Acquire 5 High-Paying Clients Now", query: "Find 5 high-paying client prospects and draft zero-commission pitches" },
-  { label: "💼 Scan $80+/hr Remote Contracts", query: "Scan high-paying $80+/hr remote software contracts and generate Upwork bids" },
-  { label: "⚡ Scaffold Hospital ERP System", query: "Scaffold a complete Sribhumi hospital ERP system with React 19, database schema, and live preview" },
-  { label: "🌐 External Platform Connector (GitHub/WhatsApp)", query: "Connect and integrate external platforms to execute configured workflows" },
-  { label: "🎬 4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
-  { label: "🧹 Clean & Purge Storage Bloat", query: "purge_trigger" },
+  { label: "Acquire 5 High-Paying Clients Now", query: "Find 5 high-paying client prospects and draft zero-commission pitches" },
+  { label: "Scan $80+/hr Remote Contracts", query: "Scan high-paying $80+/hr remote software contracts and generate Upwork bids" },
+  { label: "Scaffold Hospital ERP System", query: "Scaffold a complete Sribhumi hospital ERP system with React 19, database schema, and live preview" },
+  { label: "External Platform Connector (GitHub/WhatsApp)", query: "Connect and integrate external platforms to execute configured workflows" },
+  { label: "4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
+  { label: "Clean & Purge Storage Bloat", query: "purge_trigger" },
 ];
 
 // Synthesizes futuristic audio sound effects via Web Audio API without external assets
@@ -695,21 +695,16 @@ function PlatformConnectorCard({
   const handleForceAction = (actionId: string, label: string, _defaultPayload: string) => {
     setExecutingActionId(actionId);
     playAudioTone("ping");
-    toast.info(`⚡ Enforcing "${label}" on ${activePlatform.name}...`);
-
-    setTimeout(() => {
-      setExecutingActionId(null);
-      const newLog = {
-        id: `log-${Date.now()}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
-        action: label,
-        status: "SUCCESS" as const,
-        message: `Task enforced successfully. Sandbox verified, 0% data leak, results piped to founder.`,
-      };
-      setExecutionLogs((prev) => [newLog, ...prev.slice(0, 4)]);
-      playAudioTone("chime");
-      toast.success(`✅ ${activePlatform.name} enforced: "${label}" completed without error!`);
-    }, 750);
+    setExecutingActionId(null);
+    const newLog = {
+      id: `log-${Date.now()}`,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      action: label,
+      status: "FAILED" as const,
+      message: `Configure live credentials for ${activePlatform.name} in Integrations to execute.`,
+    };
+    setExecutionLogs((prev) => [newLog, ...prev.slice(0, 4)]);
+    toast.error(`${activePlatform.name}: API credentials must be configured in Integrations before running "${label}".`);
   };
 
   return (
@@ -855,7 +850,7 @@ function PlatformConnectorCard({
           variant="outline"
           className="text-xs font-bold text-emerald-300 border-emerald-500/40"
           onClick={() => {
-            toast.success(`🛡️ Safety Audit: ${activePlatform.name} has 0 security vulnerabilities and active rollback.`);
+            toast.success(`Safety Audit: ${activePlatform.name} has 0 security vulnerabilities and active rollback.`);
           }}
         >
           <ShieldCheck className="size-3 mr-1.5" />
@@ -1054,7 +1049,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           {autoSubtitles && (
             <div className="absolute bottom-4 inset-x-3 text-center pointer-events-none">
               <div className="inline-block bg-black/75 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-black text-amber-300 border border-amber-400/40 shadow-lg tracking-wide">
-                <span className="text-white">🚀 OrderKing:</span> 15-Min Hyperlocal Fleet Active!
+                <span className="text-white">OrderKing:</span> 15-Min Hyperlocal Fleet Active!
               </div>
             </div>
           )}
@@ -1098,7 +1093,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
               className={`p-1 rounded font-medium text-left ${voiceover === "young_female_aria" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
                 }`}
             >
-              👩 Aria (Young Female)
+              Aria (Young Female)
             </button>
             <button
               type="button"
@@ -1106,7 +1101,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
               className={`p-1 rounded font-medium text-left ${voiceover === "executive_nova" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
                 }`}
             >
-              ✨ Nova (Executive)
+              Nova (Executive)
             </button>
           </div>
         </div>
@@ -1346,7 +1341,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
           className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow font-black"
         >
           <CheckCircle2 className="size-3 mr-1.5" />
-          <span>{hasSaved ? "Configuration Saved ✓" : "Save Manual Customizations"}</span>
+          <span>{hasSaved ? "Configuration Saved" : "Save Manual Customizations"}</span>
         </Button>
       </div>
     </div>
@@ -1370,21 +1365,18 @@ function SmartCleanerCard({
   const handleCleanAll = () => {
     setIsCleaning(true);
     playAudioTone("ping");
-    toast.info("🧹 Auto-cleaning duplicate media, stale buffers, and resolving glitches...");
-
-    setTimeout(() => {
-      setIsCleaning(false);
-      setCleaned(true);
-      mediaStorageVault.purgeStorage({
-        purgeImages: true,
-        purgeVideos: true,
-        purgeAttachments: true,
-        purgeChatCache: true,
-        purgeApiCache: true,
-      });
-      playAudioTone("chime");
-      toast.success("✨ Auto-Clean Complete! Reclaimed 3.84 GB and resolved all problematic glitches.");
-    }, 700);
+    const res = mediaStorageVault.purgeStorage({
+      purgeImages: true,
+      purgeVideos: true,
+      purgeAttachments: true,
+      purgeChatCache: true,
+      purgeApiCache: true,
+    });
+    setIsCleaning(false);
+    setCleaned(true);
+    playAudioTone("chime");
+    const mb = (res.freedBytes / (1024 * 1024)).toFixed(2);
+    toast.success(`Purge complete: cleared ${mb} MB from local vault.`);
   };
 
   return (
@@ -1398,7 +1390,7 @@ function SmartCleanerCard({
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white tracking-wide">AI Smart Suggest &amp; Auto-Clean Suite</span>
               <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 text-[9px] font-mono">
-                ZERO RISK GUARANTEE
+                PROTECTED RECORDS
               </Badge>
             </div>
             <span className="text-[10px] text-slate-400">
@@ -1408,7 +1400,7 @@ function SmartCleanerCard({
         </div>
 
         <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">
-          3.84 GB Freeable
+          {(data.freedEstimateBytes / (1024 * 1024)).toFixed(2)} MB Cached
         </Badge>
       </div>
 
@@ -1433,11 +1425,11 @@ function SmartCleanerCard({
         </div>
       </div>
 
-      {/* Protected Core Guarantee */}
+      {/* Protected Core Policy */}
       <div className="p-2 rounded-lg bg-emerald-950/20 border border-emerald-500/30 text-[11px] text-emerald-300 flex items-center gap-2">
         <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
         <span>
-          <strong>Protected Core Guarantee:</strong> Verified client leads, invoices, and blueprints are immutable and can never be deleted.
+          <strong>Protected Core Policy:</strong> Client leads, invoices, and blueprints are retained outside temporary cache purges.
         </span>
       </div>
 
@@ -1450,7 +1442,7 @@ function SmartCleanerCard({
           className="flex-1 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow"
         >
           <Trash2 className="size-3 mr-1.5" />
-          <span>{cleaned ? "System Perfectly Cleaned ✓" : isCleaning ? "Cleaning..." : "1-Click Auto-Clean Everything"}</span>
+          <span>{cleaned ? "Cleaned" : isCleaning ? "Cleaning..." : "1-Click Auto-Clean Everything"}</span>
         </Button>
       </div>
     </div>
@@ -1504,13 +1496,13 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
     a.download = `${mod.id}-standalone-app.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`📦 Downloaded standalone package for ${mod.name}!`);
+    toast.success(`Downloaded standalone package for ${mod.name}!`);
   };
 
   const handleDeploySubdomain = (mod: SeparableModule) => {
     playAudioTone("ping");
     window.open(mod.subdomainUrl, "_blank");
-    toast.success(`🚀 Launching standalone deployment on ${mod.subdomainUrl}!`);
+    toast.success(`Launching standalone deployment on ${mod.subdomainUrl}!`);
   };
 
   return (
@@ -1776,12 +1768,12 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
-            <span className="font-bold text-emerald-400 block">🟢 Food Delivery Territory</span>
+            <span className="font-bold text-emerald-400 block">Food Delivery Territory</span>
             <p className="text-zinc-300">Active strictly within 12km radius of Karimganj / Sribhumi core.</p>
             <span className="text-[11px] text-zinc-400 font-mono block">Zero surge · 15-min delivery</span>
           </div>
           <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
-            <span className="font-bold text-amber-400 block">👑 Pan-India Outside Zone</span>
+            <span className="font-bold text-amber-400 block">Pan-India Outside Zone</span>
             <p className="text-zinc-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
             <span className="text-[11px] text-zinc-400 font-mono block">Section 79 IT Act Compliant</span>
           </div>
@@ -1796,7 +1788,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
       <div className="rounded-xl border border-amber-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-amber-300">🎯 Prospect: {lead.businessName}</span>
+            <span className="text-xs font-bold text-amber-300">Prospect: {lead.businessName}</span>
             <Badge className="bg-amber-500/20 text-amber-300 text-[10px]">{lead.category.toUpperCase()}</Badge>
           </div>
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">Ready to Close</Badge>
@@ -1880,7 +1872,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
       <div className="rounded-xl border border-emerald-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-emerald-400">💵 Invoice: {invoice.invoiceNumber}</span>
+            <span className="text-xs font-bold text-emerald-400">Invoice: {invoice.invoiceNumber}</span>
             <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px]">0% Gateway Cut</Badge>
           </div>
           <span className="text-[10px] text-muted">Due: {invoice.dueDate}</span>
@@ -2134,7 +2126,7 @@ function ExecutionStepsViewer({ steps }: { steps: AgentExecutionStep[] }) {
 }
 
 // Founder Work & Task Execution Hub ("+ Work" Tab)
-// 1000x More Structured, Organized, Easier to Understand, with Real Cleaning & Strict Tasks
+// Structured, organized command bar handlers
 function FounderWorkHub({
   onExecuteTask,
   onOpenPurifier,
@@ -2192,16 +2184,15 @@ function FounderWorkHub({
     });
     refreshStats();
     const mb = (res.freedBytes / (1024 * 1024)).toFixed(2);
-    toast.success(`🧹 Custom Purge Completed! Reclaimed ${mb} MB without touching protected business records.`);
+    toast.success(`Custom Purge Completed! Reclaimed ${mb} MB without touching protected business records.`);
   };
 
   const handleRunAudit = () => {
     setIsAuditing(true);
-    setTimeout(() => {
-      setIsAuditing(false);
-      setAuditPassed(true);
-      toast.success("🛡️ 160-Suite Integrity Verified: All Systems Nominal.");
-    }, 600);
+    const report = systemMasterController.scanJunkAndDuplicates();
+    setIsAuditing(false);
+    setAuditPassed(true);
+    toast.success(`Integrity check complete: ${report.duplicateItemsCount} duplicate items, ${report.staleCachesCount} stale cache keys.`);
   };
 
   // 5 Non-Negotiable Strict Tasks
@@ -2211,7 +2202,7 @@ function FounderWorkHub({
       category: "revenue" as const,
       badge: "REVENUE TARGET: ₹1,85,000",
       badgeColor: "border-amber-500/40 text-amber-300 bg-amber-500/10",
-      title: "🎯 Task 1: High-Margin Restaurant Client Acquisition Machine",
+      title: "Task 1: High-Margin Restaurant Client Acquisition Machine",
       objective: "Direct pitch to 5 curated restaurants in Sribhumi/Silchar offering 0% aggregator commission.",
       deliverables: [
         "Identified 5 high-revenue restaurants paying 25% commission to aggregators.",
@@ -2227,12 +2218,12 @@ function FounderWorkHub({
       category: "tasks" as const,
       badge: "RATE: $80 – $150/HR",
       badgeColor: "border-emerald-500/40 text-emerald-300 bg-emerald-500/10",
-      title: "💼 Task 2: Scan High-Paid Remote Work & Generate Tailored Bids",
+      title: "Task 2: Scan High-Paid Remote Work & Generate Tailored Bids",
       objective: "Scan 4 verified enterprise software contracts (USA, Europe, Remote) and generate technical proposals.",
       deliverables: [
         "Filters high-paying ($100/hr avg) contracts on Upwork, Turing, and direct enterprise boards.",
         "Generates tailored proposal with verifiable React 19, TypeScript & PostgreSQL architecture proof.",
-        "Guarantees 100% legitimate proposal copy without fabricated client histories.",
+        "Generates technical proposal drafts aligned to stack requirements.",
       ],
       strictStatus: "4 CONTRACTS VERIFIED",
       actionLabel: "Scan Remote Work & Generate Bids",
@@ -2243,12 +2234,12 @@ function FounderWorkHub({
       category: "tasks" as const,
       badge: "PRODUCTION ARCHITECTURE",
       badgeColor: "border-blue-500/40 text-blue-300 bg-blue-500/10",
-      title: "🚀 Task 3: Scaffold Heavy Enterprise Apps (Hospital ERP & Food App)",
+      title: "Task 3: Scaffold Heavy Enterprise Apps (Hospital ERP & Food App)",
       objective: "Autonomously scaffold complete multi-vendor food/grocery platform & hospital management system.",
       deliverables: [
         "Full PostgreSQL schema with RBAC roles, audit logs, and edge runtime support.",
         "TanStack Router + React 19 UI component tree ready for deployment.",
-        "Zero-breakage guarantee with 160 unit tests verification.",
+        "TypeScript React 19 and TanStack Router component tree.",
       ],
       strictStatus: "BLUEPRINT VALIDATED",
       actionLabel: "Deploy Scaffold Blueprint",
@@ -2259,7 +2250,7 @@ function FounderWorkHub({
       category: "revenue" as const,
       badge: "0% GATEWAY FEES",
       badgeColor: "border-teal-500/40 text-teal-300 bg-teal-500/10",
-      title: "💳 Task 4: King Pay Direct Settlement & Instant UPI Billing",
+      title: "Task 4: King Pay Direct Settlement & Instant UPI Billing",
       objective: "Issue verifiable ₹75,000 milestone invoice with zero intermediary fees and direct bank deposit.",
       deliverables: [
         "Generates compliant NPCI UPI deep link (upi://pay?pa=9395065587@ybl).",
@@ -2275,7 +2266,7 @@ function FounderWorkHub({
       category: "cleaning" as const,
       badge: "OPTIMIZED ALLOCATION",
       badgeColor: "border-purple-500/40 text-purple-300 bg-purple-500/10",
-      title: "🧹 Task 5: System Cache & Storage Optimizer",
+      title: "Task 5: System Cache & Storage Optimizer",
       objective: "Systematically purge temporary blobs, media renders, and memory leaks without touching persistent assets.",
       deliverables: [
         "Reclaims storage space from temporary image & video generations.",
@@ -2291,12 +2282,12 @@ function FounderWorkHub({
       category: "platforms" as const,
       badge: "ENTERPRISE INTEGRATIONS",
       badgeColor: "border-cyan-500/40 text-cyan-300 bg-cyan-500/10",
-      title: "🌐 Task 6: Universal App & Platform Orchestrator",
+      title: "Task 6: Universal App & Platform Orchestrator",
       objective: "Connect with configured GitHub, Upwork, WhatsApp, Shopify, and King Pay integrations.",
       deliverables: [
         "Connected 8 platforms with sub-50ms RPC latency.",
         "Enforces automated task execution within HMAC-SHA256 sandbox.",
-        "Guarantees 0% data leak with sub-10ms automatic rollback on error.",
+        "Executes configured webhooks within HMAC-SHA256 verification bounds.",
       ],
       strictStatus: "8 PLATFORMS CONNECTED",
       actionLabel: "Manage Connected Platforms",
@@ -2307,7 +2298,7 @@ function FounderWorkHub({
       category: "video" as const,
       badge: "MEDIA RENDER ENGINE",
       badgeColor: "border-purple-500/40 text-purple-300 bg-purple-500/10",
-      title: "🎬 Task 7: Video & Image Render Studio (9:16 & 16:9)",
+      title: "Task 7: Video & Image Render Studio (9:16 & 16:9)",
       objective: "Generate and edit commercial videos, reels, and presentations with professional voiceover and dynamic subtitles.",
       deliverables: [
         "Optimized WebCodecs rendering at 60 FPS in 9:16, 16:9, 1:1, and 21:9.",
@@ -2544,15 +2535,15 @@ function FounderWorkHub({
                 }`}
             >
               {cat === "platforms"
-                ? "🌐 Platforms"
+                ? "Platforms"
                 : cat === "video"
-                  ? "🎬 4K Video"
+                  ? "4K Video"
                   : cat === "separate"
-                    ? "📦 Separate Apps"
+                    ? "Separate Apps"
                     : cat === "settings"
-                      ? "⚙️ Settings"
+                      ? "Settings"
                       : cat === "cleaning"
-                        ? "🧹 Cleaning"
+                        ? "Cleaning"
                         : cat}
             </button>
           ))}
@@ -2658,28 +2649,28 @@ function FounderWorkHub({
             {[
               {
                 id: "vid-reel",
-                title: "📱 9:16 Viral Reel / TikTok",
+                title: "9:16 Viral Reel / TikTok",
                 desc: "60s vertical video with Aria young female narration and dynamic karaoke subtitles.",
                 query: "Create fastest 9:16 viral vertical reel video for OrderKing with young female voiceover and auto subtitles",
                 ratio: "9:16",
               },
               {
                 id: "vid-comm",
-                title: "🖥️ 16:9 4K Commercial Ad",
+                title: "16:9 4K Commercial Ad",
                 desc: "High-impact cinematic widescreen commercial presentation with 3D HUD graphics.",
                 query: "Create fastest 16:9 4K commercial widescreen video presentation for OrderKing ecosystem",
                 ratio: "16:9",
               },
               {
                 id: "vid-prod",
-                title: "🛍️ 1:1 Product Showcase",
+                title: "1:1 Product Showcase",
                 desc: "Square format product video with dynamic lighting and King Pay soundbox.",
                 query: "Create 1:1 square product showcase video of King Pay 3D soundbox with commercial lighting",
                 ratio: "1:1",
               },
               {
                 id: "vid-film",
-                title: "🎬 21:9 Cinematic Film Trailer",
+                title: "21:9 Cinematic Film Trailer",
                 desc: "Anamorphic ultra-wide trailer with volumetric lighting and 8K Octane render.",
                 query: "Create 21:9 ultra-wide cinematic trailer video of autonomous drone delivery fleet",
                 ratio: "21:9",
@@ -2793,7 +2784,7 @@ function FounderWorkHub({
                       a.click();
                       URL.revokeObjectURL(url);
                       playAudioTone("chime");
-                      toast.success(`📦 Downloaded ${mod.name} standalone bundle!`);
+                      toast.success(`Downloaded ${mod.name} standalone bundle!`);
                     }}
                     className="h-7 px-2 text-[10px] font-bold text-emerald-300 border-emerald-500/40 rounded-lg"
                   >
@@ -2832,11 +2823,9 @@ function FounderWorkHub({
                 size="sm"
                 onClick={() => {
                   playAudioTone("ping");
-                  toast.info("⚡ Refreshing system: Hot-fixing glitches without any disconnections...");
-                  setTimeout(() => {
-                    playAudioTone("chime");
-                    toast.success("✨ Zero-Downtime Refresh complete: All glitches resolved!");
-                  }, 450);
+                  const res = systemMasterController.performSoftRefresh();
+                  playAudioTone("chime");
+                  toast.success(`Refresh complete: ${res.message} (${res.latencyMs}ms)`);
                 }}
                 className="h-8 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-1.5"
               >
@@ -2848,11 +2837,9 @@ function FounderWorkHub({
                 size="sm"
                 onClick={() => {
                   playAudioTone("ping");
-                  toast.info("🔄 System Restart: Rebooting module engines with 100% preserved state...");
-                  setTimeout(() => {
-                    playAudioTone("chime");
-                    toast.success("✅ Graceful System Restart complete: All data safe!");
-                  }, 800);
+                  const res = systemMasterController.performSystemRestart();
+                  playAudioTone("chime");
+                  toast.success(`System Restart complete: ${res.componentsRebooted.length} engines reloaded in ${res.bootDurationMs}ms.`);
                 }}
                 className="h-8 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-black flex items-center gap-1.5"
               >
@@ -3012,28 +2999,25 @@ export function PremiumFounderAiChat({
   // Quick Action Handlers for System Operations
   const handleQuickRestart = () => {
     playAudioTone("ping");
-    toast.info("🔄 System Restart: Rebooting module engines with 100% preserved state...");
     const res = systemMasterController.performSystemRestart();
-    setTimeout(() => {
-      playAudioTone("chime");
-      toast.success(`✅ System Restart Complete: ${res.componentsRebooted.length} core engines rebooted with 100% preserved state in ${res.bootDurationMs}ms!`);
-    }, 500);
+    playAudioTone("chime");
+    toast.success(`System Restart Complete: ${res.componentsRebooted.length} engines reloaded in ${res.bootDurationMs}ms.`);
   };
 
   const handleQuickRefresh = () => {
     playAudioTone("ping");
     const res = systemMasterController.performSoftRefresh();
     playAudioTone("chime");
-    toast.success(`⚡ Zero-Downtime Hot Refresh Complete: ${res.message} (${res.latencyMs}ms)`);
+    toast.success(`Zero-Downtime Hot Refresh Complete: ${res.message} (${res.latencyMs}ms)`);
   };
 
   const handleSuggestClean = () => {
     playAudioTone("ping");
     const report = systemMasterController.scanJunkAndDuplicates();
     if (report.duplicateItemsCount > 0) {
-      toast.info(`🧹 Found ${report.duplicateItemsCount} duplicate items (${report.formattedDuplicateSize}). Opening Purifier...`);
+      toast.info(`Found ${report.duplicateItemsCount} duplicate items (${report.formattedDuplicateSize}). Opening Purifier...`);
     } else {
-      toast.success("✨ Zero duplicate media items detected. System is running at optimal peak!");
+      toast.success("Zero duplicate media items detected. System is running at optimal peak!");
     }
     setIsStoragePurifierOpen(true);
   };
@@ -3042,7 +3026,7 @@ export function PremiumFounderAiChat({
     playAudioTone("ping");
     const res = systemMasterController.performAutoFixMistakes();
     playAudioTone("chime");
-    toast.success(`🛠️ Zero-Tolerance Auto-Fix: ${res.fixedItems.join(" · ")} (~${(res.memoryReclaimedBytes / (1024 * 1024)).toFixed(2)} MB reclaimed)`);
+    toast.success(`Zero-Tolerance Auto-Fix: ${res.fixedItems.join(" · ")} (~${(res.memoryReclaimedBytes / (1024 * 1024)).toFixed(2)} MB reclaimed)`);
   };
 
   // Chat history with initial professional greeting
@@ -3111,7 +3095,7 @@ export function PremiumFounderAiChat({
         .replace(/\*([^*]+)\*/g, "$1")
         .replace(/`([^`]+)`/g, "$1")
         .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-        .replace(/[👑⚡💎🚀✨🛡️💡🎯🔥]/g, "")
+        .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
         .trim();
 
       const utterance = new SpeechSynthesisUtterance(cleanText || text);
@@ -3308,14 +3292,14 @@ export function PremiumFounderAiChat({
     setMessages((prev) => [...prev, initialAiMsg]);
 
     try {
-      // Bi-directional UMAR AI ↔ Platform Settings Auto-Execution
+      // Bi-directional UMAR AI and Platform Settings Sync
       let liveCustomizationNote = "";
       if (text) {
         try {
           const liveCustom = await systemMasterController.executeFounderLiveCustomization(text);
           if (liveCustom.matched) {
-            liveCustomizationNote = `\n\n---\n✅ **UMAR AI Live Platform Customization Executed**:\n${liveCustom.summary}`;
-            toast.success(`👑 UMAR AI Applied Setting: ${liveCustom.summary}`);
+            liveCustomizationNote = `\n\n---\n**UMAR AI Live Platform Customization Executed**:\n${liveCustom.summary}`;
+            toast.success(`UMAR AI Applied Setting: ${liveCustom.summary}`);
           }
         } catch (customErr) {
           console.warn("[ai-chat] Live customization check warning:", customErr);
@@ -3449,7 +3433,7 @@ export function PremiumFounderAiChat({
           .replace(/\*([^*]+)\*/g, "$1")
           .replace(/`([^`]+)`/g, "$1")
           .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-          .replace(/[👑⚡💎🚀✨🛡️💡🎯🔥🩺📊💻👋]/g, "")
+          .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, "")
           .trim();
         const sentences = cleanSpoken.split(/(?<=[.?!])\s+/);
         const spoken = sentences.slice(0, 2).join(" ").slice(0, 250);
@@ -3480,7 +3464,7 @@ export function PremiumFounderAiChat({
     setIsCallMode(next);
     if (next) {
       playAudioTone("connect");
-      toast.success("📞 Voice Call Connected! Hands-free duplex conversational AI active.");
+      toast.success("Voice Call Connected! Hands-free duplex conversational AI active.");
       speakText(
         "Voice call connected. How can I help you today?",
         "en-IN"
@@ -3597,14 +3581,14 @@ export function PremiumFounderAiChat({
               onClick={() => setIsOrderKingSuiteOpen(true)}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
             >
-              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> 👑 Order King Suite
+              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> Order King Suite
             </Button>
             <Button
               variant="ghost"
               onClick={() => setIsBusinessOsOpen(true)}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
             >
-              <Briefcase className="size-4 mr-3 text-amber-400" /> 🏢 Business OS Cockpit
+              <Briefcase className="size-4 mr-3 text-amber-400" /> Business OS Cockpit
             </Button>
             <Button
               variant="ghost"
@@ -3763,11 +3747,11 @@ export function PremiumFounderAiChat({
                   }}
                   className="bg-transparent text-[14px] font-semibold text-slate-200 focus:outline-none cursor-pointer appearance-none outline-none max-w-[280px] sm:max-w-none truncate"
                 >
-                  <option value="auto-supreme-orchestrator" className="bg-[#212121]">⚡ Auto (Best Available)</option>
-                  <option value="ensemble-consensus" className="bg-[#212121]">🧠 Multi-Model Consensus</option>
+                  <option value="auto-supreme-orchestrator" className="bg-[#212121]">Auto (Best Available)</option>
+                  <option value="ensemble-consensus" className="bg-[#212121]">Multi-Model Consensus</option>
                   {verifiedModels.filter(m => m.id !== 'auto-supreme-orchestrator' && m.id !== 'ensemble-consensus' && m.id !== 'sovereign-ultra').map((m) => (
                     <option key={m.id} value={m.id} className="bg-[#212121]">
-                      {m.connectionStatus === "CONNECTED" ? "🟢 " : "🔴 "}{m.displayName}
+                      {m.displayName}
                     </option>
                   ))}
                 </select>
@@ -3887,7 +3871,7 @@ export function PremiumFounderAiChat({
               size="sm"
               onClick={() => setIsBusinessOsOpen(true)}
               className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-lg shadow-amber-500/25 border border-amber-400/50 flex items-center gap-1.5 transition active:scale-95"
-              title="🏢 Autonomous Business OS (One Founder Enterprise, Multi-Model Consensus, Approval Gates)"
+              title="Autonomous Business OS (One Founder Enterprise, Multi-Model Consensus, Approval Gates)"
             >
               <Briefcase className="size-3.5 fill-black" />
               <span>Business OS</span>
@@ -4092,7 +4076,7 @@ export function PremiumFounderAiChat({
                       title="Ensemble Consensus: Run all 6 frontier AI models concurrently for 100% infallible execution"
                     >
                       <Sparkles className="size-3 text-amber-400" />
-                      <span>🧠 All Models Consensus</span>
+                      <span>All Models Consensus</span>
                     </button>
                     <button
                       type="button"
@@ -4101,7 +4085,7 @@ export function PremiumFounderAiChat({
                       title="Instant Live Deploy: Build and deploy any app, website, or portal live to edge CDN in 1 command"
                     >
                       <Zap className="size-3 text-emerald-400" />
-                      <span>🚀 Deploy Live</span>
+                      <span>Deploy Live</span>
                     </button>
                     <button
                       type="button"
@@ -4224,7 +4208,7 @@ export function PremiumFounderAiChat({
                     </div>
                   </div>
 
-                  {/* Trending Discovery List matching Screenshot with ↗ icon */}
+                  {/* Trending Discovery List */}
                   <div className="w-full max-w-xl mt-6 flex flex-col space-y-1">
                     {TRENDING_DISCOVERY_ITEMS.map((item, idx) => (
                       <button
@@ -4378,7 +4362,6 @@ export function PremiumFounderAiChat({
                                       src={m.mediaCard.url}
                                       controls
                                       className="w-full h-full object-contain"
-                                      poster="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
                                     />
                                   )}
                                   <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10 text-[11px] font-semibold text-purple-300">
@@ -4539,7 +4522,7 @@ export function PremiumFounderAiChat({
                       title="Ensemble Consensus: Run all 6 frontier AI models concurrently for 100% infallible execution"
                     >
                       <Sparkles className="size-3 text-amber-400" />
-                      <span>🧠 All Models</span>
+                      <span>All Models</span>
                     </button>
                     <button
                       type="button"
@@ -4548,7 +4531,7 @@ export function PremiumFounderAiChat({
                       title="Instant Live Deploy: Build and deploy any app, website, or portal live to edge CDN in 1 command"
                     >
                       <Zap className="size-3 text-emerald-400" />
-                      <span>🚀 Deploy Live</span>
+                      <span>Deploy Live</span>
                     </button>
                     <button
                       type="button"
@@ -4760,7 +4743,7 @@ export function PremiumFounderAiChat({
           const itemMsg: PremiumAiMessage = {
             id: `msg-media-${Date.now()}`,
             sender: "ai",
-            text: `### 🎨 AI Generated Media Attached from Vault\n**Prompt:** "${item.prompt}"\n*Asset ready for deployment, client branding, or download.*`,
+            text: `### AI Generated Media Attached from Vault\n**Prompt:** "${item.prompt}"\n*Asset ready for deployment, client branding, or download.*`,
             timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
             mediaCard: {
               type: item.type === "video" ? "video" : "image",
@@ -4814,7 +4797,7 @@ export function PremiumFounderAiChat({
         onClose={() => setIsOrderKingSuiteOpen(false)}
       />
 
-      {/* 🏢 Autonomous Business OS Command Center Modal */}
+      {/* Autonomous Business OS Command Center Modal */}
       <BusinessOsCommandCenterModal
         isOpen={isBusinessOsOpen}
         onClose={() => setIsBusinessOsOpen(false)}

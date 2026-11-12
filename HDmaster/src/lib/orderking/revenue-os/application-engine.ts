@@ -83,12 +83,12 @@ export class ApplicationEngine {
       `3. Complete documentation, database schemas, and clean handoff credentials.`,
       ``,
       `Real Portfolio Reference:`,
-      ...relevantProof.map((p) => `• ${p.projectName}: ${p.verifiedMetric} (${p.techStack.join(", ")})`),
+      ...relevantProof.map((p) => `| ${p.projectName}: ${p.verifiedMetric} (${p.techStack.join(", ")})`),
       ``,
       `Commercial Terms:`,
-      `• Stated Value: ${currency} ${budget.toLocaleString()}`,
-      `• 50% Milestone Advance on Contract Signing: ${currency} ${advance.toLocaleString()}`,
-      `• Final 50% upon verified acceptance and delivery.`,
+      `| Stated Value: ${currency} ${budget.toLocaleString()}`,
+      `| 50% Milestone Advance on Contract Signing: ${currency} ${advance.toLocaleString()}`,
+      `| Final 50% upon verified acceptance and delivery.`,
     ].join("\n");
 
     const appId = `APP-${Date.now().toString().slice(-4)}`;

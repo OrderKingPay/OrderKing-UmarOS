@@ -54,7 +54,7 @@ export const requestPhoneOtpFn = createServerFn({ method: "POST" })
     });
     try {
       const sql = await getSql();
-      const otpId = `v_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+      const otpId = `v_${crypto.randomUUID().replace(/-/g, "").slice(0, 14)}`;
       await sql`
         CREATE TABLE IF NOT EXISTS verification (
           id TEXT NOT NULL PRIMARY KEY,

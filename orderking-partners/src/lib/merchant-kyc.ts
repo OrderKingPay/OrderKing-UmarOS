@@ -698,7 +698,7 @@ export function executePennyDropVerification(input: PennyDropRequest): PennyDrop
   const ifsc = (input.ifsc || "").trim().toUpperCase();
 
   const timestamp = new Date().toISOString();
-  const refId = `pny_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const refId = `pny_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
   // 12-digit standard IMPS Retrieval Reference Number (RRN)
   const rrnBuffer = new Uint32Array(1);
   crypto.getRandomValues(rrnBuffer);
@@ -1467,7 +1467,7 @@ export function verifyAadhaarOtp(
   }
   const cleanOtp = otp.trim();
   if (!/^\d{6}$/.test(cleanOtp)) {
-    return { success: false, error: "OTP must be exactly 6 numeric digits (e.g. 123456)" };
+    return { success: false, error: "OTP must be exactly 6 numeric digits" };
   }
   return {
     success: true,
@@ -1475,7 +1475,7 @@ export function verifyAadhaarOtp(
       isVerified: true,
       maskedAadhaar: maskAadhaar(cleanAadhaar),
       verifiedAt: new Date().toISOString(),
-      transactionId: `UIDAI-OK-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+      transactionId: `UIDAI-OK-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`,
     },
   };
 }

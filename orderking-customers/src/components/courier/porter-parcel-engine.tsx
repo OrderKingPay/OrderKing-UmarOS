@@ -219,7 +219,7 @@ export function PorterParcelEngine({
     }
 
     setIsSubmitting(true);
-    const idempotencyKey = `pcl_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    const idempotencyKey = `pcl_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 
     try {
       // 1. If Razorpay Online chosen, initiate gateway checkout
@@ -614,7 +614,7 @@ export function PorterParcelEngine({
                   maxLength={10}
                   value={pickupPhone}
                   onChange={(e) => setPickupPhone(e.target.value)}
-                  placeholder="9876543210"
+                  placeholder="10-digit mobile"
                   className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
                 />
               </div>
@@ -689,7 +689,7 @@ export function PorterParcelEngine({
                   maxLength={10}
                   value={dropPhone}
                   onChange={(e) => setDropPhone(e.target.value)}
-                  placeholder="9876543210"
+                  placeholder="10-digit mobile"
                   className="w-full bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
                 />
               </div>

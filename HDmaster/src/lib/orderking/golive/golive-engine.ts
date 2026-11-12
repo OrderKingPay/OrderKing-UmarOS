@@ -115,7 +115,7 @@ export const DEFAULT_GOLIVE_CONFIG: MasterGoLiveConfig = {
     otpLength: 4,
     otpValiditySeconds: 300,
     maxOtpRequestsPerHour: 3,
-    autoFallbackToexecution: false,
+    autoFallbackToSandbox: false,
     status: "CONFIG_REQUIRED",
     lastTestedAt: null,
   },
@@ -261,7 +261,7 @@ export function evaluateGoLiveReadiness(config: MasterGoLiveConfig): GoLiveReadi
   if (config.smsGateway.apiKey && config.smsGateway.senderId) {
     commScore += 6;
   } else {
-    commWarnings.push("SMS Gateway API key missing. Operating in fallback execution mode.");
+    commWarnings.push("SMS Gateway API key missing. Operating without external SMS gateway credentials.");
   }
 
   if (config.smsGateway.dltEntityId && config.smsGateway.dltTemplateIdOtp) {

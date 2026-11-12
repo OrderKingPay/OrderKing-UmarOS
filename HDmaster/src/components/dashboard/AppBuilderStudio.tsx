@@ -37,8 +37,8 @@ interface PwaAppConfig {
 const DEFAULT_PWA_CONFIG: PwaAppConfig = {
   appName: "OrderKing Food Delivery",
   shortName: "OrderKing",
-  domainUrl: "https://orderking.in",
-  supportPhone: "+919876543210",
+  domainUrl: "https://orderkingpay.com",
+  supportPhone: "",
   themeColor: "#059669",
   backgroundColor: "#ffffff",
   defaultCity: "Bengaluru",
@@ -218,10 +218,10 @@ export function AppBuilderStudio() {
             Checkout & Delivery Rules
           </span>
           <p className="text-xs font-semibold text-slate-900 mt-1">
-            Min Order: ₹{config.minOrderInr} • Free Delivery: ₹{config.freeDeliveryAboveInr}+
+            Min Order: ₹{config.minOrderInr} | Free Delivery: ₹{config.freeDeliveryAboveInr}+
           </p>
           <p className="text-xs text-slate-600 mt-1">
-            Packaging: ₹{config.packagingFeeInr} • UPI: {config.enableUpiCheckout ? "On" : "Off"}
+            Packaging: ₹{config.packagingFeeInr} | UPI: {config.enableUpiCheckout ? "On" : "Off"}
           </p>
         </div>
 

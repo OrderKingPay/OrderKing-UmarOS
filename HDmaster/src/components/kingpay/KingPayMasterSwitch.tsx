@@ -149,7 +149,7 @@ export function KingPayMasterSwitch() {
       id: "upi",
       label: "UPI Payments",
       desc: "Let customers pay instantly using any UPI app or QR code.",
-      spec: `Max order ₹${customSettings.maxUpiOrderInr.toLocaleString()} • ${customSettings.upiFeePct}% UPI fee`,
+      spec: `Max order ₹${customSettings.maxUpiOrderInr.toLocaleString()} | ${customSettings.upiFeePct}% UPI fee`,
       locked: false,
     },
     {
@@ -282,7 +282,7 @@ export function KingPayMasterSwitch() {
             {activeCount} of {features.length} Payment Modes Enabled
           </div>
           <p className="text-xs text-slate-600 mt-1">
-            COD limit: ₹{customSettings.maxCodOrderInr} • Wallet cashback: {customSettings.walletCashbackPct}%.
+            COD limit: ₹{customSettings.maxCodOrderInr} | Wallet cashback: {customSettings.walletCashbackPct}%.
           </p>
         </div>
 

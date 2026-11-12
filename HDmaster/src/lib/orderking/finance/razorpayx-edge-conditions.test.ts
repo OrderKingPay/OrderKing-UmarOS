@@ -9,7 +9,7 @@ import { validateIndianBankIFSC } from "../compliance/india-marketplace-engine.t
 import { calculateRestaurantWeeklySettlement } from "./weekly-settlement.ts";
 import { createHmac } from "node:crypto";
 
-describe("👑 RazorpayX Edge Conditions & Fail-Closed Payout Engine Verification", () => {
+describe("RazorpayX Edge Conditions & Fail-Closed Payout Engine Verification", () => {
   const origEnv = { ...process.env };
 
   beforeEach(() => {

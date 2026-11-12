@@ -3,7 +3,7 @@ import type { Sql } from "../../db.ts";
 
 /**
  * ============================================================================
- * 🛡️ MILITARY-GRADE ANTI-FRAUD SHIELD (HDmaster Sovereign Security Kernel)
+ * MILITARY-GRADE ANTI-FRAUD SHIELD (HDmaster Sovereign Security Kernel)
  * ============================================================================
  * Zero fake orders. Zero fake refund claims. Zero exploit penetration.
  * Real operations only.

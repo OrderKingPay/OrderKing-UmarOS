@@ -536,7 +536,7 @@ export class PgStore implements RiderStore {
       await this.sql.query(
         `INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
          VALUES ($1, $2, 'READY', 'RIDER_ASSIGNED', $3, 'rider', 'Delivery partner assigned to order', now())`,
-        [`oev_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, d.orderId, d.userId],
+        [`oev_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`, d.orderId, d.userId],
       );
     } catch {
       // Non-fatal if orders table is not in test schema
@@ -561,7 +561,7 @@ export class PgStore implements RiderStore {
         await this.sql.query(
           `INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
            VALUES ($1, $2, 'RIDER_ASSIGNED', 'ON_THE_WAY', $3, 'rider', 'Rider departed restaurant, order on the way', now())`,
-          [`oev_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, d.orderId, d.userId],
+          [`oev_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`, d.orderId, d.userId],
         );
       } else if (d.state === "DELIVERED") {
         await this.sql.query(
@@ -576,7 +576,7 @@ export class PgStore implements RiderStore {
         await this.sql.query(
           `INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
            VALUES ($1, $2, 'ON_THE_WAY', 'DELIVERED', $3, 'rider', 'Delivery completed and confirmed with customer OTP', now())`,
-          [`oev_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, d.orderId, d.userId],
+          [`oev_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`, d.orderId, d.userId],
         );
       }
     } catch {

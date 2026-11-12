@@ -162,7 +162,12 @@ export function generateWhatsAppConciergeUrl(inquiry: {
   preferredFleetOrProperty?: string;
   specialRequests?: string;
 }): string {
-  const reqId = inquiry.requestId || `VIP-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+  const bytes = new Uint8Array(6);
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  }
+  const suffix = Array.from(bytes, (b) => b.toString(36)).join("").toUpperCase().slice(0, 5);
+  const reqId = inquiry.requestId || `VIP-${suffix}`;
   const text =
     `*OrderKing Travel & Aviation Concierge Inquiry*\n` +
     `• *Request ID:* ${reqId}\n` +

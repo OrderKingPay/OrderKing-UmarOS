@@ -338,7 +338,7 @@ export function MetaOmnichannelHub({
   // Interpolated Preview Text
   const previewBody = useMemo(() => {
     let text = form.acquisitionPitchBody || "";
-    text = text.replace(/{{restaurant_name}}/g, "The Olive & Truffle Bistro");
+    text = text.replace(/{{restaurant_name}}/g, "Partner Restaurant");
     text = text.replace(/{{distance_km}}/g, "1.4 km");
     text = text.replace(/{{portal_claim_url}}/g, form.acquisitionCtaUrl || "https://orderking.delivery/partner-claim");
     text = text.replace(/{{offer_code}}/g, form.acquisitionOfferCode || "ZERO_FEE_DIRECT_2026");
@@ -1241,7 +1241,7 @@ export function MetaOmnichannelHub({
                   value={form.acquisitionHeadline}
                   onChange={(e) => handleFieldChange("acquisitionHeadline", e.target.value)}
                   className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  placeholder="Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding"
+                  placeholder="Eliminate 30% Aggregator Commission | ₹0 Setup Fee Onboarding"
                 />
               </div>
 
@@ -1388,7 +1388,7 @@ export function MetaOmnichannelHub({
                 </div>
               </div>
 
-              {/* Smartphone Simulated Frame */}
+              {/* Smartphone Preview Frame */}
               <div className="rounded-2xl border-4 border-slate-800 bg-slate-950 p-2 shadow-xl max-w-sm mx-auto">
                 {/* Screen */}
                 <div className="rounded-xl bg-slate-50 overflow-hidden flex flex-col h-[460px]">
@@ -1430,7 +1430,7 @@ export function MetaOmnichannelHub({
                     {/* Timestamp */}
                     <div className="text-center">
                       <span className="bg-white/80 border border-slate-200 text-slate-500 text-[9px] px-2 py-0.5 rounded-full">
-                        Today 11:42 AM • Direct Blast
+                        Today 11:42 AM | Direct Blast
                       </span>
                     </div>
 
@@ -1546,7 +1546,7 @@ export function MetaOmnichannelHub({
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span>STREAM: /v21.0/me/messages & /v21.0/{form.whatsappBusinessAccountId || "waba"}/messages</span>
                 </div>
-                <span>TLS 1.3 • HTTP/2 PUSH</span>
+                <span>TLS 1.3 | HTTP/2 PUSH</span>
               </div>
 
               <div className="space-y-2 max-h-80 overflow-y-auto">

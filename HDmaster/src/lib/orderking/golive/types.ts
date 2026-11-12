@@ -18,7 +18,7 @@ export type PaymentGatewayProvider =
   | "PHONEPE_PG" 
   | "PAYTM_PG" 
   | "ICICI_EAZYPAY" 
-  | "execution";
+  | "SANDBOX";
 
 export type SmsGatewayProvider = 
   | "FAST2SMS" 
@@ -26,7 +26,7 @@ export type SmsGatewayProvider =
   | "TWILIO" 
   | "GUPSHUP" 
   | "EXOTEL" 
-  | "execution";
+  | "SANDBOX";
 
 export type MapsProvider = 
   | "GOOGLE_MAPS" 
@@ -48,7 +48,7 @@ export type EntityType =
 
 export type ConnectionStatus = 
   | "CONNECTED" 
-  | "live_ACTIVE" 
+  | "SANDBOX_ACTIVE" 
   | "CONFIG_REQUIRED" 
   | "ERROR";
 
@@ -104,7 +104,7 @@ export type SmsGatewayConfig = {
   otpLength: 4 | 6;
   otpValiditySeconds: number;
   maxOtpRequestsPerHour: number;
-  autoFallbackToexecution: boolean;
+  autoFallbackToSandbox: boolean;
   status: ConnectionStatus;
   lastTestedAt: string | null;
   errorMessage?: string;

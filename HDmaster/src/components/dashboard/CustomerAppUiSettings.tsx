@@ -607,7 +607,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                       <Square className="h-4 w-4 text-slate-800" />
                       <span className="text-xs font-bold text-slate-900">Sharp Square Corners (0px)</span>
                     </div>
-                    {isSharp && <span className="text-xs font-bold text-emerald-600">✓</span>}
+                    {isSharp && <span className="text-xs font-bold text-emerald-600">Selected</span>}
                   </div>
                   <p className="text-[11px] text-slate-600 mt-1.5">
                     Clean 90-degree edges on all cards, pictures, and buttons.
@@ -628,7 +628,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                       <Circle className="h-4 w-4 text-slate-800" />
                       <span className="text-xs font-bold text-slate-900">Rounded Corners (16px)</span>
                     </div>
-                    {!isSharp && <span className="text-xs font-bold text-emerald-600">✓</span>}
+                    {!isSharp && <span className="text-xs font-bold text-emerald-600">Selected</span>}
                   </div>
                   <p className="text-[11px] text-slate-600 mt-1.5">
                     Soft friendly curves on all food cards and checkout buttons.
@@ -709,7 +709,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                       <Sun className="h-4 w-4 text-amber-600" />
                       <span className="text-xs font-bold text-slate-900">Light Mode (Daytime White)</span>
                     </div>
-                    {!isDark && <span className="text-xs font-bold text-emerald-600">✓</span>}
+                    {!isDark && <span className="text-xs font-bold text-emerald-600">Selected</span>}
                   </div>
                   <p className="text-[11px] text-slate-600 mt-1.5">
                     Bright white background that is easy to read outdoors in daylight.
@@ -732,7 +732,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                         Dark Mode (Night Black)
                       </span>
                     </div>
-                    {isDark && <span className="text-xs font-bold text-emerald-400">✓</span>}
+                    {isDark && <span className="text-xs font-bold text-emerald-400">Selected</span>}
                   </div>
                   <p className={`text-[11px] mt-1.5 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                     Dark background that reduces eye strain for late-night food orders.
@@ -905,7 +905,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                             {settings.appHeaderTitle || "OrderKing"}
                           </span>
                         </div>
-                        <div className="text-[9px] text-slate-400">Sribhumi • 20 mins delivery</div>
+                        <div className="text-[9px] text-slate-400">Sribhumi | 20 mins delivery</div>
                       </div>
                       {settings.showCartBadge && (
                         <div
@@ -942,7 +942,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                         }}
                       >
                         <span className="truncate">{settings.searchPlaceholder}</span>
-                        <span className="text-[9px]">🔍</span>
+                        <span className="text-[9px] font-bold">Search</span>
                       </div>
                     )}
 
@@ -1016,7 +1016,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                                 backgroundColor: isDark ? "#334155" : "#E2E8F0",
                               }}
                             >
-                              🍗
+                              Biryani
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1">
@@ -1045,7 +1045,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                               borderRadius: isSharp ? "0px" : `${settings.radiusPx}px`,
                             }}
                           >
-                            <span>Add to Cart • ₹240</span>
+                            <span>Add to Cart | ₹240</span>
                             <ChevronRight className="h-3 w-3" />
                           </button>
                         </div>
@@ -1063,7 +1063,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                         }}
                       >
                         <div className="font-bold text-[9px] truncate">
-                          ⚡ {getSectionTitle("walletStrip")}
+                           {getSectionTitle("walletStrip")}
                         </div>
                         <span
                           className="text-[9px] font-bold shrink-0"

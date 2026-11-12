@@ -654,7 +654,7 @@ export function parseDishLine(
     category = "Beverages";
   }
 
-  const itemId = `itm_${Math.random().toString(36).substring(2, 9)}`;
+  const itemId = `itm_${crypto.randomUUID().replace(/-/g, "").slice(0, 10)}`;
   const formattedPrice = `₹${(pricePaise / 100).toFixed(2)}`;
 
   // Default prep minutes by category
@@ -802,7 +802,7 @@ export async function autonomousMerchantOnboard(
     },
   });
 
-  const merchantId = `rst_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const merchantId = `rst_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
 
   auditTrail.push({
     step: "AUTONOMOUS_MERCHANT_ACTIVATED",

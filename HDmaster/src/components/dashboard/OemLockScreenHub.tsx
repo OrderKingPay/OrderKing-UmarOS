@@ -246,7 +246,7 @@ export function OemLockScreenHub({
                 OEM Lock-Screen Ad Hub (Glance & InMobi)
               </h2>
               <span className="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-semibold text-purple-800 border border-purple-200">
-                Xiaomi • Samsung • Vivo Fleet
+                Xiaomi | Samsung | Vivo Fleet
               </span>
             </div>
             <p className="text-xs text-slate-500 mt-1 max-w-2xl">
@@ -706,8 +706,7 @@ export function OemLockScreenHub({
                 type="button"
                 onClick={() => setShowCampaignModal(false)}
                 className="text-slate-400 hover:text-slate-700 text-sm font-semibold"
-              >
-                ✕
+              >                  Close
               </button>
             </div>
 
@@ -764,7 +763,7 @@ export function OemLockScreenHub({
                   required
                   value={adHeadline}
                   onChange={(e) => setAdHeadline(e.target.value)}
-                  placeholder="e.g. Sizzling Butter Chicken Delivered in 20 Mins • ₹0 Surge"
+                  placeholder="e.g. Sizzling Butter Chicken Delivered in 20 Mins | ₹0 Surge"
                   className="w-full h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>

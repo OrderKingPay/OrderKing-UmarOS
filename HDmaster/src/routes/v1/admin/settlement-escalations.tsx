@@ -25,7 +25,7 @@ function SettlementEscalations() {
         <header className="border-b border-rose-500/30 pb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-black text-white flex items-center gap-3">
-              <span className="text-4xl">🚨</span> 
+              <span className="text-xs font-black uppercase tracking-wider text-rose-400">ALERT</span> 
               AI Settlement Escalations
             </h1>
             <p className="text-sm text-rose-400 mt-2 max-w-2xl">
@@ -44,7 +44,7 @@ function SettlementEscalations() {
           <div className="grid grid-cols-1 gap-6">
             {!data || data.length === 0 ? (
               <div className="bg-emerald-500/10 border border-emerald-500/30 p-8 rounded-xl text-center">
-                <p className="text-emerald-400 font-bold text-lg">✅ All Clear!</p>
+                <p className="text-emerald-400 font-bold text-lg">All Clear!</p>
                 <p className="text-slate-400 text-sm mt-1">The AI Engine found 0 mathematical errors this week. All Tier-1 cycle payouts are executing safely.</p>
               </div>
             ) : (
@@ -62,7 +62,7 @@ function SettlementEscalations() {
                       <p className="text-xs text-slate-400 font-mono">Entity: {batch.entity_type} {batch.entity_id}</p>
                       
                       <div className="bg-rose-500/10 border border-rose-500/20 p-3 rounded-lg mt-4 max-w-2xl">
-                        <p className="text-sm font-bold text-rose-400">🤖 AI Reason for Freezing:</p>
+                        <p className="text-sm font-bold text-rose-400">AI Reason for Freezing:</p>
                         <p className="text-xs text-slate-300 mt-1">{batch.notes}</p>
                       </div>
                     </div>

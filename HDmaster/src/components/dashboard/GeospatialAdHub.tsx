@@ -948,7 +948,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   type={visibleSecrets["jioSecret"] ? "text" : "password"}
                   value={activeConfig.jioAdsClientSecret}
                   onChange={(e) => updateConfig({ jioAdsClientSecret: e.target.value })}
-                  placeholder="••••••••••••••••••••••••"
+                  placeholder="************************"
                   className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs font-mono text-foreground focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -1022,7 +1022,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   type={visibleSecrets["airtelToken"] ? "text" : "password"}
                   value={activeConfig.airtelXstreamToken}
                   onChange={(e) => updateConfig({ airtelXstreamToken: e.target.value })}
-                  placeholder="••••••••••••••••••••••••"
+                  placeholder="************************"
                   className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs font-mono text-foreground focus:ring-1 focus:ring-primary"
                 />
               </div>
@@ -1092,7 +1092,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                   type={visibleSecrets["inmobiSecret"] ? "text" : "password"}
                   value={activeConfig.inmobiDspSecret}
                   onChange={(e) => updateConfig({ inmobiDspSecret: e.target.value })}
-                  placeholder="••••••••••••••••••••••••"
+                  placeholder="************************"
                   className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs font-mono text-foreground focus:ring-1 focus:ring-primary"
                 />
               </div>

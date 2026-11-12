@@ -528,7 +528,9 @@ export function validateIrctcTdrFiling(params: {
   }
 
   const cleanPnr = crisValidation.pnr;
-  const randomRef = Math.floor(10000000 + Math.random() * 90000000);
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  const randomRef = 10000000 + (buf[0]! % 90000000);
   const tdrReferenceNumber = `TDR-CRIS-${cleanPnr.slice(0, 4)}-${randomRef}`;
 
   return {

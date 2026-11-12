@@ -73,7 +73,7 @@ export function assertCanonicalTransition(command: OrderTransitionCommand): void
   }
   if (!canTransition(command.from, command.to, command.actor)) {
     throw new Error(
-      `Invalid canonical order transition ${command.from} → ${command.to} as ${command.actor}`,
+      `Invalid canonical order transition ${command.from} -> ${command.to} as ${command.actor}`,
     );
   }
 }

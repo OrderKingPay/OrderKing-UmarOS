@@ -55,7 +55,7 @@ export class RevenueGrowthEngine {
       `Why this matters: ${opp.rationale}`,
       ``,
       `Deliverables:`,
-      ...opp.proposedDeliverables.map((d) => `• ${d}`),
+      ...opp.proposedDeliverables.map((d) => `| ${d}`),
       ``,
       `Commercial Terms: ₹${value.toLocaleString()}${opp.monthlyValueInr ? "/month" : " one-time"}.`,
     ].join("\n");

@@ -838,10 +838,10 @@ export function reconcileRiderCodStatus(input: CodReconciliationInput): CodRecon
     let message = `Your floating cash-in-hand is at ${currentUtilPct}% of limit. Please deposit cash via UPI or partner hub soon.`;
 
     if (isBlocked) {
-      headline = `🚨 COD BLOCKED: Cash limit of ₹${limitRupees} breached`;
+      headline = `COD BLOCKED: Cash limit of ₹${limitRupees} breached`;
       message = `Your cash-in-hand of ₹${currentRupees} exceeds your threshold of ₹${limitRupees}. You cannot accept COD orders until you deposit at least ₹${fromPaise(requiredDepositToUnblock).toFixed(0)}.`;
     } else if (!canAccept) {
-      headline = `⚠️ Cannot accept order: Would exceed ₹${limitRupees} limit`;
+      headline = `Cannot accept order: Would exceed ₹${limitRupees} limit`;
       message = `Accepting order with COD ₹${fromPaise(incomingOrderCod).toFixed(0)} would bring your cash to ₹${fromPaise(projectedCash).toFixed(0)} (limit ₹${limitRupees}). Deposit ₹${dueRupees} to accept.`;
     }
 

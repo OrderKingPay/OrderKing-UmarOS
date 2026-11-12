@@ -1,5 +1,5 @@
 // Emergency Recovery & Deployment Rollback System (Directive 23)
-// 9-step recovery flow: DETECT → FREEZE RISKY CHANGES → COLLECT LOGS → DIAGNOSE → ROLLBACK IF NECESSARY → FIX → TEST → REDEPLOY → VERIFY.
+// 9-step recovery flow: DETECT -> FREEZE RISKY CHANGES -> COLLECT LOGS -> DIAGNOSE -> ROLLBACK IF NECESSARY -> FIX -> TEST -> REDEPLOY -> VERIFY.
 // Maintains immutable deployment history with commit hashes, health status, and rollback logs.
 
 export interface DeploymentRecord {

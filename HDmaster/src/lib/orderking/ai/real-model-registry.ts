@@ -105,7 +105,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "auto-supreme-orchestrator",
-      displayName: "⚡ Auto-Select Best Model (Premium Orchestrator)",
+      displayName: "Auto-Select Best Model (Premium Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
@@ -128,7 +128,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "ensemble-consensus",
-      displayName: "🧠 Multi-Model Ensemble Consensus",
+      displayName: "Multi-Model Ensemble Consensus",
       provider: "Consensus",
       realApiId: "multi-model-consensus-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",

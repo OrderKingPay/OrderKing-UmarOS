@@ -630,7 +630,7 @@ function CheckoutPage() {
                       </label>
                       <Input
                         className="mt-1 text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
-                        placeholder="e.g. 9876543210"
+                        placeholder="10-digit mobile number"
                         type="tel"
                         value={recipientPhone}
                         onChange={(e) => setRecipientPhone(e.target.value)}

@@ -9,7 +9,7 @@ export interface AutoDispatchResult {
 }
 
 /**
- * 🚀 ZERO-HUMAN ALGORITHMIC DISPATCH ENGINE
+ * ZERO-HUMAN ALGORITHMIC DISPATCH ENGINE
  * 
  * Replaces human dispatchers with a hyper-optimized mathematical model.
  * - Uses the Haversine formula to calculate the exact curvature of the Earth.
@@ -32,7 +32,7 @@ function calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lo
 }
 
 export async function runAlgorithmicAutoDispatch(evaluationDate: Date = new Date()): Promise<AutoDispatchResult> {
-  // 0. Military-Grade Dispatch Velocity Throttling
+  // Dispatch Velocity Throttling
   const throttleCheck = militaryAntiFraudShield.checkDispatchThrottle(2);
   if (!throttleCheck.valid) {
     return { assignedOrders: 0, matchedPairs: [], unassignedOrders: 0 };
@@ -92,7 +92,7 @@ export async function runAlgorithmicAutoDispatch(evaluationDate: Date = new Date
         for (const rider of orgRiders) {
           if (!rider.lat || !rider.lng) continue; // Skip riders with no GPS signal
 
-          // Military-Grade GPS Telemetry & Spoofing Shield
+          // GPS Telemetry & Spoofing Shield
           const telemetryCheck = militaryAntiFraudShield.validateRiderTelemetry({
             riderId: rider.id,
             lat: rider.lat,

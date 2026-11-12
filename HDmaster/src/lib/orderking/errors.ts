@@ -16,7 +16,7 @@ export class DomainError extends Error {
 
 export class InvalidTransitionError extends DomainError {
   constructor(from: string, to: string) {
-    super(`Invalid order transition ${from} → ${to}`, "INVALID_TRANSITION", 409);
+    super(`Invalid order transition ${from} -> ${to}`, "INVALID_TRANSITION", 409);
     this.name = "InvalidTransitionError";
   }
 }

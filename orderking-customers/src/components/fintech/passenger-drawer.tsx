@@ -430,7 +430,7 @@ export function PassengerDrawer({
                     maxLength={10}
                     value={contact.phone}
                     onChange={(e) => setContact({ ...contact, phone: e.target.value.replace(/\D/g, "") })}
-                    placeholder="9876543210"
+                    placeholder="10-digit mobile"
                     className="w-full px-3 py-2 text-xs font-mono font-bold text-slate-900 outline-none"
                   />
                 </div>
@@ -445,7 +445,7 @@ export function PassengerDrawer({
                   required
                   value={contact.email}
                   onChange={(e) => setContact({ ...contact, email: e.target.value })}
-                  placeholder="name@example.com"
+                  placeholder="name@domain.com"
                   className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-indigo-500 transition"
                 />
               </div>

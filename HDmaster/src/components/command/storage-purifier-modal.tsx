@@ -176,7 +176,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
           </div>
           <div className="bg-white rounded-lg p-2 border border-emerald-200">
             <span className="text-slate-500 block text-[10px]">System State Reserve:</span>
-            <span className="font-bold text-emerald-700 font-mono">Guaranteed</span>
+            <span className="font-bold text-emerald-700 font-mono">Isolated</span>
           </div>
         </div>
         <p className="text-[11px] text-slate-600 leading-relaxed pt-1">

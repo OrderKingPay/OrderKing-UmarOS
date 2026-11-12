@@ -158,7 +158,7 @@ export function enqueueRiderOfflineAction(
 ): RiderQueuedAction {
   const queuedItem: RiderQueuedAction = {
     ...action,
-    id: `rider_q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+    id: `rider_q_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`,
     timestamp: Date.now(),
     retryCount: 0,
     nextRetryAt: 0,

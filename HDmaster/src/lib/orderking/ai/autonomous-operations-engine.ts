@@ -1,4 +1,4 @@
-// HDmaster Autonomous Operations Engine — 1000x Dominant Legacy Aggregator-Level Autonomy
+// HDmaster Autonomous Operations Engine — Live PostgreSQL-backed operations
 // Replaces Level 1/2 Support, Partner Operations, and Payout Calculations with Zero Legal Liability.
 // Implements Strict Tax Compliance (TCS Section 52, TDS Section 194-O) and Dispute Management.
 

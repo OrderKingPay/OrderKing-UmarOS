@@ -232,7 +232,7 @@ function CatalogHitIcon({ icon }: { icon: string }) {
 export function SupremeKingPayExperience() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
-  const { walletBalancePaise, addMoney, deductMoney } = useRealKingPayWallet();
+  const { walletBalancePaise, deductMoney } = useRealKingPayWallet();
 
   // Modals
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -1400,6 +1400,7 @@ export function SupremeKingPayExperience() {
         onClose={() => setIsScannerOpen(false)}
         walletBalancePaise={walletBalancePaise}
         onDeductWallet={(amountPaise, desc) => {
+          if (walletBalancePaise < amountPaise) return false;
           deductMoney.mutate({ amount: amountPaise / 100, description: desc });
           return true;
         }}
@@ -1410,9 +1411,8 @@ export function SupremeKingPayExperience() {
         isOpen={isAddMoneyOpen}
         onClose={() => setIsAddMoneyOpen(false)}
         currentBalancePaise={walletBalancePaise}
-        onSuccess={(addedPaise) => {
-          addMoney.mutate({ amount: addedPaise / 100, description: "Wallet Top-up" });
-          toast.success("Wallet loaded successfully");
+        onSuccess={() => {
+          // Server-side verifyAndCreditWalletTopup has committed to PostgreSQL and invalidated queries.
         }}
       />
 

@@ -507,28 +507,28 @@ function SettingsPage() {
         }),
         updates.brand
           ? saveCustomerUiSettingsFn({
-              data: {
-                settings: {
-                  primaryColor: updates.brand.primaryColor,
-                  radiusPx: updates.brand.radiusPx,
-                  themeMode: updates.brand.themeMode,
-                },
+            data: {
+              settings: {
+                primaryColor: updates.brand.primaryColor,
+                radiusPx: updates.brand.radiusPx,
+                themeMode: updates.brand.themeMode,
               },
-            })
+            },
+          })
           : Promise.resolve(),
         updates.brand
           ? saveBrandingFn({
-              data: {
-                patch: {
-                  colorPrimary: updates.brand.primaryColor,
-                  colorAccent: updates.brand.accentColor,
-                  colorBg: updates.brand.surfaceColor,
-                  tagline: updates.brand.tagline,
-                  appName: updates.brand.logoText,
-                },
-                reason: customReason || "Brand updated via Master Settings Studio",
+            data: {
+              patch: {
+                colorPrimary: updates.brand.primaryColor,
+                colorAccent: updates.brand.accentColor,
+                colorBg: updates.brand.surfaceColor,
+                tagline: updates.brand.tagline,
+                appName: updates.brand.logoText,
               },
-            })
+              reason: customReason || "Brand updated via Master Settings Studio",
+            },
+          })
           : Promise.resolve(),
       ]);
 
@@ -578,25 +578,25 @@ function SettingsPage() {
       if (lower.includes("reset")) {
         if (lower.includes("brand") || lower.includes("color") || lower.includes("theme")) {
           await handleSectionReset("brand");
-          setUmarLog("🤖 UMAR AI reset Brand, Colors & Typography to institutional defaults.");
+          setUmarLog("UMAR AI reset Brand, Colors & Typography to institutional defaults.");
           setUmarPrompt("");
           return;
         }
         if (lower.includes("commission") || lower.includes("fee") || lower.includes("marketplace")) {
           await handleSectionReset("marketplace");
-          setUmarLog("🤖 UMAR AI reset Marketplace Commissions & Fees to defaults.");
+          setUmarLog("UMAR AI reset Marketplace Commissions & Fees to defaults.");
           setUmarPrompt("");
           return;
         }
         if (lower.includes("algorithm") || lower.includes("surge") || lower.includes("radius")) {
           await handleSectionReset("algorithm");
-          setUmarLog("🤖 UMAR AI reset Dispatch & Surge Algorithm sliders to defaults.");
+          setUmarLog("UMAR AI reset Dispatch & Surge Algorithm sliders to defaults.");
           setUmarPrompt("");
           return;
         }
         if (lower.includes("all") || lower.includes("factory")) {
           await handleSectionReset("all");
-          setUmarLog("🤖 UMAR AI reset all platform settings to institutional defaults.");
+          setUmarLog("UMAR AI reset all platform settings to institutional defaults.");
           setUmarPrompt("");
           return;
         }
@@ -613,16 +613,16 @@ function SettingsPage() {
       if (hexMatches && hexMatches.length > 0) {
         if (lower.includes("accent") || lower.includes("gold")) {
           nextBrand.accentColor = hexMatches[0].toUpperCase();
-          appliedChanges.push(`Accent Color → ${nextBrand.accentColor}`);
+          appliedChanges.push(`Accent Color -> ${nextBrand.accentColor}`);
         } else if (lower.includes("surface") || lower.includes("background") || lower.includes("bg")) {
           nextBrand.surfaceColor = hexMatches[0].toUpperCase();
-          appliedChanges.push(`Surface Color → ${nextBrand.surfaceColor}`);
+          appliedChanges.push(`Surface Color -> ${nextBrand.surfaceColor}`);
         } else {
           nextBrand.primaryColor = hexMatches[0].toUpperCase();
-          appliedChanges.push(`Primary Color → ${nextBrand.primaryColor}`);
+          appliedChanges.push(`Primary Color -> ${nextBrand.primaryColor}`);
           if (hexMatches[1]) {
             nextBrand.accentColor = hexMatches[1].toUpperCase();
-            appliedChanges.push(`Accent Color → ${nextBrand.accentColor}`);
+            appliedChanges.push(`Accent Color -> ${nextBrand.accentColor}`);
           }
         }
       }
@@ -631,73 +631,73 @@ function SettingsPage() {
       if (lower.includes("emerald")) {
         nextBrand.primaryColor = "#0D3B2E";
         nextBrand.accentColor = "#D97706";
-        appliedChanges.push("Theme Preset → OrderKing Emerald & Gold");
+        appliedChanges.push("Theme Preset -> OrderKing Emerald & Gold");
       } else if (lower.includes("crimson") || lower.includes("tier-1 red")) {
         nextBrand.primaryColor = "#E23744";
         nextBrand.accentColor = "#F59E0B";
-        appliedChanges.push("Theme Preset → Crimson & Slate");
+        appliedChanges.push("Theme Preset -> Crimson & Slate");
       } else if (lower.includes("midnight")) {
         nextBrand.primaryColor = "#4F46E5";
         nextBrand.surfaceColor = "#090D16";
         nextBrand.themeMode = "dark";
-        appliedChanges.push("Theme Preset → Midnight Dark Mode");
+        appliedChanges.push("Theme Preset -> Midnight Dark Mode");
       }
 
       if (lower.includes("dark mode") || lower.includes("dark theme")) {
         nextBrand.themeMode = "dark";
-        appliedChanges.push("Theme Mode → Dark");
+        appliedChanges.push("Theme Mode -> Dark");
       } else if (lower.includes("light mode") || lower.includes("light theme")) {
         nextBrand.themeMode = "light";
-        appliedChanges.push("Theme Mode → Light");
+        appliedChanges.push("Theme Mode -> Light");
       }
 
       if (lower.includes("compact")) {
         nextBrand.compactMode = !lower.includes("disable") && !lower.includes("off");
-        appliedChanges.push(`Compact Mode → ${nextBrand.compactMode ? "ON" : "OFF"}`);
+        appliedChanges.push(`Compact Mode -> ${nextBrand.compactMode ? "ON" : "OFF"}`);
       }
 
       const radiusMatch = lower.match(/radius\s*(?:to|=|:)?\s*(\d+)/);
       if (radiusMatch) {
         nextBrand.radiusPx = Math.min(32, Math.max(0, Number(radiusMatch[1])));
-        appliedChanges.push(`Corner Radius → ${nextBrand.radiusPx}px`);
+        appliedChanges.push(`Corner Radius -> ${nextBrand.radiusPx}px`);
       }
 
       // 3. Parse Commission, Delivery Fee, Platform Fee, Per-KM, Radius, Surge
       const commMatch = lower.match(/commission\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)\s*%?/);
       if (commMatch) {
         nextEcon.restaurant_commission_pct = Number(commMatch[1]);
-        appliedChanges.push(`Restaurant Commission → ${nextEcon.restaurant_commission_pct}%`);
+        appliedChanges.push(`Restaurant Commission -> ${nextEcon.restaurant_commission_pct}%`);
       }
 
       const platFeeMatch = lower.match(/(?:platform|convenience)\s*fee\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
       if (platFeeMatch) {
         nextEcon.platform_fee_inr = Number(platFeeMatch[1]);
         nextEcon.customer_convenience_fee_inr = Number(platFeeMatch[1]);
-        appliedChanges.push(`Platform Convenience Fee → ₹${nextEcon.platform_fee_inr}`);
+        appliedChanges.push(`Platform Convenience Fee -> ₹${nextEcon.platform_fee_inr}`);
       }
 
       const baseDelMatch = lower.match(/(?:base\s*delivery|delivery\s*base|base\s*fee)\s*(?:fee)?\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
       if (baseDelMatch) {
         nextEcon.base_delivery_fee_inr = Number(baseDelMatch[1]);
-        appliedChanges.push(`Base Delivery Fee → ₹${nextEcon.base_delivery_fee_inr}`);
+        appliedChanges.push(`Base Delivery Fee -> ₹${nextEcon.base_delivery_fee_inr}`);
       }
 
       const kmRateMatch = lower.match(/(?:per\s*km|rider\s*rate|km\s*rate)\s*(?:to|=|:)?\s*(?:rs\.?|₹)?\s*(\d+(?:\.\d+)?)/);
       if (kmRateMatch) {
         nextEcon.rider_payout_per_km_inr = Number(kmRateMatch[1]);
-        appliedChanges.push(`Rider Per-KM Payout → ₹${nextEcon.rider_payout_per_km_inr}/km`);
+        appliedChanges.push(`Rider Per-KM Payout -> ₹${nextEcon.rider_payout_per_km_inr}/km`);
       }
 
       const radiusKmMatch = lower.match(/(?:delivery\s*radius|max\s*radius|radius)\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)\s*km/);
       if (radiusKmMatch) {
         nextEcon.max_delivery_radius_km = Number(radiusKmMatch[1]);
-        appliedChanges.push(`Max Delivery Radius → ${nextEcon.max_delivery_radius_km} km`);
+        appliedChanges.push(`Max Delivery Radius -> ${nextEcon.max_delivery_radius_km} km`);
       }
 
       const surgeMatch = lower.match(/surge\s*(?:cap|multiplier)?\s*(?:to|=|:)?\s*(\d+(?:\.\d+)?)x?/);
       if (surgeMatch) {
         nextEcon.surge_multiplier_cap = Number(surgeMatch[1]);
-        appliedChanges.push(`Surge Multiplier Cap → ${nextEcon.surge_multiplier_cap}x`);
+        appliedChanges.push(`Surge Multiplier Cap -> ${nextEcon.surge_multiplier_cap}x`);
       }
 
       // 4. Parse 10 Indian Benchmark Languages
@@ -713,7 +713,7 @@ function SettingsPage() {
       for (const lang of INDIAN_23_LANGUAGES) {
         if (lower.includes(`default language to ${lang.name.toLowerCase()}`) || lower.includes(`default to ${lang.name.toLowerCase()}`)) {
           nextLocale.defaultLocale = lang.code;
-          appliedChanges.push(`Default Platform Language → ${lang.name} (${lang.nativeName})`);
+          appliedChanges.push(`Default Platform Language -> ${lang.name} (${lang.nativeName})`);
         }
       }
 
@@ -723,12 +723,12 @@ function SettingsPage() {
         nextNotif.weatherGraceEnabled = true;
         nextNotif.trafficSpikeImmunity = true;
         nextNotif.gatewayOutageShield = true;
-        appliedChanges.push("Zero-Harassment Guard & Partner Protection → ACTIVE");
+        appliedChanges.push("Zero-Harassment Guard & Partner Protection -> ACTIVE");
       }
 
       if (appliedChanges.length === 0) {
         setUmarLog(
-          "ℹ️ King AI parsed your instruction. Try specific values such as: 'Set commission to 16% and primary color to #0D3B2E' or 'Enable all 10 languages'.",
+          "ℹ King AI parsed your instruction. Try specific values such as: 'Set commission to 16% and primary color to #0D3B2E'or 'Enable all 10 languages'.",
         );
         return;
       }
@@ -759,7 +759,7 @@ function SettingsPage() {
         `UMAR AI Direct Customization: ${appliedChanges.join(" · ")}`,
       );
 
-      setUmarLog(`✅ Applied via UMAR AI: ${appliedChanges.join(" | ")}`);
+      setUmarLog(`Applied via UMAR AI: ${appliedChanges.join(" | ")}`);
       setUmarPrompt("");
     } finally {
       setUmarApplying(false);
@@ -832,11 +832,11 @@ function SettingsPage() {
         window.dispatchEvent(new CustomEvent("orderking:deep_clean"));
       }
       setSavedBanner(
-        "⚡ Deep Clean & Refresh Complete: Client storage flushed, Postgres connection pool verified, and master settings re-synchronized without reload."
+        "Deep Clean & Refresh Complete: Client storage flushed, Postgres connection pool verified, and master settings re-synchronized without reload."
       );
     } catch (err) {
       console.error("Failed to deep clean settings:", err);
-      setSavedBanner("⚠️ Deep clean completed with network notice. Local state refreshed.");
+      setSavedBanner("Deep clean completed with network notice. Local state refreshed.");
     } finally {
       setIsDeepCleaning(false);
     }
@@ -1037,7 +1037,7 @@ function SettingsPage() {
               UMAR OS Master Settings &amp; Governance Studio
             </h1>
             <p className="text-slate-500 mt-1.5 text-sm">
-              Bi-Directional Category → Sub-Category Customization Engine · Synced live with{" "}
+              Bi-Directional Category to Sub-Category Customization Engine | Synced live with{" "}
               <code className="font-mono text-xs bg-slate-200/70 px-1.5 py-0.5 rounded">
                 /api/v1/admin/settings
               </code>{" "}
@@ -1091,7 +1091,7 @@ function SettingsPage() {
           </div>
         ) : null}
 
-        {/* 🤖 UMAR AI Direct Customization Bar */}
+        {/* UMAR AI Direct Customization Bar */}
         <section className="rounded-2xl border-2 border-emerald-600/30 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 p-5 text-white shadow-md space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
@@ -1103,7 +1103,7 @@ function SettingsPage() {
                   Autonomous Founder Co-Pilot
                 </span>
                 <h2 className="text-base font-bold">
-                  🤖 UMAR AI Direct Customization Bar (Natural Language → Live Database Mutation)
+                  UMAR AI Direct Customization Bar (Natural Language to Live Database Mutation)
                 </h2>
               </div>
             </div>
@@ -1164,7 +1164,7 @@ function SettingsPage() {
                 }}
                 className="rounded-lg border border-slate-700 bg-slate-800/70 hover:bg-slate-700 px-2.5 py-1 text-[11px] text-slate-200 transition"
               >
-                ⚡ {chip}
+                {chip}
               </button>
             ))}
           </div>
@@ -1176,7 +1176,7 @@ function SettingsPage() {
           ) : null}
         </section>
 
-        {/* 🔍 Universal Settings Search & Deep Clean Switchboard */}
+        {/* Universal Settings Search & Deep Clean Switchboard */}
         <section className="bg-white border-2 border-slate-200/90 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -1274,11 +1274,10 @@ function SettingsPage() {
                     cat5: true,
                   });
                 }}
-                className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border transition ${
-                  searchQuery.toLowerCase() === preset.q.toLowerCase()
+                className={`text-[11px] font-medium px-2.5 py-1 rounded-lg border transition ${searchQuery.toLowerCase() === preset.q.toLowerCase()
                     ? "bg-emerald-600 text-white border-emerald-600 font-bold"
                     : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
-                }`}
+                  }`}
               >
                 {preset.label}
               </button>
@@ -1307,7 +1306,7 @@ function SettingsPage() {
         />
 
         {/* =====================================================================
-            CATEGORY 1: 🎨 Brand, Colors, Typography & UI Design
+            CATEGORY 1: Brand, Colors, Typography & UI Design
            ===================================================================== */}
         <section
           id="cat-1"
@@ -1326,7 +1325,7 @@ function SettingsPage() {
                   Category 1 · Sub-Categories 1A &amp; 1B
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  🎨 Brand, Colors, Typography &amp; UI Design
+                  Brand, Colors, Typography &amp; UI Design
                 </h2>
               </div>
             </div>
@@ -1387,11 +1386,10 @@ function SettingsPage() {
                             themeMode: preset.themeMode,
                           }))
                         }
-                        className={`rounded-xl border p-3 text-left transition ${
-                          isSelected
+                        className={`rounded-xl border p-3 text-left transition ${isSelected
                             ? "border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600"
                             : "border-slate-200 hover:border-slate-300 bg-slate-50/50"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2 mb-1.5">
                           <span
@@ -1565,7 +1563,7 @@ function SettingsPage() {
         </section>
 
         {/* =====================================================================
-            CATEGORY 2: ⚖️ Marketplace Economics, Commissions & Algorithm Sliders
+            CATEGORY 2: Marketplace Economics, Commissions & Algorithm Sliders
            ===================================================================== */}
         <section
           id="cat-2"
@@ -1584,7 +1582,7 @@ function SettingsPage() {
                   Category 2 · Sub-Categories 2A, 2B, 2C, 2D &amp; 2E
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  ⚖️ Marketplace Economics, Commissions, Algorithm, Rider Discipline &amp; Central Pricing Switchboard
+                  Marketplace Economics, Commissions, Algorithm, Rider Discipline &amp; Central Pricing Switchboard
                 </h2>
               </div>
             </div>
@@ -1657,11 +1655,10 @@ function SettingsPage() {
                               setEconState((p) => ({ ...p, restaurant_commission_pct: tier.pct }));
                               setMasterControlsState((p) => ({ ...p, standard_commission_pct: tier.pct }));
                             }}
-                            className={`p-2 rounded-lg text-left border transition-all ${
-                              isSelected
+                            className={`p-2 rounded-lg text-left border transition-all ${isSelected
                                 ? "bg-emerald-600 text-white border-emerald-700 shadow-sm"
                                 : "bg-white text-slate-800 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50"
-                            }`}
+                              }`}
                           >
                             <div className="text-sm font-black font-mono">{tier.pct}%</div>
                             <div className={`text-[10px] font-bold line-clamp-1 ${isSelected ? "text-emerald-100" : "text-slate-600"}`}>
@@ -1861,11 +1858,10 @@ function SettingsPage() {
                   {/* Visual Zone Indicator Card */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                     <div
-                      className={`p-3 rounded-xl border text-xs font-mono transition ${
-                        masterControlsState.delivery_radius_km <= 3
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${masterControlsState.delivery_radius_km <= 3
                           ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
                           : "border-slate-200 bg-slate-50/60 text-slate-600"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
                         <MapPin className="w-3 h-3 text-emerald-600" />
@@ -1877,11 +1873,10 @@ function SettingsPage() {
                     </div>
 
                     <div
-                      className={`p-3 rounded-xl border text-xs font-mono transition ${
-                        masterControlsState.delivery_radius_km > 3 && masterControlsState.delivery_radius_km <= 7
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${masterControlsState.delivery_radius_km > 3 && masterControlsState.delivery_radius_km <= 7
                           ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
                           : "border-slate-200 bg-slate-50/60 text-slate-600"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
                         <Compass className="w-3 h-3 text-emerald-600" />
@@ -1893,11 +1888,10 @@ function SettingsPage() {
                     </div>
 
                     <div
-                      className={`p-3 rounded-xl border text-xs font-mono transition ${
-                        masterControlsState.delivery_radius_km > 7
+                      className={`p-3 rounded-xl border text-xs font-mono transition ${masterControlsState.delivery_radius_km > 7
                           ? "border-emerald-500 bg-emerald-50/70 text-emerald-900 font-bold"
                           : "border-slate-200 bg-slate-50/60 text-slate-600"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold uppercase">
                         <Navigation className="w-3 h-3 text-emerald-600" />
@@ -2011,11 +2005,10 @@ function SettingsPage() {
                           </span>
                         </div>
                         <span
-                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                            masterControlsState.soundbox_gateway_enabled
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${masterControlsState.soundbox_gateway_enabled
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-slate-200 text-slate-600"
-                          }`}
+                            }`}
                         >
                           {masterControlsState.soundbox_gateway_enabled ? "4G / Wi-Fi Active" : "Disabled"}
                         </span>
@@ -2046,11 +2039,10 @@ function SettingsPage() {
                           </span>
                         </div>
                         <span
-                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                            masterControlsState.thermal_printer_gateway_enabled
+                          className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${masterControlsState.thermal_printer_gateway_enabled
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-slate-200 text-slate-600"
-                          }`}
+                            }`}
                         >
                           {masterControlsState.thermal_printer_gateway_enabled ? "Auto-Print Active" : "Disabled"}
                         </span>
@@ -2086,11 +2078,10 @@ function SettingsPage() {
                       </p>
                     </div>
                     <span
-                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
-                        masterControlsState.zero_delivery_fallback_enabled
+                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${masterControlsState.zero_delivery_fallback_enabled
                           ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                           : "bg-slate-200 text-slate-600"
-                      }`}
+                        }`}
                     >
                       {masterControlsState.zero_delivery_fallback_enabled ? "Fallback Active" : "Off"}
                     </span>
@@ -2165,11 +2156,10 @@ function SettingsPage() {
                       </p>
                     </div>
                     <span
-                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${
-                        masterControlsState.affiliate_travel_enabled
+                      className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full ${masterControlsState.affiliate_travel_enabled
                           ? "bg-blue-100 text-blue-800 border border-blue-300"
                           : "bg-slate-200 text-slate-600"
-                      }`}
+                        }`}
                     >
                       {masterControlsState.affiliate_travel_enabled ? "Active" : "Disabled"}
                     </span>
@@ -2740,7 +2730,7 @@ function SettingsPage() {
         </section>
 
         {/* =====================================================================
-            CATEGORY 3: 🌐 All 23 Official Indian Languages (22 Scheduled + English)
+            CATEGORY 3: All 23 Official Indian Languages (22 Scheduled + English)
            ===================================================================== */}
         <section
           id="cat-3"
@@ -2759,7 +2749,7 @@ function SettingsPage() {
                   Category 3 · Sub-Categories 3A &amp; 3B ({localeState.enabledLocales.length} / 10 Active)
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  🌐 10 Indian Food Delivery Benchmark Languages
+                  10 Indian Food Delivery Benchmark Languages
                 </h2>
               </div>
             </div>
@@ -2896,7 +2886,7 @@ function SettingsPage() {
                       }
                       className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition"
                     >
-                      ✓ Enable All 10 Languages
+                      Enable All 10 Languages
                     </button>
                   </div>
                 </div>
@@ -2909,11 +2899,10 @@ function SettingsPage() {
                         key={lang.code}
                         type="button"
                         onClick={() => toggleLanguageCode(lang.code)}
-                        className={`flex items-start justify-between gap-2 rounded-xl border p-3 text-left transition ${
-                          enabled
+                        className={`flex items-start justify-between gap-2 rounded-xl border p-3 text-left transition ${enabled
                             ? "border-emerald-500 bg-emerald-50/60 text-slate-900"
                             : "border-slate-200 bg-slate-50/50 text-slate-400"
-                        }`}
+                          }`}
                       >
                         <div>
                           <div className="flex items-center gap-1.5">
@@ -2928,11 +2917,10 @@ function SettingsPage() {
                           <div className="text-[10px] text-slate-500 mt-0.5">{lang.region}</div>
                         </div>
                         <span
-                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            enabled
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full ${enabled
                               ? "bg-emerald-600 text-white"
                               : "bg-slate-200 text-slate-500"
-                          }`}
+                            }`}
                         >
                           {enabled ? "ON" : "OFF"}
                         </span>
@@ -2968,7 +2956,7 @@ function SettingsPage() {
         </section>
 
         {/* =====================================================================
-            CATEGORY 4: 🚨 6-Tier Notification & Zero-Harassment Auto-Remediation Rules
+            CATEGORY 4: 6-Tier Notification & Zero-Harassment Auto-Remediation Rules
            ===================================================================== */}
         <section
           id="cat-4"
@@ -2987,7 +2975,7 @@ function SettingsPage() {
                   Category 4 · Sub-Categories 4A &amp; 4B
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  🚨 6-Tier Notification &amp; Zero-Harassment Auto-Remediation Rules
+                  6-Tier Notification &amp; Zero-Harassment Auto-Remediation Rules
                 </h2>
               </div>
             </div>
@@ -3022,13 +3010,12 @@ function SettingsPage() {
                         <div className="space-y-1 flex-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <span
-                              className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded ${
-                                key === "EMERGENCY" || key === "DANGER"
+                              className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded ${key === "EMERGENCY" || key === "DANGER"
                                   ? "bg-red-100 text-red-800 border border-red-300"
                                   : key === "CRITICAL" || key === "HIGH"
                                     ? "bg-amber-100 text-amber-800 border border-amber-300"
                                     : "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                              }`}
+                                }`}
                             >
                               {key}
                             </span>
@@ -3084,13 +3071,12 @@ function SettingsPage() {
                                 },
                               }))
                             }
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                              rule.autoRemediate
+                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${rule.autoRemediate
                                 ? "bg-emerald-600 text-white"
                                 : "bg-slate-200 text-slate-600"
-                            }`}
+                              }`}
                           >
-                            {rule.autoRemediate ? "⚡ Auto-Remediate ON" : "Manual Only"}
+                            {rule.autoRemediate ? "Auto-Remediate ON" : "Manual Only"}
                           </button>
                         </div>
                       </div>
@@ -3176,7 +3162,7 @@ function SettingsPage() {
         </section>
 
         {/* =====================================================================
-            CATEGORY 5: 🗑️ Reset, Prune & Configuration Backup
+            CATEGORY 5: Reset, Prune & Configuration Backup
            ===================================================================== */}
         <section
           id="cat-5"
@@ -3195,7 +3181,7 @@ function SettingsPage() {
                   Category 5 · Sub-Categories 5A &amp; 5B
                 </span>
                 <h2 className="text-lg font-extrabold text-slate-900">
-                  🗑️ Reset, Prune, Configuration Backup &amp; Ecosystem Connectors
+                  Reset, Prune, Configuration Backup &amp; Ecosystem Connectors
                 </h2>
               </div>
             </div>
@@ -3235,7 +3221,7 @@ function SettingsPage() {
                     onClick={() => void handleSectionReset("brand")}
                     className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
                   >
-                    <div className="text-xs font-bold text-slate-900">🎨 Reset Branding</div>
+                    <div className="text-xs font-bold text-slate-900">Reset Branding</div>
                     <p className="text-[11px] text-slate-500 mt-1">
                       Restore #0D3B2E Emerald, #D97706 Gold, 16px radius &amp; default typography.
                     </p>
@@ -3247,7 +3233,7 @@ function SettingsPage() {
                     onClick={() => void handleSectionReset("marketplace")}
                     className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
                   >
-                    <div className="text-xs font-bold text-slate-900">⚖️ Reset Marketplace Fees</div>
+                    <div className="text-xs font-bold text-slate-900">Reset Marketplace Fees</div>
                     <p className="text-[11px] text-slate-500 mt-1">
                       Restore 18% commission, ₹4 platform fee, ₹35 base delivery &amp; ₹8/km rate.
                     </p>
@@ -3259,7 +3245,7 @@ function SettingsPage() {
                     onClick={() => void handleSectionReset("algorithm")}
                     className="rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 p-3.5 text-left transition"
                   >
-                    <div className="text-xs font-bold text-slate-900">🧭 Reset Algorithm Sliders</div>
+                    <div className="text-xs font-bold text-slate-900">Reset Algorithm Sliders</div>
                     <p className="text-[11px] text-slate-500 mt-1">
                       Restore 25 km max radius, 2.0x surge cap &amp; 15m kitchen prep buffer.
                     </p>
@@ -3273,7 +3259,7 @@ function SettingsPage() {
                       className="rounded-xl border border-red-300 bg-red-50 hover:bg-red-100 p-3.5 text-left transition"
                     >
                       <div className="text-xs font-bold text-red-800">
-                        🗑️ Reset All to Factory Defaults
+                        Reset All to Factory Defaults
                       </div>
                       <p className="text-[11px] text-red-600 mt-1">
                         Requires confirmation before resetting all 5 categories.
@@ -3322,11 +3308,10 @@ function SettingsPage() {
                       onClick={() =>
                         setActiveSubsystemTab((t) => (t === "visual_studio" ? "none" : "visual_studio"))
                       }
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                        activeSubsystemTab === "visual_studio"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${activeSubsystemTab === "visual_studio"
                           ? "bg-rose-600 text-white border-rose-600"
                           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       <Palette className="h-3.5 w-3.5" /> Visual Customization Studio
                     </button>
@@ -3335,11 +3320,10 @@ function SettingsPage() {
                       onClick={() =>
                         setActiveSubsystemTab((t) => (t === "cms" ? "none" : "cms"))
                       }
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                        activeSubsystemTab === "cms"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${activeSubsystemTab === "cms"
                           ? "bg-emerald-600 text-white border-emerald-600"
                           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       <FileText className="h-3.5 w-3.5" /> Ecosystem CMS
                     </button>
@@ -3348,11 +3332,10 @@ function SettingsPage() {
                       onClick={() =>
                         setActiveSubsystemTab((t) => (t === "connectors" ? "none" : "connectors"))
                       }
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                        activeSubsystemTab === "connectors"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${activeSubsystemTab === "connectors"
                           ? "bg-emerald-600 text-white border-emerald-600"
                           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       <Cpu className="h-3.5 w-3.5" /> Plugin Connectors
                     </button>
@@ -3361,11 +3344,10 @@ function SettingsPage() {
                       onClick={() =>
                         setActiveSubsystemTab((t) => (t === "hyperlocal_playbook" ? "none" : "hyperlocal_playbook"))
                       }
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                        activeSubsystemTab === "hyperlocal_playbook"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${activeSubsystemTab === "hyperlocal_playbook"
                           ? "bg-emerald-600 text-white border-emerald-600 shadow-sm"
                           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       <Rocket className="h-3.5 w-3.5 text-amber-500" /> 5-Day Launch Playbook
                     </button>
@@ -3462,15 +3444,13 @@ function ToggleRow({ title, description, isOn, onToggle }: any) {
       <button
         type="button"
         onClick={onToggle}
-        className={`w-12 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${
-          isOn ? "bg-emerald-600" : "bg-slate-300"
-        }`}
+        className={`w-12 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${isOn ? "bg-emerald-600" : "bg-slate-300"
+          }`}
         aria-label={`Toggle ${title}`}
       >
         <div
-          className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${
-            isOn ? "translate-x-6" : "translate-x-0"
-          }`}
+          className={`w-5 h-5 bg-white rounded-full transition-transform shadow-sm ${isOn ? "translate-x-6" : "translate-x-0"
+            }`}
         />
       </button>
     </div>

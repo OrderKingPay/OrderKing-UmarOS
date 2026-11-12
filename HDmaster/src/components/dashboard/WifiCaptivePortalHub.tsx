@@ -99,9 +99,7 @@ export function WifiCaptivePortalHub({
   const [adHeadline, setAdHeadline] = useState("");
   const [adDescription, setAdDescription] = useState("");
   const [targetUrl, setTargetUrl] = useState("");
-  const [creativeUrl, setCreativeUrl] = useState(
-    "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80"
-  );
+  const [creativeUrl, setCreativeUrl] = useState("");
   const [adBudget, setAdBudget] = useState(2500);
   const [isBookingAd, setIsBookingAd] = useState(false);
   const [adBookingNotice, setAdBookingNotice] = useState<string | null>(null);
@@ -747,13 +745,16 @@ export function WifiCaptivePortalHub({
 
               {/* Sponsor Creative Box */}
               <div className="rounded-xl border border-slate-200 bg-slate-50 overflow-hidden text-left shadow-2xs">
-                <div className="h-24 bg-cover bg-center" style={{ backgroundImage: `url(${creativeUrl})` }} />
+                <div
+                  className="h-24 bg-cover bg-center bg-gradient-to-br from-slate-800 to-slate-900"
+                  style={creativeUrl ? { backgroundImage: `url(${creativeUrl})` } : undefined}
+                />
                 <div className="p-2.5">
                   <span className="text-[8px] uppercase font-bold text-blue-600 tracking-wider">
-                    Sponsored • OrderKing Partner
+                    Sponsored | OrderKing Partner
                   </span>
                   <div className="text-[11px] font-bold text-slate-900 leading-tight mt-0.5">
-                    {adHeadline || "Get ₹150 Instant Cash • Order Direct via OrderKing"}
+                    {adHeadline || "Get ₹150 Instant Cash | Order Direct via OrderKing"}
                   </div>
                   <div className="text-[9px] text-slate-500 mt-0.5">
                     Direct ordering. Authentic restaurant prices.
@@ -768,7 +769,7 @@ export function WifiCaptivePortalHub({
                   onClick={() => setPreviewUnlocked(true)}
                   className="w-full rounded-lg bg-blue-600 py-2 text-xs font-bold text-white hover:bg-blue-700 shadow-xs"
                 >
-                  {previewUnlocked ? "Connected to Internet ✓" : "Claim Offer & Unlock Wi-Fi"}
+                  {previewUnlocked ? "Connected to Internet" : "Claim Offer & Unlock Wi-Fi"}
                 </button>
                 <div className="text-[9px] text-slate-400">
                   Powered by Umar OS Hotspot Engine
@@ -799,7 +800,7 @@ export function WifiCaptivePortalHub({
                 onClick={() => setShowAdModal(false)}
                 className="text-slate-400 hover:text-slate-700 text-sm font-semibold"
               >
-                ✕
+                Close
               </button>
             </div>
 

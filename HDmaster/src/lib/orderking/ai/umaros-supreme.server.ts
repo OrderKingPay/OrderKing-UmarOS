@@ -304,7 +304,7 @@ export interface AutonomousRefundResult {
 }
 
 /**
- * Core implementation: Autonomous Refund with Military-Grade Anti-Fraud Shield
+ * Core implementation: Autonomous Refund with Anti-Fraud Shield
  */
 export async function executeAutonomousRefundCore(params: {
   claim: RefundClaimPayload;
@@ -340,7 +340,7 @@ export async function executeAutonomousRefundCore(params: {
     } catch (_e) {}
   }
 
-  // Validate with Military-Grade Anti-Fraud Shield
+  // Validate with Anti-Fraud Shield
   const validation = militaryAntiFraudShield.validateRefundClaim(claim, signature, {
     orderTotalPaise,
     orderStatus,
@@ -602,72 +602,102 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
     };
   }
 
-  // 6. Military Anti-Fraud Shield Command
-  if (normalized === "/shield" || normalized === "/security" || normalized.includes("anti-fraud") || normalized.includes("defense") || normalized.includes("military")) {
+  // 6. Anti-Fraud Shield Command
+  if (normalized === "/shield" || normalized === "/security" || normalized.includes("anti-fraud") || normalized.includes("defense") || normalized.includes("security shield")) {
     const report = militaryAntiFraudShield.getAuditReport();
     const executionMs = Date.now() - startTime;
     return {
       status: "SUCCESS",
-      title: "Military-Grade Anti-Fraud Cryptographic Shield",
-      response: `Military Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Simulated Orders: ${report.fakeOrdersIntercepted}, Simulated Refunds: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
+      title: "Anti-Fraud Cryptographic Shield",
+      response: `Military Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Orders Blocked: ${report.fakeOrdersIntercepted}, Refunds Blocked: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
       toolExecuted: "audit_military_anti_fraud_shield",
       executionMs,
       data: report
     };
   }
 
-  // 7. Multimodal Visual Proof Audit Command
+  // 7. Multimodal Visual Proof Audit Command (Real DB backed)
   if (normalized === "/vision" || normalized.includes("vision audit") || normalized.includes("photo proof")) {
+    let proofCount = 0;
+    if (sql) {
+      try {
+        const rows = await sql<{ count: string }>`
+          SELECT count(*)::text as count FROM rider_documents
+        `;
+        proofCount = parseInt(rows[0]?.count || "0", 10);
+      } catch (_e) {}
+    }
     const executionMs = Date.now() - startTime;
     return {
       status: "SUCCESS",
-      title: "Multimodal Visual Inspection & Optical Proof Audit",
-      response: "Multimodal Vision Audit complete. Optical inspection confirms 100% tamper-seal compliance on active orders, verified QR rider handoffs, and 0 visual defect claims flagged across preparation bays.",
+      title: "Visual Proof Audit",
+      response: `Database Proof Audit complete: ${proofCount} uploaded rider/handover document records found in PostgreSQL.`,
       toolExecuted: "multimodal_vision_audit",
       executionMs,
       data: {
-        inspectedOrders: 3,
-        tamperSealConfidence: "99.4%",
-        handoffQrVerified: true,
-        geoAccuracyMeters: 2.1
+        inspectedDocuments: proofCount,
+        connected: Boolean(sql),
       }
     };
   }
 
-  // 7. Operations Throughput & SLA Curves Command
+  // 7. Operations Throughput & SLA Curves Command (Real PostgreSQL backed)
   if (normalized === "/charts" || normalized === "/chart" || normalized.includes("throughput curve") || normalized.includes("sla performance")) {
+    let last24hOrders = 0;
+    let deliveredOrders = 0;
+    if (sql) {
+      try {
+        const rows = await sql<{ total_24h: string; delivered_24h: string }>`
+          SELECT
+            count(*)::text as total_24h,
+            count(*) filter (where status = 'DELIVERED')::text as delivered_24h
+          FROM orders
+          WHERE created_at >= now() - interval '24 hours'
+        `;
+        last24hOrders = parseInt(rows[0]?.total_24h || "0", 10);
+        deliveredOrders = parseInt(rows[0]?.delivered_24h || "0", 10);
+      } catch (_e) {}
+    }
     const executionMs = Date.now() - startTime;
     return {
       status: "SUCCESS",
-      title: "Operational Throughput & SLA Velocity Analytics",
-      response: "Operational Velocity Analytics: Peak platform throughput at 142 orders/hr with 3.4m average Haversine dispatch latency. 99.1% prep-to-dispatch SLA adherence recorded across active zones.",
+      title: "Operational Throughput & SLA Analytics",
+      response: `Last 24h Orders (PostgreSQL): ${last24hOrders} total, ${deliveredOrders} delivered.`,
       toolExecuted: "query_throughput_curves",
       executionMs,
       data: {
-        peakHourlyVolume: 142,
-        avgDispatchMins: 3.4,
-        slaComplianceRate: "99.1%",
-        activeTimeWindow: "10:00 - 17:00 IST"
+        last24hOrders,
+        deliveredOrders,
+        connected: Boolean(sql),
       }
     };
   }
 
   // 8. CCTV Kitchen Dispatch Video Stream Command
   if (normalized === "/video" || normalized === "/cctv" || normalized.includes("cctv stream") || normalized.includes("video replay")) {
+    const rtspGateway = (process.env.CCTV_RTSP_GATEWAY_URL || "").trim();
     const executionMs = Date.now() - startTime;
+    if (!rtspGateway) {
+      return {
+        status: "ERROR",
+        title: "CCTV Stream Not Connected",
+        response: "Live CCTV RTSP gateway is not configured (CCTV_RTSP_GATEWAY_URL unset).",
+        toolExecuted: "cctv_motion_tracking",
+        executionMs,
+        data: {
+          connected: false,
+        }
+      };
+    }
     return {
       status: "SUCCESS",
-      title: "CCTV Dispatch Telemetry & Optical Replay Stream",
-      response: "CCTV Stream Telemetry active: CAM-04 Kitchen Expedition Bay operating at 1080p 30fps. Autonomous optical tracking indicates nominal dispatch flow with 3.2m average handoff latency and 0 bottlenecks.",
+      title: "CCTV Dispatch Stream Gateway",
+      response: `CCTV RTSP gateway configured (${rtspGateway}).`,
       toolExecuted: "cctv_motion_tracking",
       executionMs,
       data: {
-        streamId: "CAM-04-EXPEDITION",
-        fps: 30,
-        resolution: "1920x1080",
-        codec: "H.264",
-        motionTracking: "NOMINAL",
-        avgHandoffSlaMins: 3.2
+        connected: true,
+        gatewayConfigured: true,
       }
     };
   }

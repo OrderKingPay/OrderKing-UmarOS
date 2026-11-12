@@ -56,7 +56,7 @@ export class InstantDeployEngine {
 
   <main class="max-w-4xl mx-auto w-full py-16 text-center space-y-6">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-      <span>⚡ Instant Autonomous Deployment via Umar OS</span>
+      <span>Instant Autonomous Deployment via Umar OS</span>
     </div>
     <h1 class="font-display text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
       ${name}

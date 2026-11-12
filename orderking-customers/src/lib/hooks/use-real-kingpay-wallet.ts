@@ -1,7 +1,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getKingpayBalance, addKingpayMoney, deductKingpayMoney } from "@/lib/server/kingpay";
+import { getKingpayBalance, deductKingpayMoney } from "@/lib/server/kingpay";
 import { supabase } from "@/lib/db-cloud";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
@@ -30,7 +30,7 @@ export function useRealKingPayWallet() {
         (payload) => {
           queryClient.setQueryData(["kingpay_balance", user.id], {
             balance: payload.new.balance_paise / 100,
-            coins: payload.new.king_coins,
+            coins: Number(payload.new.king_coins),
           });
         }
       )
@@ -42,42 +42,15 @@ export function useRealKingPayWallet() {
   const walletBalancePaise = Math.round(walletBalance * 100);
   const kingCoins = data?.coins ?? 0;
 
-  const addMoney = useMutation({
-    mutationFn: (args: { amount: number; description: string }) => addKingpayMoney({ data: args }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
-  });
-
   const deductMoney = useMutation({
     mutationFn: (args: { amount: number; description: string }) => deductKingpayMoney({ data: args }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["kingpay_balance", user?.id] }),
   });
 
-  // Simulated setWalletBalance to emulate the useState tuple structure for easy patching
-  const setWalletBalance = (action: any) => {
-    let amount = 0;
-    if (typeof action === 'function') {
-      const result = action(walletBalance);
-      amount = result - walletBalance;
-    } else {
-      amount = action - walletBalance;
-    }
-    
-    if (amount > 0) {
-      addMoney.mutate({ amount, description: "Wallet Top-up / Reward" });
-    } else if (amount < 0) {
-      deductMoney.mutate({ amount: Math.abs(amount), description: "Wallet Deduction" });
-    }
-  };
-
-  const setKingCoins = () => { /* read only for now, mutations can be added */ };
-
   return {
     walletBalance,
     walletBalancePaise,
-    setWalletBalance,
     kingCoins,
-    setKingCoins,
-    addMoney,
     deductMoney,
     isLoading,
   };

@@ -593,7 +593,7 @@ export function UmarOsVisualCustomizationStudio({
   };
 
   // Filtered sections for the device simulator
-  const simulatedVisibleSections = useMemo(() => {
+  const visibleSections = useMemo(() => {
     return sortedSections.filter((section) => {
       if (!section.visible) return false;
       if (previewDevice === "mobile" && section.responsive.hideOnMobile) return false;
@@ -833,7 +833,7 @@ export function UmarOsVisualCustomizationStudio({
     const gstOnCommission = grossCommission * 0.18; // 18% GST on platform services (SAC 9985)
     const tcsSec52 = foodOrderAmount * 0.01; // 1% TCS
     const tdsSec194O = foodOrderAmount * 0.01; // 1% TDS
-    const promoDiscount = 50; // Sample ₹50 order discount
+    const promoDiscount = 50; // Reference ₹50 order discount
     const merchantDiscountShare = (promoDiscount * discountCoFundingMerchantPercent) / 100;
     const platformDiscountShare = promoDiscount - merchantDiscountShare;
     const packagingCharge = Math.min(25, packagingFeeCapRupees);
@@ -1379,7 +1379,7 @@ export function UmarOsVisualCustomizationStudio({
                   <Badge tone="primary" className="text-[10px]">Real-time Tokens</Badge>
                 </div>
 
-                {/* Simulated UI Card rendered using currently selected tokens */}
+                {/* Storefront Token Preview Card */}
                 <div
                   className="rounded-xl p-5 border shadow-md transition-all duration-300"
                   style={{
@@ -1396,13 +1396,13 @@ export function UmarOsVisualCustomizationStudio({
                         color: palette.accent,
                       }}
                     >
-                      ★ 4.9 Super Merchant
+                      4.9 Partner Preview
                     </span>
                     <span className="text-[11px] text-slate-400 font-mono">18-22 mins</span>
                   </div>
 
                   <h4 className="mt-3 text-base font-bold" style={{ color: palette.foreground }}>
-                    Royal Biryani Darbar
+                    Partner Storefront Preview
                   </h4>
                   <p className="text-xs mt-1" style={{ color: palette.muted }}>
                     Awadhi Biryani, Mughlai, Kebabs · Koramangala
@@ -1810,14 +1810,14 @@ export function UmarOsVisualCustomizationStudio({
                 <div className="mb-4 flex items-center justify-between w-full text-slate-300 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-mono">Viewport Simulation: {previewDevice.toUpperCase()}</span>
+                    <span className="font-mono">Viewport Preview: {previewDevice.toUpperCase()}</span>
                   </div>
                   <span className="text-[11px] text-slate-400">
-                    Visible Sections: {simulatedVisibleSections.length} of {sortedSections.length}
+                    Visible Sections: {visibleSections.length} of {sortedSections.length}
                   </span>
                 </div>
 
-                {/* Device Bezel Simulator Container */}
+                {/* Device Bezel Preview Container */}
                 <div
                   className={cn(
                     "bg-slate-100 rounded-3xl border-4 border-slate-700 shadow-2xl transition-all duration-300 overflow-hidden flex flex-col",
@@ -1838,7 +1838,7 @@ export function UmarOsVisualCustomizationStudio({
 
                   {/* Rendered SDUI Sections inside Device Frame */}
                   <div className="p-3 space-y-3 flex-1 overflow-y-auto">
-                    {simulatedVisibleSections.map((section) => (
+                    {visibleSections.map((section) => (
                       <div
                         key={section.id}
                         className="rounded-xl border shadow-xs p-3 transition"
@@ -1889,7 +1889,7 @@ export function UmarOsVisualCustomizationStudio({
                               {["Biryani", "Pizza", "Grocery", "Pharmacy"].map((cat, i) => (
                                 <div key={i} className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex flex-col items-center gap-1">
                                   <div className="h-6 w-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-xs">
-                                    🍽
+                                    {cat.slice(0, 1)}
                                   </div>
                                   <span style={{ color: palette.foreground }}>{cat}</span>
                                 </div>
@@ -1901,7 +1901,7 @@ export function UmarOsVisualCustomizationStudio({
                         {section.type === "deal_strip" && (
                           <div className="flex items-center justify-between text-xs bg-amber-50/70 p-2 rounded-lg border border-amber-200 text-amber-900">
                             <span className="font-bold flex items-center gap-1">
-                              ⚡ Lightning Flash Deals
+                              Lightning Flash Deals
                             </span>
                             <span className="font-mono text-[10px] font-bold">Ends in 24m 12s</span>
                           </div>
@@ -1917,11 +1917,11 @@ export function UmarOsVisualCustomizationStudio({
                             </div>
                             <div className="p-2.5 rounded-lg border border-slate-100 bg-slate-50/50 flex items-center justify-between">
                               <div>
-                                <h6 className="text-xs font-bold" style={{ color: palette.foreground }}>Karimganj Biryani House</h6>
-                                <p className="text-[10px] text-slate-500">North Indian, Mughlai · 25 mins</p>
+                                <h6 className="text-xs font-bold" style={{ color: palette.foreground }}>Preview Restaurant Card</h6>
+                                <p className="text-[10px] text-slate-500">North Indian, Mughlai | 25 mins</p>
                               </div>
                               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                                ★ 4.6
+                                4.6
                               </span>
                             </div>
                           </div>
@@ -1933,7 +1933,7 @@ export function UmarOsVisualCustomizationStudio({
                             style={{ backgroundColor: palette.primary }}
                           >
                             <span>1 Item | ₹380</span>
-                            <span>View Cart →</span>
+                            <span>View Cart</span>
                           </div>
                         )}
                       </div>
@@ -2726,10 +2726,10 @@ export function UmarOsVisualCustomizationStudio({
                             : "bg-white text-slate-700 border-slate-200"
                         )}
                       >
-                        {cond === "clear" && "☀️ Clear"}
-                        {cond === "drizzle" && "🌦️ Drizzle"}
-                        {cond === "heavy_rain" && "🌧️ Heavy Rain"}
-                        {cond === "waterlogged" && "🌊 Waterlogged"}
+                        {cond === "clear" && "Clear"}
+                        {cond === "drizzle" && "Drizzle"}
+                        {cond === "heavy_rain" && "Heavy Rain"}
+                        {cond === "waterlogged" && "Waterlogged"}
                       </button>
                     ))}
 
@@ -2741,7 +2741,7 @@ export function UmarOsVisualCustomizationStudio({
                         isNightActive ? "bg-indigo-700 text-white border-indigo-700" : "bg-white text-slate-700 border-slate-200"
                       )}
                     >
-                      🌙 Night Mode {isNightActive ? "(ON)" : "(OFF)"}
+                      Night Mode {isNightActive ? "(ON)" : "(OFF)"}
                     </button>
                   </div>
                 </div>

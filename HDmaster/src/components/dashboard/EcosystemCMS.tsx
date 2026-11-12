@@ -1409,7 +1409,7 @@ export function EcosystemCMS() {
                       <span className="text-[9px] text-slate-400">Sribhumi</span>
                     </div>
                     <div className="text-[10px] text-slate-300">
-                      📍 {formData.deliveryLocationPrompt || "Delivering fresh to your location"}
+                       {formData.deliveryLocationPrompt || "Delivering fresh to your location"}
                     </div>
                   </div>
 

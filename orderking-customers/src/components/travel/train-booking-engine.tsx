@@ -724,7 +724,7 @@ export function TrainBookingEngine({
                   type="email"
                   value={contactEmail}
                   onChange={(e) => setContactEmail(e.target.value.trim())}
-                  placeholder="name@example.com"
+                  placeholder="name@domain.com"
                   className="w-full h-10 px-3 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-900 focus:border-indigo-500 focus:outline-none"
                 />
               </div>

@@ -690,7 +690,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             Settings & Customizations
           </span>
           <p className="text-xs font-semibold text-foreground mt-1">
-            Razorpay • Supabase • WhatsApp • Maps • AI • FSSAI/GST
+            Razorpay | Supabase | WhatsApp | Maps | AI | FSSAI/GST
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             All secret keys stay masked on screen and can be updated anytime.

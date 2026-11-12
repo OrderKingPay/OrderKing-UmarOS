@@ -37,7 +37,7 @@ export async function createPresignedUpload(
 ): Promise<PresignedUploadResponse> {
   const config = getStorageConfig();
   const ext = req.fileName.split(".").pop() || "jpg";
-  const uniqueKey = `${req.target}/${req.targetId}/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
+  const uniqueKey = `${req.target}/${req.targetId}/${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}.${ext}`;
 
   if (!config.hasCredentials) {
     throw new Error("Storage credentials not configured. Refusing to generate simulated upload.");

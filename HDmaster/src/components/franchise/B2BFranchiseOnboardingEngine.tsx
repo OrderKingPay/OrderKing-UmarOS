@@ -381,11 +381,10 @@ export function B2BFranchiseOnboardingEngine() {
         <div className="flex items-center gap-2 py-3 overflow-x-auto">
           <button
             onClick={() => setActiveTab("ledger")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === "ledger"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "ledger"
                 ? "bg-white text-slate-900 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <Receipt className="h-4 w-4 text-blue-600" />
             <span>Franchise Invoices & Contracts Ledger</span>
@@ -396,11 +395,10 @@ export function B2BFranchiseOnboardingEngine() {
 
           <button
             onClick={() => setActiveTab("generator")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === "generator"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "generator"
                 ? "bg-white text-slate-900 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <FileSignature className="h-4 w-4 text-emerald-600" />
             <span>Generate Contract & Tax Invoice</span>
@@ -411,11 +409,10 @@ export function B2BFranchiseOnboardingEngine() {
 
           <button
             onClick={() => setActiveTab("playbook")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-              activeTab === "playbook"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === "playbook"
                 ? "bg-white text-slate-900 shadow-xs border border-slate-200"
                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
-            }`}
+              }`}
           >
             <Briefcase className="h-4 w-4 text-indigo-600" />
             <span>Founder Capital Acquisition Playbook</span>
@@ -546,19 +543,18 @@ export function B2BFranchiseOnboardingEngine() {
                             {/* Tier */}
                             <td className="py-4 px-4 align-top">
                               <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                                  c.tier === "EXECUTIVE_FLAGSHIP"
+                                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${c.tier === "EXECUTIVE_FLAGSHIP"
                                     ? "bg-purple-100 text-purple-900 border border-purple-200"
                                     : c.tier === "PRIORITY_PARTNER"
-                                    ? "bg-blue-100 text-blue-900 border border-blue-200"
-                                    : "bg-slate-100 text-slate-900 border border-slate-200"
-                                }`}
+                                      ? "bg-blue-100 text-blue-900 border border-blue-200"
+                                      : "bg-slate-100 text-slate-900 border border-slate-200"
+                                  }`}
                               >
                                 {c.tier === "EXECUTIVE_FLAGSHIP"
                                   ? "Executive Flagship (₹50k)"
                                   : c.tier === "PRIORITY_PARTNER"
-                                  ? "Growth Partner (₹25k)"
-                                  : "Standard Priority (₹10k)"}
+                                    ? "Growth Partner (₹25k)"
+                                    : "Standard Priority (₹10k)"}
                               </span>
                               <div className="text-[10px] text-slate-500 mt-1">
                                 {TIER_CONFIGS[c.tier]?.tagline || "Onboarding Tier"}
@@ -611,6 +607,7 @@ export function B2BFranchiseOnboardingEngine() {
                                     className="block text-[10px] font-semibold text-emerald-700 hover:text-emerald-900 hover:underline"
                                   >
                                     Record Payment →
+                                    Record Payment
                                   </button>
                                 </div>
                               )}
@@ -641,6 +638,7 @@ export function B2BFranchiseOnboardingEngine() {
                                     className="block text-[10px] font-semibold text-blue-700 hover:text-blue-900 hover:underline"
                                   >
                                     Sign Contract →
+                                    Sign Contract
                                   </button>
                                 </div>
                               )}
@@ -743,11 +741,10 @@ export function B2BFranchiseOnboardingEngine() {
                 {/* Tier 1 */}
                 <div
                   onClick={() => handleTierChange("STANDARD_MERCHANT")}
-                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${
-                    formTier === "STANDARD_MERCHANT"
+                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "STANDARD_MERCHANT"
                       ? "border-slate-900 bg-slate-50/80 shadow-sm"
                       : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">
@@ -766,11 +763,10 @@ export function B2BFranchiseOnboardingEngine() {
                 {/* Tier 2 */}
                 <div
                   onClick={() => handleTierChange("PRIORITY_PARTNER")}
-                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${
-                    formTier === "PRIORITY_PARTNER"
+                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "PRIORITY_PARTNER"
                       ? "border-blue-600 bg-blue-50/50 shadow-sm ring-1 ring-blue-600"
                       : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
+                    }`}
                 >
                   <div className="absolute -top-2.5 right-4 rounded-full bg-blue-600 text-white text-[9px] font-bold px-2 py-0.5 tracking-wider uppercase">
                     Most Popular
@@ -792,11 +788,10 @@ export function B2BFranchiseOnboardingEngine() {
                 {/* Tier 3 */}
                 <div
                   onClick={() => handleTierChange("EXECUTIVE_FLAGSHIP")}
-                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${
-                    formTier === "EXECUTIVE_FLAGSHIP"
+                  className={`cursor-pointer rounded-xl border-2 p-5 transition-all relative ${formTier === "EXECUTIVE_FLAGSHIP"
                       ? "border-purple-600 bg-purple-50/50 shadow-sm ring-1 ring-purple-600"
                       : "border-slate-200 bg-white hover:border-slate-300"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-purple-900 uppercase tracking-wider">
@@ -1182,7 +1177,7 @@ export function B2BFranchiseOnboardingEngine() {
                   OrderKing Technologies Private Limited
                 </div>
                 <div className="text-[11px] text-slate-600 font-sans">
-                  Corporate Identification & Hyperlocal Cloud Commerce Operations • CIN: U72900AS2026PTC019823
+                  Corporate Identification &amp; Hyperlocal Cloud Commerce Operations | CIN: U72900AS2026PTC019823
                 </div>
                 <div className="text-[10px] font-mono text-slate-500 font-sans">
                   Agreement Reference: <strong>{viewingContract.contract_number}</strong> | Date:{" "}
@@ -1331,7 +1326,7 @@ export function B2BFranchiseOnboardingEngine() {
                   onClick={() => setViewingInvoice(null)}
                   className="rounded-lg p-1.5 text-slate-400 hover:text-slate-800"
                 >
-                  ✕
+                  Close
                 </button>
               </div>
             </div>
@@ -1428,6 +1423,9 @@ export function B2BFranchiseOnboardingEngine() {
                     Bank / UPI Escrow Settlement Rails:
                   </div>
                   <div className="text-xs font-semibold text-slate-900">OrderKing Technologies Escrow</div>
+                  <div className="text-[11px] text-slate-600">Bank: HDFC Bank Limited (Commercial Branch)</div>
+                  <div className="font-mono text-[11px] text-slate-800">A/C: 50200088912345 | IFSC: HDFC0001234</div>
+                  <div className="font-mono text-[11px] text-emerald-800 font-semibold">UPI VPA: orderking@ybl</div>
                   <div className="text-[11px] text-slate-600">Settlement Rail: Configure Bank A/C &amp; IFSC in Finance Settings</div>
                   <div className="font-mono text-[11px] text-emerald-800 font-semibold">Direct NPCI UPI VPA: 9395065587@ybl</div>
                 </div>
@@ -1459,7 +1457,7 @@ export function B2BFranchiseOnboardingEngine() {
                 <h3 className="font-bold text-sm text-slate-900">Record Setup Fee Settlement</h3>
               </div>
               <button onClick={() => setPaymentModalContract(null)} className="text-slate-400 hover:text-slate-800">
-                ✕
+                Close
               </button>
             </div>
 
@@ -1536,7 +1534,7 @@ export function B2BFranchiseOnboardingEngine() {
                 <h3 className="font-bold text-sm text-slate-900">Attest Digital Signature</h3>
               </div>
               <button onClick={() => setSignatureModalContract(null)} className="text-slate-400 hover:text-slate-800">
-                ✕
+                Close
               </button>
             </div>
 

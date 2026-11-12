@@ -57,7 +57,7 @@ export class DemandPredictionEngine {
 
     console.log(`[AI ENGINE] Initiating demand prediction cycle for Zone: ${zoneId}`);
     
-    // Simulate AI Prediction Math
+    // Compute demand projection from active order rate
     const predictedOrdersNextHour = currentActiveOrders * (this.config.aggressivenessLevel === 'MAX_DOMINANCE' ? 3.5 : 2.0);
     console.log(`[AI ENGINE] Forecast: ${Math.floor(predictedOrdersNextHour)} orders expected in the next 60 minutes.`);
 

@@ -4,12 +4,12 @@ import {
   Sparkles,
   Clock,
   Crown,
-      Store,
+  Store,
   ArrowRight,
   ShieldCheck,
   ShoppingBag,
   CreditCard,
-    } from "lucide-react";
+} from "lucide-react";
 import { useCartStore, cartCount } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 
@@ -30,9 +30,9 @@ export function SmartZeroDeliveryFallbackCard({
     cityName && cityName !== "Locating..."
       ? cityName
       : storeLocation?.zoneName ||
-        (storeLocation?.cityName && storeLocation.cityName !== "Locating..."
-          ? storeLocation.cityName
-          : "your area");
+      (storeLocation?.cityName && storeLocation.cityName !== "Locating..."
+        ? storeLocation.cityName
+        : "your area");
 
   const now = new Date();
   const hour = now.getHours();
@@ -83,7 +83,7 @@ export function SmartZeroDeliveryFallbackCard({
               </p>
             ) : isNightHour ? (
               <p>
-                <strong className="font-bold text-stone-900">24/7 KingPay UPI:</strong> Instant dynamic BharatQR, peer-to-peer transfers, and instant cashback wallet settlements.</p>
+                <strong className="font-bold text-stone-900">24/7 KingPay UPI:</strong> Instant dynamic BharatQR, peer-to-peer transfers, and bank wallet settlements.</p>
             ) : (
               <p>
                 <strong className="font-bold text-stone-900">Mart Groceries:</strong> Essential pantry goods, groceries, and packaged foods shipped across verified zones.</p>
@@ -135,7 +135,7 @@ export function SmartZeroDeliveryFallbackCard({
                 KingPay UPI &amp; Bill Payments
               </h4>
               <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Instant 256-bit live fee & instant cashback UPI transfers, mobile recharges, and utility bill payments available 24/7 across India.
+                Instant 256-bit zero-fee UPI transfers, mobile recharges, and utility bill payments available 24/7 across India.
               </p>
             </div>
             <Link
@@ -187,7 +187,7 @@ export function SmartZeroDeliveryFallbackCard({
           <span>·</span>
           <span>Official IRCTC PNR tracking</span>
           <span>·</span>
-          
+
           <span>₹0 extra delivery fee with active cart</span>
         </div>
       </div>

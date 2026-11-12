@@ -74,8 +74,10 @@ export class ExtremeNetworkEngine {
     for (const order of queueCopy) {
       try {
         const compressed = this.compressPayloadFor2G(order);
-        // Simulate sending over network
-        await this.transmit(compressed);
+        const ok = await this.transmit(compressed);
+        if (!ok) {
+          throw new Error("Upstream sync endpoint returned non-OK status");
+        }
         console.log(`Successfully synced order ${order.id}`);
       } catch (e) {
         console.error(`Failed to sync order ${order.id}, requeuing...`, e);
@@ -112,11 +114,14 @@ export class ExtremeNetworkEngine {
   }
 
   private async transmit(compressedPayload: string): Promise<boolean> {
-    // Simulated transmission delay depending on network
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 2000); // simulate 2G latency
+    if (typeof fetch !== "function") {
+      return false;
+    }
+    const res = await fetch("/api/orders/sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ payload: compressedPayload }),
     });
+    return res.ok;
   }
 }

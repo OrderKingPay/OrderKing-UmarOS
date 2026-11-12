@@ -1548,7 +1548,7 @@ function FeaturedAdAuctionStudioSection() {
         </div>
       </div>
 
-      {/* Top of Feed Live Winning Slots Simulation */}
+      {/* Top of Feed Winning Slots */}
       <div className="space-y-3">
         <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block flex items-center gap-2">
           <Award className="size-4 text-amber-400" />

@@ -165,7 +165,7 @@ export async function signIn(
  * handler (no await before this). The path is served by the template Vite
  * plugin (`authPopupPlugin` in vite.config.ts) — NOT by a React route.
  *
- * Opens the real URL directly (not about:blank → assign). From a cross-origin
+ * Opens the real URL directly (not about:blank -> assign). From a cross-origin
  * iframe the about:blank dance often fails on the first click and the window
  * ends up showing the app shell.
  */

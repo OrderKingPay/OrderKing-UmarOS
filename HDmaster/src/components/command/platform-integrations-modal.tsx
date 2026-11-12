@@ -91,7 +91,7 @@ export function PlatformIntegrationsModal({
       if (result.success) {
         toast.success(`${selectedPlatform.name}: ${result.summary}`);
       } else {
-        toast.info(`ℹ️ ${selectedPlatform.name}: ${result.summary}`);
+        toast.info(`ℹ ${selectedPlatform.name}: ${result.summary}`);
       }
 
       if (onExecuteInChat) {

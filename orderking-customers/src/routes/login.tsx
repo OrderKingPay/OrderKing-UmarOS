@@ -277,7 +277,7 @@ function Login() {
                           void handleSendOtp();
                         }
                       }}
-                      placeholder="9876543210"
+                      placeholder="10-digit mobile number"
                       className="w-full bg-transparent px-4 py-3 text-base font-black tracking-wider text-stone-900 placeholder:text-stone-400 focus:outline-none"
                     />
                   </div>
@@ -392,7 +392,7 @@ function Login() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder="you@domain.com"
                 className="w-full rounded-2xl border-2 border-stone-200 px-4 py-2.5 text-sm font-bold"
               />
             </div>

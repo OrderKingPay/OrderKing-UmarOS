@@ -1,6 +1,6 @@
 // Universal Connector Architecture & 3-Tier Provider Fallback (Directives 18 & 19)
 // Standard interface for all system connectors (AI, Search, Git, Database, Payments, Cloud, etc.)
-// 3-Tier Fallback Hierarchy: PRIMARY → SECONDARY → TERTIARY → SAFE FAILURE + HUMAN NOTICE.
+// 3-Tier Fallback Hierarchy: PRIMARY -> SECONDARY -> TERTIARY -> SAFE FAILURE + HUMAN NOTICE.
 // Never silently pretends a failed action succeeded.
 
 export type Capability =

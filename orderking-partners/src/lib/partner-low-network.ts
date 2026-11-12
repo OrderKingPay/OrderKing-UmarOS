@@ -69,7 +69,7 @@ export function enqueuePartnerAction(action: Omit<QueuedPartnerAction, "id" | "t
     const existing: QueuedPartnerAction[] = JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
     existing.push({
       ...action,
-      id: `partner_q_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      id: `partner_q_${crypto.randomUUID().slice(0, 12)}`,
       timestamp: Date.now(),
     });
     localStorage.setItem(QUEUE_KEY, JSON.stringify(existing));

@@ -58,32 +58,12 @@ export const getKingpayLedger = createServerFn({ method: "GET" }).handler(async 
 
 export const addKingpayMoney = createServerFn({ method: "POST" })
   .validator((d: { amount: number; description: string; gatewaySignature?: string }) => d)
-  .handler(async ({ data }: any) => {
+  .handler(async () => {
     const user = await getSessionUser();
     if (!user) throw new Error("Unauthorized");
-    
-    const cfg = await loadConfig();
-    
-    if (cfg.marketplace.launchMode === "live") {
-       if (!data.gatewaySignature) {
-           throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
-       }
-       throw new Error("Financial Security: Gateway cryptographic verification required. Direct wallet minting blocked.");
-    }
-    
-    if (data.amount > 10000) {
-        throw new Error("Financial Security: Single top-up exceeds ₹10,000 transaction threshold.");
-    }
-
-    const sql = await getSql();
-    const amountPaise = Math.round(data.amount * 100);
-    
-    await sql.transaction(async (tx) => {
-      await tx`INSERT INTO kingpay_wallets (user_id, balance_paise, king_coins) VALUES (${user.id}, 0, 0) ON CONFLICT DO NOTHING`;
-      await tx`UPDATE kingpay_wallets SET balance_paise = balance_paise + ${amountPaise}, updated_at = NOW() WHERE user_id = ${user.id}`;
-      await tx`INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description) VALUES (${randomUUID()}, ${user.id}, ${amountPaise}, 'CREDIT', ${data.description})`;
-    });
-    return { success: true };
+    throw new Error(
+      "Financial Security: Direct wallet minting is disabled. Use verifyAndCreditWalletTopup with verified gateway signature."
+    );
   });
 
 export const deductKingpayMoney = createServerFn({ method: "POST" })

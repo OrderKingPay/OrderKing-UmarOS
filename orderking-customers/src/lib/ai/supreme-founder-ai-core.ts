@@ -21,10 +21,8 @@ const autonomousModelUpdater = {
 };
 import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofence-guard.ts";
 import { instantDeployEngine } from "./instant-deploy-engine.ts";
-const operationsEngine = { generateMerchantPayout: (merchantId: string, grossSalesInr: number, platformFeePct: number) => { const gross = Math.max(0, Number(grossSalesInr) || 0); const fee = Math.round(gross * ((Number(platformFeePct) || 0) / 100)); return { merchantId, grossSalesInr: gross, platformFeeInr: fee, netSettlementInr: Math.max(0, gross - fee), status: "READY" }; }, resolveDispute: (userId: string, trustScore: number, reason: string, orderTotalInr: number, delayMins: number) => { const comp = delayMins > 45 && trustScore >= 70 ? Math.min(200, Math.round(orderTotalInr * 0.1)) : 0; return { disputeId: `DSP-${userId}-${Date.now().toString().slice(-6)}`, reason, action: comp > 0 ? "AUTO_WALLET_CREDIT" : "ESCALATED_FOR_AUDIT", compensationAmountInr: comp }; } };
 import { BENCHMARK_TEST_SUITE } from "./capability-benchmark.ts";
 import { decomposeFounderGoal } from "./supreme-task-executor.ts";
-const kingpayLedgerEngine = { processPayment: (idempotencyKey: string, debitAccount: string, creditAccount: string, amountInr: number, velocityCount: number) => { const safeAmount = Math.max(0, Number(amountInr) || 0); const amlFlag = safeAmount > 50000 || (Number(velocityCount) || 0) > 10; return { transactionId: `TXN-${idempotencyKey}`, debitAccount, creditAccount, amountInr: safeAmount, status: amlFlag ? "HELD_FOR_AML_REVIEW" : "SETTLED", amlFlag }; } };
 
 export type AiModelId =
   | "auto-supreme-orchestrator"
@@ -147,7 +145,7 @@ export type AgentExecutionStep = {
   stepNumber: number;
   totalSteps: number;
   label: string;
-  status: "COMPLETED" | "RUNNING" | "PENDING";
+  status: "COMPLETED" | "RUNNING" | "PENDING" | "FAILED";
   detail: string;
 };
 
@@ -911,7 +909,7 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "939506
   if (isBengali) detectedLanguage = "bn-IN";
   else if (isHindi) detectedLanguage = "hi-IN";
 
-  // --- Tier-1 Scale Autonomous Operations Engine ---
+  // --- Live Operations Routing (Fail-Closed: No Synthetic Payouts/Disputes) ---
   if (
     q.startsWith("/ops") ||
     q.startsWith("/fleet-ops") ||
@@ -920,36 +918,21 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "939506
     q.includes("resolve dispute") ||
     q.includes("auto operations")
   ) {
-    const analysis = operationsEngine.generateMerchantPayout("rest_123", 25000, 5);
-    
-    // Simulate resolving a dispute
-    const disputeResolution = operationsEngine.resolveDispute("USER_456", 85, "LATE_DELIVERY", 800, 60);
-    const disputeId = disputeResolution!.disputeId;
-    
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning Merchant Ledger & SLAs", status: "COMPLETED", detail: "Checking compliance across all Tier-1 Market Leader/OrderKing SLA thresholds." },
-      { stepNumber: 2, totalSteps: 4, label: "Diagnosing Payout & Taxation", status: "COMPLETED", detail: `Calculated GST/TDS offsets. Next Cycle: ₹${analysis!.netSettlementInr}` },
-      { stepNumber: 3, totalSteps: 4, label: "Evaluating Open Disputes", status: "COMPLETED", detail: `Resolved internal dispute ${disputeId} with ${disputeResolution!.action}` },
-      { stepNumber: 4, totalSteps: 4, label: "Generating Final Executive Report", status: "COMPLETED", detail: "Partner SLA and payout reconciliation report compiled." },
+      { stepNumber: 1, totalSteps: 2, label: "Checking Authenticated Admin Session", status: "COMPLETED", detail: "Direct PostgreSQL settlement & dispute tables live only on HDmaster /v1/admin endpoints." },
+      { stepNumber: 2, totalSteps: 2, label: "Routing to Authentic Operations Console", status: "COMPLETED", detail: "Refused synthetic merchant payout or dispute records." },
     ];
-    
-    const responseMarkdown = `### Autonomous Operations Diagnostics (Tier-1 Scale Ops)
-- **Target Merchant**: ${analysis!.merchantId}
-- **Status**: Compliant
-- **Upcoming Payout**: **₹${analysis!.netSettlementInr}** (Gross: ₹${analysis!.grossSalesInr})
-- **Dispute Auto-Resolution**: ${disputeResolution!.action} (Penalty: ₹${disputeResolution!.compensationAmountInr})
 
-> [!IMPORTANT]
-> **Autonomous AI Operator Executed**: Deterministic audit evaluated merchant metrics and dispute rules. Founder liability remains 0%.
+    const responseMarkdown = `### Operations & Settlement Dispatch
+- **Status**: Requires authenticated HDmaster admin PostgreSQL connection
+- **Action**: Open the HDmaster Orders, Disputes, and Settlement Batches dashboard to process live merchant payouts and verified refunds.`;
 
-Use this engine for real-time compliance checks without needing human operations staff.`;
-
-    const voiceSpokenText = isHindi 
-      ? `Tier-1 level autonomous operations active hai. Merchant compliance aur payouts check kar liye gaye hain.`
+    const voiceSpokenText = isHindi
+      ? `Merchant payout aur dispute operations ke liye HDmaster admin panel use karein.`
       : isBengali
-      ? `Autonomous operations active. Merchant details verify kora hoyeche.`
-      : `Tier-1 level autonomous operations active. Merchant compliance and payouts have been successfully evaluated.`;
-      
+      ? `Merchant payout ebong dispute operation-er jonno HDmaster admin console byabohar korun.`
+      : `Use the authenticated HDmaster operations dashboard to process live merchant settlements and disputes.`;
+
     return {
       intent: "autonomous_ops",
       detectedLanguage,
@@ -958,12 +941,12 @@ Use this engine for real-time compliance checks without needing human operations
       executionSteps,
       actionCard: {
         type: "autonomous_ops_action",
-        data: { analysis, disputeResolution }
+        data: { status: "LIVE_ADMIN_CONSOLE_REQUIRED" }
       }
     };
   }
 
-  // --- KingPay Ledger Engine (Cred/PhonePe Level) ---
+  // --- KingPay Ledger Routing (Fail-Closed: No Simulated Ledger Entries) ---
   if (
     q.startsWith("/pay") ||
     q.startsWith("/ledger") ||
@@ -972,42 +955,22 @@ Use this engine for real-time compliance checks without needing human operations
     q.includes("process payment") ||
     q.includes("run settlement")
   ) {
-    const idempotencyKey = "idem_" + Math.floor(Math.random() * 999999999);
-    
-    // Simulate recording an incoming transaction (Customer -> Escrow)
-    const ledgerEntry = kingpayLedgerEngine.processPayment(
-      idempotencyKey,
-      "USER_999",
-      "MERCHANT_123",
-      2450.50,
-      2
-    );
-    
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Double-Entry Ledger Authorization", status: "COMPLETED", detail: "Securing atomic transaction locks." },
-      { stepNumber: 2, totalSteps: 4, label: "Velocity Scan", status: "COMPLETED", detail: `Velocity check passed. Limits OK.` },
-      { stepNumber: 3, totalSteps: 4, label: "Zero-Knowledge State Mutation", status: "COMPLETED", detail: `Logged ${ledgerEntry!.transactionId} synchronously in immutable DB.` },
-      { stepNumber: 4, totalSteps: 4, label: "Ledger Analytics", status: "COMPLETED", detail: "Double-entry ledger verification completed." },
+      { stepNumber: 1, totalSteps: 2, label: "Validating Live KingPay Ledger Gateway", status: "COMPLETED", detail: "Customer payments execute strictly via Razorpay HMAC & PostgreSQL kingpay_wallets." },
+      { stepNumber: 2, totalSteps: 2, label: "Zero-Simulation Guard", status: "COMPLETED", detail: "Refused client-side synthetic ledger transaction generation." },
     ];
-    
-    const responseMarkdown = `### KingPay Ledger Core (Double-Entry Shield)
-- **Transaction Hash**: \`${ledgerEntry!.transactionId}\`
-- **Status**: ${ledgerEntry!.status === "SETTLED" ? "Mathematically Settled" : ledgerEntry!.status}
-- **Transfer**: \`${ledgerEntry!.debitAccount} to ${ledgerEntry!.creditAccount}\`
-- **Amount**: **₹${ledgerEntry!.amountInr.toFixed(2)} INR**
-- **AML Velocity Check**: ${!ledgerEntry!.amlFlag ? "Safe" : "Exceeded Limits"}
 
-> [!TIP]
-> **Compliance Active**: Follows Secure Aggregator TSP verification model.
+    const responseMarkdown = `### KingPay Ledger Status
+- **Accounting Engine**: Live PostgreSQL \`kingpay_wallets\` & \`kingpay_transactions\`
+- **Settlement Rail**: Verified Razorpay HMAC & NPCI UPI Intent (\`9395065587@ybl\`)
+- **Action**: Open **Passbook** or **Add Money** in KingPay to inspect real database entries.`;
 
-Double-entry idempotency ensures funds are never lost or double-spent, beating PhonePe and Paytm accuracy.`;
-
-    const voiceSpokenText = isHindi 
-      ? `KingPay Ledger system ne payment process kar di hai. PMLA checks successful.`
+    const voiceSpokenText = isHindi
+      ? `KingPay ledger seedhe PostgreSQL database aur Razorpay se juda hai.`
       : isBengali
-      ? `KingPay Ledger active. Payment process kora hoyeche ebong AML checks thik ache.`
-      : `KingPay ledger system has successfully processed the double-entry transaction. All anti money laundering limits are compliant.`;
-      
+      ? `KingPay ledger shorasori PostgreSQL database ebong Razorpay-r sathe jukto.`
+      : `KingPay ledger transactions run directly against PostgreSQL and verified Razorpay signatures.`;
+
     return {
       intent: "kingpay_ledger",
       detectedLanguage,
@@ -1016,7 +979,7 @@ Double-entry idempotency ensures funds are never lost or double-spent, beating P
       executionSteps,
       actionCard: {
         type: "kingpay_ledger_action",
-        data: { ledgerEntry }
+        data: { status: "LIVE_POSTGRES_LEDGER_ONLY" }
       }
     };
   }
@@ -1084,7 +1047,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       .replace(/make (an )?image (of )?/i, "")
       .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
 
-    const seed = Math.floor(Math.random() * 999999);
+    const seed = crypto.getRandomValues(new Uint32Array(1))[0] % 999999;
 // @ts-ignore
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
 // @ts-ignore
@@ -1162,36 +1125,21 @@ You can download this image, copy its direct CDN link, or command further edits 
       .replace(/make (a )?video (of )?/i, "")
       .trim() || "Cinematic OrderKing 15-minute drone delivery flight through neon city streets";
 
-    const videoUrl = "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4";
-
-    mediaStorageVault.addItem({
-      type: "video",
-      title: rawPrompt.slice(0, 45),
-      prompt: rawPrompt,
-      url: videoUrl,
-      sizeBytes: 8400000,
-      mimeType: "video/mp4",
-    });
-
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Compiling Kinetic Motion Script", status: "COMPLETED", detail: rawPrompt },
-      { stepNumber: 2, totalSteps: 4, label: "Simulating 60FPS Video Keyframes", status: "COMPLETED", detail: "Motion interpolation and procedural particles generated" },
-      { stepNumber: 3, totalSteps: 4, label: "Encoding MP4 Stream", status: "COMPLETED", detail: "WebCodecs hardware acceleration active · Unlimited" },
-      { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
+      { stepNumber: 1, totalSteps: 2, label: "Validating Video Prompt", status: "COMPLETED", detail: rawPrompt },
+      { stepNumber: 2, totalSteps: 2, label: "Checking Video Generation Provider", status: "FAILED", detail: "Video Generation Provider Not Configured (Veo / Runway / Luma key required)" },
     ];
 
-    const responseMarkdown = `### AI Video Studio Preview
+    const responseMarkdown = `### Video Generation Provider Not Configured
 - **Prompt**: *"${rawPrompt}"*
-- **Format**: **MP4** | **Delivery**: Local WebCodecs Preview
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
-
-The video is ready for playback below with full audio-visual motion capabilities!`;
+- **Status**: No live video generation provider API key is configured in this client environment.
+- **Required**: Connect an authentic video generation provider (Veo, Runway, or Luma) via server environment variables to render authentic video streams.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye cinematic AI video clip generate kar diya hai. Yeh playback aur download ke liye ready hai.`
+      ? `Live AI video generation provider configured nahi hai. Server environment me Veo ya Runway API key set karein.`
       : isBengali
-      ? `Ami apnar jonno cinematic AI video clip toiri korechi. Eta playback ebong download korar jonno ready.`
-      : `I have generated your cinematic AI video clip. It is ready for playback, download, and commercial deployment.`;
+      ? `Live AI video generation provider configure kora nei. Server environment e Veo ba Runway API key set korun.`
+      : `Video generation provider is not configured. Add a Veo, Runway, or Luma API key in server integrations to render live videos.`;
 
     return {
       intent: "media_generation",
@@ -1199,20 +1147,6 @@ The video is ready for playback below with full audio-visual motion capabilities
       responseMarkdown,
       voiceSpokenText,
       executionSteps,
-      mediaCard: {
-        type: "video",
-        prompt: rawPrompt,
-        url: videoUrl,
-        style: "Cinematic 60FPS",
-      },
-      actionCard: {
-        type: "media_generator",
-        data: {
-          type: "video",
-          prompt: rawPrompt,
-          url: videoUrl,
-        },
-      },
     };
   }
 
@@ -1648,48 +1582,29 @@ Use the interactive card below to force task execution on **${matchedPlatform.na
       autoSubtitles: true,
       colorGrade: "cinematic_hdr",
       fps: 60,
-      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smartphone-with-green-screen-41130-large.mp4",
-      thumbnailUrl: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=1080&auto=format&fit=crop",
+      videoUrl: "",
+      thumbnailUrl: "",
       isLongForm,
       exportFormat: "MP4_H265",
       renderSpeedMultiplier: "Realtime WebCodecs 60 FPS Hardware Accelerated",
-      commercialRightsCertified: true,
+      commercialRightsCertified: false,
     };
 
-    // Auto-save to media vault
-    mediaStorageVault.addItem({
-      type: "video",
-      title: `[${aspectRatio}] ${videoConfig.title}`,
-      prompt: promptText,
-      url: videoConfig.videoUrl,
-      thumbnailUrl: videoConfig.thumbnailUrl,
-      sizeBytes: isLongForm ? 48500000 : 9200000,
-      mimeType: "video/mp4",
-    });
-
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Activating Sovereign Neural Video Engine", status: "COMPLETED", detail: "Allocated WebCodecs hardware rendering cluster with 60FPS precision" },
-      { stepNumber: 2, totalSteps: 5, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} · Resolution: 4K Ultra HD · Duration: ${duration}` },
-      { stepNumber: 3, totalSteps: 5, label: "Acoustic Voiceover & Subtitles Synthesis", status: "COMPLETED", detail: "Voice: Aria Ultra-Realistic Female · Dynamic animated karaoke subtitles generated" },
-      { stepNumber: 4, totalSteps: 5, label: "Applying 8K Cinematic HDR Color Grade", status: "COMPLETED", detail: "Dynamic range balanced, volumetric motion blur applied" },
-      { stepNumber: 5, totalSteps: 5, label: "Encoding at Realtime Speed", status: "COMPLETED", detail: "Hardware accelerated export · Ready in Media Vault" },
+      { stepNumber: 1, totalSteps: 2, label: `Configuring Frame Canvas [${aspectRatio}]`, status: "COMPLETED", detail: `Target: ${aspectRatio} | Duration: ${duration}` },
+      { stepNumber: 2, totalSteps: 2, label: "Checking External Video Render Provider", status: "FAILED", detail: "Video Generation Provider Not Configured (Veo / Runway / Luma API key required)" },
     ];
 
-    const responseMarkdown = `### Video & Image Creation Studio
+    const responseMarkdown = `### Video & Image Creation Studio (Provider Required)
 - **Project**: **"${promptText}"**
-- **Aspect Ratio**: **${aspectRatio}** (${isReel ? "Vertical Reel / Shorts" : aspectRatio === "16:9" ? "Cinematic Widescreen (YouTube/Commercial)" : aspectRatio})
-- **Duration**: **${duration}** (${isLongForm ? "Long-Form Commercial Presentation" : "High-Impact Commercial Spot"})
-- **Resolution**: **4K Ultra HD (60 FPS)** | **Export Pipeline**: **Hardware Accelerated WebCodecs**
-- **Acoustic Voiceover**: Ultra-realistic Young Female Voice (\`${videoConfig.voiceoverLanguage}\`) with **Auto-Animated Subtitles**.
-- **Commercial Rights**: **100% Verified Commercial License** (Ready for client pitches, TV broadcast, or social ads).
-
-Your studio controls, aspect ratio switcher, timeline duration, and instant 4K preview player are loaded below!`;
+- **Aspect Ratio**: **${aspectRatio}** | **Duration**: **${duration}**
+- **Status**: No live video generation provider API key is configured. Connect Veo, Runway, or Luma in server integrations to execute real renders.`;
 
     const voiceSpokenText = isHindi
-      ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
+      ? `Video studio configured hai, lekin live video rendering ke liye server par Veo ya Runway API key set karna zaroori hai.`
       : isBengali
-      ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your 4K video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
+      ? `Video studio configure kora hoyeche, tobe live video rendering er jonno server e Veo ba Runway API key set kora proyojon.`
+      : `Video studio project parameters are set. Configure a live Veo, Runway, or Luma API key in server integrations to render real video.`;
 
     return {
       intent: "video_editor_studio",
@@ -1841,7 +1756,7 @@ Manual customization controls and 1-click optimization triggers are available be
     };
   }
 
-  // 4. Smart Suggest Clean & Auto-Clean Mistakes / Duplicates
+  // 4. Storage Inspection & Cleanup
   if (
     q.includes("suggest clean") ||
     q.includes("auto clean") ||
@@ -1852,26 +1767,22 @@ Manual customization controls and 1-click optimization triggers are available be
     q.includes("smart clean") ||
     q.includes("unnecessary")
   ) {
+    const inspection = mediaStorageVault.inspectSystemStorage();
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "AI Deep Heuristic Inspection", status: "COMPLETED", detail: "Scanned duplicate images, orphaned buffers, and temporary keyframes" },
-      { stepNumber: 2, totalSteps: 4, label: "Isolating Problematic Artifacts", status: "COMPLETED", detail: "Found 4 duplicate media items, 2 stale audio nodes, 12 expired temp blobs" },
-      { stepNumber: 3, totalSteps: 4, label: "Validating Protected Business Records", status: "COMPLETED", detail: "Client Leads, Invoices, and Blueprints 100% Safe (0% Risk)" },
-      { stepNumber: 4, totalSteps: 4, label: "Auto-Clean & Suggestions Ready", status: "COMPLETED", detail: "Potential space freed: 3.84 GB · Speed boost: +45%" },
+      { stepNumber: 1, totalSteps: 2, label: "Scanning Active Media Vault", status: "COMPLETED", detail: `Inspected ${inspection.itemCount} stored items (${inspection.formattedTotalSize})` },
+      { stepNumber: 2, totalSteps: 2, label: "Validating Protected Business Records", status: "COMPLETED", detail: "PostgreSQL database records untouched." },
     ];
 
-    const responseMarkdown = `### AI Smart Clean & Diagnostics
-- **Duplicate Media Detected**: **4 items** (Identical generated prompt variations)
-- **Unnecessary Temporary Junk**: **12 expired cache blobs** (~3.84 GB)
-- **Problematic/Glitchy Things Auto-Fixed**: **2 stale audio nodes & orphaned buffers**
-- **Protected Core Status**: **100% SAFE** (Zero risk to invoices, leads, or verified code)
-
-Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to eliminate all junk and duplicates instantly!`;
+    const responseMarkdown = `### Storage Inspection
+- **Cached Media Items**: ${inspection.itemCount}
+- **Measured Footprint**: ${inspection.formattedTotalSize}
+- **Protected Records**: Live PostgreSQL orders, leads, and ledger entries are never altered by local cache cleanup.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine storage me 4 duplicates aur 3 point 8 GB unnecessary junk isolate kar liya hai. Sabhi client leads safe hain aur aap 1-click me auto-clean kar sakte hain.`
+      ? `Storage scan complete: ${inspection.itemCount} cached items (${inspection.formattedTotalSize}).`
       : isBengali
-      ? `Ami storage e 4 duplicates ebong 3 point 8 GB unnecessary junk isolate korechi. Shob client records safe ache ebong apni 1-click e auto-clean korte paren.`
-      : `AI Smart Cleaner has detected 4 duplicate media items and 3.84 Gigabytes of unnecessary cache. Stale buffers are auto-cleared, and your business records are 100% protected.`;
+      ? `Storage scan complete: ${inspection.itemCount} ti cached item (${inspection.formattedTotalSize}).`
+      : `Storage inspection complete: ${inspection.itemCount} cached items (${inspection.formattedTotalSize}).`;
 
     return {
       intent: "smart_cleaner",
@@ -1882,10 +1793,10 @@ Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to 
       actionCard: {
         type: "smart_cleaner",
         data: {
-          suggestedItemsCount: 16,
-          duplicateCount: 4,
-          mistakesFixedCount: 2,
-          freedEstimateBytes: 3840000000,
+          suggestedItemsCount: inspection.itemCount,
+          duplicateCount: 0,
+          mistakesFixedCount: 0,
+          freedEstimateBytes: inspection.sizeBytes,
         },
       },
     };
@@ -1902,32 +1813,19 @@ Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to 
     q.includes("split app") ||
     q.includes("different app")
   ) {
+    const moduleCount = SEPARABLE_MODULES.length;
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Analyzing HDmaster Modular Architecture", status: "COMPLETED", detail: "Isolated 7 separable production engines" },
-      { stepNumber: 2, totalSteps: 5, label: "Synthesizing Standalone Package Bundles", status: "COMPLETED", detail: "Generated independent package.json, vite.config, and route files" },
-      { stepNumber: 3, totalSteps: 5, label: "Configuring Independent Custom Subdomains", status: "COMPLETED", detail: "Ready to deploy on studio.orderking.in, enforcer.orderking.in, etc." },
-      { stepNumber: 4, totalSteps: 5, label: "Compiling Native Wrapper Schemas", status: "COMPLETED", detail: "Capacitor Mobile & Electron Desktop manifests created" },
-      { stepNumber: 5, totalSteps: 5, label: "Handoff Ready for Founder", status: "COMPLETED", detail: "1-Click Download ZIP or 1-Click Deploy to Edge" },
+      { stepNumber: 1, totalSteps: 2, label: "Analyzing HDmaster Modular Architecture", status: "COMPLETED", detail: `Discovered ${moduleCount} registered exportable modules` },
+      { stepNumber: 2, totalSteps: 2, label: "Export Check Complete", status: "COMPLETED", detail: moduleCount > 0 ? "Module manifests ready" : "No standalone module packages registered in client bundle" },
     ];
 
-    const responseMarkdown = `### Autonomous Section Separator & Standalone App Exporter
-You can **separate, extract, and deploy ANY part of HDmaster** into an independent website or standalone app with zero technical friction:
+    const responseMarkdown = moduleCount > 0
+      ? `### Section Separator & Module Exporter\nFound **${moduleCount}** registered exportable modules.`
+      : `### Section Separator & Module Exporter\nNo standalone export bundles are currently registered in this client session. Use the HDmaster monorepo workspace directly to build and deploy apps separately.`;
 
-1. **4K Video & Image Studio**: Standalone video creation & editing web app (\`studio.orderking.in\`)
-2. **Universal Platform Enforcer**: Standalone API integration & task enforcement bridge (\`enforcer.orderking.in\`)
-3. **KingPay UPI Terminal**: Standalone 0% gateway fee billing & escrow web portal (\`pay.orderking.in\`)
-4. **Client Acquisition Machine**: Standalone sales radar & proposal app (\`sales.orderking.in\`)
-5. **Hospital Management ERP**: Full healthcare patient portal (\`hospital.orderking.in\`)
-6. **Hyperlocal Multi-Vendor Marketplace**: Standalone food/grocery delivery app (\`market.orderking.in\`)
-7. **Sovereign Storage Purifier**: Standalone system cleaner cockpit (\`purifier.orderking.in\`)
-
-Select any module below to **preview standalone source code, download full ZIP package, or deploy to a different website!**`;
-
-    const voiceSpokenText = isHindi
-      ? `Aap HDmaster ke kisi bhi section ko alag karke ek nayi website ya standalone app bana sakte hain. Maine 7 separable modules tayyar kar diye hain jo 1-click download ya deploy ke liye ready hain.`
-      : isBengali
-      ? `Apni HDmaster er je kono section ke alada kore notun website ba standalone app toiri korte paren. Ami 7 ti separable modules ready korechi.`
-      : `You can separate and extract any section of HDmaster into an independent website or standalone application. All 7 modules have their own package configurations, live subdomains, and 1-click download bundles ready.`;
+    const voiceSpokenText = moduleCount > 0
+      ? `Found ${moduleCount} exportable modules ready in the registry.`
+      : `Use the monorepo workspace to build and deploy each application separately.`;
 
     return {
       intent: "module_separator",
@@ -1954,18 +1852,17 @@ Select any module below to **preview standalone source code, download full ZIP p
     q.includes("together")
   ) {
     const consensus = ensembleConsensusEngine.executeConsensus(query);
+    const activeModelsList = consensus.participatingModels.join(", ");
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Simultaneous Multi-Model Fanout", status: "COMPLETED", detail: "GPT-5.6, Claude 4.6, Grok 4.6, Gemini 3.8, Codex, DeepSeek invoked" },
-      { stepNumber: 2, totalSteps: 4, label: "Cross-Model Critique & Verification", status: "COMPLETED", detail: "Checked 0.00% hallucinations, verified algorithmic correctness" },
-      { stepNumber: 3, totalSteps: 4, label: "Mathematical Consensus Synthesis", status: "COMPLETED", detail: `${consensus.overallConsensusAgreement}% Inter-model agreement reached` },
-      { stepNumber: 4, totalSteps: 4, label: "Single Unified Flawless Deliverable", status: "COMPLETED", detail: "Unified production solution authorized" },
+      { stepNumber: 1, totalSteps: 2, label: "Checking Active Model Endpoints", status: "COMPLETED", detail: `Active providers: ${activeModelsList}` },
+      { stepNumber: 2, totalSteps: 2, label: "Synthesis Complete", status: "COMPLETED", detail: `Agreement: ${consensus.overallConsensusAgreement}%` },
     ];
 
     return {
       intent: "ensemble_consensus",
       detectedLanguage,
       responseMarkdown: consensus.unifiedSynthesis,
-      voiceSpokenText: `All 6 strongest frontier models have executed together in complete consensus with ${consensus.overallConsensusAgreement} percent agreement. The deliverable is 100% verified with zero hallucinations.`,
+      voiceSpokenText: `Consensus checked across ${activeModelsList}.`,
       executionSteps,
       actionCard: {
         type: "ensemble_consensus",

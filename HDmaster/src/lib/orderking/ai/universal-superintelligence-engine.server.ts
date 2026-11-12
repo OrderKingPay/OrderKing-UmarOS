@@ -77,7 +77,7 @@ export class UniversalSuperintelligenceEngine {
 
   /**
    * Main entry point. Runs the full lifecycle:
-   * REQUESTED → UNDERSTOOD → PLANNED → EXECUTING → VALIDATING → COMPLETED/BLOCKED/FAILED
+   * REQUESTED -> UNDERSTOOD -> PLANNED -> EXECUTING -> VALIDATING -> COMPLETED/BLOCKED/FAILED
    */
   static async execute(req: UniversalTaskRequest): Promise<UniversalTaskResult> {
     const log = (msg: string) => {

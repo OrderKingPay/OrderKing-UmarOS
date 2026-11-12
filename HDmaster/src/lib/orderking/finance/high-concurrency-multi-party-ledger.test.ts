@@ -37,7 +37,7 @@ import {
   calculatePlatformServiceGST,
 } from "../revenue/tax-calculator.ts";
 
-describe("👑 HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", () => {
+describe("HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", () => {
   const reconEngine = new SettlementReconciliationEngine();
 
   // =========================================================================

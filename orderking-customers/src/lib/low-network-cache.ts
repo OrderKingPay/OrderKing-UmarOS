@@ -82,7 +82,7 @@ export type OfflineQueuedAction = {
 export async function enqueueOfflineAction(action: Omit<OfflineQueuedAction, "id" | "createdAt">): Promise<void> {
   try {
     const db = await getDB();
-    const id = `queue_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const id = `queue_${crypto.randomUUID().slice(0, 12)}`;
     await db.put(QUEUE_STORE, {
       ...action,
       id,

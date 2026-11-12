@@ -394,10 +394,10 @@ export function CentralPricingSwitch() {
               Live Result
             </div>
             <div className="text-base font-black text-slate-900 mt-1">
-              {customRates.commissionPct}% Commission • ₹{customRates.deliveryFeeInr} Delivery
+              {customRates.commissionPct}% Commission | ₹{customRates.deliveryFeeInr} Delivery
             </div>
             <p className="text-xs text-slate-600 mt-1">
-              Min: ₹{customRates.minOrderInr} • Rain: +₹{customRates.rainFeeInr} • Floors: T1 ₹{customRates.tier1FloorInr} / T2 ₹{customRates.tier2FloorInr} / T3 ₹{customRates.tier3FloorInr} • Slabs: ₹{customRates.slab1RateInr}/₹{customRates.slab2RateInr}/₹{customRates.slab3RateInr}.
+              Min: ₹{customRates.minOrderInr} | Rain: +₹{customRates.rainFeeInr} | Floors: T1 ₹{customRates.tier1FloorInr} / T2 ₹{customRates.tier2FloorInr} / T3 ₹{customRates.tier3FloorInr} | Slabs: ₹{customRates.slab1RateInr}/₹{customRates.slab2RateInr}/₹{customRates.slab3RateInr}.
             </p>
           </div>
 

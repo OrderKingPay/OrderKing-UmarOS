@@ -23,7 +23,7 @@ export function WorldSkeleton({ world = "general", className }: WorldSkeletonPro
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/80 pb-4">
         <div className="flex items-center gap-3">
           <div className="size-11 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-sm">
-            <span className="text-xl">🌐</span>
+            <span className="text-xs font-black tracking-wider">OS</span>
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">

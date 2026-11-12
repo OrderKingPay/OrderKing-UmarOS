@@ -666,7 +666,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
                 >
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-emerald-400">"{item.command}"</span>
-                    <span className="text-slate-400 text-[11px]">→ {item.summary}</span>
+                    <span className="text-slate-400 text-[11px]">- {item.summary}</span>
                   </div>
                   <span className="text-[10px] text-slate-400 font-mono shrink-0 ml-2">
                     {item.timestamp}

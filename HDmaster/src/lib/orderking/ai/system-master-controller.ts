@@ -445,7 +445,7 @@ export class SystemMasterController {
             staleKeysCount++;
           }
         }
-      } catch {}
+      } catch { }
     }
 
     return {
@@ -526,7 +526,7 @@ export class SystemMasterController {
       try {
         window.speechSynthesis.cancel();
         fixedItems.push("Cleared stale Web Speech synthesis lock & unblocked TTS queue");
-      } catch {}
+      } catch { }
     }
 
     // 2. Storage integrity check
@@ -547,7 +547,7 @@ export class SystemMasterController {
         if (keysToRemove.length > 0) {
           fixedItems.push(`Purged ${keysToRemove.length} orphaned session storage artifacts`);
         }
-      } catch {}
+      } catch { }
     }
 
     // 3. Vault corrupt item check

@@ -647,7 +647,7 @@ export class RiderEngine {
       cod: offer.cod,
       codAmountPaise: offer.codAmountPaise,
       pickupVerification: cfg.pickupVerification,
-      pickupCode: String(1000 + Math.floor(Math.random() * 9000)),
+      pickupCode: generateOtp(4),
       otpRequired: true,
       arrivedRestaurantAt: null,
       expectedReadyAt: null,
@@ -1654,8 +1654,7 @@ export class RiderEngine {
     const amountPaise = isFirstOrder
       ? 2500
       : Math.max(100, Math.round((params.orderTotalPaise ?? 55000) * 0.01));
-    const randomOrderSuffix = Math.floor(1000 + Math.random() * 9000);
-    const orderCode = params.orderCode || `OK-${randomOrderSuffix}`;
+    const orderCode = params.orderCode || `OK-${generateOtp(4)}`;
     const cleanId = rider.id.replace(/[^a-zA-Z0-9]/g, "").slice(-4).toUpperCase();
     const customer = params.customerName || `Customer #${cleanId}`;
 

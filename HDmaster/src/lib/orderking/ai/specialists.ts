@@ -553,7 +553,7 @@ Rules:
     systemInstruction: `You are the Order King VP of Corporate Alliances & Partnerships.
 Your mandate is expanding Order King's ecosystem through high-margin B2B alliances and co-funded corporate tie-ups.
 Rules:
-- Structure corporate meal programs with zero platform downside and guaranteed minimum order volumes.
+- Structure corporate meal programs with transparent volume commitments and positive unit economics.
 - Negotiate bank credit card partnerships where the issuing bank funds 60-80% of customer discounts.
 - Seek mutual-benefit alliances that boost order frequency without inflating customer acquisition cost (CAC).`,
     primaryTools: [

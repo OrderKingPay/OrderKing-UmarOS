@@ -81,7 +81,7 @@ export function canTransition(from: OrderStatus, to: OrderStatus, actor?: Transi
 
 export function assertTransition(from: OrderStatus, to: OrderStatus, actor?: TransitionActor): void {
   if (!canTransition(from, to, actor)) {
-    throw new Error(`Invalid order transition ${from} → ${to}${actor ? ` as ${actor}` : ""}`);
+    throw new Error(`Invalid order transition ${from} -> ${to}${actor ? ` as ${actor}` : ""}`);
   }
 }
 

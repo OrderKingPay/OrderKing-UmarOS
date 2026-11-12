@@ -948,7 +948,7 @@ export function CustomerConciergeDrawer({
 
     setCustomAddons((prev) => [
       ...prev,
-      { id: `custom-${Date.now()}-${Math.random().toString(36).substring(7)}`, name: clean, pricePaise: estPaise },
+      { id: `custom-${crypto.randomUUID().slice(0, 12)}`, name: clean, pricePaise: estPaise },
     ]);
     setCustomAddonText("");
     toast.success(`Added ${clean} (${formatPaise(estPaise)}) to your feast!`);

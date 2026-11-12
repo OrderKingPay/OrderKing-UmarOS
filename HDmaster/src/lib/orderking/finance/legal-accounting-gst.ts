@@ -43,77 +43,46 @@ export class LegalAccountingGstEngine {
   }
 
   /**
-   * Generates automated GSTR-1 and GSTR-3B filings for platform commissions.
+   * Generates automated GSTR-1 and GSTR-3B tax breakdown for a given taxable value in paise.
    */
-  public generateMonthlyGstReturns(month: string = "September 2026"): GstReport[] {
-    // 18% GST on platform convenience fees and restaurant commissions
-    const taxableValuePaise = 18_500_0000; // ₹18,50,000.00
-    const totalTaxPaise = Math.round(taxableValuePaise * 0.18);
+  public generateMonthlyGstReturns(
+    month: string = new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" }),
+    taxableValuePaise: number = 0
+  ): GstReport[] {
+    const safeTaxable = Math.max(0, Math.round(Number(taxableValuePaise) || 0));
+    const totalTaxPaise = Math.round(safeTaxable * 0.18);
     const halfTax = Math.round(totalTaxPaise / 2);
 
     return [
       {
         returnType: "GSTR-1",
         period: month,
-        taxableValuePaise,
+        taxableValuePaise: safeTaxable,
         igstPaise: 0,
         cgstPaise: halfTax,
         sgstPaise: halfTax,
         totalTaxPaise,
-        status: "COMPILED",
+        status: safeTaxable > 0 ? "COMPILED" : "PENDING_REVIEW",
       },
       {
         returnType: "GSTR-3B",
         period: month,
-        taxableValuePaise,
+        taxableValuePaise: safeTaxable,
         igstPaise: 0,
         cgstPaise: halfTax,
         sgstPaise: halfTax,
         totalTaxPaise,
-        status: "COMPILED",
+        status: safeTaxable > 0 ? "COMPILED" : "PENDING_REVIEW",
       },
     ];
   }
 
   /**
-   * Generates automated settlement ledger with Section 194-O (1% TDS on e-commerce operators).
+   * Returns settlement ledger entries supplied from authentic PostgreSQL queries.
+   * Never returns hardcoded or fabricated UTRs or payout rows.
    */
-  public getRecentSettlementLedger(): LegalPayoutEntry[] {
-    return [
-      {
-        id: "PAY-001",
-        recipientType: "MERCHANT",
-        recipientMaskedName: "Royal Biryani Darbar (Merchant #412)",
-        grossAmountPaise: 45_000_00,
-        tdsDeductedPaise: 450_00, // 1% TDS Sec 194-O
-        netSettledPaise: 44_550_00,
-        utrNumber: "HDFC928174918231",
-        settledAt: "Today, 11:30 AM",
-        complianceDoc: "TDS_FORM_16A_SEC194O.pdf",
-      },
-      {
-        id: "PAY-002",
-        recipientType: "RIDER",
-        recipientMaskedName: "Sovereign Delivery Fleet Batch #14 (28 Riders)",
-        grossAmountPaise: 28_400_00,
-        tdsDeductedPaise: 284_00,
-        netSettledPaise: 28_116_00,
-        utrNumber: "ICIC819203918274",
-        settledAt: "Today, 12:00 PM",
-        complianceDoc: "RIDER_BATCH_REMITTANCE.pdf",
-      },
-      {
-        id: "PAY-003",
-        recipientType: "FOUNDER_DIVIDEND",
-        recipientMaskedName: "Founder Sovereign Reserve (Private & Masked)",
-        grossAmountPaise: 120_000_00,
-        tdsDeductedPaise: 0, // Post-corporate tax legal dividend
-        netSettledPaise: 120_000_00,
-        utrNumber: "SBIN918273645120",
-        settledAt: "Yesterday",
-        complianceDoc: "DIRECTOR_DIVIDEND_VOUCHER.pdf",
-      },
-    ];
+  public getRecentSettlementLedger(entries: LegalPayoutEntry[] = []): LegalPayoutEntry[] {
+    return entries;
   }
 
   /**

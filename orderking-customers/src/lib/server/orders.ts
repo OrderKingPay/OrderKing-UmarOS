@@ -640,7 +640,8 @@ async function getOwnedOrder(userId: string, orderId: string) {
     id: string;
     public_id: string;
     user_id: string;
-    restaurant_id: string;
+    restaurant_id: string | null;
+    category: string | null;
     status: OrderStatus;
     payment_method: string;
     payment_status: string;
@@ -650,7 +651,7 @@ async function getOwnedOrder(userId: string, orderId: string) {
     delivery_otp: string | null;
     address_snapshot: string;
     data_label: string;
-  }>`select id, public_id, user_id, restaurant_id, status, payment_method, payment_status, total_paise, placed_at::text as placed_at, notes, delivery_otp, address_snapshot, data_label from orders where id = ${orderId} and user_id = ${userId}`;
+  }>`select id, public_id, user_id, restaurant_id, category, status, payment_method, payment_status, total_paise, placed_at::text as placed_at, notes, delivery_otp, address_snapshot, data_label from orders where id = ${orderId} and user_id = ${userId}`;
   return rows[0] ?? null;
 }
 
@@ -674,19 +675,20 @@ export const listMyOrders = createServerFn({ method: "GET" })
         id: string;
         public_id: string;
         status: OrderStatus;
-        restaurant_id: string;
+        restaurant_id: string | null;
+        category: string | null;
         total_paise: number;
         placed_at: string;
         data_label: string;
         restaurant_name: string;
         restaurant_slug: string;
         preview: string | null;
-      }>`select o.id, o.public_id, o.status, o.restaurant_id, o.total_paise, o.placed_at::text as placed_at, o.data_label, r.name as restaurant_name, r.slug as restaurant_slug, (select string_agg(name_snapshot, ', ') from (select name_snapshot from order_items where order_id = o.id limit 3) s) as preview from orders o join restaurants r on r.id = o.restaurant_id where o.user_id = ${context.userId} order by o.placed_at desc limit 50`;
+      }>`select o.id, o.public_id, o.status, o.restaurant_id, o.category, o.total_paise, o.placed_at::text as placed_at, o.data_label, coalesce(r.name, case when o.category = 'CAB' then 'OrderKing Cab' when o.category = 'PARCEL' then 'OrderKing Courier' else 'OrderKing' end) as restaurant_name, coalesce(r.slug, lower(coalesce(o.category, 'order'))) as restaurant_slug, (select string_agg(name_snapshot, ', ') from (select name_snapshot from order_items where order_id = o.id limit 3) s) as preview from orders o left join restaurants r on r.id = o.restaurant_id where o.user_id = ${context.userId} order by o.placed_at desc limit 50`;
       const orders: OrderSummary[] = rows.map((r) => ({
         id: r.id,
         publicId: r.public_id,
         status: r.status,
-        restaurantId: r.restaurant_id,
+        restaurantId: r.restaurant_id ?? r.category?.toLowerCase() ?? "orderking",
         restaurantName: r.restaurant_name,
         restaurantSlug: r.restaurant_slug,
         totalPaise: r.total_paise,
@@ -747,18 +749,26 @@ export const getMyOrder = createServerFn({ method: "GET" })
       const order = await getOwnedOrder(context.userId, data.orderId);
       if (!order) return { order: null as OrderDetail | null };
       const sql = await getSql();
-      const rst = await sql<{ name: string; slug: string; data_label: string }>`select name, slug, data_label from restaurants where id = ${order.restaurant_id}`;
+      const rst = order.restaurant_id
+        ? await sql<{ name: string; slug: string; data_label: string }>`select name, slug, data_label from restaurants where id = ${order.restaurant_id}`
+        : [];
       const items = await sql<{ name_snapshot: string; quantity: number; line_total_paise: number; instructions: string | null }>`select name_snapshot, quantity, line_total_paise, instructions from order_items where order_id = ${order.id}`;
       const lines = await sql<{ code: string; name: string; amount_paise: number; source: string; funded_by: string | null; reason: string }>`select code, name, amount_paise, source, funded_by, reason from order_price_lines where order_id = ${order.id} order by sort_order`;
       const events = await sql<{ to_status: string; created_at: string; note: string | null }>`select to_status, created_at::text as created_at, note from order_events where order_id = ${order.id} order by created_at`;
       const restaurant = rst[0];
+      const fallbackServiceName =
+        order.category === "CAB"
+          ? "OrderKing Cab"
+          : order.category === "PARCEL"
+            ? "OrderKing Courier"
+            : "Kitchen";
       const detail: OrderDetail = {
         summary: {
           id: order.id,
           publicId: order.public_id,
           status: order.status,
-          restaurantName: restaurant?.name ?? "Kitchen",
-          restaurantSlug: restaurant?.slug ?? "",
+          restaurantName: restaurant?.name ?? fallbackServiceName,
+          restaurantSlug: restaurant?.slug ?? (order.category?.toLowerCase() || ""),
           totalPaise: order.total_paise,
           placedAt: order.placed_at,
           itemPreview: items.map((i) => i.name_snapshot).join(", "),
@@ -879,6 +889,7 @@ export const reorderItems = createServerFn({ method: "POST" })
     } else {
       const order = await getOwnedOrder(context.userId, data.orderId);
       if (!order) throw new Error("Order not found");
+      if (!order.restaurant_id) throw new Error("Only restaurant orders can be reordered.");
       restaurantId = order.restaurant_id;
       const sql = await getSql();
       items = await sql<{

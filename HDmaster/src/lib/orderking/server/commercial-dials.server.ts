@@ -698,7 +698,7 @@ export async function loadDailyTPlus1PayoutBatch(ctx: AccessContext): Promise<Da
     const bankAccountMasked = r.payout_vpa
       ? str(r.payout_vpa)
       : r.bank_account
-        ? `A/C •••• ${str(r.bank_account).slice(-4)}`
+        ? `A/C XXXX-${str(r.bank_account).slice(-4)}`
         : "READY_FOR_BANK_DETAILS";
 
     return {

@@ -93,9 +93,9 @@ export class WhatsAppStatusBountyEngine {
     const cleanTrackingUrl = `${trackingUrl}${refParam}`;
 
     const shareCopy =
-      `🔥 Tracking my live hot food order on OrderKing! 🛵 Direct menu pricing & sub-25 min delivery in ${town}.\n\n` +
+      `Tracking my live hot food order on OrderKing! Direct menu pricing & sub-25 min delivery in ${town}.\n\n` +
       `Tap below to track real-time delivery and get 50% OFF (up to ₹100) on your first order:\n` +
-      `👉 ${cleanTrackingUrl}`;
+      `${cleanTrackingUrl}`;
 
     const encodedText = encodeURIComponent(String(shareCopy ?? ""));
     // WhatsApp Status / Direct share intent

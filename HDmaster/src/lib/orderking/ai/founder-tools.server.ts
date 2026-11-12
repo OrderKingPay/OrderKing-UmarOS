@@ -73,7 +73,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
             sum(total_paise) as total_paise
           FROM orders
         `;
-        
+
         const riderStats = await sql<{ active: number }>`
           SELECT count(*) as active FROM riders WHERE status = 'ACTIVE'
         `;
@@ -95,7 +95,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
         const order = orders[0];
         const payments = await sql`SELECT * FROM payments WHERE order_id = ${order.id}`;
         const items = await sql`SELECT name_snapshot, quantity, line_total_paise FROM order_items WHERE order_id = ${order.id}`;
-        
+
         return {
           id: order.id,
           publicId: order.public_id,
@@ -104,7 +104,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
           placedAt: order.placed_at,
           paymentMethod: order.payment_method,
           paymentStatus: order.payment_status,
-          payments: payments.map(p => ({ provider: p.provider, status: p.status, amountINR: Number(p.amount_paise)/100 })),
+          payments: payments.map(p => ({ provider: p.provider, status: p.status, amountINR: Number(p.amount_paise) / 100 })),
           items: items.map(i => ({ name: i.name_snapshot, quantity: i.quantity }))
         };
       }
@@ -113,7 +113,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
         const { restaurantId } = args;
         const rst = await sql`SELECT * FROM restaurants WHERE id = ${restaurantId} LIMIT 1`;
         if (!rst.length) return { error: "Restaurant not found." };
-        
+
         const stats = await sql<{ total_orders: number, revenue: number }>`
           SELECT count(*) as total_orders, sum(total_paise) as revenue 
           FROM orders WHERE restaurant_id = ${restaurantId} AND status = 'DELIVERED'
@@ -136,30 +136,54 @@ export async function executeFounderTool(name: string, args: Record<string, any>
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.LUMA_API_KEY) {
           return { error: "CONFIGURATION_REQUIRED", detail: "Video enhancement requires RUNWAY_API_KEY or LUMA_API_KEY in environment to execute frame-by-frame super-resolution." };
         }
-        
-        // Placeholder for genuine API call once keys are provided
+
         return {
-          status: "SUCCESS",
-          action: `Media Enhancement Processed for ${type}`,
-          processedUrl: mediaUrl,
-          message: "Media enhanced realistically. Identity and structural details perfectly preserved."
+          error: "PROVIDER_WEBHOOK_REQUIRED",
+          detail: `Live media enhancement for ${type} (${mediaUrl || "unspecified"}) requires async provider webhook integration.`,
         };
       }
 
       case "generate_media": {
         const { prompt, type } = args;
-        if (type === "image" && !process.env.OPENAI_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Image generation requires OPENAI_API_KEY for DALL-E 3 or Midjourney." };
+        if (type === "image") {
+          const openaiKey = process.env.OPENAI_API_KEY;
+          if (!openaiKey) {
+            return { error: "CONFIGURATION_REQUIRED", detail: "Image generation requires OPENAI_API_KEY." };
+          }
+          const res = await fetch("https://api.openai.com/v1/images/generations", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${openaiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "dall-e-3",
+              prompt: String(prompt || ""),
+              n: 1,
+              size: "1024x1024",
+            }),
+          });
+          const data = await res.json().catch(() => ({} as Record<string, any>));
+          if (!res.ok || !data?.data?.[0]?.url) {
+            return {
+              error: "GENERATION_FAILED",
+              detail: data?.error?.message || `OpenAI Image API returned ${res.status}`,
+            };
+          }
+          return {
+            status: "SUCCESS",
+            action: "Image generated via OpenAI DALL-E 3",
+            prompt,
+            url: data.data[0].url,
+          };
         }
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.SORA_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Realistic video generation requires SORA_API_KEY or RUNWAY_API_KEY." };
+          return { error: "CONFIGURATION_REQUIRED", detail: "Video generation requires SORA_API_KEY or RUNWAY_API_KEY." };
         }
 
         return {
-          status: "SUCCESS",
-          action: `Genuine Generation Processed for ${type}`,
-          prompt,
-          message: "Media generated realistically at world-class standards."
+          error: "PROVIDER_WEBHOOK_REQUIRED",
+          detail: "Video generation requires async provider job polling via AI Media Engine.",
         };
       }
 

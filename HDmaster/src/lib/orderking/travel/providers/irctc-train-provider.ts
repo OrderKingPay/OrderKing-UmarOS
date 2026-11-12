@@ -12,7 +12,7 @@ export class IrctcTrainProvider implements TravelProvider {
   name = "IRCTC Licensed B2B Train Provider";
   supportedModes: TravelMode[] = ["TRAIN"];
 
-  // 1000x Capacity Variables
+  // In-memory rate and circuit breaker state
   private activeRequests = 0;
   private readonly MAX_CONCURRENCY = 5000;
   private isCircuitBroken = false;

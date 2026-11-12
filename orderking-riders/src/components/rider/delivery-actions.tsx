@@ -44,21 +44,14 @@ export function DeliveryActions({
   const [qrVerified, setQrVerified] = useState(false);
   const billFileInputRef = useRef<HTMLInputElement | null>(null);
 
-  function getVirtualProxyDial(contactMasked: string | null | undefined): string {
-    const digits = (contactMasked || "").replace(/\D/g, "");
-    const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
-    return `+91804567${suffix}`;
-  }
-
-  function getVirtualProxyDisplay(contactMasked: string | null | undefined): string {
-    const digits = (contactMasked || "").replace(/\D/g, "");
-    const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
-    return `+91 80 4567 ${suffix}`;
+  function getMaskedContactLabel(contactMasked: string | null | undefined): string {
+    const cleaned = (contactMasked || "").trim();
+    if (!cleaned) return "Protected contact";
+    return cleaned;
   }
 
   async function handleMaskedCustomerCall() {
     setIsCalling(true);
-    const fallbackDial = getVirtualProxyDial(delivery.customer.contactMasked);
     try {
       toast.info("Connecting via OrderKing Cloud Telephony Bridge...");
       const res = await triggerMaskedCallFn({
@@ -67,12 +60,15 @@ export function DeliveryActions({
           recipientType: "CUSTOMER",
         },
       });
-      const dialTarget = res?.virtualProxyNumber || fallbackDial;
-      window.location.href = `tel:${dialTarget}`;
-      toast.success(`Virtual bridge connected to ${res?.maskedDisplay || dialTarget}`);
+      if (!res?.virtualProxyNumber) {
+        toast.error("Masked call bridge unavailable. Contact support or retry.");
+        return;
+      }
+      window.location.href = `tel:${res.virtualProxyNumber}`;
+      toast.success(`Virtual bridge connected to ${res.maskedDisplay || res.virtualProxyNumber}`);
       onChanged();
-    } catch {
-      window.location.href = `tel:${fallbackDial}`;
+    } catch (err) {
+      toast.error(errorMessage(err, "Unable to initiate masked call."));
     } finally {
       setIsCalling(false);
     }
@@ -281,7 +277,7 @@ export function DeliveryActions({
       ) : null}
       {d.customer.contactAllowed && d.customer.contactMasked ? (
         <p className="text-xs text-muted-foreground">
-          Masked Customer Contact: <span className="font-mono">{getVirtualProxyDisplay(d.customer.contactMasked)}</span>
+          Masked Customer Contact: <span className="font-mono">{getMaskedContactLabel(d.customer.contactMasked)}</span>
         </p>
       ) : null}
       {d.cod ? (

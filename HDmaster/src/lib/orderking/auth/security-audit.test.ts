@@ -33,7 +33,7 @@ function makeCtx(role: string, overrides: Partial<AccessContext> = {}): AccessCo
   };
 }
 
-describe("🛡️ UMAR OS SECURITY AUDIT & VERIFICATION SUITE", () => {
+describe("UMAR OS SECURITY AUDIT & VERIFICATION SUITE", () => {
   // =========================================================================
   // DIRECTIVE 1: Better Auth Session Cookies, HttpOnly, Secure, SameSite & JWT
   // =========================================================================

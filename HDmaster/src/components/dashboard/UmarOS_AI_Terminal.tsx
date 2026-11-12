@@ -110,28 +110,18 @@ export interface AuditLogEntry {
 // =========================================================================
 
 /**
- * High-Contrast SVG Data Chart Card
- * Renders hourly throughput and Haversine dispatch latency curves
+ * Live Database Throughput Card
+ * Renders real order telemetry returned from PostgreSQL via executeFounderConsoleCommand
  */
 function DataChartCard({ item }: { item: RichMediaOutput }) {
-  const hourlyData = [
-    { hour: "10:00", orders: 42, latencyMins: 4.8 },
-    { hour: "11:00", orders: 68, latencyMins: 4.2 },
-    { hour: "12:00", orders: 115, latencyMins: 3.8 },
-    { hour: "13:00", orders: 142, latencyMins: 3.4 },
-    { hour: "14:00", orders: 98, latencyMins: 3.1 },
-    { hour: "15:00", orders: 76, latencyMins: 3.2 },
-    { hour: "16:00", orders: 110, latencyMins: 3.5 },
-    { hour: "17:00", orders: 135, latencyMins: 3.3 }
-  ];
-
-  const maxOrders = 160;
-  const chartHeight = 130;
-  const chartWidth = 560;
+  const totalOrders = Number(item.data?.last24hOrders ?? 0);
+  const deliveredOrders = Number(item.data?.deliveredOrders ?? 0);
+  const connected = Boolean(item.data?.connected);
+  const completionRate =
+    totalOrders > 0 ? `${Math.round((deliveredOrders / totalOrders) * 1000) / 10}%` : "N/A";
 
   return (
     <div className="mt-3 p-4 bg-white border border-slate-300 rounded-xl shadow-2xs font-sans">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-800">
@@ -139,170 +129,49 @@ function DataChartCard({ item }: { item: RichMediaOutput }) {
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">{item.title}</h4>
-            <p className="text-[11px] text-slate-600 font-medium">{item.subtitle || "Real-time Haversine velocity and volume telemetry"}</p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              {item.subtitle || "Live 24h order throughput from PostgreSQL"}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1.5 font-mono text-[10px]">
           <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold border border-slate-300">
-            PEAK: 142 ORDERS/HR
+            24H ORDERS: {totalOrders}
           </span>
           <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold border border-emerald-300">
-            AVG LATENCY: 3.4M
+            DELIVERED: {deliveredOrders}
           </span>
           <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-bold border border-blue-300">
-            SLA: 99.1% PASS
+            COMPLETION: {completionRate}
           </span>
         </div>
       </div>
 
-      {/* SVG Chart Graphic */}
-      <div className="pt-3 pb-2">
-        <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 35}`} className="w-full h-44 overflow-visible">
-          {/* Horizontal Gridlines */}
-          <line x1="40" y1="20" x2={chartWidth} y2="20" stroke="#e2e8f0" strokeDasharray="3 3" />
-          <line x1="40" y1="55" x2={chartWidth} y2="55" stroke="#e2e8f0" strokeDasharray="3 3" />
-          <line x1="40" y1="90" x2={chartWidth} y2="90" stroke="#e2e8f0" strokeDasharray="3 3" />
-          <line x1="40" y1={chartHeight} x2={chartWidth} y2={chartHeight} stroke="#cbd5e1" strokeWidth="1.5" />
-
-          {/* Y-Axis Value Labels */}
-          <text x="32" y="24" textAnchor="end" className="text-[9px] font-mono fill-slate-500 font-bold">150</text>
-          <text x="32" y="59" textAnchor="end" className="text-[9px] font-mono fill-slate-500 font-bold">100</text>
-          <text x="32" y="94" textAnchor="end" className="text-[9px] font-mono fill-slate-500 font-bold">50</text>
-          <text x="32" y={chartHeight} textAnchor="end" className="text-[9px] font-mono fill-slate-500 font-bold">0</text>
-
-          {/* Bars & Latency Line Points */}
-          {hourlyData.map((d, i) => {
-            const x = 60 + i * 62;
-            const barH = (d.orders / maxOrders) * (chartHeight - 20);
-            const y = chartHeight - barH;
-            const latencyY = chartHeight - (d.latencyMins / 6) * (chartHeight - 30);
-
-            return (
-              <g key={d.hour}>
-                {/* Throughput Bar */}
-                <rect
-                  x={x - 14}
-                  y={y}
-                  width="28"
-                  height={barH}
-                  rx="3"
-                  className="fill-slate-900 hover:fill-emerald-600 transition-colors cursor-pointer"
-                />
-                {/* Bar Value Label */}
-                <text
-                  x={x}
-                  y={y - 4}
-                  textAnchor="middle"
-                  className="text-[9px] font-mono font-bold fill-slate-700 select-none"
-                >
-                  {d.orders}
-                </text>
-                {/* X-Axis Hour Label */}
-                <text
-                  x={x}
-                  y={chartHeight + 16}
-                  textAnchor="middle"
-                  className="text-[10px] font-mono font-semibold fill-slate-600 select-none"
-                >
-                  {d.hour}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Overlay Latency Curve (Polyline) */}
-          <polyline
-            fill="none"
-            stroke="#2563eb"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            points={hourlyData
-              .map((d, i) => {
-                const x = 60 + i * 62;
-                const latencyY = chartHeight - (d.latencyMins / 6) * (chartHeight - 30);
-                return `${x},${latencyY}`;
-              })
-              .join(" ")}
-          />
-
-          {/* Latency Data Dots */}
-          {hourlyData.map((d, i) => {
-            const x = 60 + i * 62;
-            const latencyY = chartHeight - (d.latencyMins / 6) * (chartHeight - 30);
-            return (
-              <g key={`dot-${d.hour}`}>
-                <circle cx={x} cy={latencyY} r="4" fill="#ffffff" stroke="#2563eb" strokeWidth="2" />
-                <circle cx={x} cy={latencyY} r="2" fill="#2563eb" />
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Legend & Breakdown Strip */}
-      <div className="mt-2 pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-700 gap-2">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 font-medium">
-            <span className="h-3 w-3 rounded-xs bg-slate-900 inline-block"></span>
-            <span>Hourly Completed Orders (Paise Grounded)</span>
-          </span>
-          <span className="flex items-center gap-1.5 font-medium">
-            <span className="h-2 w-2 rounded-full bg-blue-600 inline-block"></span>
-            <span>Haversine Dispatch Latency (Mins)</span>
-          </span>
-        </div>
-        <span className="text-[11px] font-mono font-bold text-emerald-800">
-          Target SLA: &lt;5.0m across all city zones
-        </span>
+      <div className="pt-3 pb-1 text-xs text-slate-700 font-mono">
+        {!connected ? (
+          <p className="text-rose-700 font-semibold">PostgreSQL connection unavailable.</p>
+        ) : totalOrders === 0 ? (
+          <p className="text-slate-600">No orders recorded in PostgreSQL in the last 24 hours.</p>
+        ) : (
+          <p className="text-slate-800">
+            PostgreSQL verified {totalOrders} total order(s) and {deliveredOrders} delivered order(s) in the last 24h.
+          </p>
+        )}
       </div>
     </div>
   );
 }
 
 /**
- * High-Contrast Image Grid Card
- * Renders optical proof verification across kitchen prep, tamper seals, and delivery dropoffs
+ * Live Document Verification Summary Card
+ * Renders actual uploaded rider_documents count from PostgreSQL
  */
 function ImageGridCard({ item }: { item: RichMediaOutput }) {
-  const [activeProof, setActiveProof] = useState<number | null>(null);
-
-  const proofItems = [
-    {
-      id: "proof-1",
-      title: "Kitchen Preparation Audit",
-      badge: "SEAL INTACT · 99.4%",
-      badgeColor: "bg-emerald-100 text-emerald-900 border-emerald-300",
-      orderId: "OK-8492",
-      timestamp: "14:28:11 IST",
-      metric: "Prep Temp: 68.2°C · 0 Defects",
-      description: "Optical scanner verified container thermal seal, sanitized packaging, and allergen tags prior to courier bag placement."
-    },
-    {
-      id: "proof-2",
-      title: "Rider QR Hand-off Verification",
-      badge: "QR MATCH · #RD-104",
-      badgeColor: "bg-blue-100 text-blue-900 border-blue-300",
-      orderId: "OK-8492",
-      timestamp: "14:31:02 IST",
-      metric: "Handoff SLA: 2.1m · Bag Weight: 1.42kg",
-      description: "Courier scanned optical RFID barcode at kitchen dispatch bay. Thermal container locked and departure confirmed."
-    },
-    {
-      id: "proof-3",
-      title: "Geotagged Doorstep Hand-off",
-      badge: "GEO-FENCE MATCH",
-      badgeColor: "bg-purple-100 text-purple-900 border-purple-300",
-      orderId: "OK-8492",
-      timestamp: "14:44:30 IST",
-      metric: "GPS Accuracy: 2.1m · OTP Verified",
-      description: "Customer residence doorstep dropoff photo logged with cryptographic hash and latitude/longitude watermark."
-    }
-  ];
+  const inspectedDocuments = Number(item.data?.inspectedDocuments ?? 0);
+  const connected = Boolean(item.data?.connected);
 
   return (
     <div className="mt-3 p-4 bg-white border border-slate-300 rounded-xl shadow-2xs font-sans">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-blue-50 border border-blue-300 text-blue-800">
@@ -310,135 +179,39 @@ function ImageGridCard({ item }: { item: RichMediaOutput }) {
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">{item.title}</h4>
-            <p className="text-[11px] text-slate-600 font-medium">{item.subtitle || "Autonomous optical verification gallery"}</p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              {item.subtitle || "Uploaded document verification count from PostgreSQL"}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 font-mono text-[10px]">
-          <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold border border-emerald-300">
-            3 ARTIFACTS VERIFIED · 100% PASS
-          </span>
-        </div>
+        <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-900 font-mono text-[10px] font-bold border border-slate-300">
+          {inspectedDocuments} DOCUMENTS IN DB
+        </span>
       </div>
-
-      {/* Grid of 3 High-Contrast Proof Cards */}
-      <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {proofItems.map((proof, idx) => (
-          <div
-            key={proof.id}
-            onClick={() => setActiveProof(idx)}
-            className={`p-3 rounded-xl border transition-all cursor-pointer ${
-              activeProof === idx
-                ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900 shadow-xs"
-                : "border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50/60"
-            }`}
-          >
-            {/* Visual Thumbnail Representation */}
-            <div className="h-28 w-full rounded-lg bg-slate-900 text-white p-2.5 flex flex-col justify-between relative overflow-hidden border border-slate-800">
-              <div className="flex justify-between items-center text-[10px] font-mono z-10">
-                <span className="text-emerald-400 font-bold">● {proof.orderId}</span>
-                <span className="text-slate-400">{proof.timestamp}</span>
-              </div>
-
-              {/* Graphic Wireframe */}
-              <div className="my-auto flex items-center justify-center">
-                {idx === 0 && (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-10 w-16 border-2 border-emerald-400 border-dashed rounded flex items-center justify-center bg-emerald-950/40">
-                      <Check className="h-5 w-5 text-emerald-400" />
-                    </div>
-                    <span className="text-[9px] font-mono text-emerald-300 uppercase">Thermal Seal</span>
-                  </div>
-                )}
-                {idx === 1 && (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-10 w-16 border-2 border-blue-400 rounded flex items-center justify-center bg-blue-950/40">
-                      <Bike className="h-5 w-5 text-blue-400" />
-                    </div>
-                    <span className="text-[9px] font-mono text-blue-300 uppercase">Courier Handoff</span>
-                  </div>
-                )}
-                {idx === 2 && (
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="h-10 w-16 border-2 border-purple-400 rounded flex items-center justify-center bg-purple-950/40">
-                      <CheckCircle2 className="h-5 w-5 text-purple-400" />
-                    </div>
-                    <span className="text-[9px] font-mono text-purple-300 uppercase">Geotag Dropoff</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-[9px] font-mono text-slate-300 z-10 truncate">
-                {proof.metric}
-              </div>
-            </div>
-
-            {/* Proof Card Metadata */}
-            <div className="mt-2.5 space-y-1">
-              <div className="flex items-center justify-between">
-                <h5 className="text-xs font-bold text-slate-900">{proof.title}</h5>
-              </div>
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold border ${proof.badgeColor}`}>
-                {proof.badge}
-              </span>
-              <p className="text-[11px] text-slate-600 line-clamp-2 mt-1 leading-snug">
-                {proof.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Expanded Details Drawer if Selected */}
-      {activeProof !== null && (
-        <div className="mt-3 p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs space-y-1.5 animate-fadeIn">
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">
-              Detailed Telemetry: {proofItems[activeProof].title}
-            </span>
-            <button
-              onClick={() => setActiveProof(null)}
-              className="text-slate-500 hover:text-slate-900 font-bold"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <p className="text-slate-700 leading-relaxed font-mono text-[11px]">
-            {proofItems[activeProof].description} Order Reference: <span className="font-bold text-slate-900">{proofItems[activeProof].orderId}</span> | Timestamp: {proofItems[activeProof].timestamp} | Telemetry metric: {proofItems[activeProof].metric}
+      <div className="pt-3 text-xs text-slate-700 font-mono">
+        {!connected ? (
+          <p className="text-rose-700 font-semibold">PostgreSQL connection unavailable.</p>
+        ) : inspectedDocuments === 0 ? (
+          <p className="text-slate-600">No uploaded rider or handover documents in PostgreSQL yet.</p>
+        ) : (
+          <p className="text-slate-800">
+            Verified {inspectedDocuments} uploaded document record(s) in PostgreSQL `rider_documents`.
           </p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
 
 /**
- * High-Contrast CCTV Video Output Card
- * Renders video stream player with optical motion tracking & SLA telemetry
+ * CCTV Dispatch Stream Gateway Card
+ * Shows live connection status based on CCTV_RTSP_GATEWAY_URL — never fabricates a camera feed
  */
 function VideoOutputCard({ item }: { item: RichMediaOutput }) {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [playbackSec, setPlaybackSec] = useState<number>(24);
-
-  useEffect(() => {
-    let timer: any;
-    if (isPlaying) {
-      timer = setInterval(() => {
-        setPlaybackSec((prev) => (prev >= 75 ? 0 : prev + 1));
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [isPlaying]);
-
-  const formatSec = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `0${m}:${s < 10 ? "0" : ""}${s}`;
-  };
+  const connected = Boolean(item.data?.connected);
 
   return (
     <div className="mt-3 p-4 bg-white border border-slate-300 rounded-xl shadow-2xs font-sans">
-      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-purple-50 border border-purple-300 text-purple-800">
@@ -446,112 +219,29 @@ function VideoOutputCard({ item }: { item: RichMediaOutput }) {
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider">{item.title}</h4>
-            <p className="text-[11px] text-slate-600 font-medium">{item.subtitle || "CAM-04 Kitchen Expedition Bay · 1080P 30FPS"}</p>
+            <p className="text-[11px] text-slate-600 font-medium">
+              {item.subtitle || "CCTV RTSP gateway status"}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 font-mono text-[10px]">
-          <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold border border-emerald-300">
-            STREAM ACTIVE · H.264
-          </span>
-          <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 font-bold border border-slate-300">
-            MOTION TRACKING: NOMINAL
-          </span>
-        </div>
-      </div>
-
-      {/* Video Monitor Frame */}
-      <div className="mt-3 rounded-xl bg-slate-950 border border-slate-800 text-white overflow-hidden shadow-xs">
-        {/* Top Watermark Overlay */}
-        <div className="px-3 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-[10px] font-mono">
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-rose-500 animate-pulse"></span>
-            <span className="font-bold text-slate-200">CAM-04 SOUTH KITCHEN EXPEDITION BAY</span>
-          </div>
-          <div className="text-slate-400">
-            REC 14:35:18 IST · 1920x1080 30FPS
-          </div>
-        </div>
-
-        {/* Video Canvas Graphic with Optical Tracking Overlays */}
-        <div className="h-48 w-full relative flex items-center justify-center p-4 bg-radial from-slate-900 to-slate-950">
-          {/* Subtle Grid Overlay */}
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-          {/* AI Optical Bounding Boxes Overlay */}
-          <div className="absolute top-6 left-8 p-1.5 rounded border border-emerald-400 bg-emerald-950/60 font-mono text-[10px] text-emerald-300">
-            <span className="font-bold">[CHEF STN 2: DISH PACKED - 100%]</span>
-          </div>
-
-          <div className="absolute bottom-10 right-8 p-1.5 rounded border border-blue-400 bg-blue-950/60 font-mono text-[10px] text-blue-300">
-            <span className="font-bold">[COURIER DISPATCH: RIDER #RD-049 DETECTED]</span>
-          </div>
-
-          <div className="flex flex-col items-center gap-2 z-10">
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="h-12 w-12 rounded-full bg-white text-slate-900 hover:bg-slate-200 flex items-center justify-center shadow-lg transition-transform hover:scale-105 cursor-pointer"
-            >
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5 fill-slate-900" />}
-            </button>
-            <span className="text-[11px] font-mono text-slate-300 font-medium">
-              {isPlaying ? "Playing Stream Replay..." : "Click to Play CCTV Telemetry Clip"}
-            </span>
-          </div>
-
-          {/* Timestamp Indicator */}
-          <div className="absolute bottom-2 left-3 font-mono text-[10px] text-slate-400">
-            TIME: {formatSec(playbackSec)} / 01:15
-          </div>
-        </div>
-
-        {/* Video Scrubber & Controls */}
-        <div className="px-4 py-2.5 bg-slate-900 border-t border-slate-800 flex items-center gap-3">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="p-1 hover:bg-slate-800 rounded text-slate-200"
-          >
-            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-          </button>
-
-          {/* Scrubber Bar */}
-          <div className="flex-1 relative flex items-center">
-            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-300"
-                style={{ width: `${(playbackSec / 75) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <span className="text-[11px] font-mono text-slate-300 shrink-0">
-            {formatSec(playbackSec)} / 01:15
-          </span>
-
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="p-1 hover:bg-slate-800 rounded text-slate-300"
-          >
-            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Telemetry Footer */}
-      <div className="mt-3 pt-2.5 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-700 gap-2">
-        <div className="flex items-center gap-3 font-mono text-[11px]">
-          <span>Handoff SLA: <strong className="text-slate-900">3.2m (Target: &lt;5m)</strong></span>
-          <span>•</span>
-          <span>Optical Quality Score: <strong className="text-emerald-700">99.8%</strong></span>
-          <span>•</span>
-          <span>Haversine Dispatch: <strong className="text-blue-700">Verified</strong></span>
-        </div>
-        <button
-          onClick={() => toast.success("CCTV stream metadata exported as JSON telemetry log.")}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 font-mono text-[11px] border border-slate-300 transition-colors"
+        <span
+          className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
+            connected
+              ? "bg-emerald-100 text-emerald-900 border-emerald-300"
+              : "bg-rose-100 text-rose-900 border-rose-300"
+          }`}
         >
-          <Download className="h-3 w-3" />
-          <span>Export Telemetry MP4/JSON</span>
-        </button>
+          {connected ? "GATEWAY CONFIGURED" : "NOT CONNECTED"}
+        </span>
+      </div>
+      <div className="pt-3 text-xs font-mono">
+        {connected ? (
+          <p className="text-emerald-800">CCTV RTSP gateway configured via `CCTV_RTSP_GATEWAY_URL`.</p>
+        ) : (
+          <p className="text-rose-700">
+            Live CCTV RTSP gateway is not configured (`CCTV_RTSP_GATEWAY_URL` unset).
+          </p>
+        )}
       </div>
     </div>
   );
@@ -765,7 +455,7 @@ export function UmarOS_AI_Terminal() {
       const sizeStr = file.size > 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${sizeKb} KB`;
 
       newMediaList.push({
-        id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+        id: `att-${crypto.randomUUID()}`,
         name: file.name,
         size: sizeStr,
         type,
@@ -781,50 +471,6 @@ export function UmarOS_AI_Terminal() {
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  };
-
-  // Add Preset Multimodal Media
-  const handleAddPresetMedia = (preset: "kitchen_proof" | "delivery_qr" | "cctv_clip" | "ledger_csv") => {
-    setShowPlusMenu(false);
-    let newMedia: AttachedMedia;
-
-    switch (preset) {
-      case "kitchen_proof":
-        newMedia = {
-          id: `preset-${Date.now()}-1`,
-          name: "kitchen_prep_seal_proof.jpg",
-          size: "420 KB",
-          type: "image"
-        };
-        break;
-      case "delivery_qr":
-        newMedia = {
-          id: `preset-${Date.now()}-2`,
-          name: "tamper_proof_bag_qr.png",
-          size: "280 KB",
-          type: "image"
-        };
-        break;
-      case "cctv_clip":
-        newMedia = {
-          id: `preset-${Date.now()}-3`,
-          name: "expedition_bay_cam04.mp4",
-          size: "3.4 MB",
-          type: "video"
-        };
-        break;
-      case "ledger_csv":
-        newMedia = {
-          id: `preset-${Date.now()}-4`,
-          name: "double_entry_reconciliation.csv",
-          size: "86 KB",
-          type: "data"
-        };
-        break;
-    }
-
-    setAttachedMedia((prev) => [...prev, newMedia]);
-    toast.success(`Staged preset: ${newMedia.name} for multimodal inspection.`);
   };
 
   const handleRemoveMedia = (id: string) => {
@@ -854,97 +500,6 @@ export function UmarOS_AI_Terminal() {
 
     const normalized = (prompt || "").toLowerCase();
 
-    // Determine rich media output to render
-    let richMediaToAttach: RichMediaOutput[] | undefined = undefined;
-
-    if (
-      normalized.includes("/vision") ||
-      normalized.includes("vision") ||
-      normalized.includes("photo") ||
-      normalized.includes("proof") ||
-      currentAttachments.some((a) => a.type === "image")
-    ) {
-      richMediaToAttach = [
-        {
-          id: `rm-${Date.now()}-vision`,
-          type: "image_grid",
-          title: "Autonomous Multimodal Visual Verification (3-Angle Audit)",
-          subtitle: "Optical inspection of kitchen prep seal, courier handoff, and doorstep delivery geotag",
-          timestamp: new Date().toLocaleTimeString(),
-          data: {
-            confidence: "99.4%",
-            tamperDefects: 0,
-            sealStatus: "PASSED",
-            geoAccuracy: "2.1m"
-          }
-        }
-      ];
-    } else if (
-      normalized.includes("/charts") ||
-      normalized.includes("/chart") ||
-      normalized.includes("chart") ||
-      normalized.includes("throughput") ||
-      normalized.includes("curve")
-    ) {
-      richMediaToAttach = [
-        {
-          id: `rm-${Date.now()}-chart`,
-          type: "chart",
-          title: "Platform Hourly Throughput & Dispatch SLA Performance Curve",
-          subtitle: "Real-time query across active, prepared, and dispatched order velocity",
-          timestamp: new Date().toLocaleTimeString(),
-          data: {
-            peakHourlyVolume: 142,
-            avgDispatchMins: 3.4,
-            slaComplianceRate: "99.1%"
-          }
-        }
-      ];
-    } else if (
-      normalized.includes("/video") ||
-      normalized.includes("/cctv") ||
-      normalized.includes("video") ||
-      normalized.includes("cctv") ||
-      normalized.includes("stream") ||
-      currentAttachments.some((a) => a.type === "video")
-    ) {
-      richMediaToAttach = [
-        {
-          id: `rm-${Date.now()}-video`,
-          type: "video_summary",
-          title: "CCTV Kitchen Dispatch Stream & Fleet Trajectory Replay",
-          subtitle: "CAM-04 South Kitchen Expedition Bay · Autonomous Motion Tracking",
-          timestamp: new Date().toLocaleTimeString(),
-          data: {
-            camera: "CAM-04",
-            resolution: "1080P 30FPS",
-            codec: "H.264/AAC",
-            motionTrackingStatus: "NOMINAL",
-            handoffSla: "3.2m"
-          }
-        }
-      ];
-    } else if (
-      normalized.includes("setting") ||
-      normalized.includes("toggle") ||
-      normalized.includes("change")
-    ) {
-      richMediaToAttach = [
-        {
-          id: `rm-${Date.now()}-settings`,
-          type: "settings_widget",
-          title: "Action-Intent Engine: Configuration Detected",
-          subtitle: "Confirm execution of operation parameters.",
-          timestamp: new Date().toLocaleTimeString(),
-          data: {
-            settingKey: "aiRiderDispatch",
-            settingName: "AI Autonomous Rider Dispatch",
-            settingValue: engineSettings.aiRiderDispatch
-          }
-        }
-      ];
-    }
-
     try {
       const res: FounderCommandResponse = await executeFounderConsoleCommand({
         data: {
@@ -952,6 +507,61 @@ export function UmarOS_AI_Terminal() {
           model: selectedModel
         }
       });
+
+      let richMediaToAttach: RichMediaOutput[] | undefined = undefined;
+      if (res.toolExecuted === "multimodal_vision_audit") {
+        richMediaToAttach = [
+          {
+            id: `rm-${crypto.randomUUID()}`,
+            type: "image_grid",
+            title: res.title,
+            subtitle: "Uploaded documents count from PostgreSQL",
+            timestamp: new Date().toLocaleTimeString(),
+            data: res.data
+          }
+        ];
+      } else if (res.toolExecuted === "query_throughput_curves") {
+        richMediaToAttach = [
+          {
+            id: `rm-${crypto.randomUUID()}`,
+            type: "chart",
+            title: res.title,
+            subtitle: "24h order throughput from PostgreSQL",
+            timestamp: new Date().toLocaleTimeString(),
+            data: res.data
+          }
+        ];
+      } else if (res.toolExecuted === "cctv_motion_tracking") {
+        richMediaToAttach = [
+          {
+            id: `rm-${crypto.randomUUID()}`,
+            type: "video_summary",
+            title: res.title,
+            subtitle: "CCTV RTSP gateway status",
+            timestamp: new Date().toLocaleTimeString(),
+            data: res.data
+          }
+        ];
+      } else if (
+        normalized.includes("setting") ||
+        normalized.includes("toggle") ||
+        normalized.includes("change")
+      ) {
+        richMediaToAttach = [
+          {
+            id: `rm-${crypto.randomUUID()}`,
+            type: "settings_widget",
+            title: "Action-Intent Engine: Configuration Detected",
+            subtitle: "Confirm execution of operation parameters.",
+            timestamp: new Date().toLocaleTimeString(),
+            data: {
+              settingKey: "aiRiderDispatch",
+              settingName: "AI Autonomous Rider Dispatch",
+              settingValue: engineSettings.aiRiderDispatch
+            }
+          }
+        ];
+      }
 
       let responseText = res.response;
       if (currentAttachments.length > 0 && !res.response.includes("Multimodal")) {
@@ -1078,7 +688,7 @@ export function UmarOS_AI_Terminal() {
               </span>
             </div>
             <p className="text-xs text-slate-700 font-medium mt-0.5">
-              Multimodal Input & Voice-Enabled Architecture • Zero-Human Dependency Grounding
+              Multimodal Input & Voice-Enabled Architecture | Zero-Human Dependency Grounding
             </p>
           </div>
         </div>
@@ -1360,7 +970,7 @@ export function UmarOS_AI_Terminal() {
                         m.role === "founder" ? "text-blue-800" : "text-emerald-800"
                       }`}
                     >
-                      {m.role === "founder" ? "Founder • Multimodal Input" : "UmarOS Multimodal AI"}
+                      {m.role === "founder" ? "Founder | Multimodal Input" : "UmarOS Multimodal AI"}
                     </span>
                     <span className="text-[10px] text-slate-600 font-mono">{m.timestamp}</span>
                     {m.executionMs !== undefined && (
@@ -1601,7 +1211,7 @@ export function UmarOS_AI_Terminal() {
                   <button
                     type="button"
                     onClick={() => setShowPlusMenu((prev) => !prev)}
-                    title="Add multimodal input or sample operational proof"
+                    title="Add multimodal input or operational proof"
                     className={`h-11 w-11 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 flex items-center justify-center shrink-0 shadow-2xs transition-colors cursor-pointer ${
                       showPlusMenu ? "ring-2 ring-slate-900 border-slate-900" : ""
                     }`}
@@ -1626,38 +1236,6 @@ export function UmarOS_AI_Terminal() {
                         <UploadCloud className="h-3.5 w-3.5 text-blue-600" />
                         <span>Upload File from Device...</span>
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddPresetMedia("kitchen_proof")}
-                        className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-medium cursor-pointer"
-                      >
-                        <Camera className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Preset: Kitchen Prep Proof (JPG)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddPresetMedia("delivery_qr")}
-                        className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-medium cursor-pointer"
-                      >
-                        <ImageIcon className="h-3.5 w-3.5 text-amber-600" />
-                        <span>Preset: Tamper Seal Photo (PNG)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddPresetMedia("cctv_clip")}
-                        className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-medium cursor-pointer"
-                      >
-                        <VideoIcon className="h-3.5 w-3.5 text-purple-600" />
-                        <span>Preset: CCTV Expedition Clip (MP4)</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleAddPresetMedia("ledger_csv")}
-                        className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-slate-100 flex items-center gap-2 text-slate-800 font-medium cursor-pointer"
-                      >
-                        <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Preset: Double-Entry Ledger (CSV)</span>
-                      </button>
                     </div>
                   )}
                 </div>
@@ -1665,7 +1243,7 @@ export function UmarOS_AI_Terminal() {
                 {/* Input Text Box */}
                 <div className="relative flex-1">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-emerald-600 font-bold select-none">
-                    ❯
+                    
                   </span>
                   <input
                     type="text"
@@ -1713,13 +1291,13 @@ export function UmarOS_AI_Terminal() {
                     <Mic className="h-3 w-3 text-rose-600" />
                     <span className="text-slate-700 font-semibold">Voice Processing Ready</span>
                   </span>
-                  <span>•</span>
+                  <span>|</span>
                   <span className="flex items-center gap-1">
                     <Paperclip className="h-3 w-3 text-blue-600" />
                     <span className="text-slate-700 font-semibold">Multimodal Optical Grounding</span>
                   </span>
                 </div>
-                <span>Keyboard: ↵ Enter to run • Model: {selectedModel}</span>
+                <span>Keyboard: Enter to run | Model: {selectedModel}</span>
               </div>
             </div>
           </div>
@@ -1985,7 +1563,7 @@ export function UmarOS_AI_Terminal() {
                         <span className="font-bold text-slate-900">{log.action}</span>
                         <div className="text-slate-600 mt-1">
                           <span className="font-mono text-[10px]">{log.timestamp}</span>
-                          <span className="mx-2">•</span>
+                          <span className="mx-2">|</span>
                           <span className="text-emerald-700 font-medium">{log.authorizedBy}</span>
                         </div>
                       </div>

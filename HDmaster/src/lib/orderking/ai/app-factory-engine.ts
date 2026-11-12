@@ -1373,43 +1373,45 @@ export async function GET() {
 `;
 
   const apiOrdersRouteTs = `import { NextResponse } from "next/server";
+import { getSql } from "@/lib/db";
 
 interface OrderPayload {
   customerName: string;
-  totalAmount: number;
+  totalAmountPaise: number;
 }
 
 export async function GET() {
-  const sampleOrders = [
-    { id: "NX-101", customerName: "Vikram Mehta", totalAmount: 3200, status: "READY" },
-    { id: "NX-102", customerName: "Ananya Roy", totalAmount: 1850, status: "DISPATCHED" },
-  ];
+  const sql = await getSql();
+  const rows = await sql\`SELECT id, customer_name, total_amount_paise, status, created_at FROM orders ORDER BY created_at DESC LIMIT 50\`;
 
   return NextResponse.json({
     success: true,
-    orders: sampleOrders,
-    count: sampleOrders.length,
+    orders: rows,
+    count: rows.length,
   });
 }
 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as OrderPayload;
-    if (!body.customerName || typeof body.totalAmount !== "number") {
+    if (!body.customerName || !Number.isInteger(body.totalAmountPaise) || body.totalAmountPaise <= 0) {
       return NextResponse.json({ error: "Invalid order payload" }, { status: 400 });
     }
 
-    const createdOrder = {
-      id: \`NX-\${Math.floor(Math.random() * 9000 + 1000)}\`,
-      customerName: body.customerName,
-      totalAmount: body.totalAmount,
-      status: "CONFIRMED",
-      createdAt: new Date().toISOString(),
-    };
+    const sql = await getSql();
+    const orderId = \`ORD-\${crypto.randomUUID().slice(0, 8).toUpperCase()}\`;
+    const createdAt = new Date().toISOString();
+    await sql\`
+      INSERT INTO orders (id, customer_name, total_amount_paise, status, created_at)
+      VALUES (\${orderId}, \${body.customerName}, \${body.totalAmountPaise}, 'CONFIRMED', \${createdAt})
+    \`;
 
-    return NextResponse.json({ success: true, order: createdOrder }, { status: 201 });
+    return NextResponse.json(
+      { success: true, order: { id: orderId, customerName: body.customerName, totalAmountPaise: body.totalAmountPaise, status: "CONFIRMED", createdAt } },
+      { status: 201 }
+    );
   } catch {
-    return NextResponse.json({ error: "Malformed JSON" }, { status: 400 });
+    return NextResponse.json({ error: "Failed to persist order" }, { status: 500 });
   }
 }
 `;

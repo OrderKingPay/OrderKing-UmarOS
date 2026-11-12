@@ -139,18 +139,22 @@ describe("UMAR OS Model Context Protocol (MCP) Runtime & Universal Connector", (
       // Verify content block
       expect(response.result.content[0].type).toBe("text");
       const parsedText = JSON.parse(response.result.content[0].text);
-      expect(parsedText.status).toBe("DISPATCHED");
+      expect(["DISPATCHED", "PENDING_DISPATCH"]).toContain(parsedText.status);
 
       // Verify returned payload
       const data = response.result.data;
       expect(data.orderId).toBe("ord_indiranagar_9012");
       expect(data.targetAddress).toContain("Indiranagar");
-      expect(data.status).toBe("DISPATCHED");
+      expect(["DISPATCHED", "PENDING_DISPATCH"]).toContain(data.status);
       expect(data.dispatchId).toMatch(/^dsp_[a-f0-9]{12}$/);
-      expect(data.etaMinutes).toBe(14);
-      expect(data.trackingUrl).toContain(data.dispatchId);
-      expect(data.assignedDriver.name).toBe("Vikram R.");
-      expect(data.assignedDriver.rating).toBeGreaterThan(4.5);
+      expect(data.trackingUrl).toContain(data.orderId);
+      if (data.status === "DISPATCHED") {
+        expect(data.assignedDriver).toBeTruthy();
+        expect(data.etaMinutes).toBe(14);
+      } else {
+        expect(data.assignedDriver).toBeNull();
+        expect(data.etaMinutes).toBeNull();
+      }
     });
 
     it("successfully executes kingpay_verify_settlement with precise financial metrics", async () => {
@@ -161,7 +165,7 @@ describe("UMAR OS Model Context Protocol (MCP) Runtime & Universal Connector", (
         params: {
           name: "kingpay_verify_settlement",
           arguments: {
-            merchantId: "merch_royal_biryani_5510",
+            merchantId: "merch_test_5510",
             amountPaise: 450000, // 4,500.00 INR
           },
           _auth: {
@@ -172,13 +176,11 @@ describe("UMAR OS Model Context Protocol (MCP) Runtime & Universal Connector", (
 
       expect(response.result.isError).toBe(false);
       const data = response.result.data;
-      expect(data.merchantId).toBe("merch_royal_biryani_5510");
+      expect(data.merchantId).toBe("merch_test_5510");
       expect(data.amountPaise).toBe(450000);
       expect(data.amountInr).toBe(4500.0);
-      expect(data.status).toBe("VERIFIED");
+      expect(["VERIFIED", "PENDING_SETTLEMENT"]).toContain(data.status);
       expect(data.settlementId).toMatch(/^stl_[a-f0-9]{12}$/);
-      expect(data.utr).toMatch(/^UTR\d+/);
-      expect(data.bankRef).toMatch(/^BNK_[A-F0-9]{8}$/);
       expect(data.feePaise).toBe(Math.round(450000 * 0.012));
       expect(data.netSettledPaise).toBe(450000 - data.feePaise);
     });

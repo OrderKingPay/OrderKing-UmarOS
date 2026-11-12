@@ -1,6 +1,6 @@
 // @ts-nocheck
 /**
- * 👑 MANDATE 3: AUTOMATED T+1 NODAL PAYOUT ENGINE & DISPUTE HANDLING TEST SUITE
+ * MANDATE 3: AUTOMATED T+1 NODAL PAYOUT ENGINE & DISPUTE HANDLING TEST SUITE
  *
  * Specialist: Banking Payouts & RazorpayX Specialist (f1ad9aac)
  * Entity: Order King (GSTIN: 18AFXPH9838M1Z9), Sribhumi, Assam - 788710
@@ -27,7 +27,7 @@ import {
   executeRazorpayXPayout,
 } from "./razorpayx-payout-engine.ts";
 
-describe("👑 Mandate 3: Automated T+1 Nodal Payout Engine & Dispute Handling", () => {
+describe("Mandate 3: Automated T+1 Nodal Payout Engine & Dispute Handling", () => {
   beforeEach(() => {
     DisputeDeductionQueue.resetTestState();
   });

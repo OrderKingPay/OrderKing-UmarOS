@@ -278,7 +278,7 @@ export function B2BSaaSSalesDeckGenerator() {
               </Badge>
             </div>
             <p className="text-xs text-slate-400">
-              Merchant contracts • Take-rate commissions • Direct onboarding • Ledger entries
+              Merchant contracts | Take-rate commissions | Direct onboarding | Ledger entries
             </p>
           </div>
         </div>
@@ -394,7 +394,7 @@ export function B2BSaaSSalesDeckGenerator() {
                         </Badge>
                       </div>
                       <p className="text-xs text-slate-400">
-                        {outlet.cuisine || "Multi-Cuisine"} • {outlet.address || "Local Outlet"}
+                        {outlet.cuisine || "Multi-Cuisine"} | {outlet.address || "Local Outlet"}
                       </p>
                       <p className="text-[11px] font-mono text-slate-500">
                         ID: {outlet.id}
@@ -468,7 +468,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   required
                   value={newLeadForm.businessName}
                   onChange={(e) => setNewLeadForm({ ...newLeadForm, businessName: e.target.value })}
-                  placeholder="e.g. Karimganj Royal Biryani"
+                  placeholder="Restaurant or franchise business name"
                   className="h-9 text-xs bg-slate-950 border-slate-800 text-white"
                 />
               </div>
@@ -492,7 +492,7 @@ export function B2BSaaSSalesDeckGenerator() {
                   maxLength={10}
                   value={newLeadForm.phone}
                   onChange={(e) => setNewLeadForm({ ...newLeadForm, phone: e.target.value })}
-                  placeholder="9876543210"
+                  placeholder="10-digit mobile number"
                   className="h-9 text-xs bg-slate-950 border-slate-800 text-white font-mono"
                 />
               </div>
@@ -613,7 +613,7 @@ export function B2BSaaSSalesDeckGenerator() {
                         </Badge>
                       </div>
                       <p className="text-xs text-slate-400">
-                        {lead.contactPerson} • {lead.phone} • {lead.location}
+                        {lead.contactPerson} | {lead.phone} | {lead.location}
                       </p>
                     </div>
 
@@ -627,7 +627,7 @@ export function B2BSaaSSalesDeckGenerator() {
                         onClick={() => handleAdvanceStage(lead)}
                         className="h-7 text-[11px] border-slate-700 bg-slate-800 text-slate-200 hover:text-white"
                       >
-                        Advance Stage →
+                        Advance Stage
                       </Button>
                     </div>
                   </div>

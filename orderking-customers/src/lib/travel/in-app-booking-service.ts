@@ -176,6 +176,28 @@ export interface SovereignETicket {
 // PNR & SERIAL GENERATORS
 // ============================================================================
 
+function randomAlnumUpper(len: number): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(len);
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    throw new Error("Secure cryptographic RNG unavailable.");
+  }
+  return Array.from(bytes, (b) => chars[b % chars.length]).join("");
+}
+
+function randomDigitsInRange(min: number, maxExclusive: number): number {
+  const span = maxExclusive - min;
+  const arr = new Uint32Array(1);
+  if (typeof globalThis !== "undefined" && globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(arr);
+  } else {
+    throw new Error("Secure cryptographic RNG unavailable.");
+  }
+  return min + (arr[0]! % span);
+}
+
 export function generateSovereignPnr(mode: TravelMode): string {
   if (mode === "train") {
     throw new Error(
@@ -188,14 +210,14 @@ export function generateSovereignPnr(mode: TravelMode): string {
     cab: "OK-CB",
   };
   const prefix = (prefixMap as any)[mode] || "OK-TRV";
-  const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const randomChars = randomAlnumUpper(6);
   const timestampSuffix = Date.now().toString().slice(-4);
   return `${prefix}-${randomChars}${timestampSuffix}`;
 }
 
 export function generateTransactionId(method: PaymentMethod): string {
   const prefix = method === "kingpay_wallet" ? "KP-WAL" : "RZP-PAY";
-  const num = Math.floor(100000000 + Math.random() * 900000000);
+  const num = randomDigitsInRange(100000000, 1000000000);
   return `${prefix}-${num}`;
 }
 
@@ -678,9 +700,9 @@ export function searchCabQuotes(
       vehicleModel: "Maruti Suzuki Dzire AC",
       vehicleType: "Sedan",
       seatingCapacity: 4,
-      driverName: "Rajesh Kumar Sharma",
-      driverRating: 4.92,
-      vehiclePlate: "DL-1Z-9281",
+      driverName: "Assigned at live dispatch",
+      driverRating: 4.8,
+      vehiclePlate: "Assigned at live dispatch",
       etaMinutes: 4,
       seatsAvailable: 4,
       baseFarePaise: baseRate,
@@ -705,9 +727,9 @@ export function searchCabQuotes(
       vehicleModel: "Toyota Innova Crysta AC",
       vehicleType: "SUV",
       seatingCapacity: 6,
-      driverName: "Gurpreet Singh",
-      driverRating: 4.95,
-      vehiclePlate: "DL-1Z-3849",
+      driverName: "Assigned at live dispatch",
+      driverRating: 4.8,
+      vehiclePlate: "Assigned at live dispatch",
       etaMinutes: 6,
       seatsAvailable: 6,
       baseFarePaise: Math.round(baseRate * 1.55),
@@ -732,9 +754,9 @@ export function searchCabQuotes(
       vehicleModel: "Tata Tigor EV Electric",
       vehicleType: "EV Taxi",
       seatingCapacity: 4,
-      driverName: "Amitabh Verma",
-      driverRating: 4.88,
-      vehiclePlate: "DL-1Z-EV-8820",
+      driverName: "Assigned at live dispatch",
+      driverRating: 4.8,
+      vehiclePlate: "Assigned at live dispatch",
       etaMinutes: 3,
       seatsAvailable: 4,
       baseFarePaise: Math.round(baseRate * 0.95),
@@ -759,9 +781,9 @@ export function searchCabQuotes(
       vehicleModel: "Maruti WagonR AC",
       vehicleType: "Mini",
       seatingCapacity: 4,
-      driverName: "Sunil Yadav",
-      driverRating: 4.82,
-      vehiclePlate: "DL-1Z-4412",
+      driverName: "Assigned at live dispatch",
+      driverRating: 4.7,
+      vehiclePlate: "Assigned at live dispatch",
       etaMinutes: 5,
       seatsAvailable: 4,
       baseFarePaise: Math.round(baseRate * 0.8),
@@ -1039,10 +1061,10 @@ export function issueSovereignETicket(params: {
     qrCodeData,
     cabDriver: params.quote.mode === "cab" ? {
       name: params.quote.driverName || "Assigned at live dispatch",
-      phone: (params.quote as any).driverPhone || "+91 93950 65587",
+      phone: (params.quote as any).driverPhone || "Assigned at live dispatch",
       vehicleModel: params.quote.vehicleModel || "Sedan",
       vehiclePlate: params.quote.vehiclePlate || "Assigned at live dispatch",
-      otp: `${Math.floor(1000 + Math.random() * 9000)}`,
+      otp: `${randomDigitsInRange(1000, 10000)}`,
       etaMinutes: params.quote.etaMinutes || 4,
     } : undefined,
     bookedAt: new Date().toISOString(),

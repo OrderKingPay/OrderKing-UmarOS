@@ -105,9 +105,9 @@ export function MultimodelBenchmarkDashboard() {
     toast.info("Settings reset to recommended defaults.");
   };
 
-  const handleTestResponse = () => {
+  const handleEstimateCost = () => {
     if (!testPrompt.trim()) {
-      toast.error("Please enter a prompt to test.");
+      toast.error("Please enter a prompt to estimate.");
       return;
     }
 
@@ -115,22 +115,13 @@ export function MultimodelBenchmarkDashboard() {
     const outputTokens = Math.min(settings.maxTokensPerReply, 180);
     const cost = calculateTokenCost(activeModelId, inputTokens, outputTokens);
 
-    const sampleReplies: Record<"support" | "menu" | "advice", string> = {
-      support:
-        "Order Status Reply Template: We are checking your live kitchen and rider status now. Your itemized GST tax invoice can be downloaded directly from the Order Details screen once delivered.",
-      menu:
-        "Menu Description Template: Freshly prepared in our FSSAI-verified kitchen using sealed tamper-evident packaging. Allergen and portion size details are listed below.",
-      advice:
-        "Business Advice Template: Focus on reducing kitchen prep time during 7 PM–10 PM peak dinner hours and highlight top-margin combo meals on your home banner.",
-    };
-
     setTestOutput({
       modelName: activeModel.name,
       estimatedCostInr: cost.costInr,
-      previewText: `[${activeModel.name} • Max ${settings.maxTokensPerReply} tokens]\n${sampleReplies[testCategory]}\n\nRule Applied: "${settings.customSystemInstruction}"`,
+      previewText: `Model: ${activeModel.name} | Input: ~${inputTokens} tokens | Max Output Cap: ${settings.maxTokensPerReply} tokens\nCategory: ${testCategory.toUpperCase()}\nConfigured System Instruction: "${settings.customSystemInstruction}"`,
       testedAt: new Date().toLocaleTimeString(),
     });
-    toast.success("Test response generated.");
+    toast.success("Token and cost estimate calculated.");
   };
 
   return (
@@ -196,7 +187,7 @@ export function MultimodelBenchmarkDashboard() {
             Support: {FRONTIER_MODELS[settings.supportModel]?.name || settings.supportModel}
           </p>
           <p className="text-xs text-slate-600 mt-0.5">
-            Photos: {FRONTIER_MODELS[settings.menuPhotoModel]?.name || settings.menuPhotoModel} • Advice:{" "}
+            Photos: {FRONTIER_MODELS[settings.menuPhotoModel]?.name || settings.menuPhotoModel} | Advice:{" "}
             {FRONTIER_MODELS[settings.businessAdviceModel]?.name || settings.businessAdviceModel}
           </p>
         </div>
@@ -441,13 +432,13 @@ export function MultimodelBenchmarkDashboard() {
         </div>
       </div>
 
-      {/* 4. Test AI Response Box */}
+      {/* 4. Prompt Token & Cost Estimator */}
       <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Test Model Response</h3>
+            <h3 className="text-sm font-bold text-slate-900">Prompt Token &amp; Cost Estimator</h3>
             <p className="text-xs text-slate-600">
-              Preview how your selected model formats replies and check the exact cost per message.
+              Calculate estimated token usage and INR cost for the selected model configuration.
             </p>
           </div>
           <div className="flex items-center gap-1.5">
@@ -477,10 +468,10 @@ export function MultimodelBenchmarkDashboard() {
             className="flex-1 bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900"
           />
           <Button
-            onClick={handleTestResponse}
+            onClick={handleEstimateCost}
             className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs px-5 rounded-xl gap-1.5"
           >
-            <Send className="h-3.5 w-3.5" /> Test Response
+            <Send className="h-3.5 w-3.5" /> Estimate Cost
           </Button>
         </div>
 
@@ -491,7 +482,7 @@ export function MultimodelBenchmarkDashboard() {
                 Model: {testOutput.modelName}
               </span>
               <span className="font-mono text-emerald-700 font-semibold">
-                Est. Cost: ₹{testOutput.estimatedCostInr.toFixed(4)} • {testOutput.testedAt}
+                Est. Cost: ₹{testOutput.estimatedCostInr.toFixed(4)} | {testOutput.testedAt}
               </span>
             </div>
             <pre className="text-xs text-slate-700 whitespace-pre-wrap font-sans leading-relaxed">

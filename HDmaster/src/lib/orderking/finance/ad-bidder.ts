@@ -8,7 +8,7 @@ export interface AdPayload {
 
 export async function requestHighestAdBid(customerId: string): Promise<AdPayload | null> {
   // Retrieve the customer's order history to determine LTV
-  const rows = await getSql('SELECT SUM(total_amount) as ltv FROM orders WHERE customer_id = ?', [customerId]);
+  const rows = await getSql('SELECT SUM(total_paise) as ltv FROM orders WHERE customer_id = $1', [customerId]);
   const ltv = rows[0]?.ltv || 0;
 
   // Read configured ad network bid endpoints from environment

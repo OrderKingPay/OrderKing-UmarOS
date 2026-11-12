@@ -200,7 +200,7 @@ export function LaunchPlaybookView() {
                 Cluster: {DEFAULT_CLUSTER_CONFIG.name}
               </span>
               <span className="bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40">
-                1km Core → 3.5km Perimeter
+                1km Core to 3.5km Perimeter
               </span>
               <span className="bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40 text-amber-300 font-bold">
                 Budget: ₹65k–₹95k Ledger

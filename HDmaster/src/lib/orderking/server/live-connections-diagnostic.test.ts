@@ -14,7 +14,7 @@ describe("Live Infrastructure & Gateway Diagnostics", () => {
     expect(result).toBeDefined();
     expect(result.length).toBeGreaterThan(0);
     const row = result[0];
-    console.log("✅ Live Supabase Connection:", {
+    console.log("Live Supabase Connection:", {
       database: row.db_name,
       time: row.db_time,
       version: String(row.db_version || "").slice(0, 40),
@@ -28,7 +28,7 @@ describe("Live Infrastructure & Gateway Diagnostics", () => {
       headers: { authorization: apiKey },
     });
     const data = await res.json();
-    console.log("✅ Live Fast2SMS Gateway Status:", {
+    console.log("Live Fast2SMS Gateway Status:", {
       status: res.status,
       wallet: data,
     });
@@ -39,7 +39,7 @@ describe("Live Infrastructure & Gateway Diagnostics", () => {
     const apiKey = process.env.TWOFACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042";
     const res = await fetch(`https://2factor.in/API/V1/${apiKey}/BAL/SMS`);
     const text = await res.text();
-    console.log("✅ Live 2Factor Gateway Status:", {
+    console.log("Live 2Factor Gateway Status:", {
       status: res.status,
       response: text,
     });

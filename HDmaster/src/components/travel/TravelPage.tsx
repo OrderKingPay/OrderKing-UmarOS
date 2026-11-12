@@ -44,19 +44,19 @@ export function TravelPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
         <div className="flex gap-2">
           <Button variant={mode === "FLIGHT" ? "primary" : "secondary"} onClick={() => setMode("FLIGHT")}>
-            ✈️ Flights
+             Flights
           </Button>
           <Button variant={mode === "TRAIN" ? "primary" : "secondary"} onClick={() => setMode("TRAIN")}>
-            🚆 Indian Rail
+             Indian Rail
           </Button>
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted">
           <span className="font-bold">Quick Routes:</span>
           {[
-            { label: "DEL ➔ BOM", o: "DEL", d: "BOM", m: "FLIGHT" as const },
-            { label: "BLR ➔ DEL", o: "BLR", d: "DEL", m: "FLIGHT" as const },
-            { label: "NDLS ➔ MMCT", o: "NDLS", d: "MMCT", m: "TRAIN" as const },
-            { label: "SBC ➔ MAS", o: "SBC", d: "MAS", m: "TRAIN" as const },
+            { label: "DEL -> BOM", o: "DEL", d: "BOM", m: "FLIGHT" as const },
+            { label: "BLR -> DEL", o: "BLR", d: "DEL", m: "FLIGHT" as const },
+            { label: "NDLS -> MMCT", o: "NDLS", d: "MMCT", m: "TRAIN" as const },
+            { label: "SBC -> MAS", o: "SBC", d: "MAS", m: "TRAIN" as const },
           ].map((r) => (
             <button
               key={r.label}

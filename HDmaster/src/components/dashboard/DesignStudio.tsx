@@ -269,7 +269,7 @@ export function DesignStudio() {
             setConfig((p) => ({
               ...p,
               headline: "Weekend Family Combo",
-              tagline: "Zero surge fee • Direct kitchen prices",
+              tagline: "Zero surge fee | Direct kitchen prices",
               promoBadge: "FREE DELIVERY ABOVE ₹399",
               primaryColor: "#2563eb",
               accentColor: "#f97316",

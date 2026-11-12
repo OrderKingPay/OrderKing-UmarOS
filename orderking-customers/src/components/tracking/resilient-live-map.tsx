@@ -276,10 +276,20 @@ export function ResilientLiveMap({
     return () => observer.disconnect();
   }, []);
 
-  // Update target coordinates based on status & overrides
+  // Update target coordinates strictly from verified status, progress override, or live rider coordinates (no fake timers)
   useEffect(() => {
     if (status === "DELIVERED") {
       targetPosRef.current = { lat: effDeliveryLat, lng: effDeliveryLng };
+      return;
+    }
+
+    if (rider?.lat !== undefined && rider?.lng !== undefined) {
+      targetPosRef.current = { lat: rider.lat, lng: rider.lng };
+      return;
+    }
+
+    if (initialRiderLat !== undefined && initialRiderLng !== undefined) {
+      targetPosRef.current = { lat: initialRiderLat, lng: initialRiderLng };
       return;
     }
 
@@ -292,26 +302,13 @@ export function ResilientLiveMap({
       return;
     }
 
-    // Default simulation step along corridor if live stream isn't firing
-    const interval = setInterval(() => {
-      const prev = targetPosRef.current;
-      const dLat = effDeliveryLat - prev.lat;
-      const dLng = effDeliveryLng - prev.lng;
-      const distRemaining = Math.sqrt(dLat * dLat + dLng * dLng);
-      if (distRemaining < 0.0003) {
-        targetPosRef.current = { lat: effDeliveryLat, lng: effDeliveryLng };
-        return;
-      }
-      // Advance slightly toward customer
-      const step = 0.00025;
-      targetPosRef.current = {
-        lat: prev.lat + (dLat / distRemaining) * step,
-        lng: prev.lng + (dLng / distRemaining) * step,
-      };
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, [status, riderProgressOverride, effRestaurantLat, effRestaurantLng, effDeliveryLat, effDeliveryLng]);
+    const statusFraction =
+      status === "ON_THE_WAY" ? 0.7 : status === "PICKED_UP" ? 0.45 : 0.2;
+    targetPosRef.current = {
+      lat: effRestaurantLat + (effDeliveryLat - effRestaurantLat) * statusFraction,
+      lng: effRestaurantLng + (effDeliveryLng - effRestaurantLng) * statusFraction,
+    };
+  }, [status, riderProgressOverride, rider?.lat, rider?.lng, initialRiderLat, initialRiderLng, effRestaurantLat, effRestaurantLng, effDeliveryLat, effDeliveryLng]);
 
   // Real-time Supabase telemetry listener
   useEffect(() => {
@@ -375,9 +372,9 @@ export function ResilientLiveMap({
       // Update state for HUD and UI (throttled to ~15fps state update for React, while canvas/ref remains 60fps)
       frameCounter++;
       if (frameCounter % 4 === 0) {
-        const straight = calculateHaversineDistance(nextLat, nextLng, deliveryLat, deliveryLng);
+        const straight = calculateHaversineDistance(nextLat, nextLng, effDeliveryLat, effDeliveryLng);
         const road = straight * INDIAN_ROAD_FACTOR;
-        const eta = etaOverride ?? calculateETA(road);
+        const eta = effEtaOverride ?? calculateETA(road);
 
         setTelemetry({
           currentLat: nextLat,
@@ -593,7 +590,7 @@ export function ResilientLiveMap({
           />
         </svg>
 
-        {/* 🍳 Restaurant Marker */}
+        {/* Restaurant Marker */}
         <div
           className="absolute pointer-events-none transition-transform duration-75"
           style={{

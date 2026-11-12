@@ -851,7 +851,8 @@ export async function dispatchBookingConfirmationTelecom(
     }
 
     // Branch B: Fast2SMS Smart OTP / Dedicated Corridor
-    if (process.env.FAST2SMS_OTP_ID) {
+    const smartOtpDigits = (params.pnr.replace(/\D/g, "") || params.bookingId.replace(/\D/g, "")).slice(0, 6);
+    if (process.env.FAST2SMS_OTP_ID && smartOtpDigits.length > 0) {
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -868,7 +869,7 @@ export async function dispatchBookingConfirmationTelecom(
             body: JSON.stringify({
               otp_id: process.env.FAST2SMS_OTP_ID.trim().replace(/^["']|["']$/g, ""),
               mobile: cleanPhone,
-              otp: params.pnr.replace(/\D/g, "").slice(0, 6) || "123456",
+              otp: smartOtpDigits,
             }),
             signal: controller.signal,
           },
@@ -940,11 +941,11 @@ export async function dispatchBookingConfirmationTelecom(
     }
   }
 
-  // STEP 3: Resilient fail-closed zero-lockout simulation/audit
+  // STEP 3: Resilient fail-closed zero-lockout audit
   const fallbackNotice =
     "Telecom API credentials unconfigured in environment. Booking confirmation logged to audit trail.";
   console.log(
-    `[Telecom Gateway] ℹ️ ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
+    `[Telecom Gateway] ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
   );
 
   return {

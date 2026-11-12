@@ -180,7 +180,7 @@ export function SocialPublishingStudio() {
             {selectedChannel.replace("_", " ")}
           </p>
           <p className="text-xs text-slate-600 mt-1">
-            Aspect Ratio: {constraints.allowedAspectRatios.join(" or ")} • Max Hashtags: {constraints.maxHashtags}
+            Aspect Ratio: {constraints.allowedAspectRatios.join(" or ")} | Max Hashtags: {constraints.maxHashtags}
           </p>
         </div>
 

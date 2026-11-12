@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Lightbulb,
   Smartphone,
@@ -11,27 +12,29 @@ import {
   X,
   CheckCircle2,
   Copy,
-  ExternalLink,
   Zap,
   ArrowRight,
-  ShieldCheck,
+  Wallet,
+  CreditCard,
   Share2,
   Receipt,
   Printer,
-  ChevronRight,
-  Sparkles,
-  Clock,
-  ArrowLeft,
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatPaise } from "@/lib/money";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import {
   buildNPCIUpiIntentUrl,
   generateAppDeepLink,
-  FOUNDER_UPI_VPAS,
-  DEFAULT_FOUNDER_PAYEE_NAME,
 } from "@/lib/payments/npci-upi-intent";
+import {
+  prepareUtilityBillRazorpayOrder,
+  verifyAndRecordUtilityBillPayment,
+  payUtilityBillWithWallet,
+  listMyUtilityBills,
+} from "@/lib/server/kingpay";
 
 export type UtilityCategory =
   | "electricity"
@@ -122,7 +125,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Karnataka",
     code: "BESCOM",
     accountLabel: "Account ID / Consumer ID (10 Digits)",
-    accountPlaceholder: "e.g. 1234567890",
+    accountPlaceholder: "Enter 10-digit Consumer ID",
     defaultAmount: 950,
   },
   {
@@ -132,7 +135,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Telangana",
     code: "TSSPDCL",
     accountLabel: "Unique Service Number (USC)",
-    accountPlaceholder: "e.g. 101234567",
+    accountPlaceholder: "Enter USC number",
     defaultAmount: 1100,
   },
   {
@@ -142,7 +145,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Tamil Nadu",
     code: "TANGEDCO",
     accountLabel: "Consumer Number",
-    accountPlaceholder: "e.g. 09201234567",
+    accountPlaceholder: "Enter consumer number",
     defaultAmount: 800,
   },
   {
@@ -152,7 +155,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Maharashtra",
     code: "MSEDCL",
     accountLabel: "Consumer Number (12 Digits)",
-    accountPlaceholder: "e.g. 123456789012",
+    accountPlaceholder: "Enter 12-digit Consumer Number",
     defaultAmount: 1250,
   },
   {
@@ -162,7 +165,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Delhi",
     code: "TPDDL",
     accountLabel: "CA Number (11 Digits)",
-    accountPlaceholder: "e.g. 60012345678",
+    accountPlaceholder: "Enter 11-digit CA Number",
     defaultAmount: 1400,
   },
   {
@@ -172,7 +175,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Delhi",
     code: "BRPL",
     accountLabel: "CA Number (9 Digits)",
-    accountPlaceholder: "e.g. 100123456",
+    accountPlaceholder: "Enter 9-digit CA Number",
     defaultAmount: 1350,
   },
   {
@@ -182,7 +185,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Delhi",
     code: "BYPL",
     accountLabel: "CA Number (9 Digits)",
-    accountPlaceholder: "e.g. 100987654",
+    accountPlaceholder: "Enter 9-digit CA Number",
     defaultAmount: 1200,
   },
   {
@@ -192,7 +195,7 @@ export const ALL_UTILITY_BILLERS: UtilityBiller[] = [
     state: "Uttar Pradesh",
     code: "UPPCL",
     accountLabel: "Account Number (10 Digits)",
-    accountPlaceholder: "e.g. 1234567890",
+    accountPlaceholder: "Enter 10-digit Account Number",
     defaultAmount: 900,
   },
   {
@@ -890,7 +893,30 @@ interface UtilitiesBillEngineProps {
   initialCategory?: UtilityCategory;
 }
 
+async function ensureRazorpayLoaded(): Promise<any> {
+  if (typeof window === "undefined") return null;
+  const win = window as any;
+  if (win.Razorpay) return win.Razorpay;
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve((window as any).Razorpay || null));
+      existing.addEventListener("error", () => resolve(null));
+      setTimeout(() => resolve((window as any).Razorpay || null), 1500);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve((window as any).Razorpay || null);
+    script.onerror = () => resolve(null);
+    document.body.appendChild(script);
+  });
+}
+
 export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProps) {
+  const { user } = useCurrentUserState();
+  const queryClient = useQueryClient();
   const [selectedCategory, setSelectedCategory] = useState<UtilityCategory>(() => {
     if (initialCategory) return initialCategory;
     if (typeof window !== "undefined") {
@@ -908,7 +934,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
     return found || ALL_UTILITY_BILLERS[0];
   });
 
-  // Mobile Recharge Specific State (PhonePe Parity)
+  // Mobile Recharge Specific State
   const [mobileOperator, setMobileOperator] = useState<"JIO" | "AIRTEL" | "VI" | "BSNL">("JIO");
   const [mobileCircle, setMobileCircle] = useState("Assam & North East");
   const [planFilterTab, setPlanFilterTab] = useState<"popular" | "5g" | "daily" | "annual" | "addon">(
@@ -921,8 +947,16 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const [activeTxnRef, setActiveTxnRef] = useState("");
   const [paymentCompleted, setPaymentCompleted] = useState(false);
-  const [confirmedUtr, setConfirmedUtr] = useState("");
+  const [confirmedRef, setConfirmedRef] = useState("");
+  const [confirmedGateway, setConfirmedGateway] = useState("");
   const [completedTimestamp, setCompletedTimestamp] = useState("");
+  const [isPaying, setIsPaying] = useState(false);
+
+  const billHistoryQuery = useQuery({
+    queryKey: ["utility_bills_history", user?.id],
+    queryFn: () => listMyUtilityBills(),
+    enabled: Boolean(user),
+  });
 
   // Sync biller when category changes externally
   useEffect(() => {
@@ -1068,13 +1102,13 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
   const handleProceedToPay = () => {
     if (selectedCategory === "mobile") {
       const cleanPhone = accountNumber.replace(/\D/g, "");
-      if (cleanPhone.length > 0 && cleanPhone.length !== 10) {
+      if (cleanPhone.length !== 10) {
         toast.error("Please enter a valid 10-digit mobile number");
         return;
       }
     } else {
-      if (!accountNumber.trim()) {
-        toast.error(`Please enter your ${selectedBiller.accountLabel}`);
+      if (!accountNumber.trim() || accountNumber.trim().length < 4) {
+        toast.error(`Please enter a valid ${selectedBiller.accountLabel}`);
         return;
       }
     }
@@ -1082,12 +1116,117 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
     const newRef = `UTIL-${selectedBiller.code}-${Date.now().toString().slice(-6)}`;
     setActiveTxnRef(newRef);
     setPaymentCompleted(false);
+    setConfirmedRef("");
+    setConfirmedGateway("");
     setIsCheckoutModalOpen(true);
   };
 
-  const handleConfirmPaid = () => {
-    setPaymentCompleted(true);
-    toast.message("Marked on this screen only. No bill was paid and no GST invoice was issued.");
+  const handlePayViaRazorpay = async () => {
+    if (!user) {
+      toast.error("Please sign in to pay utility bills online.");
+      return;
+    }
+    setIsPaying(true);
+    try {
+      const prepared = await prepareUtilityBillRazorpayOrder({
+        data: {
+          billerCode: selectedBiller.code,
+          billerName: selectedBiller.name,
+          category: selectedCategory,
+          accountNumber: accountNumber.trim(),
+          amountRupees: cleanAmount,
+          receipt: txnRef,
+        },
+      });
+      const RazorpayCtor = await ensureRazorpayLoaded();
+      if (!RazorpayCtor) {
+        throw new Error("Razorpay checkout could not load. Please retry.");
+      }
+
+      const rzp = new RazorpayCtor({
+        key: prepared.keyId,
+        amount: prepared.amountPaise,
+        currency: prepared.currency,
+        name: "KingPay Utilities",
+        description: `${selectedBiller.code} · ${accountNumber.trim()}`,
+        order_id: prepared.orderId,
+        handler: async (resp: {
+          razorpay_order_id?: string;
+          razorpay_payment_id?: string;
+          razorpay_signature?: string;
+        }) => {
+          try {
+            const verified = await verifyAndRecordUtilityBillPayment({
+              data: {
+                billerCode: selectedBiller.code,
+                billerName: selectedBiller.name,
+                category: selectedCategory,
+                accountNumber: accountNumber.trim(),
+                amountPaise: prepared.amountPaise,
+                razorpayOrderId: resp.razorpay_order_id || prepared.orderId,
+                razorpayPaymentId: resp.razorpay_payment_id || "",
+                razorpaySignature: resp.razorpay_signature || "",
+              },
+            });
+            setConfirmedRef(verified.transactionRef);
+            setConfirmedGateway(verified.gateway);
+            setCompletedTimestamp(new Date(verified.paidAtIso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
+            setPaymentCompleted(true);
+            await queryClient.invalidateQueries({ queryKey: ["utility_bills_history"] });
+            toast.success("Utility payment verified and recorded.");
+          } catch (verifyErr) {
+            toast.error(verifyErr instanceof Error ? verifyErr.message : "Payment verification failed.");
+          } finally {
+            setIsPaying(false);
+          }
+        },
+        modal: {
+          ondismiss: () => setIsPaying(false),
+        },
+        theme: { color: "#F59E0B" },
+      });
+      rzp.on("payment.failed", (failResp: any) => {
+        toast.error(failResp?.error?.description || "Utility payment failed.");
+        setIsPaying(false);
+      });
+      rzp.open();
+    } catch (err) {
+      setIsPaying(false);
+      toast.error(err instanceof Error ? err.message : "Unable to start online utility checkout.");
+    }
+  };
+
+  const handlePayWithWallet = async () => {
+    if (!user) {
+      toast.error("Please sign in to pay with KingPay Wallet.");
+      return;
+    }
+    setIsPaying(true);
+    try {
+      const res = await payUtilityBillWithWallet({
+        data: {
+          billerCode: selectedBiller.code,
+          billerName: selectedBiller.name,
+          category: selectedCategory,
+          accountNumber: accountNumber.trim(),
+          amountRupees: cleanAmount,
+        },
+      });
+      setConfirmedRef(res.transactionRef);
+      setConfirmedGateway(res.gateway);
+      setCompletedTimestamp(new Date(res.paidAtIso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
+      setPaymentCompleted(true);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["kingpay_balance"] }),
+        queryClient.invalidateQueries({ queryKey: ["kingpay_ledger"] }),
+        queryClient.invalidateQueries({ queryKey: ["utility_bills_history"] }),
+      ]);
+      toast.success("Paid using KingPay Wallet.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Wallet payment failed.");
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   const handleCopyUpi = () => {
@@ -1665,43 +1804,47 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                   </button>
                 </div>
 
-                {/* Mark as Paid -> Generate GST Invoice */}
-                <div className="pt-2 border-t border-slate-800">
+                {/* Verified Gateway & Wallet Settlement */}
+                <div className="pt-2 border-t border-slate-800 space-y-2">
                   <button
                     type="button"
-                    onClick={handleConfirmPaid}
-                    className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-emerald-600/20"
+                    disabled={isPaying}
+                    onClick={handlePayViaRazorpay}
+                    className="w-full h-11 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-60 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/20"
                   >
-                    <CheckCircle2 className="size-4" />
-                    <span>I Have Completed Payment</span>
+                    <CreditCard className="size-4" />
+                    <span>{isPaying ? "Processing..." : `Pay ₹${cleanAmount.toFixed(2)} via Razorpay`}</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isPaying}
+                    onClick={handlePayWithWallet}
+                    className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer"
+                  >
+                    <Wallet className="size-4" />
+                    <span>Pay via KingPay Wallet</span>
                   </button>
                 </div>
               </div>
             ) : (
-              /* VIEW 2: OFFICIAL GST TAX INVOICE & RECEIPT GENERATOR */
+              /* VIEW 2: VERIFIED PAYMENT RECEIPT (ONLY SHOWN AFTER SERVER VERIFICATION) */
               <div className="space-y-4">
-                {/* Success Indicator */}
                 <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-1">
                   <CheckCircle2 className="size-8 text-emerald-400 mx-auto" />
-                  <h4 className="text-sm font-black text-white">Payment Confirmed &amp; Settled</h4>
+                  <h4 className="text-sm font-black text-white">Payment Verified &amp; Recorded</h4>
                   <p className="text-xs text-slate-300">
-                    Your transaction has been processed via NPCI UPI Direct Gateway.
+                    Settled via {confirmedGateway || "Verified Gateway"}.
                   </p>
                 </div>
 
-                {/* Official Printable GST Invoice Card */}
                 <div
-                  id="printable-gst-invoice"
+                  id="printable-utility-receipt"
                   className="p-5 rounded-2xl bg-slate-900 border border-slate-800 text-xs space-y-3 font-sans print:bg-white print:text-black print:p-0"
                 >
-                  {/* Invoice Header */}
                   <div className="flex items-start justify-between border-b border-slate-800 pb-3">
                     <div>
                       <span className="font-black text-base text-white tracking-tight block">
                         ORDERKING PAY
-                      </span>
-                      <span className="text-[10px] text-slate-400 block">
-                        GSTIN: <strong className="text-slate-300 font-mono">18AFXPH9838M1Z9</strong>
                       </span>
                       <span className="text-[10px] text-slate-400 block">
                         Sribhumi / Karimganj, Assam - 788710
@@ -1709,7 +1852,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     </div>
                     <div className="text-right">
                       <span className="text-[9px] px-2 py-0.5 rounded bg-emerald-400/20 text-emerald-300 font-bold uppercase">
-                        TAX INVOICE
+                        PAYMENT RECEIPT
                       </span>
                       <span className="text-[10px] text-slate-400 block mt-1 font-mono">
                         #{activeTxnRef}
@@ -1717,7 +1860,6 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     </div>
                   </div>
 
-                  {/* Transaction Metadata */}
                   <div className="grid grid-cols-2 gap-2 text-[11px] py-1 border-b border-slate-800">
                     <div>
                       <span className="text-slate-400 block text-[10px]">Service &amp; Biller</span>
@@ -1730,8 +1872,8 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">Bank UTR Reference</span>
-                      <span className="font-mono text-slate-300">{confirmedUtr}</span>
+                      <span className="text-slate-400 block text-[10px]">Verified Reference</span>
+                      <span className="font-mono text-slate-300 break-all">{confirmedRef}</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Date &amp; Time (IST)</span>
@@ -1739,35 +1881,9 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     </div>
                   </div>
 
-                  {/* Statutory Tax Breakdown (18% GST on facilitation/service) */}
-                  <div className="space-y-1.5 py-1 text-[11px]">
-                    <div className="flex justify-between text-slate-400">
-                      <span>Base Value / Recharge Tariff</span>
-                      <span className="font-mono font-bold text-white">
-                        ₹{(cleanAmount / 1.18).toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-slate-400 text-[10px]">
-                      <span>CGST @ 9% (SAC {selectedCategory === "mobile" ? "9984" : "9985"})</span>
-                      <span className="font-mono">
-                        ₹{(((cleanAmount - cleanAmount / 1.18) / 2) || 0).toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-slate-400 text-[10px]">
-                      <span>SGST @ 9% (SAC {selectedCategory === "mobile" ? "9984" : "9985"})</span>
-                      <span className="font-mono">
-                        ₹{(((cleanAmount - cleanAmount / 1.18) / 2) || 0).toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-slate-200 font-bold pt-2 border-t border-slate-800 text-sm">
-                      <span>Total Amount Paid</span>
-                      <span className="font-mono text-emerald-400">₹{cleanAmount.toFixed(2)}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-[10px] text-slate-500 pt-2 border-t border-slate-800/60 leading-tight">
-                    This is an electronically generated statutory tax invoice emitted under Section
-                    31 of the CGST Act, 2017. OrderKing Pay operates under GSTIN 18AFXPH9838M1Z9.
+                  <div className="flex justify-between text-slate-200 font-bold pt-2 text-sm">
+                    <span>Total Amount Paid</span>
+                    <span className="font-mono text-emerald-400">₹{cleanAmount.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -1779,7 +1895,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     className="flex-1 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
                     <Printer className="size-4" />
-                    <span>Print Invoice</span>
+                    <span>Print Receipt</span>
                   </button>
                   <button
                     type="button"
@@ -1803,6 +1919,42 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                 </button>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── RECENT UTILITY & RECHARGE HISTORY (POSTGRESQL) ─── */}
+      {user && (billHistoryQuery.data?.length ?? 0) > 0 && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+              <Receipt className="size-4 text-amber-400" />
+              <span>Recent Verified Utility Payments</span>
+            </h3>
+            <span className="text-[10px] font-mono text-slate-400">PostgreSQL Ledger</span>
+          </div>
+          <div className="space-y-2">
+            {(billHistoryQuery.data ?? []).map((bill) => (
+              <div
+                key={bill.id}
+                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-900/70 px-3.5 py-2.5 text-xs"
+              >
+                <div>
+                  <span className="font-bold text-white block">{bill.billerName}</span>
+                  <span className="text-[10px] text-slate-400 font-mono">
+                    {bill.billerCode} · {bill.accountMasked} · Ref {bill.id}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="font-mono font-black text-emerald-400 block">
+                    {formatPaise(bill.amountPaise)}
+                  </span>
+                  <span className="text-[9px] uppercase font-bold text-slate-400">
+                    {bill.gateway === "kingpay_wallet" ? "Wallet" : "Razorpay"} · {bill.status}
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

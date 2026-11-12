@@ -8,7 +8,7 @@ import {
   SOVEREIGN_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
 
-describe("👑 HIGH-YIELD OTA CONVENIENCE FEE & DOUBLE-ENTRY LEDGER LOCKDOWN", () => {
+describe("HIGH-YIELD OTA CONVENIENCE FEE & DOUBLE-ENTRY LEDGER LOCKDOWN", () => {
   // =========================================================================
   // MISSION 1: MANDATORY PLATFORM CONVENIENCE FEES ENFORCEMENT
   // =========================================================================

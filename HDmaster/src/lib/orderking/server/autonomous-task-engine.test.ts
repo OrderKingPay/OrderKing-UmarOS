@@ -21,7 +21,7 @@ async function run() {
   assert.equal(JSON.parse(res[0].result_json).success, true);
   assert.equal(res[0].evidence_text, 'Report saved to disk.');
 
-  console.log("✅ Autonomous Task Engine successfully completed 1000X Lifecycle!");
+  console.log("Autonomous Task Engine successfully completed 1000X Lifecycle!");
 }
 
 run().catch(console.error).finally(() => process.exit(0));

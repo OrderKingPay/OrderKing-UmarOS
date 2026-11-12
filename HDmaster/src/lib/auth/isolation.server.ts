@@ -4,7 +4,7 @@ import { getRequest } from "@tanstack/react-start/server";
  * Fetch-Metadata sibling isolation — **server-only** (`.server.ts` suffix).
  *
  * MUST keep the `.server` suffix: this file imports `@tanstack/react-start/server`
- * (`getRequest` → Node `AsyncLocalStorage`). If it is imported from a dual
+ * (`getRequest` -> Node `AsyncLocalStorage`). If it is imported from a dual
  * client/server module under a non-`.server` name, Vite ships it to the browser
  * and the app dies with: `AsyncLocalStorage is not a constructor`.
  *

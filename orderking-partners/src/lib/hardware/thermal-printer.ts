@@ -233,7 +233,7 @@ export async function dispatchSilentThermalKot(
   }
 
   console.log(
-    `[ThermalAutoPrint] ✅ Dispatched Silent KOT ESC/POS binary (${bytes.length} bytes, ${width}) for Order #${receiptData.orderNumber} (BT: ${bluetoothDispatched ? "PAIRED" : "EMULATED"})`
+    `[ThermalAutoPrint] Dispatched Silent KOT ESC/POS binary (${bytes.length} bytes, ${width}) for Order #${receiptData.orderNumber} (BT: ${bluetoothDispatched ? "PAIRED" : "EMULATED"})`
   );
 
   return {

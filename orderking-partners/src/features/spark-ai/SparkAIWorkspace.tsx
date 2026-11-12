@@ -119,7 +119,7 @@ export const SparkAIWorkspace: React.FC<SparkAIWorkspaceProps> = ({
         ))}
         {isProcessing && (
           <div style={{ alignSelf: "flex-start", backgroundColor: "#1E293B", padding: "10px 14px", borderRadius: "8px", fontSize: "13px", color: "#F97316" }}>
-            Processing document via neural parser...
+            Processing document...
           </div>
         )}
       </div>

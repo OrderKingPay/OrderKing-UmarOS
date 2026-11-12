@@ -280,7 +280,7 @@ export class P2PRoom {
       }
       this.emitPeers();
       if (pc.connectionState === "failed") {
-        // Refires negotiationneeded → a fresh offer through signaling, so a
+        // Refires negotiationneeded -> a fresh offer through signaling, so a
         // lost offer or dead path cannot wedge the pair (glare-safe).
         pc.restartIce();
       }
@@ -302,7 +302,7 @@ export class P2PRoom {
     pc.ondatachannel = (e) => this.attachChannel(slot, e.channel);
 
     if (initiator) {
-      // Creating the channels triggers negotiationneeded → the offer.
+      // Creating the channels triggers negotiationneeded -> the offer.
       this.attachChannel(
         slot,
         pc.createDataChannel("state", { ordered: false, maxRetransmits: 0 }),

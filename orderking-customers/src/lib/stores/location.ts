@@ -76,7 +76,7 @@ export const useLocationStore = create<State>()(
       addSavedAddress: (addr) => {
         const newAddress: SavedAddress = {
           ...addr,
-          id: `addr-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          id: `addr-${crypto.randomUUID().slice(0, 12)}`,
         };
         set((state) => ({
           savedAddresses: [newAddress, ...state.savedAddresses],

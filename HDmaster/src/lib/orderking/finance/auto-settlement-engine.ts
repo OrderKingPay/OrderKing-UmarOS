@@ -75,7 +75,7 @@ export const AutoSettlementEngine = {
         });
 
         // ==========================================
-        // 🛡️ FOUNDER PROTECTION ALGORITHM 🛡️
+        // FOUNDER PROTECTION ALGORITHM
         // ==========================================
         let payoutState = "READY_FOR_PAYOUT";
         let escalationReason = null;
@@ -259,7 +259,7 @@ export const AutoSettlementEngine = {
   },
 
   /**
-   * 🌅 T+1 DAILY AUTOMATED PAYOUT DISBURSEMENT ENGINE
+   * T+1 DAILY AUTOMATED PAYOUT DISBURSEMENT ENGINE
    * 
    * Mandate: All sales/deliveries recorded up to 23:59:59 IST (Day T) are batched
    * and disbursed automatically the following morning (Day T+1 10:00 AM IST) via RazorpayX IMPS/UPI/NEFT.
@@ -347,7 +347,7 @@ export const AutoSettlementEngine = {
       let payoutState = "READY_FOR_PAYOUT";
       let escalationReason: string | null = null;
 
-      // 🛡️ FOUNDER PROTECTION ALGORITHM: 0% RISK OF UNBACKED DISBURSEMENT 🛡️
+      // FOUNDER PROTECTION ALGORITHM: 0% RISK OF UNBACKED DISBURSEMENT
       const totalExpectedPlatformRetained = settlement.platformCommissionPaise + settlement.gstOnCommissionPaise;
       const totalCollected = parseInt(stat.total_collected || "0", 10);
       const deliveryFees = parseInt(stat.expected_delivery_fees || "0", 10);

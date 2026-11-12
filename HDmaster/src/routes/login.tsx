@@ -84,7 +84,7 @@ function Login() {
 
   async function onSendPhoneOtp(channel: "sms" | "whatsapp" = "sms") {
     if (!isPhoneValid) {
-      setError("Please enter a valid 10-digit Indian mobile number (e.g. 9876543210).");
+      setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
 
@@ -277,7 +277,7 @@ function Login() {
                       inputMode="numeric"
                       maxLength={10}
                       autoFocus
-                      placeholder="9876543210"
+                      placeholder="10-digit mobile number"
                       value={phone}
                       onChange={(e) => {
                         setPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
@@ -305,7 +305,7 @@ function Login() {
                   disabled={busy || !isPhoneValid}
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-amber-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
-                  {busy ? "Dispatching SMS OTP..." : "Send Cellular SMS OTP →"}
+                  {busy ? "Dispatching SMS OTP..." : "Send Cellular SMS OTP"}
                 </Button>
               </div>
             ) : (
@@ -337,7 +337,7 @@ function Login() {
                     inputMode="numeric"
                     maxLength={6}
                     autoFocus
-                    placeholder="••••••"
+                    placeholder="------"
                     value={otp}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "").slice(0, 6);
@@ -368,7 +368,7 @@ function Login() {
                   disabled={busy || otp.replace(/\D/g, "").length !== 6}
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-amber-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
-                  {busy ? "Verifying..." : "Verify & Enter Command Center →"}
+                  {busy ? "Verifying..." : "Verify & Enter Command Center"}
                 </Button>
 
                 <div className="flex items-center justify-between text-xs text-slate-400 pt-1">

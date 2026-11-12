@@ -233,7 +233,7 @@ export function MediaProductionStudio() {
             Selected Language & Tag
           </span>
           <p className="text-xs font-semibold text-slate-900 mt-1 uppercase">
-            Language: {config.language} • {dietaryLabel}
+            Language: {config.language} | {dietaryLabel}
           </p>
           <p className="text-xs text-slate-600 mt-1 truncate">
             Offer: {config.offerText}

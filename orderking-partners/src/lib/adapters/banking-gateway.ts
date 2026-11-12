@@ -379,12 +379,12 @@ async function executeDecentroPennyDrop(
  *
  * Verifies bank account details via live RazorpayX / Decentro IMPS penny-drop.
  * If credentials are not yet set, returns clean operational status STATUS: "READY_FOR_CREDENTIALS"
- * while executing deterministic simulated validation.
+ * and fails closed without fabricating any verification outcome.
  */
 export async function verifyBankPennyDropLive(
   input: PennyDropRequest,
 ): Promise<LivePennyDropResult> {
-  const refId = `ok_pny_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const refId = `ok_pny_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
   const status = getBankingGatewayStatus();
 
   // Try Live RazorpayX if active
@@ -399,11 +399,23 @@ export async function verifyBankPennyDropLive(
     if (decentroResult) return decentroResult;
   }
 
-  // Fallback: Gateway is ready for credentials, run deterministic verification simulation
-  const sim = executePennyDropVerification(input);
-
   return {
-    ...sim,
+    success: false,
+    status: "FAILED",
+    referenceId: refId,
+    impsRrn: "",
+    amountPaise: 100,
+    amountFormatted: "₹1.00",
+    beneficiaryName: "",
+    accountNumberMasked: "",
+    ifsc: (input.ifsc || "").trim().toUpperCase(),
+    bankName: "",
+    branchName: "",
+    city: "",
+    nameMatch: false,
+    nameMatchScore: 0,
+    message: "Live banking penny-drop gateway (RazorpayX or Decentro) is not configured or unreachable.",
+    timestamp: new Date().toISOString(),
     gatewayStatus: "READY_FOR_CREDENTIALS",
     provider: "SIMULATION",
     operationalNote:

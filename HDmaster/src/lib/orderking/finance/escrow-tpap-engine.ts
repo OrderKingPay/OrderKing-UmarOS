@@ -3,7 +3,7 @@
  * Regulated Banking Partner Escrow Bridge (TPAP) & Hyperlocal Jobs Milestone Escrow Engine
  *
  * =========================================================================================
- * 📜 STATUTORY & REGULATORY COMPLIANCE CHARTER:
+ * STATUTORY & REGULATORY COMPLIANCE CHARTER:
  * =========================================================================================
  * 1. SECTION 10A PAYMENT AND SETTLEMENT SYSTEMS ACT, 2007 (PSSA 2007):
  *    - OrderKing acts strictly as a Third-Party Application Provider (TPAP) and technology
@@ -166,7 +166,7 @@ export interface BankingEscrowDriver {
 }
 
 /**
- * 🏦 MOCK / TEST DRIVER FOR REGULATED BANKING ESCROW
+ * MOCK / TEST DRIVER FOR REGULATED BANKING ESCROW
  * Deterministic in-memory simulation with zero external HTTP reliance for offline testing.
  */
 export class MockBankingPartnerDriver implements BankingEscrowDriver {
@@ -262,7 +262,7 @@ export class MockBankingPartnerDriver implements BankingEscrowDriver {
 }
 
 /**
- * 🏦 RAZORPAYX ROUTE DRIVER (RBI-Licensed Payment Aggregator Escrow)
+ * RAZORPAYX ROUTE DRIVER (RBI-Licensed Payment Aggregator Escrow)
  */
 export class RazorpayXRouteDriver implements BankingEscrowDriver {
   public providerType: EscrowBankingProviderType = "RAZORPAYX_ROUTE";
@@ -489,7 +489,7 @@ export class EscrowTpapEngine {
 }
 
 /**
- * 🎓 TUTOR & HYPERLOCAL JOBS MILESTONE ESCROW ENGINE
+ * TUTOR & HYPERLOCAL JOBS MILESTONE ESCROW ENGINE
  * Supports:
  * - Milestone Deposit: Funds held in platform escrow until both client and tutor confirm delivery.
  * - 1-Tap OTP / Digital Release: Automatic escrow release upon verified 6-digit OTP verification.

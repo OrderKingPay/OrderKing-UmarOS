@@ -1350,7 +1350,7 @@ export function generateViralReelsScripts(townName: string = "Karimganj"): Viral
       title: "I Won Pure 24K Gold Ordering Dinner",
       durationSeconds: 18,
       visualHook: "User scratches gold scratch card on phone screen with confetti explosion and 24K pure gold coin animation.",
-      audioHook: `Look at this! I just ordered dinner from Royal Biryani on OrderKing and won 1.5mg pure 24K digital gold in my KingPay wallet!`,
+      audioHook: `Order dinner from verified local restaurants on OrderKing and check eligible cashback rewards in your KingPay wallet.`,
       callToAction: `Order food on OrderKing and view available scratch card rewards.`,
     },
     {

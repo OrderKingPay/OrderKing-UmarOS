@@ -271,9 +271,9 @@ export class StandaloneSectionExporter {
       <h1>${section.title}</h1>
       <p>${section.description}</p>
       <div class="features">
-        ${section.features.map((f) => `<span class="feature-tag">✓ ${f}</span>`).join("\n        ")}
+        ${section.features.map((f) => `<span class="feature-tag">${f}</span>`).join("\n        ")}
       </div>
-      <a href="${directStandaloneUrl}" class="btn" target="_blank">Launch Full-Screen App ➔</a>
+      <a href="${directStandaloneUrl}" class="btn" target="_blank">Launch Full-Screen App -> </a>
     </div>
   </main>
 </body>

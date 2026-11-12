@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 /**
  * Compares two strings in constant time regardless of string length.
@@ -10,7 +10,7 @@ export function timingSafeStringCompare(a: string | null | undefined, b: string 
   }
   
   // Ephemeral comparison key ensures comparison is strictly constant time
-  const randomKey = "ct_cmp_" + Date.now().toString(36) + "_" + Math.random().toString(36);
+  const randomKey = randomBytes(32);
   const hashA = createHmac("sha256", randomKey).update(a).digest();
   const hashB = createHmac("sha256", randomKey).update(b).digest();
   

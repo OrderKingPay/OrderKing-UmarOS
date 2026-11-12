@@ -1,39 +1,70 @@
 import { useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Car,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
   MapPin,
   Calendar,
   Clock,
   Star,
-  Zap,
   CheckCircle2,
-  Coins,
-  TrendingDown,
   Navigation,
   ArrowLeftRight,
   RotateCcw,
+  X,
+  Phone,
+  CreditCard,
+  Banknote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatPaise } from "@/lib/money";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
   searchCabQuotes,
   type CabQuote,
-  type SovereignETicket,
 } from "@/lib/travel/in-app-booking-service";
-import { PassengerDrawer } from "./passenger-drawer";
-import { SovereignETicketModal } from "./sovereign-eticket-modal";
+import {
+  prepareCabRazorpayOrder,
+  submitCabRideOrder,
+  type CabVehicleTier,
+  type CabRideResult,
+} from "@/lib/server/cab-order";
 
 interface Props {
   walletBalance?: number;
   onDeductWallet?: (amount: number, description: string) => boolean;
   initialPickup?: string;
   initialDrop?: string;
+}
+
+function mapQuoteToTier(quoteId: string): CabVehicleTier {
+  if (quoteId.includes("suv")) return "SUV";
+  if (quoteId.includes("ev")) return "EV";
+  if (quoteId.includes("mini")) return "MINI";
+  return "SEDAN";
+}
+
+async function ensureRazorpayLoaded(): Promise<any> {
+  if (typeof window === "undefined") return null;
+  const win = window as any;
+  if (win.Razorpay) return win.Razorpay;
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve((window as any).Razorpay || null));
+      existing.addEventListener("error", () => resolve(null));
+      setTimeout(() => resolve((window as any).Razorpay || null), 1500);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve((window as any).Razorpay || null);
+    script.onerror = () => resolve(null);
+    document.body.appendChild(script);
+  });
 }
 
 export function CabBookingEngine({
@@ -51,8 +82,10 @@ export function CabBookingEngine({
   const [pickupTime, setPickupTime] = useState("10:00");
 
   const [selectedQuote, setSelectedQuote] = useState<CabQuote | null>(null);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [confirmedTicket, setConfirmedTicket] = useState<SovereignETicket | null>(null);
+  const [passengerPhone, setPassengerPhone] = useState("");
+  const [ridePaymentMethod, setRidePaymentMethod] = useState<"RAZORPAY_ONLINE" | "COD">("COD");
+  const [isBookingRide, setIsBookingRide] = useState(false);
+  const [confirmedRide, setConfirmedRide] = useState<CabRideResult | null>(null);
 
   // Live cab quotes
   const quotes = searchCabQuotes(pickup.trim() || "Terminal 3, IGI Airport (DEL)", drop.trim() || "Connaught Place, New Delhi", category);
@@ -65,12 +98,111 @@ export function CabBookingEngine({
 
   const handleOpenBooking = (quote: CabQuote) => {
     if (!user) {
-      toast.error("Authentication required: Please sign in to book cabs.");
+      toast.error("Please sign in to book an OrderKing cab.");
       navigate({ to: "/login" });
       return;
     }
     setSelectedQuote(quote);
-    setIsDrawerOpen(true);
+    setConfirmedRide(null);
+  };
+
+  const handleConfirmRide = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedQuote || !user) return;
+    const cleanPhone = passengerPhone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10) {
+      toast.error("Enter a valid 10-digit mobile number.");
+      return;
+    }
+    const tier = mapQuoteToTier(selectedQuote.id);
+    const idempotencyKey = `cab_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+    setIsBookingRide(true);
+
+    try {
+      if (ridePaymentMethod === "RAZORPAY_ONLINE") {
+        const prepared = await prepareCabRazorpayOrder({
+          data: { tier, category, receipt: idempotencyKey },
+        });
+        const RazorpayCtor = await ensureRazorpayLoaded();
+        if (!RazorpayCtor) {
+          throw new Error("Razorpay checkout failed to load. Choose Pay to Driver.");
+        }
+        const rzp = new RazorpayCtor({
+          key: prepared.keyId,
+          amount: prepared.amountPaise,
+          currency: prepared.currency,
+          name: "OrderKing Cab",
+          description: `${selectedQuote.title} · ${pickup} to ${drop}`,
+          order_id: prepared.orderId,
+          prefill: { name: user.displayName || "Passenger", contact: cleanPhone },
+          handler: async (resp: {
+            razorpay_order_id?: string;
+            razorpay_payment_id?: string;
+            razorpay_signature?: string;
+          }) => {
+            try {
+              const booked = await submitCabRideOrder({
+                data: {
+                  tier,
+                  category,
+                  pickupAddress: pickup.trim(),
+                  dropAddress: drop.trim(),
+                  travelDate,
+                  pickupTime,
+                  passengerPhone: cleanPhone,
+                  passengerName: user.displayName || "Passenger",
+                  paymentMethod: "RAZORPAY_ONLINE",
+                  idempotencyKey,
+                  razorpayPayment: {
+                    razorpayOrderId: resp.razorpay_order_id || prepared.orderId,
+                    razorpayPaymentId: resp.razorpay_payment_id || "",
+                    razorpaySignature: resp.razorpay_signature || "",
+                    amountPaise: prepared.amountPaise,
+                  },
+                },
+              });
+              setConfirmedRide(booked);
+              setSelectedQuote(null);
+              toast.success(`Cab #${booked.publicId} requested.`);
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : "Cab booking failed.");
+            } finally {
+              setIsBookingRide(false);
+            }
+          },
+          modal: { ondismiss: () => setIsBookingRide(false) },
+          theme: { color: "#F59E0B" },
+        });
+        rzp.on("payment.failed", (failResp: any) => {
+          toast.error(failResp?.error?.description || "Payment declined.");
+          setIsBookingRide(false);
+        });
+        rzp.open();
+        return;
+      }
+
+      const booked = await submitCabRideOrder({
+        data: {
+          tier,
+          category,
+          pickupAddress: pickup.trim(),
+          dropAddress: drop.trim(),
+          travelDate,
+          pickupTime,
+          passengerPhone: cleanPhone,
+          passengerName: user.displayName || "Passenger",
+          paymentMethod: "COD",
+          idempotencyKey,
+        },
+      });
+      setConfirmedRide(booked);
+      setSelectedQuote(null);
+      toast.success(`Cab #${booked.publicId} booked.`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to request cab.");
+    } finally {
+      if (ridePaymentMethod === "COD") setIsBookingRide(false);
+    }
   };
 
   return (
@@ -87,8 +219,7 @@ export function CabBookingEngine({
                 On-Demand Airport &amp; City Cabs
               </h2>
               <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
-                <Sparkles className="size-3 text-amber-400" />
-                Verified Drivers · Zero Surge Markups · Direct Mobility Dispatch
+                Book on OrderKing or compare with Uber &amp; Ola
               </div>
             </div>
           </div>
@@ -189,13 +320,10 @@ export function CabBookingEngine({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-black text-slate-900 flex items-center gap-2">
-            <span>Verified Driver Fleet ({quotes.length})</span>
-            <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">
-              Transparent Flat Fares
-            </span>
+            <span>Available Rides ({quotes.length})</span>
           </h3>
           <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-            Verified Driver Assigned Instantly
+            Driver &amp; vehicle assigned at dispatch
           </span>
         </div>
 
@@ -270,26 +398,32 @@ export function CabBookingEngine({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenBooking(q)}
+                      className="h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 transition cursor-pointer"
+                    >
+                      <span>Book Ride</span>
+                      <ArrowRight className="size-3.5" />
+                    </button>
                     <a
                       href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(drop ?? ""))}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => toast.success(`Opening Uber dispatch for ${pickup} to ${drop}...`)}
-                      className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
+                      className="h-10 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs inline-flex items-center gap-1 no-underline transition"
                     >
                       <span>Uber</span>
-                      <ArrowRight className="size-3.5" />
                     </a>
                     <a
                       href="https://www.olacabs.com/"
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => toast.success(`Opening Ola Cabs dispatch...`)}
-                      className="h-10 px-3.5 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
+                      className="h-10 px-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1 no-underline transition"
                     >
                       <span>Ola</span>
-                      <ArrowRight className="size-3.5" />
                     </a>
                   </div>
                 </div>
@@ -299,28 +433,120 @@ export function CabBookingEngine({
         </div>
       </div>
 
-      {/* Passenger Drawer */}
-      {selectedQuote && (
-        <PassengerDrawer
-          isOpen={isDrawerOpen}
-          onClose={() => setIsDrawerOpen(false)}
-          quote={selectedQuote}
-          passengerCount={1}
-          walletBalancePaise={walletBalance}
-          onDeductWallet={onDeductWallet}
-          travelDate={travelDate}
-          onBookingSuccess={(ticket) => {
-            setConfirmedTicket(ticket);
-          }}
-        />
+      {/* Confirmed Cab Ride Banner (PostgreSQL Order Created) */}
+      {confirmedRide && (
+        <div className="rounded-3xl border border-emerald-300 bg-emerald-50 p-5 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="size-6 text-emerald-600 shrink-0" />
+              <div>
+                <h4 className="text-sm font-black text-slate-900">
+                  Ride Requested · #{confirmedRide.publicId}
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Driver will be assigned shortly. Share Pickup OTP <strong className="font-mono text-emerald-800">{confirmedRide.rideOtp}</strong> on arrival.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/orders/$id"
+              params={{ id: confirmedRide.orderId }}
+              className="px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold no-underline shrink-0"
+            >
+              Track Ride
+            </Link>
+          </div>
+        </div>
       )}
 
-      {/* Digital E-Ticket Modal */}
-      {confirmedTicket && (
-        <SovereignETicketModal
-          ticket={confirmedTicket}
-          onClose={() => setConfirmedTicket(null)}
-        />
+      {/* Cab Ride Booking Modal */}
+      {selectedQuote && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <form
+            onSubmit={handleConfirmRide}
+            className="w-full max-w-md rounded-3xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4 text-slate-900"
+          >
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  {selectedQuote.vehicleType} · {category}
+                </span>
+                <h3 className="text-lg font-black mt-1">{selectedQuote.title}</h3>
+                <p className="text-xs text-slate-500">
+                  {pickup} to {drop}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedQuote(null)}
+                className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                Passenger Mobile Number (10 Digits)
+              </label>
+              <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 px-3">
+                <Phone className="size-4 text-slate-400 mr-2" />
+                <input
+                  type="tel"
+                  required
+                  maxLength={10}
+                  value={passengerPhone}
+                  onChange={(e) => setPassengerPhone(e.target.value.replace(/\D/g, ""))}
+                  placeholder="10-digit mobile number"
+                  className="w-full h-10 bg-transparent text-sm font-mono font-bold outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setRidePaymentMethod("COD")}
+                className={`p-3 rounded-xl border text-left text-xs font-bold flex items-center gap-2 ${
+                  ridePaymentMethod === "COD"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-900"
+                    : "border-slate-200 bg-white text-slate-600"
+                }`}
+              >
+                <Banknote className="size-4 shrink-0" />
+                <span>Cash / UPI to Driver</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRidePaymentMethod("RAZORPAY_ONLINE")}
+                className={`p-3 rounded-xl border text-left text-xs font-bold flex items-center gap-2 ${
+                  ridePaymentMethod === "RAZORPAY_ONLINE"
+                    ? "border-amber-500 bg-amber-50 text-amber-950"
+                    : "border-slate-200 bg-white text-slate-600"
+                }`}
+              >
+                <CreditCard className="size-4 shrink-0" />
+                <span>Pay Online</span>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+              <div>
+                <span className="text-[10px] text-slate-500 block">Total Fare (incl. 5% GST)</span>
+                <span className="text-lg font-black font-mono">
+                  {formatPaise(selectedQuote.baseFarePaise + selectedQuote.carrierTaxesPaise)}
+                </span>
+              </div>
+              <Button
+                type="submit"
+                disabled={isBookingRide}
+                className="h-11 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs"
+              >
+                {isBookingRide ? "Requesting..." : "Confirm Cab Ride"}
+              </Button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   );

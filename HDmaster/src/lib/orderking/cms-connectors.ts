@@ -1122,7 +1122,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     targetInstagram: true,
     targetMessenger: true,
     targetWhatsapp: true,
-    acquisitionHeadline: "Eliminate 30% Aggregator Commission • ₹0 Setup Fee Onboarding",
+    acquisitionHeadline: "Eliminate 30% Aggregator Commission | ₹0 Setup Fee Onboarding",
     acquisitionPitchBody: "Hello {{restaurant_name}} Team! OrderKing provides direct online ordering and UPI bank settlements without 28-32% marketplace commission markups. Review or claim your profile at {{portal_claim_url}}.",
     acquisitionCtaUrl: "https://orderking.delivery/partner-claim?ref=omnichannel_geoblast",
     acquisitionOfferCode: "ZERO_FEE_DIRECT_2026",
@@ -1158,46 +1158,13 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     bountyCtaUrl: "https://orderkingpay.com/offers",
     scriptTemplate: "Order fresh food directly from verified local restaurants with live delivery tracking on OrderKing. Transparent pricing, no hidden markups, and fast doorstep delivery. Download OrderKing or order online today.",
     systemPromptVoice: "Clear, helpful, authentic customer advisor tone.",
-    renderedVideos: [
-      {
-        id: "VID-WELCOME-001",
-        provider: "heygen",
-        title: "OrderKing Food Delivery Overview (9:16)",
-        avatarId: "kabir_growth_exec",
-        voiceId: "en-IN-PrabhatNeural",
-        aspectRatio: "9:16",
-        durationSeconds: 38,
-        mp4Url: "https://assets.orderking.delivery/media/ai-renders/welcome_video_9x16.mp4",
-        thumbnailUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-        scriptSnippet: "Order fresh food directly from verified local kitchens on OrderKing...",
-        bountyOfferInr: 150,
-        status: "completed",
-        createdAt: "2026-10-10T14:30:00.000Z",
-        blastCount: 1420,
-      },
-      {
-        id: "VID-WELCOME-002",
-        provider: "synthesia",
-        title: "Restaurant Partner Direct Ordering (16:9)",
-        avatarId: "priya_indian_anchor",
-        voiceId: "hi-IN-SwaraNeural",
-        aspectRatio: "16:9",
-        durationSeconds: 52,
-        mp4Url: "https://assets.orderking.delivery/media/ai-renders/restaurant_partner_16x9.mp4",
-        thumbnailUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
-        scriptSnippet: "OrderKing partner network gives kitchens digital ordering, thermal printer integration, and fast payouts...",
-        bountyOfferInr: 0,
-        status: "completed",
-        createdAt: "2026-10-09T18:15:00.000Z",
-        blastCount: 890,
-      },
-    ],
+    renderedVideos: [],
     autoBlastOnRender: true,
     dmDispatchChannel: "all",
     targetGeoRadiusKm: 5.0,
     targetLocationLabel: "Connaught Place & Central Catchment, New Delhi",
     dailyRenderQuota: 50,
-    rendersCompletedToday: 4,
+    rendersCompletedToday: 0,
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
     lastRenderedAt: null,
@@ -1272,7 +1239,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     frequencyCapPerDevice: 4,
     defaultAdFormat: "glance_story_card",
     defaultDeepLinkAction: "direct_menu_claim",
-    defaultCtaText: "Swipe Up To Order • 20% OFF",
+    defaultCtaText: "Swipe Up To Order | 20% OFF",
     campaigns: [],
     status: "NOT_CONFIGURED",
     lastTestedAt: null,
@@ -1716,26 +1683,26 @@ export async function loadAlgorithmSettingsData(): Promise<AlgorithmSettingsConf
     maxDeliveryRadiusKm: typeof rawAlgo.maxDeliveryRadiusKm === "number"
       ? rawAlgo.maxDeliveryRadiusKm
       : (typeof bag.plugin_connectors?.mapbox?.maxServiceRadiusKm === "number"
-          ? bag.plugin_connectors.mapbox.maxServiceRadiusKm
-          : DEFAULT_ALGORITHM_SETTINGS.maxDeliveryRadiusKm),
+        ? bag.plugin_connectors.mapbox.maxServiceRadiusKm
+        : DEFAULT_ALGORITHM_SETTINGS.maxDeliveryRadiusKm),
     baseDeliveryFeeInr: typeof rawAlgo.baseDeliveryFeeInr === "number"
       ? rawAlgo.baseDeliveryFeeInr
       : (typeof rawMarket.deliveryBasePaise === "number"
-          ? rawMarket.deliveryBasePaise / 100
-          : DEFAULT_ALGORITHM_SETTINGS.baseDeliveryFeeInr),
+        ? rawMarket.deliveryBasePaise / 100
+        : DEFAULT_ALGORITHM_SETTINGS.baseDeliveryFeeInr),
     surgeMultiplierCap: typeof rawAlgo.surgeMultiplierCap === "number"
       ? rawAlgo.surgeMultiplierCap
       : DEFAULT_ALGORITHM_SETTINGS.surgeMultiplierCap,
     kitchenPrepBufferMinutes: typeof rawAlgo.kitchenPrepBufferMinutes === "number"
       ? rawAlgo.kitchenPrepBufferMinutes
       : (typeof bag.plugin_connectors?.mapbox?.etaSafetyBufferMinutes === "number"
-          ? bag.plugin_connectors.mapbox.etaSafetyBufferMinutes
-          : DEFAULT_ALGORITHM_SETTINGS.kitchenPrepBufferMinutes),
+        ? bag.plugin_connectors.mapbox.etaSafetyBufferMinutes
+        : DEFAULT_ALGORITHM_SETTINGS.kitchenPrepBufferMinutes),
     riderBasePayoutInr: typeof rawAlgo.riderBasePayoutInr === "number"
       ? rawAlgo.riderBasePayoutInr
       : (typeof rawMarket.deliveryBasePaise === "number"
-          ? rawMarket.deliveryBasePaise / 100
-          : DEFAULT_ALGORITHM_SETTINGS.riderBasePayoutInr),
+        ? rawMarket.deliveryBasePaise / 100
+        : DEFAULT_ALGORITHM_SETTINGS.riderBasePayoutInr),
     riderPickupFeeInr: typeof rawAlgo.riderPickupFeeInr === "number"
       ? rawAlgo.riderPickupFeeInr
       : DEFAULT_ALGORITHM_SETTINGS.riderPickupFeeInr,
@@ -1745,8 +1712,8 @@ export async function loadAlgorithmSettingsData(): Promise<AlgorithmSettingsConf
     riderPerKmRateInr: typeof rawAlgo.riderPerKmRateInr === "number"
       ? rawAlgo.riderPerKmRateInr
       : (typeof rawMarket.deliveryPerKmPaise === "number"
-          ? rawMarket.deliveryPerKmPaise / 100
-          : DEFAULT_ALGORITHM_SETTINGS.riderPerKmRateInr),
+        ? rawMarket.deliveryPerKmPaise / 100
+        : DEFAULT_ALGORITHM_SETTINGS.riderPerKmRateInr),
     riderWaitPayPerMinInr: typeof rawAlgo.riderWaitPayPerMinInr === "number"
       ? rawAlgo.riderWaitPayPerMinInr
       : DEFAULT_ALGORITHM_SETTINGS.riderWaitPayPerMinInr,

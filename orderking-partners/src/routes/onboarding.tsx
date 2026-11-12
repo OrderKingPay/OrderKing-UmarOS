@@ -257,7 +257,7 @@ function OnboardingPage() {
     }
     const cleanIfsc = form.bankIfsc.trim().toUpperCase();
     if (cleanIfsc.length !== 11) {
-      setError("Please enter a valid 11-character Bank IFSC Code (e.g. SBIN0001234).");
+      setError("Please enter a valid 11-character Bank IFSC Code.");
       return false;
     }
     if (!acceptTerms) {
@@ -454,7 +454,7 @@ function OnboardingPage() {
                     maxLength={10}
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    placeholder="9876543210"
+                    placeholder="Enter 10-digit mobile"
                     className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono"
                   />
                 </div>
@@ -708,7 +708,7 @@ function OnboardingPage() {
                     maxLength={11}
                     value={form.bankIfsc}
                     onChange={(e) => updateField("bankIfsc", e.target.value.toUpperCase().slice(0, 11))}
-                    placeholder="SBIN0001234"
+                    placeholder="Enter 11-char IFSC"
                     className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono uppercase"
                   />
                 </div>

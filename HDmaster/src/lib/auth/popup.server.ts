@@ -14,7 +14,7 @@
  * Wired automatically by the Vite `authPopupPlugin` in `vite.config.ts` during
  * `npm run dev` (live preview). Do NOT create `src/routes/auth/popup.tsx` — a
  * React route here paints the full app shell in the popup. The opener lives in
- * `client.ts` (`signIn` → `openSignInPopup`).
+ * `client.ts` (`signIn` -> `openSignInPopup`).
  */
 import { auth, SESSION_TOKEN_COOKIE } from "./server";
 

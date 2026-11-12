@@ -80,7 +80,7 @@ describe("Reporting & AI Document Workspace Engine", () => {
 
     assert.ok(html.includes("<!DOCTYPE html>"));
     assert.ok(html.includes("<title>"));
-    assert.ok(html.includes("Order King • Enterprise Intelligence"));
+    assert.ok(html.includes("Order King | Enterprise Intelligence"));
     assert.ok(html.includes("Section 9(5)"));
     assert.ok(html.includes("@media print"));
   });

@@ -128,7 +128,7 @@ export function SettlementsDesk() {
   async function handleSaveMandate(e: FormEvent) {
     e.preventDefault();
     if (!upiInput.trim() || !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(upiInput.trim())) {
-      setError("Please enter a valid UPI VPA handle (e.g., 9876543210@ybl or partner@okaxis).");
+      setError("Please enter a valid UPI VPA handle (e.g., partner@okaxis).");
       return;
     }
     setSavingMandate(true);
@@ -353,7 +353,7 @@ export function SettlementsDesk() {
                 <Input
                   className="mt-1"
                   required
-                  placeholder="e.g. 9876543210@ybl or name@okaxis"
+                  placeholder="e.g. name@okaxis or mobile@ybl"
                   value={upiInput}
                   onChange={(e) => setUpiInput(e.target.value.toLowerCase())}
                 />

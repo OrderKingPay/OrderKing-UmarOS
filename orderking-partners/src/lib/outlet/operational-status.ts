@@ -1,10 +1,10 @@
 /**
  * OUTLET EMERGENCY PAUSE & OPERATIONAL STATUS ENGINE
  * Authentic Tier-1 Leader Merchant Operations & Kitchen Shield:
- * - 🟢 Online (Accepting Orders)
- * - 🟡 Paused for 30 Mins (Kitchen Catch-up)
- * - 🟡 Paused for 60 Mins (Lunch / Dinner Surge Recovery)
- * - 🔴 Offline (Closed for the Day)
+ * - Online (Accepting Orders)
+ * - Paused for 30 Mins (Kitchen Catch-up)
+ * - Paused for 60 Mins (Lunch / Dinner Surge Recovery)
+ * - Offline (Closed for the Day)
  *
  * Provides reactive local persistence, automatic auto-resumption when timers expire,
  * customer app notice generation, and instant server synchronization.

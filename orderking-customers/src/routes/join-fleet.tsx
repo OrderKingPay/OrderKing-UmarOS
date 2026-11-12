@@ -33,15 +33,13 @@ export const submitRiderApplicationFn = createServerFn({ method: "POST" })
     emergencyContactPhone: string;
   }) => d)
   .handler(async ({ data }) => {
-    const applicationId = `RIDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    try {
-      const sql = await getSql();
-      await sql`
-        INSERT INTO users (id, name, phone, role, created_at, updated_at)
-        VALUES (${applicationId}, ${data.fullName}, ${data.phoneNumber}, 'RIDER_APPLICANT', NOW(), NOW())
-        ON CONFLICT (phone) DO UPDATE SET updated_at = NOW()
-      `;
-    } catch (_e) {}
+    const applicationId = `RIDER-${crypto.randomUUID().replace(/-/g, "").slice(0, 10).toUpperCase()}`;
+    const sql = await getSql();
+    await sql`
+      INSERT INTO users (id, name, phone, role, created_at, updated_at)
+      VALUES (${applicationId}, ${data.fullName}, ${data.phoneNumber}, 'RIDER_APPLICANT', NOW(), NOW())
+      ON CONFLICT (phone) DO UPDATE SET updated_at = NOW()
+    `;
     return { success: true, applicationId };
   });
 

@@ -148,13 +148,13 @@ export function calculatePromoUnitEconomics(
   let successMessage: string | null = null;
 
   if (isLossMaking) {
-    warningMessage = `⚠️ MANDATORY LOSS WARNING: NEGATIVE UNIT ECONOMICS DETECTED. Subsidy of ₹${subsidyRupees} exceeds revenue of ₹${revenueRupees}. Platform treasury will lose ₹${lossRupees} per order.${
+    warningMessage = `MANDATORY LOSS WARNING: NEGATIVE UNIT ECONOMICS DETECTED. Subsidy of ₹${subsidyRupees} exceeds revenue of ₹${revenueRupees}. Platform treasury will lose ₹${lossRupees} per order.${
       breakEvenAovPaise !== null
         ? ` Minimum break-even order value needed: ₹${(breakEvenAovPaise / 100).toFixed(2)}.`
         : ""
     } Adjustment required.`;
   } else {
-    successMessage = `✅ PROFITABLE CAMPAIGN: Net platform margin of ₹${profitRupees} per transaction (${netYieldPercent.toFixed(1)}% net yield).`;
+    successMessage = `PROFITABLE CAMPAIGN: Net platform margin of ₹${profitRupees} per transaction (${netYieldPercent.toFixed(1)}% net yield).`;
   }
 
   return {

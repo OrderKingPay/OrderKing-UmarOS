@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { CalendarDays, Clock3, Crown, FileText, Plane, Search, ShieldCheck, TrainFront, CheckCircle2, AlertCircle, QrCode, ArrowRight, Bus, Car, ExternalLink } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, Crown, FileText, Plane, ShieldCheck, TrainFront, CheckCircle2, QrCode, Bus, Car, ExternalLink } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getStoredETickets, type SovereignETicket } from "@/lib/travel/in-app-booking-service";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
+import { listMyOrders } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 
 export function TripsPageSkeleton() {
@@ -47,6 +49,15 @@ function MyTripsPage() {
   const [view, setView] = useState<View>("Upcoming");
   const [eTickets, setETickets] = useState<SovereignETicket[]>(() => getStoredETickets());
   const [selectedTicket, setSelectedTicket] = useState<SovereignETicket | null>(null);
+
+  const ordersQuery = useQuery({
+    queryKey: ["my_travel_mobility_orders", user?.id],
+    queryFn: () => listMyOrders(),
+    enabled: Boolean(user),
+  });
+  const mobilityOrders = (ordersQuery.data?.orders ?? []).filter((o) =>
+    o.restaurantSlug === "cab" || o.restaurantSlug === "parcel"
+  );
 
   useEffect(() => {
     setETickets(getStoredETickets());
@@ -263,6 +274,53 @@ function MyTripsPage() {
               </div>
             )}
           </section>
+
+          {mobilityOrders.length > 0 && (
+            <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3" aria-label="In-app cab and courier orders">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Car className="size-4 text-emerald-700" />
+                  <span>Cab &amp; Courier Orders ({mobilityOrders.length})</span>
+                </h2>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                  Live PostgreSQL
+                </span>
+              </div>
+              <div className="space-y-2.5">
+                {mobilityOrders.map((ord) => (
+                  <div
+                    key={ord.id}
+                    className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 flex items-center justify-between gap-3"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                          #{ord.publicId}
+                        </span>
+                        <span className="text-xs font-bold text-slate-900">{ord.restaurantName}</span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                          {ord.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 mt-1">{ord.itemPreview}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono font-black text-sm text-slate-900">
+                        {formatPaise(ord.totalPaise)}
+                      </span>
+                      <Link
+                        to="/orders/$id"
+                        params={{ id: ord.id }}
+                        className="px-3 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold no-underline"
+                      >
+                        Track
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section className="grid gap-4 md:grid-cols-2" aria-label="Check travel references">
             {/* IRCTC PNR Direct Status */}

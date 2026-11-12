@@ -1,5 +1,5 @@
 /**
- * 👑 ORDERKING FINTECH & SETTLEMENTS SPECIALIST (2b420240)
+ * ORDERKING FINTECH & SETTLEMENTS SPECIALIST (2b420240)
  * SPECIALIST AUDIT & MATHEMATICAL INVARIANCE TEST SUITE
  *
  * Directives Under Test:
@@ -161,7 +161,7 @@ export function verifyBharatQrChecksum(emvcoPayload: string): boolean {
 // TEST SUITE
 // ============================================================================
 
-describe("👑 GUARANTEED FINTECH & SETTLEMENTS SPECIALIST AUDIT (2b420240)", () => {
+describe("GUARANTEED FINTECH & SETTLEMENTS SPECIALIST AUDIT (2b420240)", () => {
 
   // =========================================================================
   // DIRECTIVE 1: NPCI UPI STRING CONSTRUCTION & BHARATQR SPECIFICATION

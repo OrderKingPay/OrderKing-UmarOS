@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense } from "react";
+import { useState, Suspense } from "react";
 import { Link } from "@tanstack/react-router";
 import { ExternalLink, Layers, Navigation, Sparkles, UtensilsCrossed, Bike, MapPin } from "lucide-react";
 import { formatPaise } from "@/lib/money";
@@ -47,23 +47,24 @@ export function LiveDeliveryMap({
   riderProgressOverride,
   etaOverride,
 }: LiveDeliveryMapProps) {
-  const [riderProgress, setRiderProgress] = useState(0.35);
   const [viewMode, setViewMode] = useState<"3d_vector" | "2d_route">("3d_vector");
 
   const effectiveJobId = dispatchJobId || orderId || "live-job";
   const isActiveDelivery = ["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(status);
   const isDelivered = status === "DELIVERED";
 
-  // Smooth GPS heartbeat movement along route
-  useEffect(() => {
-    if (!isActiveDelivery || riderProgressOverride !== undefined) return;
-    const interval = setInterval(() => {
-      setRiderProgress((prev) => (prev >= 0.95 ? 0.95 : prev + 0.05));
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [isActiveDelivery, riderProgressOverride]);
+  // Derive deterministic route checkpoint progress strictly from verified order state or real GPS override
+  const statusProgress =
+    status === "DELIVERED"
+      ? 1
+      : status === "ON_THE_WAY"
+      ? 0.75
+      : status === "PICKED_UP"
+      ? 0.5
+      : 0.25;
 
-  const currentProgress = riderProgressOverride !== undefined ? Math.min(0.95, riderProgressOverride) : riderProgress;
+  const currentProgress =
+    riderProgressOverride !== undefined ? Math.max(0, Math.min(1, riderProgressOverride)) : statusProgress;
 
   if (!isActiveDelivery && !isDelivered) {
     return null;
@@ -171,7 +172,7 @@ export function LiveDeliveryMap({
           />
         )
       ) : (
-        /* 2D Vector Route Simulation */
+        /* 2D Vector Route View */
         <div className="relative h-44 w-full bg-surface/95 p-4 text-fg">
           {/* Road Track Line */}
           <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-stone-300 dark:bg-stone-800">

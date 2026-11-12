@@ -86,17 +86,21 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
     });
   }, [allTech, selectedCategory, searchQuery]);
 
-  // Handle tech ping simulation
-  const handlePing = (techId: string) => {
+  const handlePing = async (techId: string) => {
     setPingingTechId(techId);
-    setTimeout(() => {
-      const baseItem = allTech.find((t) => t.id === techId);
-      const randomVariance = Math.floor(Math.random() * 8) - 4;
-      const newLatency = Math.max(4, (baseItem?.latencyMs || 25) + randomVariance);
-      setPingLatencies((prev) => ({ ...prev, [techId]: newLatency }));
+    const baseItem = allTech.find((t) => t.id === techId);
+    const started = performance.now();
+    try {
+      const res = await fetch("/api/health", { method: "HEAD", cache: "no-store" });
+      const measuredMs = Math.max(1, Math.round(performance.now() - started));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setPingLatencies((prev) => ({ ...prev, [techId]: measuredMs }));
+      toast.success(`${baseItem?.name || techId} reachability check: ${measuredMs}ms`);
+    } catch (err: any) {
+      toast.error(`${baseItem?.name || techId} probe failed: ${err?.message || "Unreachable"}`);
+    } finally {
       setPingingTechId(null);
-      toast.success(`${baseItem?.name} ping verified: ${newLatency}ms`);
-    }, 450);
+    }
   };
 
   // Handle action execution

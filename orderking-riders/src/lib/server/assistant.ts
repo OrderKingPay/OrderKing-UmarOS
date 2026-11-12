@@ -201,7 +201,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
     // Handle File / Photo / Video Attachment Storage
     if (data.attachment?.dataUrl) {
       try {
-        const docId = `doc_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const docId = `doc_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
         await sql.query(
           `INSERT INTO rider_documents (id, rider_id, user_id, kind, content_type, byte_size, data_url, status, created_at)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
@@ -243,7 +243,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
         const newCreditPaise = Math.max(0, totalDuePaise - alreadyCreditedPaise);
 
         if (newCreditPaise > 0) {
-          const earningId = `wait_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+          const earningId = `wait_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
           await eng.getStore().appendEarning(
             {
               id: earningId,
@@ -321,7 +321,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
 
     if (isRestaurantIssue && !resolutionAction) {
       try {
-        const idempotencyKey = `rest_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const idempotencyKey = `rest_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
         const ticketMsg = `[RESTAURANT DISPATCH ALERT] Partner ${home.rider.fullName} (${home.rider.phone}) reported an issue at ${active?.restaurant.name ?? "Restaurant"} for Order #${active?.orderCode ?? "N/A"}. Report: "${question}". ${data.attachment ? `Proof Uploaded: ${data.attachment.name}` : "No photo attached"}.`;
         const ticket = await eng.createTicket(
           context.userId,
@@ -369,7 +369,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
 
       if (nextAttempts >= 3) {
         try {
-          const idempotencyKey = `cust_unreach_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+          const idempotencyKey = `cust_unreach_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
           const ticket = await eng.createTicket(
             context.userId,
             {
@@ -416,7 +416,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
             [`King AI Dispute: ${question}. Proof: ${data.attachment?.name ?? "screenshot"}`, active.id],
           );
         }
-        const idempotencyKey = `cash_disp_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const idempotencyKey = `cash_disp_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
         const ticket = await eng.createTicket(
           context.userId,
           {
@@ -451,7 +451,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
     if (isEmergencyRequest) {
       const coords = data.coords || { lat: 26.1445, lng: 91.7362 };
       try {
-        const idempotencyKey = `sos_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+        const idempotencyKey = `sos_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
         const ticket = await eng.createTicket(
           context.userId,
           {

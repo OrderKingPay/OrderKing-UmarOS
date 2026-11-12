@@ -27,7 +27,7 @@ import {
   type OrderPaymentCallbackInput,
 } from "../payments/payment-callback-handler";
 
-describe("👑 PRODUCTION NPCI DIRECT UPI, BHARATQR & SECTION 9(5) INTEGRATION", () => {
+describe("PRODUCTION NPCI DIRECT UPI, BHARATQR & SECTION 9(5) INTEGRATION", () => {
   /* =========================================================================
    * DELIVERABLE 1: DYNAMIC BHARATQR GENERATION (BINDING TO orderking@ybl & 9395065587@ybl)
    * ========================================================================= */

@@ -377,7 +377,7 @@ function Login() {
                       maxLength={10}
                       autoFocus
                       required
-                      placeholder="e.g. 9876543210"
+                      placeholder="Enter 10-digit mobile"
                       value={mobileNumber}
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, "").slice(0, 10);

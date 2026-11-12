@@ -228,25 +228,25 @@ export class AutonomousCommandOrchestrator {
     let conciseSummary = "";
     if (primaryDomain === "finance") {
       const pnl = (businessData.pnl as any) || {};
-      conciseSummary = `📊 **Finance Intelligence**: Trailing GMV: **₹${(pnl.grossMerchandiseValueInr || 0).toLocaleString("en-IN")}** · Net Profit: **₹${(pnl.netFounderProfitInr || 0).toLocaleString("en-IN")}** · Cash Runway: **${pnl.cashRunwayMonths || 36} months** · Retained Vault: **₹${(pnl.retainedCapitalVaultInr || 0).toLocaleString("en-IN")}**.`;
+      conciseSummary = `**Finance Intelligence**: Trailing GMV: **₹${(pnl.grossMerchandiseValueInr || 0).toLocaleString("en-IN")}** · Net Profit: **₹${(pnl.netFounderProfitInr || 0).toLocaleString("en-IN")}** · Cash Runway: **${pnl.cashRunwayMonths || 36} months** · Retained Vault: **₹${(pnl.retainedCapitalVaultInr || 0).toLocaleString("en-IN")}**.`;
     } else if (primaryDomain === "sales") {
       const leads = (businessData.leads as any[]) || [];
-      conciseSummary = `🎯 **Sales & Opportunity**: Discovered **${leads.length} high-margin restaurant prospects** losing **₹${((businessData.totalAnnualAggregatorLossInr as number) || 0).toLocaleString("en-IN")}/year** to 25%+ commissions. Tailored 0% pitches ready.`;
+      conciseSummary = `**Sales & Opportunity**: Discovered **${leads.length} high-margin restaurant prospects** losing **₹${((businessData.totalAnnualAggregatorLossInr as number) || 0).toLocaleString("en-IN")}/year** to 25%+ commissions. Tailored 0% pitches ready.`;
     } else if (primaryDomain === "ops") {
       const slas = (businessData.kitchenSlas as any[]) || [];
       const delayed = slas.filter((s) => s.complianceStatus !== "OPTIMAL");
-      conciseSummary = `🍳 **Kitchen & Delivery SLA**: Audited **${slas.length} partner outlets**. ${delayed.length > 0 ? `⚠️ **${delayed.length} outlet** requires attention (${delayed[0]?.restaurantName} avg prep: ${delayed[0]?.avgPrepMinutes}m).` : "All kitchens operating at peak velocity."}`;
+      conciseSummary = `**Kitchen & Delivery SLA**: Audited **${slas.length} partner outlets**. ${delayed.length >0 ? `**${delayed.length} outlet** requires attention (${delayed[0]?.restaurantName} avg prep: ${delayed[0]?.avgPrepMinutes}m).` : "All kitchens operating at peak velocity."}`;
     } else if (primaryDomain === "procurement") {
       const alerts = (businessData.inventoryAlerts as any[]) || [];
-      conciseSummary = `📦 **Inventory & Procurement**: **${alerts.length} items** reached reorder threshold (Total reorder value: **₹${alerts.reduce((s, a) => s + a.estimatedCostInr, 0).toLocaleString("en-IN")}**).`;
+      conciseSummary = `**Inventory & Procurement**: **${alerts.length} items** reached reorder threshold (Total reorder value: **₹${alerts.reduce((s, a) =>s + a.estimatedCostInr, 0).toLocaleString("en-IN")}**).`;
     } else if (primaryDomain === "sre") {
-      conciseSummary = `🛡️ **SRE & Production Health**: All **3 core services healthy** (P99 latency: **18–42ms**, uptime: **99.98%**). Automated canary and rollback circuits armed.`;
+      conciseSummary = `**SRE & Production Health**: All **3 core services healthy** (P99 latency: **18–42ms**, uptime: **99.98%**). Automated canary and rollback circuits armed.`;
     } else {
-      conciseSummary = `✅ **Autonomous Execution Complete**: Processed command across OrderKing systems with **${consensus.consensusAgreementScore}% multi-model consensus agreement**. Zero errors detected.`;
+      conciseSummary = `**Autonomous Execution Complete**: Processed command across OrderKing systems with **${consensus.consensusAgreementScore}% multi-model consensus agreement**. Zero errors detected.`;
     }
 
     if (pendingApproval) {
-      conciseSummary += `\n\n> [!IMPORTANT]\n> **🔒 Founder Approval Required**: Action *"${pendingApproval.title}"* (${pendingApproval.domain}) is paused at the Approval Gate awaiting your 1-click confirmation.`;
+      conciseSummary += `\n\n> [!IMPORTANT]\n>** Founder Approval Required**: Action *"${pendingApproval.title}"* (${pendingApproval.domain}) is paused at the Approval Gate awaiting your 1-click confirmation.`;
     }
 
     steps.push({

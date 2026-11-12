@@ -326,10 +326,17 @@ export const triggerMaskedCallFn = createServerFn({ method: "POST" })
           : current.customer.contactMasked;
 
       const digits = (targetContact || "").replace(/\D/g, "");
-      const suffix = digits ? digits.slice(-4).padStart(4, "0") : "1234";
-      const virtualProxyNumber = `+91804567${suffix}`;
-      const maskedDisplay = `+91 80 4567 ${suffix}`;
-      const bridgeSessionId = `bridge_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      if (!digits || digits.length < 4) {
+        throw new Error("Masked contact number unavailable for cloud bridge.");
+      }
+      const proxyPrefix = (process.env.CLOUD_TELEPHONY_PREFIX || "").replace(/[^\d+]/g, "");
+      if (!proxyPrefix) {
+        throw new Error("Cloud telephony bridge is not configured.");
+      }
+      const suffix = digits.slice(-4);
+      const virtualProxyNumber = `${proxyPrefix}${suffix}`;
+      const maskedDisplay = `${proxyPrefix} ${suffix}`;
+      const bridgeSessionId = `bridge_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
 
       return {
         success: true,
@@ -852,7 +859,7 @@ export async function assignRiderToOrder(orderId: string, riderId: string, rider
   try {
     await sql`
       INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
-      VALUES (${'oev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)}, ${orderId}, 'READY', 'RIDER_ASSIGNED', ${riderUserId || 'rider_user'}, 'rider', 'Rider accepted dispatch assignment', now())
+      VALUES (${'oev_' + crypto.randomUUID().replace(/-/g, '').slice(0, 12)}, ${orderId}, 'READY', 'RIDER_ASSIGNED', ${riderUserId || 'rider_user'}, 'rider', 'Rider accepted dispatch assignment', now())
     `;
   } catch {}
   return { ok: true, status: 'RIDER_ASSIGNED', riderId };
@@ -869,7 +876,7 @@ export async function riderDepartRestaurant(orderId: string, riderUserId?: strin
   try {
     await sql`
       INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
-      VALUES (${'oev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)}, ${orderId}, 'RIDER_ASSIGNED', 'ON_THE_WAY', ${riderUserId || 'rider_user'}, 'rider', 'Rider departed restaurant, order on the way', now())
+      VALUES (${'oev_' + crypto.randomUUID().replace(/-/g, '').slice(0, 12)}, ${orderId}, 'RIDER_ASSIGNED', 'ON_THE_WAY', ${riderUserId || 'rider_user'}, 'rider', 'Rider departed restaurant, order on the way', now())
     `;
   } catch {}
   return { ok: true, status: 'ON_THE_WAY' };
@@ -896,7 +903,7 @@ export async function riderConfirmDelivery(orderId: string, otp: string, riderUs
   try {
     await sql`
       INSERT INTO order_events (id, order_id, from_status, to_status, actor_user_id, actor_role, note, created_at)
-      VALUES (${'oev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)}, ${orderId}, 'ON_THE_WAY', 'DELIVERED', ${riderUserId || 'rider_user'}, 'rider', 'Rider confirmed delivery with OTP handover', now())
+      VALUES (${'oev_' + crypto.randomUUID().replace(/-/g, '').slice(0, 12)}, ${orderId}, 'ON_THE_WAY', 'DELIVERED', ${riderUserId || 'rider_user'}, 'rider', 'Rider confirmed delivery with OTP handover', now())
     `;
   } catch {}
   return { ok: true, status: 'DELIVERED' };

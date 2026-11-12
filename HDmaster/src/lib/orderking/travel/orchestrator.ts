@@ -1,16 +1,16 @@
 import { travelRegistry } from "./provider-registry.ts";
 import type { TravelSearchQuery, NormalizedTravelResult, TravelBookingRequest, TravelBookingResponse } from "./schemas/travel-schemas.ts";
 
-/** 
- * 1000x Capacity In-Memory Cache 
- * TTL: 15 seconds to prevent stale pricing while surviving massive spike traffic.
+/**
+ * In-Memory Cache
+ * TTL: 15 seconds to prevent stale pricing while handling spike traffic.
  */
 const capacityCache = new Map<string, { data: NormalizedTravelResult[], expiresAt: number }>();
 
 export class TravelOrchestrator {
   /**
    * Universal search across all registered providers for the given travel mode.
-   * UPGRADED: 1000x Capacity Architecture (Caching, AbortSignal timeouts, AllSettled Resilience)
+   * Uses caching, AbortSignal timeouts, and allSettled resilience.
    */
   static async search(query: TravelSearchQuery): Promise<{ results: NormalizedTravelResult[], errors: any[] }> {
     const cacheKey = JSON.stringify(query);
@@ -28,7 +28,7 @@ export class TravelOrchestrator {
       };
     }
 
-    // 1000x scaling: Bound every provider call with an AbortSignal to prevent hanging threads.
+    // Bound every provider call with an AbortSignal to prevent hanging threads.
     const searchPromises = providers.map(async (provider) => {
       if (!provider.isAvailable()) {
         return { error: "EXTERNAL_PROVIDER_BLOCKED", details: `Provider ${provider.name} lacks credentials/configuration.` };

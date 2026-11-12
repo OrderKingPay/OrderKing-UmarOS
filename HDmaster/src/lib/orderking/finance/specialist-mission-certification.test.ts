@@ -19,7 +19,7 @@ import {
   SECONDARY_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
 
-describe("👑 SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", () => {
+describe("SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", () => {
   // =========================================================================
   // MISSION 1: INTEGER PAISE FINANCIAL VERIFICATION & ZERO-FLOAT INVARIANT
   // =========================================================================

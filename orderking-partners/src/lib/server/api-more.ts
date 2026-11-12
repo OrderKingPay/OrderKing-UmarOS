@@ -156,7 +156,9 @@ export const disputeCustomerComplaint = createServerFn({ method: "POST" })
   }) => d)
   .handler(async ({ context, data }) => {
     return withVendor(context.userId, data.restaurantId, "reviews.respond", async (sql, ctx) => {
-      const ticketNum = `TKT-${Math.floor(100000 + Math.random() * 900000)}`;
+      const tBuf = new Uint32Array(1);
+      crypto.getRandomValues(tBuf);
+      const ticketNum = `TKT-${100000 + (tBuf[0] % 900000)}`;
       const disputeId = newId("dsp");
 
       const restRow = await sql<{ org_id: string }>`
@@ -1224,7 +1226,9 @@ export const createDiningReservationFn = createServerFn({ method: "POST" })
 
       const reservationId = newId("dres");
       const prefix = data.isWalkIn ? "WI-" : "TB-";
-      const bookingRef = prefix + Math.floor(10000 + Math.random() * 90000);
+      const bBuf = new Uint32Array(1);
+      crypto.getRandomValues(bBuf);
+      const bookingRef = prefix + (10000 + (bBuf[0] % 90000));
 
       const depositRupees = data.depositAmount ?? (data.isWalkIn ? 0 : 500);
       const depositPaise = Math.round(depositRupees * 100);

@@ -841,7 +841,7 @@ export function GlobalGodEyeMap() {
                       {zone.name.split("&")[0].trim()}
                     </div>
                     <div className="text-[9px] font-mono text-emerald-400">
-                      {zone.radiusKm} km • ₹{zone.baseFeeInr}
+                      {zone.radiusKm} km | ₹{zone.baseFeeInr}
                     </div>
                   </div>
                 </div>

@@ -629,12 +629,12 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
 
       return {
         reply: `Here is your exact financial breakdown for ${dailyOrders} orders/day at ₹${aov} average order value:
-• Monthly Gross Food Volume: ₹${monthlyGrossVolume.toLocaleString("en-IN")}
-• Platform Commission (${commissionPct}%): ₹${monthlyCommission.toLocaleString("en-IN")}/month
-• Customer Platform Convenience Fees (₹${platformFee}/order): ₹${monthlyPlatformFees.toLocaleString("en-IN")}/month
-• Delivery Net Cashflow: ₹${(dailyDeliveryCollected * 30).toLocaleString("en-IN")} collected vs ₹${(dailyRiderDisbursed * 30).toLocaleString("en-IN")} paid to riders
-• Statutory Taxes: ₹${(gstSec95 * 30).toLocaleString("en-IN")}/mo CGST Sec 9(5) (5%) + ₹${(tds194O * 30).toLocaleString("en-IN")}/mo TDS Sec 194-O (0.1%)
-• Estimated Net Founder Monthly Profit: ₹${netMonthlyFounderProfit.toLocaleString("en-IN")}.`,
+| Monthly Gross Food Volume: ₹${monthlyGrossVolume.toLocaleString("en-IN")}
+| Platform Commission (${commissionPct}%): ₹${monthlyCommission.toLocaleString("en-IN")}/month
+| Customer Platform Convenience Fees (₹${platformFee}/order): ₹${monthlyPlatformFees.toLocaleString("en-IN")}/month
+| Delivery Net Cashflow: ₹${(dailyDeliveryCollected * 30).toLocaleString("en-IN")} collected vs ₹${(dailyRiderDisbursed * 30).toLocaleString("en-IN")} paid to riders
+| Statutory Taxes: ₹${(gstSec95 * 30).toLocaleString("en-IN")}/mo CGST Sec 9(5) (5%) + ₹${(tds194O * 30).toLocaleString("en-IN")}/mo TDS Sec 194-O (0.1%)
+| Estimated Net Founder Monthly Profit: ₹${netMonthlyFounderProfit.toLocaleString("en-IN")}.`,
         appliedAction: {
           type: "ECONOMICS_CALCULATED",
           detail: `Net Founder Profit: ₹${netMonthlyFounderProfit.toLocaleString("en-IN")}/mo for ${dailyOrders} orders/day`,
@@ -847,18 +847,18 @@ export const runUmarAiActionFn = createServerFn({ method: "POST" })
     // 8. NATURAL EXECUTIVE CONSULTING & STATUS ADVISORY (OFFLINE / DEFAULT)
     return {
       reply: `Platform State (PostgreSQL):
-• Restaurants: ${liveCounts.restaurants} active (${
+| Restaurants: ${liveCounts.restaurants} active (${
         liveCounts.restaurants === 0
           ? "action needed: onboard your first local kitchen with ₹0 joining fee"
           : "ready for orders"
       })
-• Delivery Riders: ${liveCounts.riders} verified (${
+| Delivery Riders: ${liveCounts.riders} verified (${
         liveCounts.riders === 0
           ? "action needed: onboard delivery riders"
           : "on standby"
       })
-• Customer Profiles: ${liveCounts.users} registered in PostgreSQL
-• Total Orders: ${liveCounts.orders} orders processed so far.
+| Customer Profiles: ${liveCounts.users} registered in PostgreSQL
+| Total Orders: ${liveCounts.orders} orders processed so far.
 
 Both OrderKing Food Delivery and KingPay Fintech & Travel ecosystems are configured and active with real PostgreSQL connectivity. You can instruct me to approve restaurants, adjust fees or commissions, calculate profits, or log alerts anytime.`,
       appliedAction: {
@@ -946,7 +946,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "home",
     number: 1,
     navLabel: "Home",
-    emoji: "🏠",
+    emoji: "HQ",
     icon: Home,
     title: "Operations Overview",
     explanation:
@@ -1000,7 +1000,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "orderking",
     number: 2,
     navLabel: "OrderKing",
-    emoji: "🍔",
+    emoji: "FD",
     icon: UtensilsCrossed,
     title: "OrderKing Food Delivery",
     explanation:
@@ -1077,7 +1077,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "kingpay",
     number: 3,
     navLabel: "KingPay",
-    emoji: "💳",
+    emoji: "KP",
     icon: CreditCard,
     title: "KingPay Fintech & Settlements",
     explanation:
@@ -1147,7 +1147,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "travel",
     number: 4,
     navLabel: "Travel",
-    emoji: "✈️",
+    emoji: "TR",
     icon: Plane,
     title: "KingPay Travel & Services",
     explanation:
@@ -1204,7 +1204,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "b2b",
     number: 5,
     navLabel: "B2B & CRM",
-    emoji: "💼",
+    emoji: "B2B",
     icon: Briefcase,
     title: "B2B Franchise & CRM",
     explanation:
@@ -1259,7 +1259,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "umarai",
     number: 6,
     navLabel: "Umar AI",
-    emoji: "🤖",
+    emoji: "AI",
     icon: Bot,
     title: "Umar AI Command Center",
     explanation:
@@ -1320,7 +1320,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "design",
     number: 7,
     navLabel: "App Design",
-    emoji: "🎨",
+    emoji: "UI",
     icon: Palette,
     title: "App Design & CMS",
     explanation:
@@ -1382,7 +1382,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "connections",
     number: 8,
     navLabel: "Connections",
-    emoji: "🔌",
+    emoji: "API",
     icon: Plug,
     title: "API Connectors & Telematics",
     explanation:
@@ -1447,7 +1447,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "alerts",
     number: 9,
     navLabel: "Alerts",
-    emoji: "🔔",
+    emoji: "AL",
     icon: Bell,
     title: "Operations & Alerts Queue",
     explanation:
@@ -1504,7 +1504,7 @@ const TEN_WORLDS: WorldDefinition[] = [
     id: "settings",
     number: 10,
     navLabel: "Settings",
-    emoji: "⚙️",
+    emoji: "SET",
     icon: Settings,
     title: "Platform Settings & Governance",
     explanation:
@@ -1947,7 +1947,7 @@ function UmarOSDashboard() {
     }
     return [];
   });
-  const [newTripMode, setNewTripMode] = useState("✈️ Flight");
+  const [newTripMode, setNewTripMode] = useState("Flight");
   const [newTripPnr, setNewTripPnr] = useState("");
   const [newTripPassenger, setNewTripPassenger] = useState("");
   const [newTripRoute, setNewTripRoute] = useState("");
@@ -2469,7 +2469,7 @@ function UmarOSDashboard() {
     }
 
     window.speechSynthesis.cancel();
-    const cleanText = text.replace(/[•\*\#]/g, "");
+    const cleanText = text.replace(/[|\*\#]/g, "");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
@@ -2642,7 +2642,7 @@ function UmarOSDashboard() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>🍔</span>
+              <span>OK</span>
               <span>OrderKing Food Delivery</span>
             </button>
             <button
@@ -2654,7 +2654,7 @@ function UmarOSDashboard() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>💳</span>
+              <span>KP</span>
               <span>KingPay Fintech & Travel</span>
             </button>
             <button
@@ -2666,7 +2666,7 @@ function UmarOSDashboard() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>🤖</span>
+              <span>AI</span>
               <span>Umar AI</span>
             </button>
             <button
@@ -2678,7 +2678,7 @@ function UmarOSDashboard() {
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>⚙️</span>
+              <span>SET</span>
               <span>Settings</span>
             </button>
           </div>
@@ -2811,7 +2811,7 @@ function UmarOSDashboard() {
               className="world-stage-transition space-y-5"
             >
             {/* ===================================================================
-                TAB 1 OF EVERY WORLD: 📊 WORLD DASHBOARD (ACTIONS & RESULTS)
+                TAB 1 OF EVERY WORLD: WORLD DASHBOARD (ACTIONS & RESULTS)
                 - Box 1: Live Result (What is happening now)
                 - Box 2: Action Needed (What to do next)
                 - Box 3: Quick Settings & Customizations (Save to PostgreSQL)
@@ -3387,7 +3387,7 @@ function UmarOSDashboard() {
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
                   <div>
                     <h2 className="text-base font-black text-slate-900">
-                      ✈️ Live Travel Provider Orchestration &amp; Affiliate Commission Engine
+                       Live Travel Provider Orchestration &amp; Affiliate Commission Engine
                     </h2>
                     <p className="text-xs text-slate-600">
                       Real-time inventory lookup and provider handoff with 0% balance-sheet inventory risk.
@@ -3401,7 +3401,7 @@ function UmarOSDashboard() {
                   fallback={
                     <WorldSuspenseShield
                       worldTitle="Travel Provider Orchestration"
-                      emoji="✈️"
+                      emoji="TR"
                     />
                   }
                 >
@@ -3414,7 +3414,7 @@ function UmarOSDashboard() {
         )}
 
         {/* ===================================================================
-            LAST TAB OF EVERY WORLD: ⚙️ WORLD SETTINGS & CUSTOMIZATIONS
+            LAST TAB OF EVERY WORLD: WORLD SETTINGS & CUSTOMIZATIONS
         =================================================================== */}
         {currentTabId === "settings" && (
           <WorldSettingsPanel
@@ -3513,7 +3513,7 @@ function UmarOSDashboard() {
                     onClick={() => selectWorld(w.id, "dashboard")}
                     className="w-full py-2 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold transition-colors"
                   >
-                    Open {w.navLabel} →
+                    Open {w.navLabel}
                   </button>
                 </div>
               ))}
@@ -3524,7 +3524,7 @@ function UmarOSDashboard() {
         {activeWorldId === "home" && currentTabId === "checklist" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              ✅ Today's Founder Action Checklist
+               Today's Founder Action Checklist
             </h2>
             <div className="space-y-2.5">
               {[
@@ -3588,7 +3588,7 @@ function UmarOSDashboard() {
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <div>
               <h2 className="text-base font-black text-slate-900">
-                🛡️ Indian Statutory & Tax Compliance Protection
+                 Indian Statutory & Tax Compliance Protection
               </h2>
               <p className="text-xs text-slate-600 mt-0.5">
                 Built-in compliance across food safety, GST, income tax, gig
@@ -3667,7 +3667,7 @@ function UmarOSDashboard() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-black text-amber-900">
-                      ⚡ {loaderData.pendingRestaurants.length} Restaurant Application(s) Awaiting Fast-Track Approval
+                       {loaderData.pendingRestaurants.length} Restaurant Application(s) Awaiting Fast-Track Approval
                     </h3>
                     <p className="text-xs text-amber-700 mt-0.5">
                       Review and activate new kitchens directly with 1-click PostgreSQL verification.
@@ -3761,7 +3761,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Live Founder Profit Dashboard"
-                emoji="📈"
+                emoji="PR"
               />
             }
           >
@@ -3769,12 +3769,13 @@ function UmarOSDashboard() {
           </Suspense>
         )}
 
+
         {activeWorldId === "kingpay" && currentTabId === "wallet-mdr" && (
           <Suspense
             fallback={
               <WorldSuspenseShield
                 worldTitle="King Pay Wallet & MDR Settings"
-                emoji="🏦"
+                emoji="BK"
               />
             }
           >
@@ -3787,7 +3788,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="King Pay Master Safety Switch"
-                emoji="🔒"
+                emoji="SEC"
               />
             }
           >
@@ -3800,7 +3801,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Central Commissions & Pricing Switch"
-                emoji="🏷️"
+                emoji="FEE"
               />
             }
           >
@@ -3817,7 +3818,7 @@ function UmarOSDashboard() {
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
                 <div>
                   <h2 className="text-base font-black text-slate-900">
-                    ✈️ Travel Affiliate Hub & Provider Orchestration
+                     Travel Affiliate Hub & Provider Orchestration
                   </h2>
                   <p className="text-xs text-slate-600">
                     Earn affiliate commissions on customer travel bookings without holding inventory or balance-sheet risk.
@@ -3832,22 +3833,22 @@ function UmarOSDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
                   {
-                    mode: "✈️ Flights",
+                    mode: "Flights",
                     partner: "Domestic & International Flight Search",
                     share: `${currentSettings.flightAffiliateMarkupPct || 1.5}% Affiliate Fee`,
                   },
                   {
-                    mode: "🏨 Hotels & Stays",
+                    mode: "Hotels & Stays",
                     partner: "Pan-India Budget & Business Hotels",
                     share: `${currentSettings.hotelAffiliateCommissionPct || 6}% Partner Commission`,
                   },
                   {
-                    mode: "🚆 Trains (IRCTC Rail)",
+                    mode: "Trains (IRCTC Rail)",
                     partner: "Authorized Rail Partner Redirect",
                     share: "Zero Hidden Markup",
                   },
                   {
-                    mode: "🚌 Intercity Buses",
+                    mode: "Intercity Buses",
                     partner: "AC Sleeper & State Bus Aggregator",
                     share: "Instant Seat Confirmation",
                   },
@@ -3874,7 +3875,7 @@ function UmarOSDashboard() {
                 fallback={
                   <WorldSuspenseShield
                     worldTitle="Travel Provider Orchestration"
-                    emoji="✈️"
+                    emoji="TR"
                   />
                 }
               >
@@ -3889,7 +3890,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <h2 className="text-base font-black text-slate-900">
-                  🧳 Customer Trips & Booking Support ({savedTrips.length} Saved Itineraries)
+                   Customer Trips & Booking Support ({savedTrips.length} Saved Itineraries)
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
                   Save and track customer flight, train, hotel, and bus PNR bookings with 1-click live status lookups. Persisted in `localStorage`.
@@ -3911,11 +3912,11 @@ function UmarOSDashboard() {
                   onChange={(e) => setNewTripMode(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
                 >
-                  <option value="✈️ Flight">✈️ Flight</option>
-                  <option value="🏨 Hotel">🏨 Hotel</option>
-                  <option value="🚆 Train">🚆 Train</option>
-                  <option value="🚌 Bus">🚌 Bus</option>
-                  <option value="🚗 Cab">🚗 Cab</option>
+                  <option value="Flight">Flight</option>
+                  <option value="Hotel">Hotel</option>
+                  <option value="Train">Train</option>
+                  <option value="Bus">Bus</option>
+                  <option value="Cab">Cab</option>
                 </select>
               </div>
 
@@ -3940,7 +3941,7 @@ function UmarOSDashboard() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. BLR → IXS or Hotel Radisson"
+                  placeholder="e.g. BLR -> IXS or Hotel Radisson"
                   value={newTripRoute}
                   onChange={(e) => setNewTripRoute(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 bg-white text-xs font-semibold"
@@ -4035,7 +4036,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🎓</span>
+                  <span className="text-xs font-bold uppercase text-indigo-600">EDU</span>
                   <h2 className="text-base font-black text-slate-900">
                     10-Language AI Tutor & Voice Lessons
                   </h2>
@@ -4177,7 +4178,7 @@ function UmarOSDashboard() {
                             : "text-slate-600 hover:text-slate-900"
                         }`}
                       >
-                        {isCompleted ? "Completed ✓" : "Mark as Done"}
+                        {isCompleted ? "Completed" : "Mark as Done"}
                       </button>
                     </div>
                   </div>
@@ -4192,7 +4193,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
                 <h2 className="text-base font-black text-slate-900">
-                  💼 Local Jobs & Gig Hiring Board ({localJobs.length} Active Openings)
+                   Local Jobs & Gig Hiring Board ({localJobs.length} Active Openings)
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
                   Post and discover verified openings for delivery riders, cooks, and franchise operations with zero middleman agency cut.
@@ -4338,7 +4339,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="B2B SaaS Sales Deck & ROI Generator"
-                emoji="📊"
+                emoji="B2B"
               />
             }
           >
@@ -4351,7 +4352,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="City Franchise Onboarding Engine"
-                emoji="🤝"
+                emoji="FRN"
               />
             }
           >
@@ -4364,7 +4365,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-black text-slate-900">
-                  🗂️ 15-Stage B2B CRM Pipeline ({b2bLeads.length} Active Leads)
+                   15-Stage B2B CRM Pipeline ({b2bLeads.length} Active Leads)
                 </h2>
                 <p className="text-xs text-slate-600">
                   Add real restaurant or city franchise leads and move them
@@ -4483,7 +4484,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">🤖</span>
+                  <span className="text-xs font-bold uppercase text-emerald-600">AI</span>
                   <h2 className="text-base font-black text-white">
                     UMAR AI — Platform Intelligence & Automation
                   </h2>
@@ -4513,7 +4514,7 @@ function UmarOSDashboard() {
                   ) : (
                     <>
                       <Mic className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>🎙️ Speak Command</span>
+                      <span>Speak Command</span>
                     </>
                   )}
                 </button>
@@ -4559,7 +4560,7 @@ function UmarOSDashboard() {
             {/* 1-Tap Executive Action Chips */}
             <div className="space-y-1.5">
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                ⚡ 1-Tap Executive Directives (Click to Execute in PostgreSQL):
+                 1-Tap Executive Directives (Click to Execute in PostgreSQL):
               </p>
               <div className="flex flex-wrap gap-2">
                 {[
@@ -4577,7 +4578,7 @@ function UmarOSDashboard() {
                     onClick={() => handleRunAiCommand(preset)}
                     className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-[11px] font-semibold text-left transition-colors"
                   >
-                    ⚡ {preset}
+                     {preset}
                   </button>
                 ))}
               </div>
@@ -4681,7 +4682,7 @@ function UmarOSDashboard() {
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <div>
               <h2 className="text-base font-black text-slate-900">
-                👥 16 Specialist Platform Teams
+                 16 Specialist Platform Teams
               </h2>
               <p className="text-xs text-slate-600">
                 Every specialist team powers a real part of your platform. Click
@@ -4705,7 +4706,7 @@ function UmarOSDashboard() {
                     onClick={() => selectWorld(team.worldId, team.tabId)}
                     className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-emerald-600 text-white text-xs font-bold shrink-0"
                   >
-                    Open →
+                    Open
                   </button>
                 </div>
               ))}
@@ -4718,7 +4719,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Multimodel AI Benchmark Dashboard"
-                emoji="⚡"
+                emoji="AI"
               />
             }
           >
@@ -4734,7 +4735,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Customer App UI Settings & Theme"
-                emoji="📱"
+                emoji="APP"
               />
             }
           >
@@ -4747,7 +4748,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Ecosystem CMS Home Banners"
-                emoji="📢"
+                emoji="CMS"
               />
             }
           >
@@ -4760,7 +4761,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="App Builder Studio"
-                emoji="🛠️"
+                emoji="BLD"
               />
             }
           >
@@ -4773,7 +4774,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Design Studio"
-                emoji="🎨"
+                emoji="UI"
               />
             }
           >
@@ -4786,7 +4787,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Media Production Studio"
-                emoji="🎬"
+                emoji="MED"
               />
             }
           >
@@ -4799,7 +4800,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Social Publishing Studio"
-                emoji="📲"
+                emoji="SOC"
               />
             }
           >
@@ -4815,7 +4816,7 @@ function UmarOSDashboard() {
             fallback={
               <WorldSuspenseShield
                 worldTitle="Payment, SMS & AI Plugin Connectors"
-                emoji="🔑"
+                emoji="KEY"
               />
             }
           >
@@ -4839,7 +4840,7 @@ function UmarOSDashboard() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-black text-slate-900">
-                  🚨 Live 6-Tier Action Center ({activeUnresolvedAlerts.length}{" "}
+                   Live 6-Tier Action Center ({activeUnresolvedAlerts.length}{" "}
                   Open · {allAlerts.length} Total)
                 </h2>
                 <p className="text-xs text-slate-600">
@@ -4958,7 +4959,7 @@ function UmarOSDashboard() {
                           onClick={() => handleResolveAlert(alert.id)}
                           className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold"
                         >
-                          ✓ Mark Resolved
+                          Mark Resolved
                         </button>
                       ) : (
                         <span className="px-3 py-1.5 rounded-lg bg-emerald-100 text-emerald-800 text-xs font-bold">
@@ -4976,7 +4977,7 @@ function UmarOSDashboard() {
         {activeWorldId === "alerts" && currentTabId === "create-alert" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              ➕ Log a Real Operational Alert (Saved to PostgreSQL)
+               Log a Real Operational Alert (Saved to PostgreSQL)
             </h2>
             <form onSubmit={handleCreateCustomAlert} className="space-y-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -5060,7 +5061,7 @@ function UmarOSDashboard() {
         {activeWorldId === "alerts" && currentTabId === "fair-policy" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              🛡️ Fair Partner Protection Rules (Zero Unfair Blocking)
+               Fair Partner Protection Rules (Zero Unfair Blocking)
             </h2>
             <p className="text-xs text-slate-600">
               OrderKing protects local restaurants and delivery riders from
@@ -5120,7 +5121,7 @@ function UmarOSDashboard() {
         {activeWorldId === "settings" && currentTabId === "languages" && (
           <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
             <h2 className="text-base font-black text-slate-900">
-              🗣️ 10 Indian Food Delivery Benchmark Languages
+               10 Indian Food Delivery Benchmark Languages
             </h2>
             <p className="text-xs text-slate-600">
               Active across Customer App, Restaurant Partner App, and Delivery
@@ -5143,7 +5144,7 @@ function UmarOSDashboard() {
         {activeWorldId === "settings" && currentTabId === "activity-log" && (
           <section className="bg-slate-950 text-white rounded-2xl border border-slate-800 p-5 shadow-xs space-y-3">
             <h2 className="text-base font-black text-white">
-              📋 Real Session & PostgreSQL Activity Log
+               Real Session & PostgreSQL Activity Log
             </h2>
             <div className="space-y-2">
               {activityLog.map((entry) => (
@@ -5181,7 +5182,7 @@ function UmarOSDashboard() {
                   onClick={() => selectSubTab("dashboard")}
                   className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs inline-flex items-center gap-1.5 shadow-xs transition-colors"
                 >
-                  <span>📊 Open {currentWorld.navLabel} Dashboard</span>
+                  <span>Open {currentWorld.navLabel} Dashboard</span>
                 </button>
               </section>
             )}

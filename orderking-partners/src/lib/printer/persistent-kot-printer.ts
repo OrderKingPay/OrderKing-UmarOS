@@ -223,7 +223,7 @@ export class PersistentKotPrinterManager {
       }
 
       console.log(
-        `[KOT Hardware] ✅ Bluetooth GATT printer attached: ${this.device?.name || "ESC/POS Thermal"}`
+        `[KOT Hardware] Bluetooth GATT printer attached: ${this.device?.name || "ESC/POS Thermal"}`
       );
       return true;
     } catch (err) {
@@ -483,7 +483,7 @@ export class PersistentKotPrinterManager {
     }
 
     this.isSirenPlaying = true;
-    console.log("[KOT Hardware] 🚨 Incoming order kitchen siren active (dual sawtooth 960Hz-1320Hz).");
+    console.log("[KOT Hardware] Incoming order kitchen siren active (dual sawtooth 960Hz-1320Hz).");
   }
 
   /**
@@ -623,7 +623,7 @@ export class PersistentKotPrinterManager {
     }
 
     console.log(
-      `[KOT Hardware] ✅ autoPrintEscPos: ${bytes.length} bytes for #${orderNumber} (BT: ${bluetoothDispatched ? "PAIRED" : "EMULATED"})`
+      `[KOT Hardware] autoPrintEscPos: ${bytes.length} bytes for #${orderNumber} (BT: ${bluetoothDispatched ? "PAIRED" : "EMULATED"})`
     );
 
     return {

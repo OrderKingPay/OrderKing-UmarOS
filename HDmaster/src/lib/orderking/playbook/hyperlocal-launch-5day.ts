@@ -407,33 +407,33 @@ Dekhiye, main apne phone se live test order karta hoon. Aapke phone par ring baj
     englishScript: `Let's look at the real math on your standard ₹300 thali or biryani order before tax adjustments:
 
 On legacy aggregators at 30% commission:
-• Food Subtotal: ₹300.00
-• Commission (30%): -₹90.00
-• GST on Commission (18%): -₹16.20
-• Gross deductions: ₹106.20 | Net to you: ~₹193.80
+| Food Subtotal: ₹300.00
+| Commission (30%): -₹90.00
+| GST on Commission (18%): -₹16.20
+| Gross deductions: ₹106.20 | Net to you: ~₹193.80
 
 On OrderKing at 22% transparent commission:
-• Food Subtotal: ₹300.00
-• Commission (22%): -₹66.00
-• GST on Commission (18%): -₹11.88
-• Section 194-O TDS (0.1%): -₹0.30
-• Net payable to your bank: ₹221.82
+| Food Subtotal: ₹300.00
+| Commission (22%): -₹66.00
+| GST on Commission (18%): -₹11.88
+| Section 194-O TDS (0.1%): -₹0.30
+| Net payable to your bank: ₹221.82
 
 You save ₹28.02 extra pure cash on EVERY single ₹300 order. At 300 orders a month, that is over ₹8,400 in direct savings, credited T+1 daily into your bank account.`,
     hinglishScript: `Aapke ₹300 ke food order ka hisaab saamne dekh lijiye:
 
 Legacy aggregator par 30% commission:
-• Food order: ₹300
-• Commission (30%): -₹90
-• GST on Commission: -₹16.20
-• Aapke haath mein aaya: ~₹193.80
+| Food order: ₹300
+| Commission (30%): -₹90
+| GST on Commission: -₹16.20
+| Aapke haath mein aaya: ~₹193.80
 
 OrderKing par 22% clear commission:
-• Food order: ₹300
-• Commission (22%): -₹66
-• GST on Commission (18%): -₹11.88
-• TDS 194-O (0.1%): -₹0.30
-• Aapke bank account mein: ₹221.82
+| Food order: ₹300
+| Commission (22%): -₹66
+| GST on Commission (18%): -₹11.88
+| TDS 194-O (0.1%): -₹0.30
+| Aapke bank account mein: ₹221.82
 
 Har ek ₹300 ke order par aapko ₹28 zyada mil raha hai. Mahine mein 300 order hue toh ₹8,400 seedha aapka profit badha. Aur payment 7 din baad nahi, T+1 daily settlement se kal subah aapke bank mein aayegi.`,
     fieldActionNote: "Field Rule: Use the merchant's actual paper settlement sheet if they are willing to show it. Highlight how competitor 'marketing charges' and 'delays' erode their real margin.",
@@ -508,7 +508,7 @@ Our commission is deducted only on completed, chargeable deliveries as per the s
 Na koi monthly charge hai, na menu upload ka paisa, na koi mandatory ad pack.
 
 Hamara commission sirf tabhi katega jab khana customer tak deliver hoga aur payment aayegi. Sirf 8 popular items se shuru karenge, 5 minute mein paper contract sign ho jata hai. Ye lijiye written agreement copy.`,
-    operationalCommitment: "100% ₹0 onboarding fee guarantee. Paper contract signed in under 3 minutes. Zero mandatory promotional deductions.",
+    operationalCommitment: "Strictly ₹0 onboarding fee under signed agreement. Zero mandatory promotional deductions.",
     fieldMove: "Hand over the physical physical 1-page paper agreement with large bold print: 'ONBOARDING FEE: ₹0.00' and 'COMMISSION: 22% FLAT'.",
   },
 ];
@@ -544,23 +544,23 @@ export const RIDER_RECRUITMENT_CONFIG: RiderRecruitmentPlan = {
   pitchScriptHinglish: `Bhai, OrderKing ki local delivery start ho rahi hai. Door shehar mein nahi bhagna padega—poora kaam isi 3–4 km ke local cluster mein rahega.
 
 Payment calculation bilkul clear aur honest hai:
-• ₹25 base fare + ₹8.50 per kilometre (2km ke upar).
-• Barish ya extreme weather mein ₹15 extra surge per delivery.
-• Agar aapne 8 ghante ki shift complete ki, toh ₹500 ka minimum gross floor guarantee company ki taraf se pakka hai.
-• Agar orders se ₹750 bane toh poora ₹750 aapka. Agar kisi din kam orders aaye aur ₹350 bane, toh company ₹150 top-up karke ₹500 poora karegi.
-• Kit ke liye aaj ₹0 advance dena hai. Bag aur t-shirt ka cost Day 4 ke baad chhota-chhota ₹50 karke tabhi katega jab aapki kamai floor se upar ho.
-• Har shaam ko poora digital hisaab app mein dikhega aur bank account mein regular payout aayega.
+| ₹25 base fare + ₹8.50 per kilometre (2km ke upar).
+| Barish ya extreme weather mein ₹15 extra surge per delivery.
+| Agar aapne 8 ghante ki shift complete ki, toh ₹500 ka minimum gross floor guarantee company ki taraf se pakka hai.
+| Agar orders se ₹750 bane toh poora ₹750 aapka. Agar kisi din kam orders aaye aur ₹350 bane, toh company ₹150 top-up karke ₹500 poora karegi.
+| Kit ke liye aaj ₹0 advance dena hai. Bag aur t-shirt ka cost Day 4 ke baad chhota-chhota ₹50 karke tabhi katega jab aapki kamai floor se upar ho.
+| Har shaam ko poora digital hisaab app mein dikhega aur bank account mein regular payout aayega.
 
 Aap documents verify karwa kar ek supervised test delivery kar lo, kal se shift confirm!`,
   pitchScriptEnglish: `Brother, OrderKing is launching local food deliveries right here. You won't have to ride across the entire city—all orders are within this tight 3–4 km local cluster.
 
 The pay structure is transparent and reliable:
-• ₹25 pickup base fare + ₹8.50 per kilometre for distance beyond 2km.
-• Additional ₹15 weather surge during heavy rain or extreme heat.
-• Guaranteed ₹500 gross floor for an 8-hour shift (or 4 deliveries with 90% acceptance).
-• If your delivery earnings reach ₹750, you keep the full ₹750. If orders are slow and you earn ₹350, OrderKing adds ₹150 top-up to ensure you take home ₹500.
-• ₹0 upfront kit payment. The equipment cost is recovered at ₹50/day from Day 4 onwards ONLY on high-earning days.
-• Daily transparent digital ledger with direct bank payouts.
+| ₹25 pickup base fare + ₹8.50 per kilometre for distance beyond 2km.
+| Additional ₹15 weather surge during heavy rain or extreme heat.
+| Guaranteed ₹500 gross floor for an 8-hour shift (or 4 deliveries with 90% acceptance).
+| If your delivery earnings reach ₹750, you keep the full ₹750. If orders are slow and you earn ₹350, OrderKing adds ₹150 top-up to ensure you take home ₹500.
+| ₹0 upfront kit payment. The equipment cost is recovered at ₹50/day from Day 4 onwards ONLY on high-earning days.
+| Daily transparent digital ledger with direct bank payouts.
 
 Let's verify your DL, Aadhaar, and bike documents, run one quick test pickup, and lock your shift for tomorrow!`,
   targetLocations: [
@@ -592,37 +592,37 @@ export const CUSTOMER_LAUNCH_PLAN: CustomerLaunchPlan = {
     budgetCapPaise: 400000, // ₹4,000 maximum discount envelope
   },
   whatsAppBroadcastCopy: {
-    customerDirectHinglish: `🍔 *OrderKing ab aapke area mein live hai!* 
+    customerDirectHinglish: `*OrderKing ab aapke area mein live hai!*
 
 Ab apne pasandida local restaurants se direct order kijiye fast delivery ke saath!
 
-🎉 *EXCLUSIVE LAUNCH OFFER:*
-✨ *₹40 FLAT OFF* on orders above ₹149!
-🛵 *FREE DELIVERY* on your first 2 orders!
-🏷️ Use Promo Code: *LOCAL40*
+ *EXCLUSIVE LAUNCH OFFER:*
+ *₹40 FLAT OFF* on orders above ₹149!
+ *FREE DELIVERY* on your first 2 orders!
+ Use Promo Code: *LOCAL40*
 
-📍 Applicable at top rated local restaurants within 3km.
+ Applicable at top rated local restaurants within 3km.
 ⏳ Limited to first 100 orders only!
 
-👉 *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
+ *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
 
-Apne friends aur family ke saath zaroor share karein! ❤️
+Apne friends aur family ke saath zaroor share karein!
 — Team OrderKing`,
-    customerDirectEnglish: `🍔 *OrderKing is now LIVE in your neighborhood!* 
+    customerDirectEnglish: `*OrderKing is now LIVE in your neighborhood!*
 
 Order fresh, hot food directly from your favorite local kitchens with rapid delivery!
 
-🎉 *EXCLUSIVE NEIGHBORHOOD LAUNCH OFFER:*
-✨ *₹40 FLAT OFF* on orders above ₹149!
-🛵 *FREE DELIVERY* on your first 2 orders!
-🏷️ Use Promo Code: *LOCAL40*
+ *EXCLUSIVE NEIGHBORHOOD LAUNCH OFFER:*
+ *₹40 FLAT OFF* on orders above ₹149!
+ *FREE DELIVERY* on your first 2 orders!
+ Use Promo Code: *LOCAL40*
 
-📍 Valid at premier neighborhood kitchens within 3km.
+ Valid at premier neighborhood kitchens within 3km.
 ⏳ Limited launch allocation: First 100 orders only!
 
-👉 *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
+ *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
 
-Share the taste with your family and neighbors! ❤️
+Share the taste with your family and neighbors!
 — Team OrderKing`,
     merchantRiderReferralHinglish: `Bhai, hamare local area mein *OrderKing* food delivery live ho gaya hai.
 
@@ -631,7 +631,7 @@ First order ₹149+ par *₹40 FLAT OFF + FREE DELIVERY* mil raha hai—coupon c
 
 Ye raha direct link: https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
 
-Try karke dekho aur feedback zaroor batana! 🚀`,
+Try karke dekho aur feedback zaroor batana! `,
   },
   qrTentCardCopy: {
     tableTentHeadline: "Order Fresh to Your Doorstep · Flat ₹40 OFF + Free Delivery",
@@ -1096,7 +1096,7 @@ export function calculateLaunchEconomics(params: OrderEconomicsInput): OrderEcon
   const tdsSection194OPaise = Math.round((foodSubtotalPaise * tdsRateBps) / 10000);
   const restaurantFundedDiscountPaise = Math.round(params.restaurantFundedDiscountPaise ?? 0);
 
-  const totalMerchantDeductionsPaise = 
+  const totalMerchantDeductionsPaise =
     merchantCommissionPaise + gstOnCommissionPaise + tdsSection194OPaise + restaurantFundedDiscountPaise;
   const netMerchantPayablePaise = foodSubtotalPaise - totalMerchantDeductionsPaise;
 
@@ -1104,7 +1104,7 @@ export function calculateLaunchEconomics(params: OrderEconomicsInput): OrderEcon
   const baseFarePaise = Math.round(params.baseFarePaise ?? 2500); // ₹25
   const baseDistanceThresholdKm = params.baseDistanceThresholdKm ?? 2.0;
   const perKmRateBeyondThresholdPaise = Math.round(params.perKmRateBeyondThresholdPaise ?? 850); // ₹8.50/km
-  
+
   // Calculate billable distance beyond base distance threshold (e.g. > 2km)
   const distanceKm = Math.max(0, params.deliveryDistanceKm);
   const excessKm = Math.max(0, distanceKm - baseDistanceThresholdKm);
@@ -1115,7 +1115,7 @@ export function calculateLaunchEconomics(params: OrderEconomicsInput): OrderEcon
   const riderPickupExcessFarePaise = Math.round(pickupExcessKm * 850);
 
   const riderWeatherSurgePaise = Math.round(params.weatherSurgePaise ?? 0);
-  const riderGrossPayoutPaise = 
+  const riderGrossPayoutPaise =
     baseFarePaise + riderDistanceFarePaise + riderPickupExcessFarePaise + riderWeatherSurgePaise;
 
   // 3. Platform Unit Inflow & Outflow
@@ -1127,9 +1127,9 @@ export function calculateLaunchEconomics(params: OrderEconomicsInput): OrderEcon
   const grossPlatformInflowPaise = merchantCommissionPaise + customerDeliveryFeePaise;
   const grossPlatformOutflowPaise = riderGrossPayoutPaise + platformFundedDiscountPaise;
   const platformContributionMarginPaise = grossPlatformInflowPaise - grossPlatformOutflowPaise;
-  
-  const platformMarginPctOfFood = foodSubtotalPaise > 0 
-    ? Number(((platformContributionMarginPaise / foodSubtotalPaise) * 100).toFixed(2)) 
+
+  const platformMarginPctOfFood = foodSubtotalPaise > 0
+    ? Number(((platformContributionMarginPaise / foodSubtotalPaise) * 100).toFixed(2))
     : 0;
 
   return {

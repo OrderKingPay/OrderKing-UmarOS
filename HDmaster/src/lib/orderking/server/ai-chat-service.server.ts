@@ -150,15 +150,15 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const hdStatus = await getLocalRepoStatus("HDmaster");
       return [
-        `### 🛠️ Repository Status: HDmaster`,
+        `### Repository Status: HDmaster`,
         `- **Branch**: \`${hdStatus.branch}\``,
-        `- **Working Directory**: ${hdStatus.isClean ? "✅ Clean (no uncommitted changes)" : "⚠️ Changes detected"}`,
+        `- **Working Directory**: ${hdStatus.isClean ? "Clean (no uncommitted changes)" : "Changes detected"}`,
         `- **Changed Files**: ${hdStatus.changedFiles.length > 0 ? hdStatus.changedFiles.slice(0, 10).map((f) => `\`${f}\``).join(", ") : "None"}`,
         `- **Path on Disk**: \`${hdStatus.path}\``,
         `- **Connected Repositories**: ${ORDER_KING_REPOS.join(", ")}`,
       ].join("\n");
     } catch (err) {
-      return `### 🛠️ Repository Inspection\nCould not fetch git status: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Repository Inspection\nCould not fetch git status: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -167,11 +167,11 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const commits = await getLocalRecentCommits("HDmaster", 5);
       return [
-        `### 📜 Recent Commits: HDmaster`,
+        `### Recent Commits: HDmaster`,
         ...commits.map((c) => `- \`${c.sha.slice(0, 8)}\` — **${c.message}** (${c.author}, ${c.date})`),
       ].join("\n");
     } catch (err) {
-      return `### 📜 Commits\nCould not fetch commits: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Commits\nCould not fetch commits: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -182,7 +182,7 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const fileData = await inspectLocalFile("HDmaster", rawPath);
       return [
-        `### 📄 File: \`${fileData.path}\` (${fileData.totalLines} lines, ${fileData.content.length} characters)`,
+        `### File: \`${fileData.path}\` (${fileData.totalLines} lines, ${fileData.content.length} characters)`,
         "```typescript",
         fileData.content.slice(0, 3500) + (fileData.content.length > 3500 ? "\n... [content truncated for preview]" : ""),
         "```",
@@ -199,10 +199,10 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const results = await searchLocalCode(term, "HDmaster", 5);
       if (results.matches.length === 0) {
-        return `### 🔍 Code Search: \`${term}\`\nNo exact matches found in HDmaster codebase.`;
+        return `### Code Search: \`${term}\`\nNo exact matches found in HDmaster codebase.`;
       }
       return [
-        `### 🔍 Code Search Results for \`${term}\` (${results.totalMatches} matches)`,
+        `### Code Search Results for \`${term}\` (${results.totalMatches} matches)`,
         ...results.matches.map((r: { file: string; line: number; text: string }) => `- **\`${r.file}:${r.line}\`**: \`${r.text.trim()}\``),
       ].join("\n");
     } catch {
@@ -234,10 +234,10 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       const ws = await ensureWorkspace("system_supreme_ai_founder");
       const list = (await q.listPendingApprovals(ws)) as any[];
       if (!list || list.length === 0) {
-        return `### 🛡️ Founder Approval Center\n✅ **Zero Pending Approvals**\nAll operational actions and financial settlements are currently reconciled and approved.`;
+        return `### Founder Approval Center\n **Zero Pending Approvals**\nAll operational actions and financial settlements are currently reconciled and approved.`;
       }
       return [
-        `### 🛡️ Founder Approval Center (${list.length} Pending)`,
+        `### Founder Approval Center (${list.length} Pending)`,
         `| ID | Module | Action | Amount | Requested By | Notes |`,
         `|---|---|---|---|---|---|`,
         ...list.map((item) => {
@@ -247,7 +247,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `\n> **To resolve an action**, reply in chat: \`approve <id>\` or \`reject <id>\``,
       ].join("\n");
     } catch (err) {
-      return `### 🛡️ Founder Approval Center\nCould not fetch approvals: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Founder Approval Center\nCould not fetch approvals: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -259,9 +259,9 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
     try {
       const ws = await ensureWorkspace("system_supreme_ai_founder");
       await q.resolveFounderApproval(ws, approvalId, decision as "APPROVED" | "REJECTED");
-      return `### 🛡️ Founder Approval Resolved\n- **Approval ID**: \`${approvalId}\`\n- **Status**: **${decision}**\n- **Authorized By**: Founder (Umar)\n- **Timestamp**: ${new Date().toISOString()}`;
+      return `### Founder Approval Resolved\n- **Approval ID**: \`${approvalId}\`\n- **Status**: **${decision}**\n- **Authorized By**: Founder (Umar)\n- **Timestamp**: ${new Date().toISOString()}`;
     } catch (err) {
-      return `### ⚠️ Founder Approval Error\nFailed to ${decision.toLowerCase()} approval \`${approvalId}\`: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Founder Approval Error\nFailed to ${decision.toLowerCase()} approval \`${approvalId}\`: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -273,7 +273,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       const ws = await ensureWorkspace("system_supreme_ai_founder");
       const plan = await q.generateRestaurantGrowthPlan(ws, restId);
       return [
-        `### 📈 AI Restaurant Growth Plan`,
+        `### AI Restaurant Growth Plan`,
         `- **Plan ID**: \`${plan.id}\``,
         `- **Restaurant ID**: \`${restId}\``,
         `- **Strategic Focus**: **${plan.plan.focus}**`,
@@ -281,7 +281,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         ...(plan.plan.recommendations || []).map((r: string) => `- ${r}`),
       ].join("\n");
     } catch (err) {
-      return `### 📈 Growth Plan Generation\nCould not generate plan for \`${restId}\`: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Growth Plan Generation\nCould not generate plan for \`${restId}\`: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -293,7 +293,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       const ws = await ensureWorkspace("system_supreme_ai_founder");
       const res = await q.calculateRestaurantPayout(ws, restId, "CURRENT");
       return [
-        `### 💰 Deterministic Restaurant Payout`,
+        `### Deterministic Restaurant Payout`,
         `- **Restaurant ID**: \`${restId}\``,
         `- **Delivered Orders Included**: ${res.ordersIncluded}`,
         `- **Gross Total**: ₹${(res.totalGrossPaise / 100).toFixed(2)}`,
@@ -301,7 +301,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `- **Net Payout**: **₹${(res.netPayoutPaise / 100).toFixed(2)}**`,
       ].join("\n");
     } catch (err) {
-      return `### 💰 Payout Calculation\nCould not calculate payout for \`${restId}\`: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Payout Calculation\nCould not calculate payout for \`${restId}\`: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -311,7 +311,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       const ws = await ensureWorkspace("system_supreme_ai_founder");
       const h = await q.systemHealth(ws.ctx);
       return [
-        `### ⚡ HDmaster Live System Health`,
+        `### HDmaster Live System Health`,
         `- **API**: \`${h.api}\``,
         `- **Database**: \`${h.database}\` (${h.databaseLatencyMs}ms latency)`,
         `- **Payments**: \`${h.payments}\``,
@@ -322,7 +322,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `- **Operational Label**: \`${h.label}\``,
       ].join("\n");
     } catch (err) {
-      return `### ⚡ System Health\nCould not query system health: ${err instanceof Error ? err.message : String(err)}`;
+      return `### System Health\nCould not query system health: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -383,7 +383,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       });
 
       return [
-        `### 📊 B2B SaaS Commercial Revenue & CRM Pipeline Audit`,
+        `### B2B SaaS Commercial Revenue & CRM Pipeline Audit`,
         `> **Provenance Governance**: All 9 commercial revenue buckets are computed strictly from \`VERIFIED_CRM_RECORD\` leads (\`${breakdown.verifiedLeadsCount}\` verified). Sample \`SCENARIO_TEMPLATE\` records (\`${breakdown.scenarioTemplatesCount}\` templates) are **100% excluded** from financial buckets.`,
         ``,
         `#### 1. Mandate 3 Commercial Revenue Breakdown (\`VERIFIED_CRM_RECORD\` Only)`,
@@ -427,7 +427,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `| **Saudi Arabia (SAR)** | SAR ${roiSaudi.annualGmv.toLocaleString()} | SAR ${roiSaudi.annualAggregatorFees.toLocaleString()} (28%) | SAR ${roiSaudi.annualOrderKingCost.toLocaleString()} (7% + SaaS) | **SAR ${roiSaudi.annualNetProfitReclaimed.toLocaleString()}** | SAR ${roiSaudi.perStoreAnnualSavings.toLocaleString()} | +${roiSaudi.ebitdaMarginExpansionPct}% | ${roiSaudi.paybackPeriodDays} days |`,
       ].join("\n");
     } catch (err) {
-      return `### 📊 B2B CRM & ROI Audit\nError computing CRM and ROI metrics: ${err instanceof Error ? err.message : String(err)}`;
+      return `### B2B CRM & ROI Audit\nError computing CRM and ROI metrics: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -440,7 +440,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
     try {
       const telemetry = await getB2BPitchDeckTelemetryCore();
       return [
-        `### 🛡️ 6-Tier Security & Webhook Verification Scan`,
+        `### 6-Tier Security & Webhook Verification Scan`,
         `- **Shield Status**: \`${telemetry.antiFraud.status}\` (${telemetry.antiFraud.stat})`,
         `- **Tier 1 — HMAC-SHA256 Webhook Signatures**: \`${telemetry.antiFraud.hmacSignaturesActive ? "ENFORCED" : "INACTIVE"}\` (Replay window: 300s strict check)`,
         `- **Tier 2 — Optical Proof Photo Deduplication**: \`${telemetry.antiFraud.opticalProofRegistryActive ? "ACTIVE" : "INACTIVE"}\` (Blocks duplicate damage/refund image hashes)`,
@@ -450,7 +450,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `- **Tier 6 — RBAC & Tenant Isolation**: Server-authenticated \`org_id\`, \`riderId\`, and \`customerId\` bindings enforced.`,
       ].join("\n");
     } catch (err) {
-      return `### 🛡️ Security & Webhook Scan\nCould not complete scan: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Security & Webhook Scan\nCould not complete scan: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -465,7 +465,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
       const dash = await q.dashboardPayload(ws);
       const telemetry = await getB2BPitchDeckTelemetryCore();
       return [
-        `### ⚡ Live Kitchen & Rider Dispatch SLA Status`,
+        `### Live Kitchen & Rider Dispatch SLA Status`,
         `- **Active Kitchens Online**: \`${dash.today.activeRestaurants.value}\` (${dash.today.activeRestaurants.label})`,
         `- **Online Fleet Riders**: \`${dash.today.onlineRiders.value}\` (${dash.today.onlineRiders.label})`,
         `- **Active Deliveries in Flight**: \`${dash.today.activeDeliveries.value}\``,
@@ -474,7 +474,7 @@ async function tryExecuteWorkforceCommand(query: string): Promise<string | null>
         `- **Dispatch SLA Benchmark**: \`${telemetry.dispatchSpeed.stat}\` (Target: ${telemetry.dispatchSpeed.targetSla} | Routing: ${telemetry.dispatchSpeed.algorithmMode})`,
       ].join("\n");
     } catch (err) {
-      return `### ⚡ Kitchen & Rider SLA Status\nCould not fetch live SLA telemetry: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Kitchen & Rider SLA Status\nCould not fetch live SLA telemetry: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 

@@ -413,10 +413,10 @@ export function KingPayGlobalSettings({
               Live Result
             </div>
             <div className="text-base font-black text-slate-900 dark:text-white mt-1">
-              {numericMdr.toFixed(2)}% Fee • ₹{numericFee.toFixed(2)} Cart Fee
+              {numericMdr.toFixed(2)}% Fee | ₹{numericFee.toFixed(2)} Cart Fee
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-              Instant refund cap: ₹{Math.round(numericThreshold)} • Payouts: {payoutDay}.
+              Instant refund cap: ₹{Math.round(numericThreshold)} | Payouts: {payoutDay}.
             </p>
           </div>
 

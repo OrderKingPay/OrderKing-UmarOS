@@ -6,7 +6,7 @@
  *    - All 4 Tier-1 Leader operational rejection reasons
  *    - Dish checklist validation & automatic timed stockout transitions
  * 2. Outlet Emergency Pause & Operational Status Switch
- *    - 🟢 Online, 🟡 Paused 30m, 🟡 Paused 60m, 🔴 Offline
+ *    - Online, Paused 30m, Paused 60m, Offline
  *    - Pause timers, localStorage persistence, customer notice generation, auto-resumption
  * 3. Daily Business Summary & Settlement Ledger
  *    - Delivered orders count, gross GMV, statutory deductions breakdown

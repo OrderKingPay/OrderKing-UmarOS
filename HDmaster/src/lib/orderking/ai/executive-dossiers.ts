@@ -286,7 +286,7 @@ Website: https://orderking.in`,
     eventForum: "State Tech Conclave & Industry-Academia MoU",
     keynoteTitle: "Zero-Loss Economics: 2G Resilient FinTech & Hyperlocal Order Infrastructure",
     honorariumAndPerks: "University Citation, Felicitation Plaque & Official Honorarium",
-    subjectLine: "Guest Lecture & Industry MoU: OrderKing Hyperlocal Advanced-App Founder Hasan",
+    subjectLine: "Guest Lecture & Industry MoU: OrderKing Hyperlocal Super-App Founder Hasan",
     emailBody: `Respected Dean, School of Technology,
 Assam University, Silchar,
 
@@ -344,8 +344,8 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       instagram_positions: ["stream", "story", "reels"],
     },
     ad_creative: {
-      title: "OrderKing — Karimganj's Food Advanced-App ",
-      body: "🔥 Authentic Food at Direct Kitchen Rates! Enjoy delicious Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Win Real 24K Digital Gold on every order! Tap to Order Now.",
+      title: "OrderKing - Karimganj Direct Food App",
+      body: "Authentic Food at Direct Kitchen Rates! Order Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Earn 24K Digital Gold rewards on every order.",
       call_to_action_type: "ORDER_NOW",
       link: "https://orderking.in",
     },
@@ -358,7 +358,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     headlines: [
       "OrderKing Food Delivery",
       "Authentic Menu Pricing",
-      "Karimganj Local Advanced-App",
+      "Karimganj Local Food App",
       "Hot Biryani in 20 Mins",
       "Win 24K Gold Every Order",
     ],
@@ -376,7 +376,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   viralReelsScripts: [
     {
       title: "Reel 1: The 'Legacy Aggregator Price Trap' Revelation (Bengali / English)",
-      hook: "Did you know you are paying ₹100 extra on every single food order in Karimganj?! 😱",
+      hook: "Did you know you are paying ₹100 extra on every single food order in Karimganj?",
       durationSeconds: 30,
       language: "Bengali & English",
       scenes: [
@@ -405,7 +405,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
     {
       title: "Reel 2: The 20-Minute Hot Food Challenge",
-      hook: "Can we get piping hot Dum Biryani delivered to Central Bazaar in under 20 minutes? ⏱️🔥",
+      hook: "Can we get piping hot Dum Biryani delivered to Central Bazaar in under 20 minutes?",
       durationSeconds: 28,
       language: "Bengali & Hindi",
       scenes: [
@@ -429,7 +429,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
     {
       title: "Reel 3: Supporting Local Karimganj Home Kitchens",
-      hook: "Meet the mother whose handmade fish thalis are taking Karimganj by storm! 🐟❤️",
+      hook: "Meet the mother whose handmade fish thalis are taking Karimganj by storm.",
       durationSeconds: 35,
       language: "Bengali",
       scenes: [
@@ -453,7 +453,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
   ],
   whatsAppStatusViralCopy: {
-    headline: "Just won 10mg Real 24K Gold on OrderKing! 🪙",
+    headline: "Just won 10mg Real 24K Gold on OrderKing!",
     body: "Ordered fresh Biryani from a local kitchen at restaurant menu prices on OrderKing: https://orderking.in",
     statusText: "Ordered on OrderKing Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
   },

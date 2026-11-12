@@ -132,7 +132,7 @@ const baseURL = explicitBaseURL ?? {
       "*.orderking.in",
       "*.pages.dev",
     ],
-  // `auto` → trust both http:// and https:// expansions of allowedHosts
+  // `auto` -> trust both http:// and https:// expansions of allowedHosts
   // (preview is https; local dev is http).
   protocol: "auto" as const,
   fallback: "https://admin.orderkingpay.com",

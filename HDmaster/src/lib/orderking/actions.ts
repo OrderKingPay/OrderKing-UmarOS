@@ -1502,7 +1502,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
         const marginPercent = ((marginSpread / retailCpm) * 100).toFixed(1);
 
         const resellingStatus = payload.resellingEnabled
-          ? `Ad-Network Reselling Active (Wholesale: ₹${wholesaleCpm.toFixed(2)}/CPM → Retail: ₹${retailCpm.toFixed(2)}/CPM • Net Founder Spread: +₹${marginSpread.toFixed(2)}/CPM [${marginPercent}% Margin])`
+          ? `Ad-Network Reselling Active (Wholesale: ₹${wholesaleCpm.toFixed(2)}/CPM -> Retail: ₹${retailCpm.toFixed(2)}/CPM | Net Founder Spread: +₹${marginSpread.toFixed(2)}/CPM [${marginPercent}% Margin])`
           : "Direct Mode (Internal Placement Only)";
 
         return {
@@ -1524,7 +1524,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `OrderKing Direct Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Media Network: Wholesale ₹${gWholesale} → Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Media: Wholesale ₹${oWholesale} → Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
+          message: `OrderKing Direct Global Ad Syndicate Hub operational. 4 Revenue Streams Active: [1. Promoted Restaurants @ ₹${pPlacementFee}/day] [2. Rider App Financial Ads @ ₹${rSponsorFee}/mo] [3. JioAds Media Network: Wholesale ₹${gWholesale} -> Retail ₹${gRetail}/CPM (${gMargin}% margin)] [4. Glance/InMobi OEM Media: Wholesale ₹${oWholesale} -> Retail ₹${oRetail}/CPM (${oMargin}% margin)]. Syndicate clearing rail online.`,
         };
       }
 
@@ -2040,100 +2040,92 @@ export const renderAiAvatarVideoFn = createServerFn({ method: "POST" })
       const words = script.trim().split(/\s+/).length;
       const estimatedDuration = Math.max(14, Math.min(180, Math.round(words / 2.25)));
 
-      let externalJobId = `VID-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      let externalJobId = "";
+      let resolvedMp4Url = "";
+      let resolvedThumbnailUrl = "";
 
-      if (mode === "live") {
-        if (provider === "heygen" && heygenApiKey && !heygenApiKey.startsWith("test_")) {
-          try {
-            const resp = await fetch("https://api.heygen.com/v2/video/generate", {
-              method: "POST",
-              headers: {
-                "X-Api-Key": heygenApiKey,
-                "Content-Type": "application/json",
+      if (provider === "heygen" && heygenApiKey && !heygenApiKey.startsWith("test_")) {
+        const resp = await fetch("https://api.heygen.com/v2/video/generate", {
+          method: "POST",
+          headers: {
+            "X-Api-Key": heygenApiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            video_inputs: [
+              {
+                character: {
+                  type: "avatar",
+                  avatar_id: avatarId,
+                  avatar_style: avatarPose,
+                },
+                voice: {
+                  type: "text",
+                  input_text: script,
+                  voice_id: voiceId,
+                },
+                background: {
+                  type: backgroundType === "cyber_dark" ? "color" : "transparent",
+                  value: backgroundColor,
+                },
               },
-              body: JSON.stringify({
-                video_inputs: [
-                  {
-                    character: {
-                      type: "avatar",
-                      avatar_id: avatarId,
-                      avatar_style: avatarPose,
-                    },
-                    voice: {
-                      type: "text",
-                      input_text: script,
-                      voice_id: voiceId,
-                    },
-                    background: {
-                      type: backgroundType === "cyber_dark" ? "color" : "transparent",
-                      value: backgroundColor,
-                    },
-                  },
-                ],
-                dimension: aspectRatio === "9:16" ? { width: 1080, height: 1920 } : aspectRatio === "1:1" ? { width: 1080, height: 1080 } : { width: 1920, height: 1080 },
-                title: title || "Market-Dominance Bounty Drop",
-              }),
-            });
-            if (resp.ok) {
-              const resJson = await resp.json();
-              if (resJson.data?.video_id) {
-                externalJobId = resJson.data.video_id;
-              }
-            }
-          } catch (apiErr) {
-            console.warn("HeyGen live API dispatch notice:", apiErr);
-          }
-        } else if (provider === "synthesia" && synthesiaApiKey && !synthesiaApiKey.startsWith("test_")) {
-          try {
-            const resp = await fetch("https://api.synthesia.io/v2/videos", {
-              method: "POST",
-              headers: {
-                Authorization: synthesiaApiKey,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                title: title || "Market-Dominance Bounty Drop",
-                description: "OrderKing Autonomous Bounty Media Campaign",
-                visibility: "public",
-                aspectRatio: aspectRatio === "9:16" ? "9:16" : aspectRatio === "1:1" ? "1:1" : "16:9",
-                parts: [
-                  {
-                    avatar: avatarId,
-                    avatarSettings: {
-                      horizontalAlign: "center",
-                      scale: 1,
-                      style: "rectangular",
-                    },
-                    scriptText: script,
-                    voice: voiceId,
-                  },
-                ],
-              }),
-            });
-            if (resp.ok) {
-              const resJson = await resp.json();
-              if (resJson.id) {
-                externalJobId = resJson.id;
-              }
-            }
-          } catch (apiErr) {
-            console.warn("Synthesia live API dispatch notice:", apiErr);
-          }
+            ],
+            dimension: aspectRatio === "9:16" ? { width: 1080, height: 1920 } : aspectRatio === "1:1" ? { width: 1080, height: 1080 } : { width: 1920, height: 1080 },
+            title: title || "Market-Dominance Bounty Drop",
+          }),
+        });
+        const resJson = await resp.json().catch(() => ({} as Record<string, any>));
+        if (!resp.ok || !resJson.data?.video_id) {
+          return {
+            ok: false as const,
+            error: `HeyGen video generation failed (${resp.status}): ${resJson?.error?.message || resJson?.message || "Invalid response from HeyGen API"}`,
+          };
         }
+        externalJobId = resJson.data.video_id;
+        resolvedMp4Url = typeof resJson.data.video_url === "string" ? resJson.data.video_url : "";
+        resolvedThumbnailUrl = typeof resJson.data.thumbnail_url === "string" ? resJson.data.thumbnail_url : "";
+      } else if (provider === "synthesia" && synthesiaApiKey && !synthesiaApiKey.startsWith("test_")) {
+        const resp = await fetch("https://api.synthesia.io/v2/videos", {
+          method: "POST",
+          headers: {
+            Authorization: synthesiaApiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: title || "Market-Dominance Bounty Drop",
+            description: "OrderKing Autonomous Bounty Media Campaign",
+            visibility: "public",
+            aspectRatio: aspectRatio === "9:16" ? "9:16" : aspectRatio === "1:1" ? "1:1" : "16:9",
+            parts: [
+              {
+                avatar: avatarId,
+                avatarSettings: {
+                  horizontalAlign: "center",
+                  scale: 1,
+                  style: "rectangular",
+                },
+                scriptText: script,
+                voice: voiceId,
+              },
+            ],
+          }),
+        });
+        const resJson = await resp.json().catch(() => ({} as Record<string, any>));
+        if (!resp.ok || !resJson.id) {
+          return {
+            ok: false as const,
+            error: `Synthesia video generation failed (${resp.status}): ${resJson?.error || resJson?.message || "Invalid response from Synthesia API"}`,
+          };
+        }
+        externalJobId = resJson.id;
+        resolvedMp4Url = typeof resJson.download === "string" ? resJson.download : "";
+        resolvedThumbnailUrl = typeof resJson.thumbnail?.image === "string" ? resJson.thumbnail.image : "";
+      } else {
+        return {
+          ok: false as const,
+          error: `Live ${provider} API key is required. Configure authentic ${provider === "heygen" ? "HeyGen" : "Synthesia"} credentials in AI Media Engine before rendering.`,
+        };
       }
-
-      const sampleMp4Map: Record<string, string> = {
-        "9:16": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "16:9": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        "1:1": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-      };
-
-      const avatarThumbnails: Record<string, string> = {
-        kabir_growth_exec: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-        priya_indian_anchor: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
-        aarav_culinary_critic: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-        zoya_savings_anchor: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-      };
 
       const videoItem = {
         id: externalJobId,
@@ -2143,11 +2135,11 @@ export const renderAiAvatarVideoFn = createServerFn({ method: "POST" })
         voiceId,
         aspectRatio,
         durationSeconds: estimatedDuration,
-        mp4Url: sampleMp4Map[aspectRatio] || sampleMp4Map["9:16"],
-        thumbnailUrl: avatarThumbnails[avatarId] || avatarThumbnails.kabir_growth_exec,
+        mp4Url: resolvedMp4Url,
+        thumbnailUrl: resolvedThumbnailUrl,
         scriptSnippet: script.slice(0, 110) + (script.length > 110 ? "..." : ""),
         bountyOfferInr,
-        status: "completed" as const,
+        status: (resolvedMp4Url ? "completed" : "rendering") as "completed",
         createdAt: new Date().toISOString(),
         blastCount: 0,
       };
@@ -2261,7 +2253,7 @@ export const dispatchAiMediaGeoDmBlastFn = createServerFn({ method: "POST" })
           bountyCashRewardInr,
           bountyHeadline,
         },
-        message: `🚀 Viral Media Blast Initiated! Rendered AI MP4 video dispatched to ${actualDispatches} smartphones across ${targetLocationLabel} (Radius: ${radiusKm}km). Projected ${projectedBountiesClaimed} Market-Dominance Bounties claimed!`,
+        message: `Viral Media Blast Initiated! Rendered AI MP4 video dispatched to ${actualDispatches} smartphones across ${targetLocationLabel} (Radius: ${radiusKm}km). Projected ${projectedBountiesClaimed} Market-Dominance Bounties claimed!`,
       };
     } catch (err) {
       return fail(err);
@@ -2298,7 +2290,7 @@ export const createOemLockScreenCampaignFn = createServerFn({ method: "POST" })
         pincode = "110001",
         adHeadline,
         adSubtext = "Order direct for authentic kitchen rates and fast delivery.",
-        ctaText = "Swipe Up to Order • 20% OFF",
+        ctaText = "Swipe Up to Order | 20% OFF",
         ctaDeepLink,
         targetXiaomi = true,
         targetSamsung = true,
@@ -2329,7 +2321,7 @@ export const createOemLockScreenCampaignFn = createServerFn({ method: "POST" })
       const profitMarginPercent = Number(((founderProfitInr / budgetInr) * 100).toFixed(1));
 
       const campaignId = `OEM-CMP-${Date.now().toString(36).toUpperCase()}`;
-      const upiPaymentLink = `upi://pay?pa=orderking.reseller@hdfcbank&pn=OrderKing%20OEM%20Ad%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + advertiserName.slice(0, 15))}`;
+      const upiPaymentLink = `upi://pay?pa=orderking@ybl&pn=OrderKing%20OEM%20Ad%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + advertiserName.slice(0, 15))}`;
 
       const { loadPluginConnectorsData, savePluginConnectorsData } = await import("@/lib/orderking/cms-connectors");
       const current = await loadPluginConnectorsData();
@@ -2486,7 +2478,7 @@ export const bookWifiCaptiveAdFn = createServerFn({ method: "POST" })
         brandName,
         headline,
         description = "Enjoy uninterrupted high-speed internet courtesy of our sponsor.",
-        creativeUrl = "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+        creativeUrl = "",
         targetUrl,
         ctaText = "Claim Offer & Connect",
         budgetInr,
@@ -2509,7 +2501,7 @@ export const bookWifiCaptiveAdFn = createServerFn({ method: "POST" })
 
       const targetImpressions = Math.floor(budgetInr / costPerImpressionInr);
       const campaignId = `WIFI-AD-${Date.now().toString(36).toUpperCase()}`;
-      const upiPaymentLink = `upi://pay?pa=orderking.ads@hdfcbank&pn=OrderKing%20WiFi%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + brandName.slice(0, 15))}`;
+      const upiPaymentLink = `upi://pay?pa=orderking@ybl&pn=OrderKing%20WiFi%20Network&am=${budgetInr}&cu=INR&tn=${encodeURIComponent(campaignId + "-" + brandName.slice(0, 15))}`;
 
       const newCampaign = {
         id: campaignId,

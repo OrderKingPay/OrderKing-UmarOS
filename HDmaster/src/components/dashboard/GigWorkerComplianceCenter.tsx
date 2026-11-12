@@ -31,44 +31,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'contracts' | 'agreement_viewer'>('overview');
   const [selectedSectionIndex, setSelectedSectionIndex] = useState<number>(1); // Section 2 by default
   const [copiedText, setCopiedText] = useState(false);
-  const [contractsList, setContractsList] = useState<ContractResult[]>([
-    {
-      contractId: 'OK-RIDER-AGMT-RIDER-78801-17290001',
-      entityId: 'RIDER-78801',
-      timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-      documentType: 'INDEPENDENT_CONTRACTOR_AGREEMENT',
-      status: 'SIGNED',
-      umarOsApprovalStatus: 'APPROVED',
-      contentSummary: 'OrderKing Delivery Partner Agreement · CSS 2020 Compliant · Motorcycle Fleet',
-      welfareFundRate: '1.5% allocated to Central Social Security Fund',
-      accidentalInsuranceCover: 'INR 10,00,000 Death & Disability',
-      hospitalizationCover: 'INR 1,00,000 Hospitalization'
-    },
-    {
-      contractId: 'OK-RIDER-AGMT-RIDER-78802-17290002',
-      entityId: 'RIDER-78802',
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      documentType: 'INDEPENDENT_CONTRACTOR_AGREEMENT',
-      status: 'SIGNED',
-      umarOsApprovalStatus: 'PENDING',
-      contentSummary: 'OrderKing Delivery Partner Agreement · CSS 2020 Compliant · Low-Speed EV (CMVR 2(u) Exempt)',
-      welfareFundRate: '1.5% allocated to Central Social Security Fund',
-      accidentalInsuranceCover: 'INR 10,00,000 Death & Disability',
-      hospitalizationCover: 'INR 1,00,000 Hospitalization'
-    },
-    {
-      contractId: 'OK-RIDER-AGMT-RIDER-78803-17290003',
-      entityId: 'RIDER-78803',
-      timestamp: new Date().toISOString(),
-      documentType: 'INDEPENDENT_CONTRACTOR_AGREEMENT',
-      status: 'PENDING_SIGNATURE',
-      umarOsApprovalStatus: 'PENDING',
-      contentSummary: 'OrderKing Delivery Partner Agreement · CSS 2020 Compliant · Bicycle Fleet',
-      welfareFundRate: '1.5% allocated to Central Social Security Fund',
-      accidentalInsuranceCover: 'INR 10,00,000 Death & Disability',
-      hospitalizationCover: 'INR 1,00,000 Hospitalization'
-    }
-  ]);
+  const [contractsList, setContractsList] = useState<ContractResult[]>([]);
 
   const handleApproveContract = (contractId: string) => {
     setContractsList(prev =>
@@ -83,18 +46,6 @@ export const GigWorkerComplianceCenter: React.FC = () => {
         return c;
       })
     );
-  };
-
-  const handleSimulateNewRiderContract = () => {
-    const randomId = `RIDER-${Math.floor(10000 + Math.random() * 90000)}`;
-    const newContract = contractEngine.generateRiderAgreement(
-      randomId,
-      'XXXX-XXXX-4821',
-      'ABCDE1234F'
-    );
-    // Simulate immediate partner signature via OTP
-    const signed = contractEngine.signContract(newContract);
-    setContractsList(prev => [signed, ...prev]);
   };
 
   const selectedSection = OFFICIAL_RIDER_SECTIONS[selectedSectionIndex];
@@ -252,17 +203,14 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                 Every delivery partner is legally bound under the Code on Social Security, 2020 via digital assent.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={handleSimulateNewRiderContract}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition shadow-xs"
-            >
-              <Sparkles className="size-3.5" />
-              <span>Draft New Partner Agreement</span>
-            </button>
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-slate-200">
+            {contractsList.length === 0 ? (
+              <div className="p-6 text-center text-xs text-slate-500 bg-white">
+                No executed rider agreements loaded. Delivery partners sign digitally during KYC onboarding on the Rider Portal.
+              </div>
+            ) : (
             <table className="min-w-full divide-y divide-slate-200 text-xs text-left">
               <thead className="bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
                 <tr>
@@ -341,6 +289,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         </div>
       )}

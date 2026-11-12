@@ -486,7 +486,7 @@ export class CrmPipelineEngine {
         {
           timestamp: new Date().toISOString().replace("T", " ").slice(0, 16),
           toStage: lead.currentStage || "LEAD",
-          note: `Verified CRM lead created (${lead.source}) • Permission confirmed: ${
+          note: `Verified CRM lead created (${lead.source}) | Permission confirmed: ${
             lead.contactPermissionConfirmed ?? true ? "YES" : "NO"
           }`,
           actor: "FOUNDER",

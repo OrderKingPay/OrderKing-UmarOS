@@ -451,7 +451,7 @@ export class FounderCommandDials {
   }
 
   public releaseWednesdayPayout(statement: RiderSettlementStatement): PayoutDisbursementReceipt {
-    const payoutId = `payout_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    const payoutId = `payout_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
     statement.payoutStatus = "DISBURSED";
 
     const refBuf = new Uint32Array(1);

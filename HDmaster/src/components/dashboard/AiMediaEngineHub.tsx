@@ -119,7 +119,7 @@ const AVATAR_PRESETS = [
     name: "Kabir",
     role: "Restaurant Growth Director",
     tone: "Authoritative, confident Hinglish, executive suit",
-    photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+    photoUrl: "",
     badge: "Most Popular",
     suggestedVoice: "en-IN-PrabhatNeural",
   },
@@ -128,7 +128,7 @@ const AVATAR_PRESETS = [
     name: "Priya",
     role: "Consumer Savings & Tech Anchor",
     roleSubtitle: "High-energy viral reels & news anchor style",
-    photoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+    photoUrl: "",
     badge: "Viral Pick",
     suggestedVoice: "hi-IN-SwaraNeural",
   },
@@ -137,7 +137,7 @@ const AVATAR_PRESETS = [
     name: "Aarav",
     role: "Food Critic & Creator",
     roleSubtitle: "Relatable street food foodie, candid camera",
-    photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+    photoUrl: "",
     badge: "Gen-Z Reach",
     suggestedVoice: "en-IN-NeerjaNeural",
   },
@@ -146,7 +146,7 @@ const AVATAR_PRESETS = [
     name: "Zoya",
     role: "Food Economics Investigative Host",
     roleSubtitle: "Analytical, sharp, breaks down aggregator bills",
-    photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+    photoUrl: "",
     badge: "High Credibility",
     suggestedVoice: "en-IN-PrabhatNeural",
   },
@@ -352,19 +352,10 @@ export function AiMediaEngineHub({
     setRenderStep(1);
 
     try {
-      // Step 1: Phoneme & Prosody Neural Tokenization
-      await new Promise((r) => setTimeout(r, 600));
       setRenderStep(2);
-
-      // Step 2: Audio Synthesis & Neural Voice Generation
-      await new Promise((r) => setTimeout(r, 700));
       setRenderStep(3);
-
-      // Step 3: 3D Facial Mesh & Lip-Sync Rendering
-      await new Promise((r) => setTimeout(r, 800));
       setRenderStep(4);
 
-      // Step 4: Video Encoding & Finalization
       const res = await renderAiAvatarVideoFn({
         data: {
           provider: form.provider,
@@ -386,7 +377,6 @@ export function AiMediaEngineHub({
       });
 
       setRenderStep(5);
-      await new Promise((r) => setTimeout(r, 400));
 
       if (res.ok && res.video) {
         setActiveRenderedVideo(res.video);
@@ -650,12 +640,18 @@ export function AiMediaEngineHub({
                           : "border-border bg-background hover:bg-secondary/40"
                       }`}
                     >
-                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
-                        <img
-                          src={av.photoUrl}
-                          alt={av.name}
-                          className="h-full w-full object-cover"
-                        />
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-border bg-muted flex items-center justify-center">
+                        {av.photoUrl ? (
+                          <img
+                            src={av.photoUrl}
+                            alt={av.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-base font-bold text-foreground">
+                            {av.name.slice(0, 2).toUpperCase()}
+                          </span>
+                        )}
                         {isSelected && (
                           <div className="absolute top-1 right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
                             <Check className="h-2.5 w-2.5" />
@@ -787,7 +783,7 @@ export function AiMediaEngineHub({
                     Presenter Script (Phonetically Optimized)
                   </label>
                   <span className="text-[11px] text-muted-foreground">
-                    {scriptCalculus.words} words • ~{scriptCalculus.estimatedSeconds}s duration
+                    {scriptCalculus.words} words | ~{scriptCalculus.estimatedSeconds}s duration
                   </span>
                 </div>
                 <textarea
@@ -805,11 +801,11 @@ export function AiMediaEngineHub({
                   <span>
                     Estimated Length: <strong className="text-foreground">{scriptCalculus.estimatedSeconds}s</strong>
                   </span>
-                  <span>•</span>
+                  <span>|</span>
                   <span>
                     Pacing: <strong className="text-foreground">{form.voiceSpeed || 1.05}x</strong>
                   </span>
-                  <span>•</span>
+                  <span>|</span>
                   <span>
                     Virality Rating:{" "}
                     <strong className="text-emerald-500 font-bold">
@@ -935,7 +931,7 @@ export function AiMediaEngineHub({
                 <span>
                   {isRendering
                     ? `Rendering Stage ${renderStep}/5...`
-                    : "⚡ Render Photorealistic MP4 Video"}
+                    : "Render Photorealistic MP4 Video"}
                 </span>
               </button>
             </div>
@@ -1020,8 +1016,8 @@ export function AiMediaEngineHub({
                   <video
                     controls
                     playsInline
-                    poster={activeRenderedVideo.thumbnailUrl}
-                    src={activeRenderedVideo.mp4Url}
+                    poster={activeRenderedVideo.thumbnailUrl || undefined}
+                    src={activeRenderedVideo.mp4Url || undefined}
                     className="max-h-[480px] w-auto rounded-lg object-contain"
                   >
                     Your browser does not support the video tag.
@@ -1285,7 +1281,7 @@ export function AiMediaEngineHub({
                   <span>
                     {isBlasting
                       ? "Dispatching Video DMs Geographically..."
-                      : `🚀 Blast Rendered Avatar MP4 to ${blastCalculus.cappedDispatch.toLocaleString()} Smartphones`}
+                      : `Blast Rendered Avatar MP4 to ${blastCalculus.cappedDispatch.toLocaleString()} Smartphones`}
                   </span>
                 </button>
               </div>
@@ -1635,12 +1631,16 @@ export function AiMediaEngineHub({
                         : "border-border hover:border-border/80"
                     }`}
                   >
-                    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black border border-border">
-                      <img
-                        src={video.thumbnailUrl}
-                        alt={video.title}
-                        className="h-full w-full object-cover opacity-80"
-                      />
+                    <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black border border-border flex items-center justify-center">
+                      {video.thumbnailUrl ? (
+                        <img
+                          src={video.thumbnailUrl}
+                          alt={video.title}
+                          className="h-full w-full object-cover opacity-80"
+                        />
+                      ) : (
+                        <Video className="h-8 w-8 text-muted-foreground opacity-50" />
+                      )}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <button
                           type="button"

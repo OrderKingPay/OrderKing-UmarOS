@@ -3,7 +3,7 @@
 // Executes 14 comprehensive check categories:
 // 1. Build  2. Unit  3. Integration  4. API  5. E2E  6. Responsive  7. Accessibility
 // 8. Security  9. Link  10. Form  11. Payment-flow  12. Auth  13. Error-state  14. Performance
-// Self-healing loop: FAIL → DIAGNOSE → FIX → TEST → REPEAT.
+// Self-healing loop: FAIL -> DIAGNOSE -> FIX -> TEST -> REPEAT.
 
 export type QaCheckType =
   | "BUILD"
@@ -72,7 +72,7 @@ export class SelfQaEngine {
     for (const check of standardChecks) {
       const isexecutedFail = executeFailureKey === check.type;
       if (isexecutedFail) {
-        // FAIL → DIAGNOSE → FIX → TEST loop
+        // FAIL -> DIAGNOSE -> FIX -> TEST loop
         results.push({
           checkType: check.type,
           label: check.label,

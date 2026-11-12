@@ -389,7 +389,7 @@ export function GlobalAdSyndicateHub({
             <span className="text-xs text-slate-500">Channels</span>
           </div>
           <p className="text-[11px] text-slate-500 mt-1">
-            Placements • Rider Ads • Telecom • OEM Locks
+            Placements | Rider Ads | Telecom | OEM Locks
           </p>
         </div>
 
@@ -431,7 +431,7 @@ export function GlobalAdSyndicateHub({
                       Promoted Restaurant Placements
                     </h4>
                     <span className="text-[11px] text-slate-500">
-                      In-App Featured Slots • Daily Tiered Billing
+                      In-App Featured Slots | Daily Tiered Billing
                     </span>
                   </div>
                 </div>
@@ -532,7 +532,7 @@ export function GlobalAdSyndicateHub({
                       Rider App Financial Ads
                     </h4>
                     <span className="text-[11px] text-slate-500">
-                      Direct B2B Sponsors • Fintech & Two-Wheeler Loans
+                      Direct B2B Sponsors | Fintech & Two-Wheeler Loans
                     </span>
                   </div>
                 </div>
@@ -633,7 +633,7 @@ export function GlobalAdSyndicateHub({
                       Geospatial Telecom Reselling
                     </h4>
                     <span className="text-[11px] text-slate-500">
-                      JioAds / Telecom Tower Arbitrage • Wholesale to Retail
+                      JioAds / Telecom Tower Arbitrage | Wholesale to Retail
                     </span>
                   </div>
                 </div>
@@ -719,7 +719,7 @@ export function GlobalAdSyndicateHub({
 
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-[11px] text-slate-600 flex items-center justify-between">
               <span>Arbitrage Rail: JioAds Wholesale DSP</span>
-              <span className="font-semibold text-slate-900">Zero Risk • Direct Settlement</span>
+              <span className="font-semibold text-slate-900">Zero Risk | Direct Settlement</span>
             </div>
           </div>
 
@@ -736,7 +736,7 @@ export function GlobalAdSyndicateHub({
                       OEM Lock-Screen Reselling
                     </h4>
                     <span className="text-[11px] text-slate-500">
-                      Glance & InMobi Arbitrage • Xiaomi & Samsung Devices
+                      Glance & InMobi Arbitrage | Xiaomi & Samsung Devices
                     </span>
                   </div>
                 </div>
@@ -844,7 +844,7 @@ export function GlobalAdSyndicateHub({
                 onClick={() => setShowPlacementModal(false)}
                 className="text-slate-400 hover:text-slate-700 text-sm font-semibold"
               >
-                ✕
+                  Close
               </button>
             </div>
 
@@ -975,7 +975,7 @@ export function GlobalAdSyndicateHub({
                 onClick={() => setShowSponsorModal(false)}
                 className="text-slate-400 hover:text-slate-700 text-sm font-semibold"
               >
-                ✕
+                  Close
               </button>
             </div>
 

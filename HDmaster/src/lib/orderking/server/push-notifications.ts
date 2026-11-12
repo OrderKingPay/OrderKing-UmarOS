@@ -52,25 +52,25 @@ export type NotificationResult = {
 export const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: string; channel: NotificationChannel[]; priority: NotificationPriority }> = {
   // Customer templates
   order_placed: {
-    title: "Order Confirmed! 🎉",
+    title: "Order Confirmed! ",
     body: "Your order #{orderId} has been placed successfully. We'll notify you when the restaurant starts preparing.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "HIGH",
   },
   order_accepted: {
-    title: "Restaurant is preparing your order 🍳",
+    title: "Restaurant is preparing your order ",
     body: "Your order #{orderId} is being prepared. Estimated delivery in {eta} minutes.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "NORMAL",
   },
   rider_assigned: {
-    title: "Rider on the way! 🏍️",
+    title: "Rider on the way! ",
     body: "{riderName} is picking up your order from {restaurantName}.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "HIGH",
   },
   order_delivered: {
-    title: "Order Delivered! ✅",
+    title: "Order Delivered! ",
     body: "Your order #{orderId} has been delivered. Enjoy your meal! Rate your experience.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "NORMAL",
@@ -82,7 +82,7 @@ export const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: strin
     priority: "HIGH",
   },
   refund_processed: {
-    title: "Refund Processed 💰",
+    title: "Refund Processed ",
     body: "₹{amount} has been refunded for order #{orderId}. It will reflect in 3-5 business days.",
     channel: ["FCM", "WEB_PUSH", "IN_APP", "EMAIL"],
     priority: "HIGH",
@@ -90,13 +90,13 @@ export const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: strin
 
   // Restaurant templates
   new_order: {
-    title: "New Order! 🔔",
+    title: "New Order! ",
     body: "Order #{orderId} — {itemCount} items, ₹{total}. Accept within 90 seconds.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "CRITICAL",
   },
   order_about_to_expire: {
-    title: "⚠️ Order Expiring!",
+    title: "Order Expiring!",
     body: "Order #{orderId} will auto-reject in 30 seconds. Please accept now.",
     channel: ["FCM", "WEB_PUSH"],
     priority: "CRITICAL",
@@ -104,13 +104,13 @@ export const NOTIFICATION_TEMPLATES: Record<string, { title: string; body: strin
 
   // Rider templates
   delivery_offer: {
-    title: "New Delivery Offer 📍",
+    title: "New Delivery Offer ",
     body: "Pickup: {restaurantName} ({distance} km). Payout: ₹{payout}.",
     channel: ["FCM", "WEB_PUSH", "IN_APP"],
     priority: "CRITICAL",
   },
   delivery_completed: {
-    title: "Delivery Complete ✓",
+    title: "Delivery Complete",
     body: "₹{payout} earned for order #{orderId}. Total today: ₹{dailyTotal}.",
     channel: ["FCM", "IN_APP"],
     priority: "NORMAL",

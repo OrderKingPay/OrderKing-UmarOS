@@ -495,7 +495,9 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
     depositAmount?: number;
     occasion?: string;
   }) => {
-    const ref = "WI-" + Math.floor(10000 + Math.random() * 90000);
+    const rBuf = new Uint32Array(1);
+    crypto.getRandomValues(rBuf);
+    const ref = "WI-" + (10000 + (rBuf[0] % 90000));
     const deposit = walkInData.depositAmount ?? 0;
     const finances = calculateReservationFinancesPaise(deposit, 500);
     const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

@@ -371,7 +371,7 @@ export function MasterCustomizationHub({
         },
       }).catch(() => null);
 
-      const success = "⚡ UmarOS Master Customizations saved & broadcast to Partner & Rider ecosystem live!";
+      const success = "UmarOS Master Customizations saved & broadcast to Partner & Rider ecosystem live!";
       setStatusMsg(success);
       if (onSaveSuccess) onSaveSuccess(success);
       setTimeout(() => setStatusMsg(null), 5000);
@@ -1207,7 +1207,7 @@ export function MasterCustomizationHub({
 
               <input
                 type="text"
-                placeholder="Announcement headline (e.g. ⚡ FESTIVE OFFER: Flat 20% OFF...)"
+                placeholder="Announcement headline (e.g. FESTIVE OFFER: Flat 20% OFF...)"
                 value={announcementText}
                 onChange={(e) => setAnnouncementText(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-xs"

@@ -1,5 +1,5 @@
 /**
- * 👑 WhatsApp Status Viral Bounty Loop & Anti-Fraud Verification Suite (Silent Bypass 9)
+ * WhatsApp Status Viral Bounty Loop & Anti-Fraud Verification Suite (Silent Bypass 9)
  *
  * Specialist: Banking Payouts & RazorpayX Specialist (f1ad9aac)
  * Entity: Order King (GSTIN: 18AFXPH9838M1Z9), Assam - 788710
@@ -9,7 +9,7 @@ import { describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { WhatsAppStatusBountyEngine } from "./whatsapp-status-bounty-engine.ts";
 
-describe("👑 Silent Bypass 9: WhatsApp Status Viral Bounty Engine", () => {
+describe("Silent Bypass 9: WhatsApp Status Viral Bounty Engine", () => {
   beforeEach(() => {
     WhatsAppStatusBountyEngine.resetTestLedger();
   });

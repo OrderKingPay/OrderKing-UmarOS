@@ -1,12 +1,11 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   X,
   Wallet,
-  CheckCircle2,
   ShieldCheck,
   Zap,
   ArrowRight,
-  Sparkles,
   CreditCard,
   Building2,
   Smartphone,
@@ -14,6 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
+import {
+  prepareWalletTopupOrder,
+  verifyAndCreditWalletTopup,
+} from "@/lib/server/kingpay";
 
 interface Props {
   isOpen: boolean;
@@ -24,12 +27,34 @@ interface Props {
 
 const PRESET_AMOUNTS = [500, 1000, 2000, 5000];
 
+async function ensureRazorpayLoaded(): Promise<any> {
+  if (typeof window === "undefined") return null;
+  const win = window as any;
+  if (win.Razorpay) return win.Razorpay;
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve((window as any).Razorpay || null));
+      existing.addEventListener("error", () => resolve(null));
+      setTimeout(() => resolve((window as any).Razorpay || null), 1500);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve((window as any).Razorpay || null);
+    script.onerror = () => resolve(null);
+    document.body.appendChild(script);
+  });
+}
+
 export function AddMoneyModal({
   isOpen,
   onClose,
   currentBalancePaise,
   onSuccess,
 }: Props) {
+  const queryClient = useQueryClient();
   const [amountRupees, setAmountRupees] = useState<number>(1000);
   const [customInput, setCustomInput] = useState<string>("1000");
   const [selectedSource, setSelectedSource] = useState<"upi" | "netbanking" | "card">("upi");
@@ -49,7 +74,7 @@ export function AddMoneyModal({
     setAmountRupees(isNaN(num) ? 0 : num);
   };
 
-  const handleAddMoney = () => {
+  const handleAddMoney = async () => {
     if (amountRupees < 10) {
       toast.error("Minimum top-up amount is ₹10");
       return;
@@ -59,50 +84,74 @@ export function AddMoneyModal({
       return;
     }
 
-    const liveKey =
-      (typeof process !== "undefined" && process.env?.RAZORPAY_KEY_ID) ||
-      (typeof window !== "undefined" && (window as any).__ENV__?.RAZORPAY_KEY_ID) ||
-      "";
-
-    if (typeof window !== "undefined" && (window as any).Razorpay && liveKey) {
-      try {
-        const rzp = new (window as any).Razorpay({
-          key: liveKey,
-          amount: amountRupees * 100,
-          currency: "INR",
-          name: "OrderKing Wallet Top-up",
-          description: `Add ₹${amountRupees} to KingPay Balance`,
-          handler: function (resp: { razorpay_payment_id?: string }) {
-            const addedPaise = amountRupees * 100;
-            onSuccess(addedPaise);
-            toast.success(`Payment verified! ID: ${resp.razorpay_payment_id || "Live"}`);
-            onClose();
-          },
-          prefill: {
-            contact: "9395065587",
-          },
-          theme: {
-            color: "#F59E0B",
-          },
-        });
-        rzp.open();
-        return;
-      } catch {
-        // fallback
+    setIsProcessing(true);
+    try {
+      const prepared = await prepareWalletTopupOrder({
+        data: { amountRupees, source: selectedSource },
+      });
+      const RazorpayCtor = await ensureRazorpayLoaded();
+      if (!RazorpayCtor) {
+        throw new Error("Razorpay checkout failed to load. Please check your connection.");
       }
-    }
 
-    const upiUri = `upi://pay?pa=9395065587@ybl&pn=OrderKing%20Wallet&am=${amountRupees}&cu=INR&tn=Wallet%20Topup`;
-    if (typeof window !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      window.location.href = upiUri;
-      toast.info("Opening UPI application to authorize wallet top-up...");
-      onClose();
-      return;
+      const rzp = new RazorpayCtor({
+        key: prepared.keyId,
+        amount: prepared.amountPaise,
+        currency: prepared.currency,
+        name: "KingPay Wallet",
+        description: `Add ₹${amountRupees.toLocaleString("en-IN")} to Wallet`,
+        order_id: prepared.orderId,
+        handler: async (resp: {
+          razorpay_order_id?: string;
+          razorpay_payment_id?: string;
+          razorpay_signature?: string;
+        }) => {
+          try {
+            const verified = await verifyAndCreditWalletTopup({
+              data: {
+                razorpayOrderId: resp.razorpay_order_id || prepared.orderId,
+                razorpayPaymentId: resp.razorpay_payment_id || "",
+                razorpaySignature: resp.razorpay_signature || "",
+                amountPaise: prepared.amountPaise,
+              },
+            });
+            await Promise.all([
+              queryClient.invalidateQueries({ queryKey: ["kingpay_balance"] }),
+              queryClient.invalidateQueries({ queryKey: ["kingpay_ledger"] }),
+            ]);
+            toast.success(`Added ${formatPaise(prepared.amountPaise)} to KingPay Wallet.`);
+            onSuccess(verified.balancePaise ? prepared.amountPaise : prepared.amountPaise);
+            onClose();
+          } catch (verifyErr) {
+            toast.error(
+              verifyErr instanceof Error
+                ? verifyErr.message
+                : "Payment verification failed. Wallet was not credited."
+            );
+          } finally {
+            setIsProcessing(false);
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false);
+          },
+        },
+        theme: {
+          color: "#F59E0B",
+        },
+      });
+      rzp.on("payment.failed", (failResp: any) => {
+        toast.error(failResp?.error?.description || "Payment was declined.");
+        setIsProcessing(false);
+      });
+      rzp.open();
+    } catch (err) {
+      setIsProcessing(false);
+      toast.error(
+        err instanceof Error ? err.message : "Unable to start wallet top-up. Please sign in and retry."
+      );
     }
-
-    toast.info(`Please complete top-up to UPI ID 9395065587@ybl in your banking app.`);
-    onClose();
-    return;
   };
 
   return (
@@ -262,9 +311,8 @@ export function AddMoneyModal({
               </span>
             ) : (
               <>
-                <Sparkles className="size-4.5" />
                 <span>
-                  Add ₹{amountRupees.toLocaleString("en-IN")} Instantly
+                  Add ₹{amountRupees.toLocaleString("en-IN")}
                 </span>
                 <ArrowRight className="size-4.5" />
               </>

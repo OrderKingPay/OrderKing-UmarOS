@@ -632,8 +632,8 @@ export class ReportingDocumentEngine {
         metricsHtml = `
           <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:16px;margin-bottom:20px;">
             ${section.metrics
-              .map(
-                (m) => `
+            .map(
+              (m) => `
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
                   <span style="font-size:12px;color:#64748b;font-weight:500;">${m.label}</span>
@@ -643,8 +643,8 @@ export class ReportingDocumentEngine {
                 ${m.sourceNote ? `<div style="font-size:11px;color:#94a3b8;margin-top:6px;">Source: ${m.sourceNote}</div>` : ''}
               </div>
             `
-              )
-              .join('')}
+            )
+            .join('')}
           </div>
         `;
       }
@@ -663,14 +663,14 @@ export class ReportingDocumentEngine {
                 </thead>
                 <tbody>
                   ${t.rows
-                    .map(
-                      (row, idx) => `
+              .map(
+                (row, idx) => `
                     <tr style="border-bottom:1px solid #e2e8f0;background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
                       ${row.map((cell) => `<td style="padding:8px 12px;color:#1e293b;">${cell}</td>`).join('')}
                     </tr>
                   `
-                    )
-                    .join('')}
+              )
+              .join('')}
                 </tbody>
               </table>
             </div>
@@ -694,7 +694,7 @@ export class ReportingDocumentEngine {
       if (section.notes && section.notes.length > 0) {
         notesHtml = `
           <div style="font-size:12px;color:#64748b;margin-bottom:16px;">
-            ${section.notes.map((n) => `<p style="margin:4px 0;">ℹ️ ${n}</p>`).join('')}
+            ${section.notes.map((n) => `<p style="margin:4px 0;">Note: ${n}</p>`).join('')}
           </div>
         `;
       }
@@ -730,7 +730,7 @@ export class ReportingDocumentEngine {
   <div style="max-width:960px;margin:0 auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #0f172a;padding-bottom:16px;margin-bottom:24px;">
       <div>
-        <div style="font-size:12px;font-weight:700;color:#f97316;letter-spacing:1px;text-transform:uppercase;">Order King • Enterprise Intelligence</div>
+        <div style="font-size:12px;font-weight:700;color:#f97316;letter-spacing:1px;text-transform:uppercase;">Order King | Enterprise Intelligence</div>
         <h1 style="font-size:26px;font-weight:800;margin:4px 0 0 0;color:#0f172a;">${report.title}</h1>
       </div>
       <div style="text-align:right;">
@@ -756,7 +756,7 @@ export class ReportingDocumentEngine {
 
     <div style="border-top:1px solid #e2e8f0;padding-top:16px;margin-top:40px;font-size:11px;color:#94a3b8;display:flex;justify-content:space-between;">
       <span>Order King Autonomous Business Operating System</span>
-      <span>Cryptographically Audited • Strictly Balanced Double-Entry Ledger</span>
+      <span>Cryptographically Audited | Strictly Balanced Double-Entry Ledger</span>
     </div>
   </div>
 </body>
@@ -820,7 +820,7 @@ export class ReportingDocumentEngine {
 
       if (section.notes && section.notes.length > 0) {
         for (const n of section.notes) {
-          lines.push(`> ℹ️ ${n}`);
+          lines.push(`> Note: ${n}`);
         }
         lines.push('');
       }

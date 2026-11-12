@@ -202,7 +202,7 @@ async function sendViaFast2SMS(
     try {
       const parsed = JSON.parse(errText);
       if (parsed.message) extra = `: ${Array.isArray(parsed.message) ? parsed.message.join(", ") : parsed.message}`;
-    } catch {}
+    } catch { }
     throw new Error(`Fast2SMS HTTP ${res.status}${extra || `: ${errText}`}`);
   }
 
@@ -469,36 +469,36 @@ export async function sendViaWhatsAppCloudApi(
     const templateName = process.env.WHATSAPP_OTP_TEMPLATE;
     const bodyPayload = templateName
       ? {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "template",
-          template: {
-            name: templateName,
-            language: { code: "en" },
-            components: [
-              {
-                type: "body",
-                parameters: [{ type: "text", text: otp }],
-              },
-              {
-                type: "button",
-                sub_type: "url",
-                index: "0",
-                parameters: [{ type: "text", text: otp }],
-              },
-            ],
-          },
-        }
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "template",
+        template: {
+          name: templateName,
+          language: { code: "en" },
+          components: [
+            {
+              type: "body",
+              parameters: [{ type: "text", text: otp }],
+            },
+            {
+              type: "button",
+              sub_type: "url",
+              index: "0",
+              parameters: [{ type: "text", text: otp }],
+            },
+          ],
+        },
+      }
       : {
-          messaging_product: "whatsapp",
-          recipient_type: "individual",
-          to: `91${cleanPhone}`,
-          type: "text",
-          text: {
-            body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
-          },
-        };
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: `91${cleanPhone}`,
+        type: "text",
+        text: {
+          body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
+        },
+      };
 
     const res = await fetch(
       `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
@@ -709,14 +709,14 @@ export async function dispatchBookingConfirmationTelecom(
     `*ORDERKING TRAVEL CONFIRMATION*\n` +
     `Hello *${params.customerName}*,\n` +
     `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED!\n\n` +
-    `🎫 PNR / Ticket: *${params.pnr}*\n` +
-    `✈️ Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
-    `📍 Route: ${params.origin} ➔ ${params.destination}\n` +
-    `🕒 Departure: ${params.departureTime}, ${params.travelDate}\n` +
-    `💳 Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
-    `📄 e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
-    `📲 Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
-    `GSTIN: 18AFXPH9838M1Z9 · Orderkingpay`;
+    `PNR / Ticket: *${params.pnr}*\n` +
+    `Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
+    `Route: ${params.origin} -> ${params.destination}\n` +
+    `Departure: ${params.departureTime}, ${params.travelDate}\n` +
+    `Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
+    `e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
+    `Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
+    `GSTIN: 18AFXPH9838M1Z9 | Orderkingpay`;
 
   const smsText =
     `OrderKing: Booking #${params.bookingId} (${params.serviceType}) CONFIRMED. ` +
@@ -770,11 +770,11 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
+        `[Telecom Gateway] WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
       );
     } catch (waErr: any) {
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
+        `[Telecom Gateway] WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
       );
     }
   }
@@ -831,12 +831,13 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (dltErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
       }
     }
 
     // Branch B: Fast2SMS Smart OTP / Dedicated Corridor
-    if (process.env.FAST2SMS_OTP_ID) {
+    const smartOtpDigits = (params.pnr.replace(/\D/g, "") || params.bookingId.replace(/\D/g, "")).slice(0, 6);
+    if (process.env.FAST2SMS_OTP_ID && smartOtpDigits.length > 0) {
       try {
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -853,7 +854,7 @@ export async function dispatchBookingConfirmationTelecom(
             body: JSON.stringify({
               otp_id: process.env.FAST2SMS_OTP_ID.trim().replace(/^["']|["']$/g, ""),
               mobile: cleanPhone,
-              otp: params.pnr.replace(/\D/g, "").slice(0, 6) || "123456",
+              otp: smartOtpDigits,
             }),
             signal: controller.signal,
           },
@@ -876,7 +877,7 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (smartErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
       }
     }
 
@@ -921,7 +922,7 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
     } catch (qErr: any) {
-      console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
+      console.warn(`[Telecom Gateway] Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
     }
   }
 
@@ -929,7 +930,7 @@ export async function dispatchBookingConfirmationTelecom(
   const fallbackNotice =
     "Telecom API credentials unconfigured in environment. Booking confirmation logged to audit trail.";
   console.log(
-    `[Telecom Gateway] ℹ️ ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
+    `[Telecom Gateway] ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
   );
 
   return {

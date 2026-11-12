@@ -32,8 +32,10 @@ export function generateScratchCard(
   trigger: ScratchTrigger,
   orderTotalPaise?: number,
 ): ScratchReward {
-  const seed = Date.now() % 100;
-  const id = `sc_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+  const buf = new Uint32Array(2);
+  crypto.getRandomValues(buf);
+  const seed = buf[0] % 100;
+  const id = `sc_${Date.now()}_${buf[1] % 1000}`;
   const unlockedAt = new Date().toISOString();
 
   // 1% chance: Bumper Prize - 1 Full Gram 24K Gold Coin
