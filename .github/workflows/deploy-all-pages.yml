@@ -53,7 +53,7 @@ jobs:
         run: |
           pnpm --filter orderking-customers run build
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            npx wrangler pages deploy orderking-customers/dist --project-name=orderking-customers --branch=main --commit-dirty=true
+            npx wrangler pages deploy orderking-customers/dist --config orderking-customers/wrangler.toml --project-name=orderking-customers --branch=main --commit-dirty=true
           else
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
@@ -64,7 +64,7 @@ jobs:
         run: |
           pnpm --filter orderking-riders run build
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            npx wrangler pages deploy orderking-riders/dist --project-name=orderking-riders --branch=main --commit-dirty=true
+            npx wrangler pages deploy orderking-riders/dist --config orderking-riders/wrangler.toml --project-name=orderking-riders --branch=main --commit-dirty=true
           else
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
@@ -75,7 +75,7 @@ jobs:
         run: |
           pnpm --filter orderking-partners run build
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            npx wrangler pages deploy orderking-partners/dist --project-name=orderking-partners --branch=main --commit-dirty=true
+            npx wrangler pages deploy orderking-partners/dist --config orderking-partners/wrangler.toml --project-name=orderking-partners --branch=main --commit-dirty=true
           else
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
@@ -86,7 +86,7 @@ jobs:
         run: |
           pnpm --filter HDmaster run build
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            npx wrangler pages deploy HDmaster/dist --project-name=orderking-hdmaster --branch=main --commit-dirty=true
+            npx wrangler pages deploy HDmaster/dist --config HDmaster/wrangler.toml --project-name=orderking-hdmaster --branch=main --commit-dirty=true
           else
             echo "Notice: CLOUDFLARE_API_TOKEN is not configured in GitHub Secrets. Cloudflare Pages git integration handles deployment directly."
           fi
