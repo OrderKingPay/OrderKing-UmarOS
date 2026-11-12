@@ -105,8 +105,8 @@ export function JoinFleetPage() {
       toast.success("Rider onboarding submitted. Verification in progress.");
     } catch (err: any) {
       console.warn("Rider onboarding submission error:", err);
-      setSubmittedSuccess(true);
-      toast.success("Registration recorded in fleet onboarding queue.");
+      setSubmittedSuccess(false);
+      toast.error(err?.message || "Failed to submit rider application. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -172,7 +172,7 @@ export function JoinFleetPage() {
                         to="/support"
                         className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-2.5 text-xs font-black text-black hover:bg-zinc-200 transition"
                       >
-                        Track Application Status ➔
+                        Track Application Status <ArrowRight className="size-3.5" />
                       </Link>
                       <button
                         type="button"
@@ -209,7 +209,7 @@ export function JoinFleetPage() {
                         required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="e.g. Ramesh Kumar"
+                        placeholder="Full name as per Aadhaar / DL"
                         className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                       />
                     </div>
@@ -224,7 +224,7 @@ export function JoinFleetPage() {
                           required
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder="e.g. +91 98765 43210"
+                          placeholder="10-digit WhatsApp mobile number"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                         />
                       </div>
@@ -306,19 +306,19 @@ export function JoinFleetPage() {
                           type="text"
                           value={idNumber}
                           onChange={(e) => setIdNumber(e.target.value)}
-                          placeholder="e.g. DL-XXXXXXXXXXXX"
+                          placeholder="DL-XXXXXXXXXXXX"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                         />
                       </div>
                       <div>
                         <label className="text-xs font-bold text-zinc-300 block mb-1">
-                          UPI ID for Daily Payouts (e.g. UPI VPA)
+                          UPI ID for Daily Payouts
                         </label>
                         <input
                           type="text"
                           value={upiId}
                           onChange={(e) => setUpiId(e.target.value)}
-                          placeholder="e.g. yourname@oksbi"
+                          placeholder="yourname@oksbi"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                         />
                       </div>
@@ -333,7 +333,7 @@ export function JoinFleetPage() {
                           type="text"
                           value={emergencyContactName}
                           onChange={(e) => setEmergencyContactName(e.target.value)}
-                          placeholder="e.g. Sunita Devi (Spouse/Parent)"
+                          placeholder="Next of kin full name"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                         />
                       </div>
@@ -346,7 +346,7 @@ export function JoinFleetPage() {
                           maxLength={10}
                           value={emergencyContactPhone}
                           onChange={(e) => setEmergencyContactPhone(e.target.value.replace(/\D/g, ""))}
-                          placeholder="e.g. 9876543210"
+                          placeholder="10-digit emergency mobile"
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition font-mono"
                         />
                       </div>
@@ -424,9 +424,9 @@ export function JoinFleetPage() {
               <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950 p-4 flex items-center justify-between text-xs text-zinc-400">
                 <span className="flex items-center gap-2">
                   <PhoneCall className="size-4 text-emerald-400" />
-                  Fleet Support Helpline
+                  Fleet Support Desk
                 </span>
-                <span className="font-mono font-bold text-white">1800-ORDER-RIDER</span>
+                <a href="tel:+919395065587" className="font-mono font-bold text-white hover:text-emerald-400 transition">+91 93950 65587</a>
               </div>
             </div>
           </div>

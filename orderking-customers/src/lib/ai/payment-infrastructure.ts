@@ -57,65 +57,7 @@ export interface PaymentWebhookPayload {
   timestamp: string;
 }
 
-export const INITIAL_CLIENT_INVOICES: ClientInvoiceRecord[] = [
-  {
-    id: "INV-2026-001",
-    clientName: "Royal Feast Cloud Kitchen",
-    clientEmail: "accounts@royalfeast.in",
-    projectName: "Sovereign POS & QR Billing Engine",
-    items: [
-      {
-        id: "ITEM-1",
-        description: "Turnkey POS & Kitchen Display System License",
-        quantity: 1,
-        unitPriceInr: 95000,
-        totalInr: 95000,
-      },
-      {
-        id: "ITEM-2",
-        description: "Cloud Kitchen WhatsApp Automated Alerts Integration",
-        quantity: 1,
-        unitPriceInr: 15000,
-        totalInr: 15000,
-      },
-    ],
-    subtotalInr: 110000,
-    taxInr: 0,
-    totalInr: 110000,
-    paymentMethod: "UPI_DIRECT",
-    status: "RECEIVED",
-    paymentLink: "upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=110000&cu=INR&tn=INV-2026-001",
-    qrPayload: "upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=110000&cu=INR",
-    issuedAt: new Date(Date.now() - 72 * 3600 * 1000).toISOString(),
-    paidAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
-    providerEventId: "UTR-HDFC-98214812",
-    reconciled: true,
-  },
-  {
-    id: "INV-2026-002",
-    clientName: "Bengaluru Logistics Tenders",
-    clientEmail: "ops@bengalurulogistics.com",
-    projectName: "Hyperlocal Geodesic Clustering Algorithm",
-    items: [
-      {
-        id: "ITEM-1",
-        description: "50% Advance Milestone: Geodesic Dispatch Architecture",
-        quantity: 1,
-        unitPriceInr: 74500,
-        totalInr: 74500,
-      },
-    ],
-    subtotalInr: 74500,
-    taxInr: 0,
-    totalInr: 74500,
-    paymentMethod: "UPI_DIRECT",
-    status: "ESCROW_LOCKED",
-    paymentLink: "upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=74500&cu=INR&tn=INV-2026-002",
-    qrPayload: "upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=74500&cu=INR",
-    issuedAt: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
-    reconciled: false,
-  },
-];
+export const INITIAL_CLIENT_INVOICES: ClientInvoiceRecord[] = [];
 
 export function verifyAndProcessWebhook(
   payload: PaymentWebhookPayload,

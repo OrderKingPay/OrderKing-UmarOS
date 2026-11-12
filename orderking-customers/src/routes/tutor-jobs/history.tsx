@@ -67,7 +67,7 @@ function TutorJobsHistoryPage() {
     try {
       const res = await releaseTutorEscrowFn({ data: { bookingId } });
       if (res?.success) {
-        toast.success(`🎉 Session verified complete! KingPay escrow released to ${tutorName}.`);
+        toast.success(`Session verified complete. KingPay escrow released to ${tutorName}.`);
         setClasses((prev) =>
           prev.map((c) =>
             c.id === bookingId
@@ -296,7 +296,9 @@ function TutorJobsHistoryPage() {
                           <span>
                             {cls.escrowStatus === "RELEASED"
                               ? "Escrow Settled & Released"
-                              : `Escrow Held: ₹${cls.amountInr || 499}`}
+                              : cls.amountInr != null && cls.amountInr > 0
+                                ? `Escrow Held: ₹${cls.amountInr}`
+                                : "Escrow Held"}
                           </span>
                         </span>
                       </div>
@@ -312,14 +314,16 @@ function TutorJobsHistoryPage() {
                             {releasingEscrowId === cls.id ? "Releasing..." : "Complete & Release Escrow"}
                           </button>
                         )}
-                        <a
-                          href={cls.meetingLink || `https://meet.orderking.in/tutor-${cls.id.slice(0, 8)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-purple-300 text-purple-900 hover:bg-purple-50 text-xs font-bold transition no-underline"
-                        >
-                          <span>Classroom Link</span>
-                        </a>
+                        {cls.meetingLink && (
+                          <a
+                            href={cls.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-purple-300 text-purple-900 hover:bg-purple-50 text-xs font-bold transition no-underline"
+                          >
+                            <span>Classroom Link</span>
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>

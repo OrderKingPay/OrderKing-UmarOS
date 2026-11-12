@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { CheckCircle2, Clock, AlertCircle, ShieldAlert, Sparkles, ChefHat, RefreshCw } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ShieldAlert, ShieldCheck, Sparkles, ChefHat, RefreshCw, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   calculateGraceTimeRemaining,
@@ -76,8 +76,8 @@ export function CancellationGraceWindow({
         data-testid="cancelled-refund-banner"
       >
         <div className="flex items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-md shadow-rose-500/30 text-2xl">
-            ⚡
+          <div className="flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-md shadow-rose-500/30">
+            <Zap className="size-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export function CancellationGraceWindow({
             </div>
           </div>
           <span className="text-xs font-mono font-black text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-lg">
-            Cooking 🍳
+            Preparing
           </span>
         </div>
       </div>
@@ -178,13 +178,13 @@ export function CancellationGraceWindow({
           <div>
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 text-xs font-extrabold text-amber-950 uppercase tracking-wide">
-                <span>⏱️</span>
+                <Clock className="size-3.5 text-amber-700" />
                 <span>60-Second Order Cancellation Grace Window</span>
               </span>
             </div>
             <p className="text-xs text-stone-600 mt-1 max-w-md">
               Changed your mind or placed by mistake? Cancel within the grace window for an
-              <span className="font-extrabold text-stone-900"> instant 100% refund</span>. standard fees, zero kitchen dispute.
+              <span className="font-extrabold text-stone-900"> instant 100% refund</span>. Zero cancellation fees, zero kitchen dispute.
             </p>
           </div>
         </div>
@@ -207,7 +207,7 @@ export function CancellationGraceWindow({
               </>
             ) : (
               <>
-                <span>⚡</span>
+                <Zap className="size-4" />
                 <span>Cancel Order (100% Refund)</span>
               </>
             )}
@@ -220,8 +220,8 @@ export function CancellationGraceWindow({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border-2 border-rose-300 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600 text-2xl">
-                ⚠️
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                <AlertCircle className="size-6" />
               </div>
               <div>
                 <h3 className="font-display text-lg font-black text-stone-900">
@@ -235,7 +235,7 @@ export function CancellationGraceWindow({
 
             <div className="rounded-2xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-950 space-y-1.5">
               <p className="font-bold flex items-center gap-1.5">
-                <span>🛡️</span>
+                <ShieldCheck className="size-4 text-amber-700" />
                 <span>OrderKing Cancellation Protection</span>
               </p>
               <p className="text-stone-700">

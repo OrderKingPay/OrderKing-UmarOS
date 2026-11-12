@@ -1,7 +1,7 @@
 import { MASTER_AI_OPERATING_CONTRACT, requiresHumanApproval } from "./master-ai-operating-contract.ts";
 import { MASTER_AI_TOOL_REGISTRY, type MasterAiToolSpec, type MasterAiToolName } from "./tool-registry.ts";
 import { requirePermission } from "../rbac.ts";
-import { appendAudit } from "../server/workspace.server.ts";
+import { appendAudit, nid } from "../server/workspace.server.ts";
 import { getSql } from "../../db.ts";
 import { getRecentCommits as getGithubCommits, getRepositoryStatus as getGithubStatus, inspectCi as inspectGithubCi, inspectFile as inspectGithubFile, searchCode as searchGithubCode } from "./github-read.server.ts";
 import {
@@ -276,13 +276,24 @@ export async function executeTool(
 
     case "reassign_order":
     case "reassign_rider": {
-      if (!id) throw new Error("reassign requires orderId");
+      const orderId = id;
+      const riderId = typeof args.riderId === "string" ? args.riderId.trim() : "";
+      if (!orderId) throw new Error(`${name} requires 'orderId' or 'id'`);
+      if (!riderId) throw new Error(`${name} requires 'riderId'`);
       requirePermission(ws.ctx, "modify_orders");
+      await q.getRider(ws.ctx, riderId);
+      await q.interveneOrder(ws, {
+        orderId,
+        action: "assign_rider",
+        riderId,
+        reason: String(args.reason || `Rider reassigned via Master AI (${name})`),
+      });
       return {
-        orderId: id,
-        action: "REASSIGN_REQUESTED",
+        orderId,
+        riderId,
+        action: "REASSIGNED",
+        status: "RIDER_ASSIGNED",
         reassignedAt: new Date().toISOString(),
-        note: "Dispatched to canonical matching engine.",
       };
     }
 
@@ -309,231 +320,219 @@ export async function executeTool(
       if (!id) throw new Error("restaurant_orders requires restaurant id");
       return q.listOrders(ws.ctx, { restaurantId: id, limit });
 
-    case "sync_restaurant_menu":
+    case "sync_restaurant_menu": {
       requirePermission(ws.ctx, "manage_cms");
-      return { restaurantId: id, status: "SYNCED", syncedAt: new Date().toISOString() };
+      const restId =
+        typeof args.restaurantId === "string" && args.restaurantId.trim()
+          ? args.restaurantId.trim()
+          : id;
+      if (!restId) throw new Error("sync_restaurant_menu requires 'restaurantId' or 'id'");
+      await q.getRestaurant(ws.ctx, restId);
+      const sql = await getSql();
+      const updatedRows = await sql.query<{ id: string }>(
+        `UPDATE restaurants SET updated_at = now() WHERE id = $1 AND org_id = $2 RETURNING id`,
+        [restId, ws.ctx.orgId],
+      );
+      if (updatedRows.length === 0) {
+        throw new Error(`Failed to persist menu sync for restaurant ${restId}`);
+      }
+      if (Array.isArray(args.menuItems) && args.menuItems.length > 0) {
+        for (const rawItem of args.menuItems as Array<Record<string, unknown>>) {
+          const itemName = typeof rawItem?.name === "string" ? rawItem.name.trim() : "";
+          const category = typeof rawItem?.category === "string" ? rawItem.category.trim() : "General";
+          const pricePaise = Number(rawItem?.pricePaise);
+          if (!itemName || !Number.isInteger(pricePaise) || pricePaise <= 0) {
+            throw new Error("Each menuItem requires a non-empty name and positive integer pricePaise");
+          }
+          const itemId = typeof rawItem?.id === "string" && rawItem.id.trim() ? rawItem.id.trim() : nid("mnu");
+          await sql.query(
+            `INSERT INTO menu_items (id, org_id, restaurant_id, category, name, price_paise, available, veg)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+             ON CONFLICT (id) DO UPDATE SET category = EXCLUDED.category, name = EXCLUDED.name, price_paise = EXCLUDED.price_paise, available = EXCLUDED.available, veg = EXCLUDED.veg`,
+            [itemId, ws.ctx.orgId, restId, category, itemName, pricePaise, rawItem?.available === false ? 0 : 1, rawItem?.veg === false ? 0 : 1],
+          );
+        }
+      }
+      const countRows = await sql.query<{ c: number }>(
+        `SELECT count(*)::int as c FROM menu_items WHERE restaurant_id = $1 AND org_id = $2`,
+        [restId, ws.ctx.orgId],
+      );
+      await appendAudit({
+        orgId: ws.ctx.orgId,
+        employeeId: ws.ctx.employeeId,
+        userId: ws.ctx.userId,
+        roleKey: ws.ctx.actingRoleKey,
+        action: "master_ai.sync_restaurant_menu",
+        targetType: "restaurant",
+        targetId: restId,
+        next: { itemsCount: countRows[0]?.c ?? 0 },
+        reason: String(args.reason || "Menu synchronization via Master AI"),
+      });
+      return {
+        restaurantId: restId,
+        itemsCount: countRows[0]?.c ?? 0,
+        status: "SYNCED",
+        syncedAt: new Date().toISOString(),
+      };
+    }
 
-    case "set_restaurant_online":
-      requirePermission(ws.ctx, "view_restaurants");
-      return { restaurantId: id, online: true, updatedAt: new Date().toISOString() };
+    case "set_restaurant_online": {
+      const restId =
+        typeof args.restaurantId === "string" && args.restaurantId.trim()
+          ? args.restaurantId.trim()
+          : id;
+      if (!restId) throw new Error("set_restaurant_online requires 'restaurantId' or 'id'");
+      const online = args.online !== false;
+      const reason = String(
+        args.reason || (online ? "Set restaurant online via Master AI" : "Set restaurant offline via Master AI"),
+      ).trim();
+      if (reason.length < 3) {
+        throw new Error("set_restaurant_online requires an audit reason of at least 3 characters");
+      }
+      const res = await q.setRestaurantStatus(ws, restId, online ? "ACTIVE" : "CLOSED", reason);
+      return {
+        restaurantId: res.id,
+        online: res.active,
+        status: res.status,
+        updatedAt: new Date().toISOString(),
+      };
+    }
 
     case "onboard_restaurant": {
       requirePermission(ws.ctx, "approve_restaurants");
-      const restaurantName = String(args.name || args.query || "New Partner Kitchen");
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const phone = String(args.phone || "9876543210");
-      const hours = String(args.hours || "10:00 - 23:00 (All Days)");
-      const commissionBps = typeof args.commissionBps === "number" ? args.commissionBps : 1000;
-      const zone = String(args.zone || "Karimganj Central / NE Hub");
-      const address = String(args.address || "Main Road, Karimganj, Assam");
-      const coverImage = String(
-        args.coverImage ||
-        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80"
-      );
-      const newRestId = `rst_${Date.now()}`;
-      const withImages = args.withImages !== false;
+      const restaurantName = typeof args.name === "string" ? args.name.trim() : "";
+      const cuisine = typeof args.cuisine === "string" ? args.cuisine.trim() : "";
+      const phoneRaw = typeof args.phone === "string" ? args.phone.replace(/\D/g, "") : "";
+      const address = typeof args.address === "string" ? args.address.trim() : "";
+      if (!restaurantName) throw new Error("onboard_restaurant requires explicit 'name'");
+      if (!cuisine) throw new Error("onboard_restaurant requires explicit 'cuisine'");
+      if (phoneRaw.length < 10) throw new Error("onboard_restaurant requires a valid 10-digit 'phone'");
+      if (!address) throw new Error("onboard_restaurant requires explicit 'address'");
 
-      // 1-Command Full Menu Generator (Auto-attached on onboarding)
-      const autoDishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG" as const,
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG" as const,
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG" as const,
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG" as const,
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG" as const,
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG" as const,
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80" : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
+      const commissionBps =
+        typeof args.commissionBps === "number" && Number.isInteger(args.commissionBps) && args.commissionBps >= 0 && args.commissionBps <= 3500
+          ? args.commissionBps
+          : ws.settings.commissionBps;
+      const sql = await getSql();
+      const requestedZone = typeof args.zoneId === "string" ? args.zoneId.trim() : typeof args.zone === "string" ? args.zone.trim() : null;
+      const zoneRows = await sql.query<{ id: string; city_id: string }>(
+        requestedZone
+          ? `SELECT id, city_id FROM zones WHERE org_id=$1 AND (id=$2 OR name ILIKE $2) LIMIT 1`
+          : `SELECT id, city_id FROM zones WHERE org_id=$1 AND status='ACTIVE' LIMIT 1`,
+        requestedZone ? [ws.ctx.orgId, requestedZone] : [ws.ctx.orgId],
+      );
+      const targetZone = zoneRows[0];
+      if (!targetZone) {
+        throw new Error("onboard_restaurant requires a valid active zone in PostgreSQL");
+      }
+
+      const newRestId = nid("rst");
+      const slug =
+        (restaurantName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "restaurant") +
+        "-" +
+        newRestId.slice(-6);
+      const phoneMasked = `XXXXXX${phoneRaw.slice(-4)}`;
+      const inserted = await sql.query<{ id: string }>(
+        `INSERT INTO restaurants (id, org_id, city_id, zone_id, name, slug, cuisine, address, phone_masked, kyc_status, payout_status, status, commission_bps, hours_json, data_mode)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'PENDING', 'PENDING', 'DRAFT', $10, $11, $12)
+         RETURNING id`,
+        [
+          newRestId,
+          ws.ctx.orgId,
+          targetZone.city_id,
+          targetZone.id,
+          restaurantName,
+          slug,
+          cuisine,
+          address,
+          phoneMasked,
+          commissionBps,
+          JSON.stringify(typeof args.hours === "object" && args.hours ? args.hours : {}),
+          ws.dataMode === "PRODUCTION" ? "PRODUCTION" : "ACTUAL",
+        ],
+      );
+      if (inserted.length === 0) {
+        throw new Error("Failed to insert restaurant into PostgreSQL");
+      }
+
+      let itemsCreated = 0;
+      if (Array.isArray(args.menuItems) && args.menuItems.length > 0) {
+        for (const rawItem of args.menuItems as Array<Record<string, unknown>>) {
+          const itemName = typeof rawItem?.name === "string" ? rawItem.name.trim() : "";
+          const category = typeof rawItem?.category === "string" ? rawItem.category.trim() : "General";
+          const pricePaise = Number(rawItem?.pricePaise);
+          if (!itemName || !Number.isInteger(pricePaise) || pricePaise <= 0) {
+            throw new Error("Each menuItem requires a non-empty name and positive integer pricePaise");
+          }
+          await sql.query(
+            `INSERT INTO menu_items (id, org_id, restaurant_id, category, name, price_paise, available, veg)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+            [nid("mnu"), ws.ctx.orgId, newRestId, category, itemName, pricePaise, 1, rawItem?.veg === false ? 0 : 1],
+          );
+          itemsCreated++;
+        }
+      }
+
+      await appendAudit({
+        orgId: ws.ctx.orgId,
+        employeeId: ws.ctx.employeeId,
+        userId: ws.ctx.userId,
+        roleKey: ws.ctx.actingRoleKey,
+        action: "master_ai.onboard_restaurant",
+        targetType: "restaurant",
+        targetId: newRestId,
+        next: { name: restaurantName, cityId: targetZone.city_id, zoneId: targetZone.id, status: "DRAFT" },
+        reason: String(args.reason || "Restaurant onboarded via Master AI"),
+      });
 
       return {
         restaurantId: newRestId,
         name: restaurantName,
         cuisine,
-        phone,
-        status: "ACTIVE",
-        onboardedAt: new Date().toISOString(),
+        phoneMasked,
+        cityId: targetZone.city_id,
+        zoneId: targetZone.id,
+        status: "DRAFT",
+        kycStatus: "PENDING",
         commissionBps,
-        operatingHours: hours,
-        zone,
         address,
-        coverImage,
-        payoutSchedule: "WEEKLY_WEDNESDAY",
-        menuStatus: "PUBLISHED_LIVE",
-        initialMenu: {
-          categoriesCount: 5,
-          dishesCount: autoDishes.length,
-          dishes: autoDishes,
-          hasRealisticImages: withImages,
-        },
-        note: "Successfully onboarded in 1 command via Master AI: full kitchen profile active, operating hours set, and live menu with authentic dish photography published.",
+        itemsCreated,
+        onboardedAt: new Date().toISOString(),
       };
     }
 
     case "generate_menu": {
       requirePermission(ws.ctx, "manage_cms");
-      const withImages = args.withImages !== false;
-      const cuisine = String(args.cuisine || "North Indian & Biryani");
-      const dishes = [
-        {
-          name: "Signature Chicken Dum Biryani",
-          category: "Biryani & Rice",
-          diet: "NONVEG",
-          pricePaise: 24000,
-          prepMinutes: 20,
-          description: "Slow-cooked aromatic basmati rice layered with spiced tender chicken, saffron, and crispy onions.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Paneer Butter Masala",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 18000,
-          prepMinutes: 15,
-          description: "Fresh cottage cheese cubes in a rich, buttery tomato cream gravy with fragrant kasuri methi.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Butter Naan (2 pcs)",
-          category: "Breads",
-          diet: "VEG",
-          pricePaise: 6000,
-          prepMinutes: 8,
-          description: "Traditional tandoor-baked leavened flatbread brushed with golden farm butter.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: true,
-        },
-        {
-          name: "Tandoori Chicken Full",
-          category: "Starters & Tandoor",
-          diet: "NONVEG",
-          pricePaise: 38000,
-          prepMinutes: 25,
-          description: "Whole chicken marinated overnight in Greek yogurt, Kashmiri chili, and roasted garam masala.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Dal Makhani",
-          category: "Main Course",
-          diet: "VEG",
-          pricePaise: 16000,
-          prepMinutes: 15,
-          description: "Slow-simmered black lentils and kidney beans enriched with dairy butter and fresh cream.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: false,
-        },
-        {
-          name: "Crispy Chicken Steamed Momos (6 pcs)",
-          category: "Starters & Snacks",
-          diet: "NONVEG",
-          pricePaise: 12000,
-          prepMinutes: 12,
-          description: "Delicate dumplings stuffed with seasoned minced chicken, served with spicy red chutney.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: true,
-          bestSeller: true,
-        },
-        {
-          name: "Gulab Jamun (2 pcs)",
-          category: "Desserts",
-          diet: "VEG",
-          pricePaise: 5000,
-          prepMinutes: 5,
-          description: "Warm golden milk-solid dumplings soaked in green cardamom and rose water sugar syrup.",
-          imageUrl: withImages
-            ? "https://images.unsplash.com/photo-1589119908995-c6837fa14d48?w=500&auto=format&fit=crop&q=80"
-            : null,
-          recommended: false,
-          bestSeller: false,
-        },
-      ];
+      const restId =
+        typeof args.restaurantId === "string" && args.restaurantId.trim()
+          ? args.restaurantId.trim()
+          : id;
+      if (!restId) throw new Error("generate_menu requires 'restaurantId' or 'id'");
+      if (!Array.isArray(args.menuItems) || args.menuItems.length === 0) {
+        throw new Error("generate_menu requires explicit 'menuItems' array — fabricated menus are disabled");
+      }
+      await q.getRestaurant(ws.ctx, restId);
+      const sql = await getSql();
+      let itemsCreated = 0;
+      for (const rawItem of args.menuItems as Array<Record<string, unknown>>) {
+        const itemName = typeof rawItem?.name === "string" ? rawItem.name.trim() : "";
+        const category = typeof rawItem?.category === "string" ? rawItem.category.trim() : "General";
+        const pricePaise = Number(rawItem?.pricePaise);
+        if (!itemName || !Number.isInteger(pricePaise) || pricePaise <= 0) {
+          throw new Error("Each menuItem requires a non-empty name and positive integer pricePaise");
+        }
+        await sql.query(
+          `INSERT INTO menu_items (id, org_id, restaurant_id, category, name, price_paise, available, veg)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [nid("mnu"), ws.ctx.orgId, restId, category, itemName, pricePaise, 1, rawItem?.veg === false ? 0 : 1],
+        );
+        itemsCreated++;
+      }
       return {
-        restaurantId: id || "rst_active",
-        cuisine,
-        categoriesCreated: 5,
-        itemsCreated: dishes.length,
-        dishes,
-        hasImages: withImages,
+        restaurantId: restId,
+        itemsCreated,
         status: "PUBLISHED_LIVE",
         updatedAt: new Date().toISOString(),
-        note: "Menu generated with authentic dish images, FSSAI diet tags, and realistic market pricing.",
       };
     }
 
@@ -545,24 +544,69 @@ export async function executeTool(
 
     case "onboard_rider": {
       requirePermission(ws.ctx, "approve_riders");
-      const riderName = String(args.name || args.query || "Rider Partner");
-      const phone = String(args.phone || "9876501234");
-      const vehicleType = String(args.vehicleType || "MOTORCYCLE");
-      const zone = String(args.zone || "Karimganj Central");
-      const upiId = String(args.upiId || `${riderName.toLowerCase().replace(/\s+/g, "")}@okaxis`);
-      const newRiderId = `rdr_${Date.now()}`;
+      const riderName = typeof args.name === "string" ? args.name.trim() : "";
+      const phoneRaw = typeof args.phone === "string" ? args.phone.replace(/\D/g, "") : "";
+      const vehicleType = typeof args.vehicleType === "string" ? args.vehicleType.trim() : "";
+      if (!riderName) throw new Error("onboard_rider requires explicit 'name'");
+      if (phoneRaw.length < 10) throw new Error("onboard_rider requires a valid 10-digit 'phone'");
+      if (!vehicleType) throw new Error("onboard_rider requires explicit 'vehicleType'");
+
+      const sql = await getSql();
+      const requestedZone = typeof args.zoneId === "string" ? args.zoneId.trim() : typeof args.zone === "string" ? args.zone.trim() : null;
+      const zoneRows = await sql.query<{ id: string; city_id: string }>(
+        requestedZone
+          ? `SELECT id, city_id FROM zones WHERE org_id=$1 AND (id=$2 OR name ILIKE $2) LIMIT 1`
+          : `SELECT id, city_id FROM zones WHERE org_id=$1 AND status='ACTIVE' LIMIT 1`,
+        requestedZone ? [ws.ctx.orgId, requestedZone] : [ws.ctx.orgId],
+      );
+      const targetZone = zoneRows[0];
+      if (!targetZone) {
+        throw new Error("onboard_rider requires a valid active zone in PostgreSQL");
+      }
+
+      const newRiderId = nid("rdr");
+      const phoneMasked = `XXXXXX${phoneRaw.slice(-4)}`;
+      const inserted = await sql.query<{ id: string }>(
+        `INSERT INTO riders (id, org_id, city_id, zone_id, name, phone_masked, vehicle, kyc_status, status, online, data_mode)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, 'PENDING', 'PENDING', 0, $8)
+         RETURNING id`,
+        [
+          newRiderId,
+          ws.ctx.orgId,
+          targetZone.city_id,
+          targetZone.id,
+          riderName,
+          phoneMasked,
+          vehicleType,
+          ws.dataMode === "PRODUCTION" ? "PRODUCTION" : "ACTUAL",
+        ],
+      );
+      if (inserted.length === 0) {
+        throw new Error("Failed to insert rider into PostgreSQL");
+      }
+
+      await appendAudit({
+        orgId: ws.ctx.orgId,
+        employeeId: ws.ctx.employeeId,
+        userId: ws.ctx.userId,
+        roleKey: ws.ctx.actingRoleKey,
+        action: "master_ai.onboard_rider",
+        targetType: "rider",
+        targetId: newRiderId,
+        next: { name: riderName, cityId: targetZone.city_id, zoneId: targetZone.id, kycStatus: "PENDING" },
+        reason: String(args.reason || "Rider onboarded via Master AI"),
+      });
+
       return {
         riderId: newRiderId,
         name: riderName,
-        phone,
+        phoneMasked,
         vehicleType,
-        zone,
-        kycStatus: "VERIFIED",
-        status: "ONLINE",
+        cityId: targetZone.city_id,
+        zoneId: targetZone.id,
+        kycStatus: "PENDING",
+        status: "PENDING",
         onboardedAt: new Date().toISOString(),
-        payoutMethod: "WEEKLY_WEDNESDAY_DIRECT_UPI",
-        upiId,
-        note: "Rider verified, KYC approved, and registered for weekly Wednesday settlements.",
       };
     }
 
@@ -605,14 +649,39 @@ export async function executeTool(
     case "get_support_tickets":
       return q.listTickets(ws.ctx);
 
-    case "create_support_case":
+    case "create_support_case": {
       requirePermission(ws.ctx, "manage_support");
+      const subject = String(args.notes || args.query || "").trim();
+      if (!subject) throw new Error("create_support_case requires 'notes' or 'query' subject");
+      const ticketId = nid("tkt");
+      const sql = await getSql();
+      const inserted = await sql.query<{ id: string }>(
+        `INSERT INTO tickets (id, org_id, city_id, queue, category, status, priority, subject, order_id, sla_minutes, data_mode)
+         VALUES ($1, $2, $3, $4, $5, 'OPEN', $6, $7, $8, $9, $10)
+         RETURNING id`,
+        [
+          ticketId,
+          ws.ctx.orgId,
+          ws.ctx.cityId,
+          String(args.queue || "customer"),
+          String(args.category || "order_issue"),
+          String(args.priority || "MEDIUM"),
+          subject,
+          id ?? null,
+          ws.settings.supportSlaMinutes,
+          ws.dataMode === "PRODUCTION" ? "PRODUCTION" : "ACTUAL",
+        ],
+      );
+      if (inserted.length === 0) {
+        throw new Error("Failed to insert support ticket into PostgreSQL");
+      }
       return {
-        ticketId: `tkt_${Date.now()}`,
+        ticketId,
         status: "OPEN",
-        subject: args.notes ?? "Automated ticket",
+        subject,
         createdAt: new Date().toISOString(),
       };
+    }
 
     // -----------------------------------------------------------------------
     // Finance & Payments
@@ -654,11 +723,25 @@ export async function executeTool(
 
     case "issue_refund": {
       requirePermission(ws.ctx, "issue_refunds");
+      if (!id) throw new Error("issue_refund requires 'id' or 'orderId'");
+      const amountPaise = Number(args.amountPaise);
+      if (!Number.isInteger(amountPaise) || amountPaise <= 0) {
+        throw new Error("issue_refund requires positive integer 'amountPaise'");
+      }
+      const reason = String(args.reason || "").trim();
+      if (reason.length < 3) {
+        throw new Error("issue_refund requires an explicit 'reason' of at least 3 characters");
+      }
+      await q.interveneOrder(ws, {
+        orderId: id,
+        action: "refund",
+        amountPaise,
+        reason,
+      });
       return {
         orderId: id,
-        refundId: `ref_${Date.now()}`,
-        amountPaise: Number(args.amountPaise || 0),
-        status: "EXECUTED",
+        amountPaise,
+        status: "REFUND_PENDING",
         executedAt: new Date().toISOString(),
       };
     }
@@ -1219,17 +1302,11 @@ export async function executeTool(
 
     case "optimize_affiliate_alliances": {
       requirePermission(ws.ctx, "manage_promotions");
+      const promos = await q.listPromotions(ws.ctx);
       return {
-        status: "OPTIMIZED",
+        status: "SYNCED_FROM_DATABASE",
         timestamp: new Date().toISOString(),
-        alliances: [
-          { partner: "Amazon", ctr: "18.4%", commissionRate: "8.5%", status: "ACTIVE" },
-          { partner: "Flipkart", ctr: "16.1%", commissionRate: "7.0%", status: "ACTIVE" },
-          { partner: "Meesho", ctr: "21.3%", commissionRate: "10.0%", status: "ACTIVE" },
-          { partner: "HPCL Fuel", ctr: "14.7%", commissionRate: "₹3.50/Litre cashback", status: "ACTIVE" },
-          { partner: "IndianOil", ctr: "15.2%", commissionRate: "₹3.50/Litre cashback", status: "ACTIVE" },
-        ],
-        projectedMonthlyPassiveRevenuePaise: 8500000,
+        alliances: Array.isArray(promos) ? promos : [],
       };
     }
 
@@ -1407,7 +1484,7 @@ export async function executeTool(
           cloudKitchenPrepBufferMs: 180000,
         },
         autonomousAdvancedvisionLevel: "TIER_1_FULLY_AUTONOMOUS_ZERO_EMPLOYEE_DEPENDENCY",
-        operationalVerdict: "OrderKing Advanced-App Ecosystem Operating at High_Performance Peak Stability, Zero Liability & Maximum EBITDA Yield.",
+        operationalVerdict: "OrderKing ecosystem health check complete with real-time database and queue checks.",
       };
     }
 
@@ -1534,7 +1611,7 @@ export async function executeTool(
         ],
         rbiLspComplianceGuarantee: "100_PERCENT_LSP_COMPLIANT_ZERO_OWNER_LIABILITY",
         zeroLeakageAudit: "CONFIRMED_ALL_LEAD_TOKENS_RECONCILED",
-        verdict: "Affiliate monetization running at peak 1000x efficiency with zero owner liability, zero capital risk, and maximized HPCL/IOCL/BPCL fuel yields.",
+        verdict: "Affiliate partner offer metrics audited for HPCL/IOCL/BPCL and lending integrations.",
       };
     }
 
@@ -1690,7 +1767,7 @@ export async function executeTool(
           orderVolumeSurgeMultiplier: vaultSummary.competitiveTier1Comparison.orderKingVolumeMultiplier,
           partnerLoyaltyIndex: "98.7%_RESTAURANTS_PRIORITIZE_ORDERKING",
         },
-        verdict: "Breakage, overpayments, and glitch float are 100% retained in the founder's account with zero disbursement to partners. Indian GST liability is legally minimized to near-zero via Section 16 & 17 ITC offsetting, retaining maximum cash working capital for the founder. Restaurants enjoy +13.3% higher take-home profit than Tier-1 Legacy Market Leader, creating an unbreakable competitive moat.",
+        verdict: "Breakage, overpayments, and suspense float tracked separately under GST Section 16 & 17 ITC offset rules with 15% merchant commission posture.",
       };
     }
 
@@ -1776,7 +1853,7 @@ export async function executeTool(
           rbiLspCompliance: "RBI_DIGITAL_LENDING_GUIDELINES_ZERO_CREDIT_RISK",
           participantMutualBenefitIndex: "100_PERCENT_PARTICIPANTS_FINANCIALLY_BETTER_OFF",
         },
-        verdict: "The 12-stream profit engine generates 10x–High_Performance higher sustainable founder free cash flow than competitors by completely eliminating corporate bloatware and activating high-margin fintech, ad, and affiliate flywheels, while guaranteeing that restaurants, riders, and customers earn or save significantly more than on legacy 30% aggregators.",
+        verdict: "12-stream profit projection calculates combined food delivery, fintech, ad, and affiliate yields alongside partner/rider unit economics.",
       };
     }
 
@@ -1918,44 +1995,33 @@ export async function executeTool(
         cravingMood = "Gourmet Pizza, Tandoori Platters, Curries & Naan";
       }
 
-      const recommendations = [
-        {
-          dishName: "Royal Dum Mutton Biryani",
-          restaurant: "Grand Karimganj Kitchen",
-          cuisine: "Mughlai",
-          cravingScore: 98,
-          pricePaise: 38000,
-          prepAndDeliveryMinutes: 28,
-          whyRecommended: `Matches your high ${mealContext} preference and 4.9-star rating in your zone.`,
-        },
-        {
-          dishName: "Butter Chicken & Garlic Naan Combo",
-          restaurant: "Spice Symphony",
-          cuisine: "North Indian",
-          cravingScore: 95,
-          pricePaise: 32000,
-          prepAndDeliveryMinutes: 24,
-          whyRecommended: "Trending dish with 85% repeat ordering rate right now.",
-        },
-        {
-          dishName: "Warm Gulab Jamun (2 pcs)",
-          restaurant: "Sweet Bengal Delights",
-          cuisine: "Desserts",
-          cravingScore: 91,
-          pricePaise: 6000,
-          prepAndDeliveryMinutes: 15,
-          whyRecommended: "Perfect sweet pairing based on your previous order endings.",
-        },
-      ];
+      const sql = await getSql();
+      const rows = await sql.query<{
+        dish_name: string;
+        restaurant_name: string;
+        cuisine: string | null;
+        price_paise: number;
+      }>(
+        `SELECT m.name AS dish_name, r.name AS restaurant_name, r.cuisine, m.price_paise
+         FROM menu_items m
+         JOIN restaurants r ON r.id = m.restaurant_id AND r.org_id = m.org_id
+         WHERE m.org_id = $1 AND m.available = 1 AND r.status = 'ACTIVE'
+         ORDER BY r.created_at DESC, m.price_paise ASC
+         LIMIT 5`,
+        [ws.ctx.orgId],
+      );
 
       return {
         customerId,
         timestamp: now.toISOString(),
         mealContext,
         cravingMood,
-        weatherSignal: "Clear, Warm Evening",
-        conversionPredictionMultiplier: "3.6x higher CTR vs standard catalog",
-        recommendations,
+        recommendations: rows.map((row) => ({
+          dishName: row.dish_name,
+          restaurant: row.restaurant_name,
+          cuisine: row.cuisine || "",
+          pricePaise: Number(row.price_paise) || 0,
+        })),
       };
     }
 
@@ -2226,14 +2292,14 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "14 synchronized revenue streams producing High_Performance higher free cash flow than Tier-1 Legacy Market Leader with 0ms 2G offline-first caching and zero legal/tax liability.",
+        result: "14 revenue stream projections calculated with 2G offline-first caching.",
       };
     }
 
     case "autonomous_High_Performance_profit_and_addiction_director": {
       requirePermission(ws.ctx, "view_finance");
       const profitSummary = calculateMasterProfitEngine({
-        periodLabel: "High_Performance Profit & Addiction Run-Rate (Barak Valley Ecosystem)",
+        periodLabel: "Profit & Retention Run-Rate Model (Barak Valley Ecosystem)",
         monthlyDeliveredOrders: 50_000,
         grossMerchandiseValuePaise: 15_000_000_00,
         activeRestaurantsCount: 220,
@@ -2296,7 +2362,7 @@ export async function executeTool(
           zeroOrderLossGuarantee: "100% VERIFIED",
           offlineQueueSyncLatencyMs: 450,
         },
-        result: "18 synchronized legal revenue streams producing High_Performance higher free cash flow than Tier-1 Legacy Market Leader, radical 1-tap customer ease, and instant voice soundbox announcements.",
+        result: "18 revenue stream projections modeled alongside 1-tap checkout and merchant soundbox alerts.",
       };
     }
 
@@ -2421,7 +2487,7 @@ export async function executeTool(
           },
           movingBillboardFleet: "10 delivery riders with high-visibility QR boxes act as 24/7 moving street billboards across town",
         },
-        verdict: "Over ₹3.74 Crore in genuine cloud and government subsidies identified. WhatsApp Status viral loop and micro-budget Meta geofencing activated to dominate local mobile feeds High_Performance faster than competitors.",
+        verdict: "Cloud and government grant eligibility catalog compiled alongside Meta geofencing configuration.",
       };
     }
 
@@ -2446,7 +2512,7 @@ export async function executeTool(
         academicKeynoteInvitations: [
           { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
           { institution: "NIT Silchar", topic: "Outperforming Legacy Aggregators: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
-          { institution: "Assam University", topic: "Zero-Loss Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
+          { institution: "Assam University", topic: "Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
           { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
           { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Advanced-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
           { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },

@@ -167,7 +167,7 @@ export function generateWhatsAppConciergeUrl(inquiry: {
     `*OrderKing Travel & Aviation Concierge Inquiry*\n` +
     `• *Request ID:* ${reqId}\n` +
     `• *Service:* ${inquiry.categoryTitle}\n` +
-    `• *Route:* ${inquiry.origin} ➔ ${inquiry.destination}\n` +
+    `• *Route:* ${inquiry.origin} to ${inquiry.destination}\n` +
     `• *Departure Date:* ${inquiry.travelDate}\n` +
     `• *Guests / Pax:* ${inquiry.passengers}\n` +
     (inquiry.clientName ? `• *Guest Name:* ${inquiry.clientName}\n` : "") +
@@ -175,7 +175,7 @@ export function generateWhatsAppConciergeUrl(inquiry: {
     (inquiry.specialRequests ? `• *Special Notes:* ${inquiry.specialRequests}\n` : "") +
     `\nPlease connect me with the Senior Charter Specialist for verified wholesale quotes and aircraft/suite availability.`;
 
-  return `https://wa.me/919876543210?text=${encodeURIComponent(String(text ?? ""))}`;
+  return `https://wa.me/919395065587?text=${encodeURIComponent(String(text ?? ""))}`;
 }
 
 export interface CarrierQuote {
@@ -223,7 +223,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     carrierCode: "VIP-AIR",
     carrierName: "OrderKing Aviation Network",
     serviceNumber: "CITATION-XLS",
-    routeDisplay: "New Delhi (DEL) ➔ Mumbai (BOM)",
+    routeDisplay: "New Delhi (DEL) - Mumbai (BOM)",
     originCode: "DEL",
     destinationCode: "BOM",
     departureTime: "On-Demand Flexible",
@@ -242,7 +242,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     carrierCode: "IATA",
     carrierName: "IATA GDS Wholesale Benchmark",
     serviceNumber: "IATA-GDS-EST",
-    routeDisplay: "New Delhi (DEL) ➔ Mumbai (BOM)",
+    routeDisplay: "New Delhi (DEL) - Mumbai (BOM)",
     originCode: "DEL",
     destinationCode: "BOM",
     departureTime: "Multi-Carrier Daily",
@@ -299,7 +299,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
     carrierCode: "INTR",
     carrierName: "IntrCity SmartBus",
     serviceNumber: "Volvo Multi-Axle AC Sleeper",
-    routeDisplay: "Bengaluru (Majestic) ➔ Hyderabad (Gachibowli)",
+    routeDisplay: "Bengaluru (Majestic) - Hyderabad (Gachibowli)",
     originCode: "BLR",
     destinationCode: "HYD",
     departureTime: "21:30",

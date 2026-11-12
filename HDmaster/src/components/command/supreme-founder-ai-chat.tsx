@@ -199,7 +199,7 @@ const TRENDING_DISCOVERY_ITEMS = [
   { label: "🎯 Acquire 5 High-Paying Clients Now", query: "Find 5 high-paying client prospects and draft zero-commission pitches" },
   { label: "💼 Scan $80+/hr Remote Contracts", query: "Scan high-paying $80+/hr remote software contracts and generate Upwork bids" },
   { label: "⚡ Scaffold Hospital ERP System", query: "Scaffold a complete Sribhumi hospital ERP system with React 19, database schema, and live preview" },
-  { label: "🌐 Universal Platform Enforcer (GitHub/WhatsApp/Dominant Legacy Aggregator)", query: "Connect and integrate external platforms to force task execution with zero data leak" },
+  { label: "🌐 External Platform Connector (GitHub/WhatsApp)", query: "Connect and integrate external platforms to execute configured workflows" },
   { label: "🎬 4K Video Studio (9:16 & 16:9)", query: "Create and edit fastest 4K video commercial with realistic voiceover and auto subtitles" },
   { label: "🧹 Clean & Purge Storage Bloat", query: "purge_trigger" },
 ];
@@ -333,8 +333,8 @@ function RadialOrbVisualizer({
         ctx.strokeStyle = isSpeaking
           ? `rgba(245, 158, 11, ${0.4 - r * 0.1})`
           : isListening
-          ? `rgba(6, 182, 212, ${0.4 - r * 0.1})`
-          : `rgba(16, 185, 129, ${0.3 - r * 0.1})`;
+            ? `rgba(6, 182, 212, ${0.4 - r * 0.1})`
+            : `rgba(16, 185, 129, ${0.3 - r * 0.1})`;
         ctx.lineWidth = 1.5;
         ctx.setLineDash([4 + r * 3, 6 + r * 4]);
         ctx.beginPath();
@@ -342,7 +342,7 @@ function RadialOrbVisualizer({
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Orbiting Ring Nodes
+        // Orbiting Satellite Nodes
         const numNodes = 3 + r;
         for (let n = 0; n < numNodes; n++) {
           const angle = (Math.PI * 2 / numNodes) * n;
@@ -385,8 +385,8 @@ function RadialOrbVisualizer({
         const wave = isSpeaking
           ? Math.sin(theta * 6 + phase * 4) * 4.5 + Math.cos(theta * 4 - phase * 3) * 2.5
           : isListening
-          ? Math.sin(theta * 5 + phase * 3) * 3
-          : Math.sin(theta * 3 + phase) * 1.5;
+            ? Math.sin(theta * 5 + phase * 3) * 3
+            : Math.sin(theta * 3 + phase) * 1.5;
         const rad = sphereRadius + wave;
         const x = cx + Math.cos(theta) * rad;
         const y = cy + Math.sin(theta) * rad;
@@ -427,13 +427,12 @@ function RadialOrbVisualizer({
       />
       <div className="absolute -bottom-2 text-center pointer-events-none">
         <span
-          className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm ${
-            isSpeaking
-              ? "bg-amber-500/20 text-amber-300 border-amber-400/50 animate-pulse"
-              : isListening
+          className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm ${isSpeaking
+            ? "bg-amber-500/20 text-amber-300 border-amber-400/50 animate-pulse"
+            : isListening
               ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 animate-pulse"
               : "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
-          }`}
+            }`}
         >
           {isSpeaking ? "AI Speaking" : isListening ? "Listening..." : "Voice Ready"}
         </span>
@@ -511,9 +510,8 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             size="sm"
             variant={activeTab === "preview" ? "primary" : "outline"}
             onClick={() => setActiveTab("preview")}
-            className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "preview" ? "bg-purple-600 text-white" : "text-slate-300"
-            }`}
+            className={`h-7 px-2.5 text-[11px] font-bold ${activeTab === "preview" ? "bg-purple-600 text-white" : "text-slate-300"
+              }`}
           >
             <Eye className="size-3 mr-1" />
             Live Preview
@@ -523,9 +521,8 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             size="sm"
             variant={activeTab === "code" ? "primary" : "outline"}
             onClick={() => setActiveTab("code")}
-            className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "code" ? "bg-purple-600 text-white" : "text-slate-300"
-            }`}
+            className={`h-7 px-2.5 text-[11px] font-bold ${activeTab === "code" ? "bg-purple-600 text-white" : "text-slate-300"
+              }`}
           >
             <Code2 className="size-3 mr-1" />
             Codebase ({blueprint.files.length} Files)
@@ -535,9 +532,8 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
             size="sm"
             variant={activeTab === "handoff" ? "primary" : "outline"}
             onClick={() => setActiveTab("handoff")}
-            className={`h-7 px-2.5 text-[11px] font-bold ${
-              activeTab === "handoff" ? "bg-purple-600 text-white" : "text-slate-300"
-            }`}
+            className={`h-7 px-2.5 text-[11px] font-bold ${activeTab === "handoff" ? "bg-purple-600 text-white" : "text-slate-300"
+              }`}
           >
             <ShieldCheck className="size-3 mr-1" />
             Client Handoff
@@ -616,11 +612,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                         <span className="font-mono font-bold text-emerald-400">#{item.token}</span>
                         <span className="font-medium text-slate-200">{item.name}</span>
                         <Badge
-                          className={`text-[9px] ${
-                            item.status === "IN_CONSULTATION"
-                              ? "bg-amber-500/20 text-amber-300"
-                              : "bg-slate-800 text-slate-400"
-                          }`}
+                          className={`text-[9px] ${item.status === "IN_CONSULTATION"
+                            ? "bg-amber-500/20 text-amber-300"
+                            : "bg-slate-800 text-slate-400"
+                            }`}
                         >
                           {item.status}
                         </Badge>
@@ -772,11 +767,10 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
                 key={f.filename}
                 type="button"
                 onClick={() => setSelectedFile(f.filename)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono transition shrink-0 ${
-                  selectedFile === f.filename
-                    ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-surface-2"
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono transition shrink-0 ${selectedFile === f.filename
+                  ? "bg-purple-600/30 text-purple-300 border border-purple-500/50 font-bold"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-surface-2"
+                  }`}
               >
                 <FileCode className="size-3" />
                 <span>{f.filename}</span>
@@ -908,7 +902,7 @@ function PlatformConnectorCard({
   };
 }) {
   const [fetchedPlatforms, setFetchedPlatforms] = useState<ConnectedPlatform[]>([]);
-  
+
   useEffect(() => {
     if (!data.allPlatforms) {
       getUniversalPlatformsFn().then((res) => {
@@ -999,11 +993,10 @@ function PlatformConnectorCard({
             key={p.id}
             type="button"
             onClick={() => setSelectedId(p.id)}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
-              p.id === activePlatform.id
-                ? "bg-cyan-600 text-white shadow-sm"
-                : "bg-surface-2 text-slate-400 hover:text-slate-200 hover:bg-surface-2/80"
-            }`}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${p.id === activePlatform.id
+              ? "bg-cyan-600 text-white shadow-sm"
+              : "bg-surface-2 text-slate-400 hover:text-slate-200 hover:bg-surface-2/80"
+              }`}
           >
             <span className="size-1.5 rounded-full bg-emerald-400" />
             <span>{p.name.split(" ")[0]}</span>
@@ -1228,11 +1221,10 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 setAspectRatio(item.id);
                 playAudioTone("ping");
               }}
-              className={`p-1.5 rounded-lg text-center transition flex flex-col items-center justify-center border ${
-                aspectRatio === item.id
-                  ? "bg-purple-600/30 border-purple-400 text-white shadow-sm"
-                  : "bg-surface-2 border-border/50 text-slate-400 hover:text-slate-200"
-              }`}
+              className={`p-1.5 rounded-lg text-center transition flex flex-col items-center justify-center border ${aspectRatio === item.id
+                ? "bg-purple-600/30 border-purple-400 text-white shadow-sm"
+                : "bg-surface-2 border-border/50 text-slate-400 hover:text-slate-200"
+                }`}
             >
               <span className="text-[11px] font-bold">{item.label}</span>
               <span className="text-[8.5px] opacity-70 truncate max-w-full">{item.sub}</span>
@@ -1251,9 +1243,8 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 key={d}
                 type="button"
                 onClick={() => setDuration(d)}
-                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition shrink-0 ${
-                  duration === d ? "bg-amber-500 text-black" : "bg-surface-2 text-slate-400 hover:text-slate-200"
-                }`}
+                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition shrink-0 ${duration === d ? "bg-amber-500 text-black" : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                  }`}
               >
                 {d}
               </button>
@@ -1275,11 +1266,10 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 key={res.id}
                 type="button"
                 onClick={() => setResolution(res.id)}
-                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition flex-1 text-center ${
-                  resolution === res.id
-                    ? "bg-cyan-600 text-white"
-                    : "bg-surface-2 text-slate-400 hover:text-slate-200"
-                }`}
+                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition flex-1 text-center ${resolution === res.id
+                  ? "bg-cyan-600 text-white"
+                  : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                  }`}
               >
                 {res.label}
               </button>
@@ -1330,9 +1320,8 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 setSpeed(s);
                 if (videoRef) videoRef.playbackRate = s;
               }}
-              className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${
-                speed === s ? "bg-white text-black" : "bg-surface-2 text-slate-400 hover:text-white"
-              }`}
+              className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold ${speed === s ? "bg-white text-black" : "bg-surface-2 text-slate-400 hover:text-white"
+                }`}
             >
               {s}x
             </button>
@@ -1348,18 +1337,16 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
             <button
               type="button"
               onClick={() => setVoiceover("young_female_aria")}
-              className={`p-1 rounded font-medium text-left ${
-                voiceover === "young_female_aria" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
-              }`}
+              className={`p-1 rounded font-medium text-left ${voiceover === "young_female_aria" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
+                }`}
             >
               👩 Aria (Young Female)
             </button>
             <button
               type="button"
               onClick={() => setVoiceover("executive_nova")}
-              className={`p-1 rounded font-medium text-left ${
-                voiceover === "executive_nova" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
-              }`}
+              className={`p-1 rounded font-medium text-left ${voiceover === "executive_nova" ? "bg-purple-600/40 text-purple-200 border border-purple-400" : "text-slate-400"
+                }`}
             >
               ✨ Nova (Executive)
             </button>
@@ -1510,9 +1497,8 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
                     key={d}
                     type="button"
                     onClick={() => setSettings((prev) => ({ ...prev, thinkingDepth: d }))}
-                    className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${
-                      settings.thinkingDepth === d ? "bg-purple-600 text-white" : "bg-black/40 text-slate-400 hover:text-white"
-                    }`}
+                    className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${settings.thinkingDepth === d ? "bg-purple-600 text-white" : "bg-black/40 text-slate-400 hover:text-white"
+                      }`}
                   >
                     {d === "sovereign_ultra" ? "Ultra" : d}
                   </button>
@@ -1535,9 +1521,8 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
               <button
                 type="button"
                 onClick={() => setSettings((prev) => ({ ...prev, autoDuplexTurnTaking: !prev.autoDuplexTurnTaking }))}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${
-                  settings.autoDuplexTurnTaking ? "bg-emerald-600 text-white" : "bg-black/40 text-slate-400"
-                }`}
+                className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${settings.autoDuplexTurnTaking ? "bg-emerald-600 text-white" : "bg-black/40 text-slate-400"
+                  }`}
               >
                 {settings.autoDuplexTurnTaking ? "ENABLED" : "OFF"}
               </button>
@@ -1583,9 +1568,8 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
               <button
                 type="button"
                 onClick={() => setSettings((prev) => ({ ...prev, autoCleanOnStartup: !prev.autoCleanOnStartup }))}
-                className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${
-                  settings.autoCleanOnStartup ? "bg-emerald-600 text-white" : "bg-black/40 text-slate-400"
-                }`}
+                className={`px-2 py-0.5 rounded text-[9px] font-bold transition ${settings.autoCleanOnStartup ? "bg-emerald-600 text-white" : "bg-black/40 text-slate-400"
+                  }`}
               >
                 {settings.autoCleanOnStartup ? "ACTIVE" : "OFF"}
               </button>
@@ -1716,7 +1700,7 @@ function SmartCleanerCard({
 // Autonomous Section Separator & Standalone App Exporter Card
 function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }) {
   const [fetchedModules, setFetchedModules] = useState<SeparableModule[]>([]);
-  
+
   useEffect(() => {
     if (!data.modules) {
       getSeparableModulesFn().then((res) => {
@@ -1801,11 +1785,10 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
             key={m.id}
             type="button"
             onClick={() => setSelectedModuleId(m.id)}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition ${
-              m.id === activeModule.id
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "bg-surface-2 text-slate-400 hover:text-slate-200"
-            }`}
+            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition ${m.id === activeModule.id
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "bg-surface-2 text-slate-400 hover:text-slate-200"
+              }`}
           >
             {m.name.split(" ")[0]} {m.name.split(" ")[1] || ""}
           </button>
@@ -2038,7 +2021,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
             <span className="text-[11px] text-zinc-400 font-mono block">Zero surge · 15-min delivery</span>
           </div>
           <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
-            <span className="font-bold text-amber-400 block">Pan-India Outside Zone</span>
+            <span className="font-bold text-amber-400 block">👑 Pan-India Outside Zone</span>
             <p className="text-zinc-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
             <span className="text-[11px] text-zinc-400 font-mono block">Section 79 IT Act Compliant</span>
           </div>
@@ -2276,20 +2259,20 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
           </div>
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">AI Engine Active</Badge>
         </div>
-        
+
         <div className="rounded-lg bg-surface-2 p-2 border border-border flex items-center justify-center min-h-[160px] overflow-hidden bg-black">
           {data.type === "image" && mediaUrl ? (
-             <img loading="lazy" src={mediaUrl} alt={promptText} className="max-w-full max-h-[260px] object-contain rounded" />
+            <img loading="lazy" src={mediaUrl} alt={promptText} className="max-w-full max-h-[260px] object-contain rounded" />
           ) : data.type === "video" && mediaUrl ? (
-             <video src={mediaUrl} controls loop muted autoPlay className="w-full max-h-[260px] rounded" />
+            <video src={mediaUrl} controls loop muted autoPlay className="w-full max-h-[260px] rounded" />
           ) : (
-             <div className="flex flex-col items-center gap-2 text-muted">
-               <Film className="size-10 text-purple-400" />
-               <span className="text-[10px]">Asset rendered and cached in Media Vault</span>
-             </div>
+            <div className="flex flex-col items-center gap-2 text-muted">
+              <Film className="size-10 text-purple-400" />
+              <span className="text-[10px]">Asset rendered and cached in Media Vault</span>
+            </div>
           )}
         </div>
-        
+
         <div className="text-[11px] text-slate-300 italic">"{promptText}"</div>
 
         <div className="flex flex-wrap gap-2 pt-1">
@@ -2334,7 +2317,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
           </div>
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">100% Protected</Badge>
         </div>
-        
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Total Cache Footprint:</span>
@@ -2351,10 +2334,10 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         </div>
 
         <div className="rounded bg-surface-2/80 p-2 text-[10px] text-slate-300 border border-border/60">
-           <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
-             <ShieldCheck className="size-3"/> System Guarantee:
-           </span>
-           <span className="ml-1">Persistent records, authenticated sessions, and system blueprints remain protected.</span>
+          <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
+            <ShieldCheck className="size-3" /> System Guarantee:
+          </span>
+          <span className="ml-1">Persistent records, authenticated sessions, and system blueprints remain protected.</span>
         </div>
 
         <div className="flex gap-2 pt-1">
@@ -2549,7 +2532,7 @@ function FounderWorkHub({
       badge: "ENTERPRISE INTEGRATIONS",
       badgeColor: "border-cyan-500/40 text-cyan-300 bg-cyan-500/10",
       title: "🌐 Task 6: Universal App & Platform Orchestrator",
-      objective: "Directly integrate with GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Shopify, and King Pay to execute tasks with zero data leak and automatic rollback.",
+      objective: "Connect with configured GitHub, Upwork, WhatsApp, Shopify, and King Pay integrations.",
       deliverables: [
         "Connected 8 platforms with sub-50ms RPC latency.",
         "Enforces automated task execution within HMAC-SHA256 sandbox.",
@@ -2797,21 +2780,20 @@ function FounderWorkHub({
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize whitespace-nowrap transition ${
-                selectedCategory === cat ? "bg-[#2F2F2F] text-white shadow-sm" : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold capitalize whitespace-nowrap transition ${selectedCategory === cat ? "bg-[#2F2F2F] text-white shadow-sm" : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               {cat === "platforms"
                 ? "🌐 Platforms"
                 : cat === "video"
-                ? "🎬 4K Video"
-                : cat === "separate"
-                ? "📦 Separate Apps"
-                : cat === "settings"
-                ? "⚙️ Settings"
-                : cat === "cleaning"
-                ? "🧹 Cleaning"
-                : cat}
+                  ? "🎬 4K Video"
+                  : cat === "separate"
+                    ? "📦 Separate Apps"
+                    : cat === "settings"
+                      ? "⚙️ Settings"
+                      : cat === "cleaning"
+                        ? "🧹 Cleaning"
+                        : cat}
             </button>
           ))}
         </div>
@@ -3471,7 +3453,7 @@ export function PremiumFounderAiChat({
     if (recognitionRef.current) {
       try {
         recognitionRef.current.abort();
-      } catch {}
+      } catch { }
     }
 
     const recognition = new SpeechRecognition();
@@ -3522,7 +3504,7 @@ export function PremiumFounderAiChat({
     if (recognitionRef.current) {
       try {
         recognitionRef.current.abort();
-      } catch {}
+      } catch { }
       setIsListening(false);
     }
   };
@@ -3573,7 +3555,7 @@ export function PremiumFounderAiChat({
           const liveCustom = await systemMasterController.executeFounderLiveCustomization(text);
           if (liveCustom.matched) {
             liveCustomizationNote = `\n\n---\n✅ **UMAR AI Live Platform Customization Executed**:\n${liveCustom.summary}`;
-            toast.success(`UMAR AI Applied Setting: ${liveCustom.summary}`);
+            toast.success(`👑 UMAR AI Applied Setting: ${liveCustom.summary}`);
           }
         } catch (customErr) {
           console.warn("[ai-chat] Live customization check warning:", customErr);
@@ -3685,15 +3667,15 @@ export function PremiumFounderAiChat({
         prev.map((m) =>
           m.id === aiMsgId
             ? {
-                ...m,
-                text: finalStreamedText,
-                language: detectedLanguage,
-                modelUsed: finalModelUsed,
-                executionSteps,
-                actionCard,
-                mediaCard,
-                jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
-              }
+              ...m,
+              text: finalStreamedText,
+              language: detectedLanguage,
+              modelUsed: finalModelUsed,
+              executionSteps,
+              actionCard,
+              mediaCard,
+              jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
+            }
             : m
         )
       );
@@ -3720,12 +3702,12 @@ export function PremiumFounderAiChat({
         prev.map((m) =>
           m.id === aiMsgId
             ? {
-                ...m,
-                text: "I couldn't reach the AI service. Please check your network connection and API key configuration in Settings.",
-                modelUsed: "sovereign-ultra" as any,
-                executionSteps: [],
-                jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
-              }
+              ...m,
+              text: "I couldn't reach the AI service. Please check your network connection and API key configuration in Settings.",
+              modelUsed: "sovereign-ultra" as any,
+              executionSteps: [],
+              jumpCards: matchedJumpCards.length > 0 ? matchedJumpCards : m.jumpCards,
+            }
             : m
         )
       );
@@ -3766,7 +3748,7 @@ export function PremiumFounderAiChat({
       setSystemHealth(100);
       playAudioTone("chime");
       const mb = (result.freedBytes / (1024 * 1024)).toFixed(1);
-      toast.success(`🧹 High_Performance Clean Completed! Freed ${mb} MB of temporary bloat. System health 100% optimal.`);
+      toast.success(`Cache clean completed. Freed ${mb} MB of temporary storage.`);
     }, 700);
   };
 
@@ -3779,7 +3761,7 @@ export function PremiumFounderAiChat({
     searchFilter.trim() === ""
       ? true
       : p.title.toLowerCase().includes(searchFilter.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchFilter.toLowerCase())
+      p.category.toLowerCase().includes(searchFilter.toLowerCase())
   );
 
   return (
@@ -3855,7 +3837,7 @@ export function PremiumFounderAiChat({
               onClick={() => setIsOrderKingSuiteOpen(true)}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
             >
-              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> Order King Suite
+              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> 👑 Order King Suite
             </Button>
             <Button
               variant="ghost"
@@ -4076,11 +4058,10 @@ export function PremiumFounderAiChat({
                         setIsSettingsModalOpen(true);
                       }
                     }}
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border transition shrink-0 ${
-                      isConnected
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 cursor-default"
-                        : "bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20 cursor-pointer"
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border transition shrink-0 ${isConnected
+                      ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 cursor-default"
+                      : "bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20 cursor-pointer"
+                      }`}
                     title={
                       isConnected
                         ? `API ID: ${currentRecord.realApiId} · Latency: ${currentRecord.measuredLatencyMs}ms`
@@ -4088,9 +4069,8 @@ export function PremiumFounderAiChat({
                     }
                   >
                     <span
-                      className={`size-1.5 rounded-full ${
-                        isConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
-                      }`}
+                      className={`size-1.5 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
+                        }`}
                     />
                     <span>{isConnected ? "CONNECTED" : "CONFIG REQUIRED"}</span>
                   </button>
@@ -4107,11 +4087,10 @@ export function PremiumFounderAiChat({
                 setActiveTab("chat");
                 playAudioTone("ping");
               }}
-              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition ${
-                activeTab === "chat"
-                  ? "bg-[#2F2F2F] text-white shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition ${activeTab === "chat"
+                ? "bg-[#2F2F2F] text-white shadow-sm"
+                : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               Chat
             </button>
@@ -4121,11 +4100,10 @@ export function PremiumFounderAiChat({
                 setActiveTab("work");
                 playAudioTone("ping");
               }}
-              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition flex items-center gap-1.5 ${
-                activeTab === "work"
-                  ? "bg-[#2F2F2F] text-amber-300 shadow-sm"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
+              className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition flex items-center gap-1.5 ${activeTab === "work"
+                ? "bg-[#2F2F2F] text-amber-300 shadow-sm"
+                : "text-slate-400 hover:text-slate-200"
+                }`}
             >
               <Plus className="size-3 text-amber-400" />
               <span>Work</span>
@@ -4160,7 +4138,7 @@ export function PremiumFounderAiChat({
               variant="ghost"
               onClick={() => setIsPlatformsModalOpen(true)}
               className="h-8 px-2.5 rounded-full text-[12px] font-medium text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 transition-colors hidden md:flex items-center gap-1.5"
-              title="Universal Platform Enforcer (GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram)"
+              title="External Platform Integrations (GitHub, Upwork, WhatsApp, Google, AWS, Telegram)"
             >
               <Globe className="size-3.5" />
               <span>Platforms</span>
@@ -4218,9 +4196,8 @@ export function PremiumFounderAiChat({
                 playAudioTone("ping");
                 toast.info(voiceEnabled ? "Voice output muted" : "Voice output enabled");
               }}
-              className={`size-9 p-0 rounded-full transition-colors ${
-                voiceEnabled ? "text-amber-400 bg-amber-400/10" : "text-slate-400 hover:text-slate-200 hover:bg-[#2F2F2F]"
-              }`}
+              className={`size-9 p-0 rounded-full transition-colors ${voiceEnabled ? "text-amber-400 bg-amber-400/10" : "text-slate-400 hover:text-slate-200 hover:bg-[#2F2F2F]"
+                }`}
               title={voiceEnabled ? "Mute realistic voice" : "Enable realistic voice"}
             >
               {voiceEnabled ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
@@ -4261,9 +4238,8 @@ export function PremiumFounderAiChat({
                     <Button
                       size="icon"
                       onClick={isListening ? stopListening : startListening}
-                      className={`h-14 w-14 rounded-full transition-all ${
-                        isListening ? "bg-emerald-500 hover:bg-emerald-400 animate-pulse text-black" : "bg-[#2F2F2F] text-white hover:bg-[#3F3F3F]"
-                      }`}
+                      className={`h-14 w-14 rounded-full transition-all ${isListening ? "bg-emerald-500 hover:bg-emerald-400 animate-pulse text-black" : "bg-[#2F2F2F] text-white hover:bg-[#3F3F3F]"
+                        }`}
                     >
                       {isListening ? <Mic className="size-6" /> : <MicOff className="size-6" />}
                     </Button>
@@ -4326,7 +4302,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsPlatformsModalOpen(true)}
                       className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-sky-500/20 text-sky-300 hover:text-sky-200 border border-sky-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
-                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram"
+                      title="External Platform Integrations (GitHub, Upwork, WhatsApp, Google, AWS, Telegram)"
                     >
                       <Globe className="size-3 text-sky-400" />
                       <span>App Integrations</span>
@@ -4437,11 +4413,10 @@ export function PremiumFounderAiChat({
                           type="button"
                           variant="ghost"
                           onClick={() => setIsThinkEnabled(!isThinkEnabled)}
-                          className={`h-8 rounded-full px-3 text-[13px] font-medium hidden sm:flex items-center transition ${
-                            isThinkEnabled
-                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
-                              : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
-                          }`}
+                          className={`h-8 rounded-full px-3 text-[13px] font-medium hidden sm:flex items-center transition ${isThinkEnabled
+                            ? "bg-purple-500/20 text-purple-300 border border-purple-500/40"
+                            : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
+                            }`}
                           title="Toggle Deep Reasoning"
                         >
                           <Brain className="size-3.5 mr-1.5" />
@@ -4453,9 +4428,8 @@ export function PremiumFounderAiChat({
                           variant="ghost"
                           size="icon"
                           onClick={isListening ? stopListening : startListening}
-                          className={`size-9 rounded-full shrink-0 ${
-                            isListening ? "bg-cyan-500/20 text-cyan-400 animate-pulse" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
-                          }`}
+                          className={`size-9 rounded-full shrink-0 ${isListening ? "bg-cyan-500/20 text-cyan-400 animate-pulse" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
+                            }`}
                           title="Voice input"
                         >
                           <Mic className="size-4" />
@@ -4529,7 +4503,7 @@ export function PremiumFounderAiChat({
                                       onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "image" })}
                                       className="cursor-pointer relative"
                                     >
-                                      <img loading="lazy"                                         src={att.url}
+                                      <img loading="lazy" src={att.url}
                                         alt={att.name}
                                         className="w-32 h-24 object-cover group-hover:scale-105 transition-transform"
                                       />
@@ -4592,7 +4566,7 @@ export function PremiumFounderAiChat({
                                         onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "image" })}
                                         className="cursor-pointer relative"
                                       >
-                                        <img loading="lazy"                                           src={att.url}
+                                        <img loading="lazy" src={att.url}
                                           alt={att.name}
                                           className="w-36 h-28 object-cover group-hover:scale-105 transition-transform"
                                         />
@@ -4634,7 +4608,7 @@ export function PremiumFounderAiChat({
                               <div className="mt-4 w-full max-w-lg rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-950/20 to-[#171717] overflow-hidden shadow-2xl">
                                 <div className="relative group aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
                                   {m.mediaCard.type === "image" ? (
-                                    <img loading="lazy"                                       src={m.mediaCard.url}
+                                    <img loading="lazy" src={m.mediaCard.url}
                                       alt={m.mediaCard.prompt}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 cursor-pointer"
                                       onClick={() => setLightboxMedia({ url: m.mediaCard!.url, title: m.mediaCard!.prompt, type: "image" })}
@@ -4775,7 +4749,7 @@ export function PremiumFounderAiChat({
                       type="button"
                       onClick={() => setIsPlatformsModalOpen(true)}
                       className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-sky-500/20 text-sky-300 hover:text-sky-200 border border-sky-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
-                      title="Universal Platform Enforcer: Integrate & force work on GitHub, Upwork, WhatsApp, Dominant Legacy Aggregators, Google, AWS, Telegram"
+                      title="External Platform Integrations (GitHub, Upwork, WhatsApp, Google, AWS, Telegram)"
                     >
                       <Globe className="size-3 text-sky-400" />
                       <span>App Integrations</span>
@@ -4884,9 +4858,8 @@ export function PremiumFounderAiChat({
                           type="button"
                           variant="ghost"
                           onClick={() => setIsThinkEnabled(!isThinkEnabled)}
-                          className={`h-8 rounded-full px-3 text-[13px] font-medium hidden sm:flex items-center transition ${
-                            isThinkEnabled ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
-                          }`}
+                          className={`h-8 rounded-full px-3 text-[13px] font-medium hidden sm:flex items-center transition ${isThinkEnabled ? "bg-purple-500/20 text-purple-300 border border-purple-500/40" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
+                            }`}
                         >
                           <Brain className="size-3.5 mr-1.5" />
                           Think
@@ -4897,9 +4870,8 @@ export function PremiumFounderAiChat({
                           variant="ghost"
                           size="icon"
                           onClick={isListening ? stopListening : startListening}
-                          className={`w-9 h-9 rounded-full shrink-0 ${
-                            isListening ? "bg-cyan-500/20 text-cyan-400 animate-pulse" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
-                          }`}
+                          className={`w-9 h-9 rounded-full shrink-0 ${isListening ? "bg-cyan-500/20 text-cyan-400 animate-pulse" : "text-slate-400 hover:text-slate-200 hover:bg-[#3F3F3F]"
+                            }`}
                         >
                           <Mic className="size-4" />
                         </Button>
@@ -5130,7 +5102,7 @@ export function PremiumFounderAiChat({
             </div>
             <div className="w-full flex-1 flex items-center justify-center bg-black/90 p-2 overflow-auto max-h-[80vh]">
               {lightboxMedia.type === "image" ? (
-                <img loading="lazy"                   src={lightboxMedia.url}
+                <img loading="lazy" src={lightboxMedia.url}
                   alt={lightboxMedia.title}
                   className="max-w-full max-h-[75vh] object-contain rounded-lg"
                 />

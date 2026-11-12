@@ -54,7 +54,7 @@ export async function logGeospatialTelemetry(payload: TelemetryPayload) {
       );
     }
   } catch (err: any) {
-    console.error("High_Performance Telemetry Error:", err.message);
+    console.error("Geospatial Telemetry Error:", err.message);
     // Suppress error in production so pinging doesn't fail the app
   }
 

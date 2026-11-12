@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   Receipt,
   Download,
@@ -15,6 +16,7 @@ import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import { useRealKingPayWallet } from "@/lib/hooks/use-real-kingpay-wallet";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { getKingpayLedger } from "@/lib/server/kingpay";
 
 interface OrderKingPassbookReceiptsProps {
   className?: string;
@@ -37,32 +39,13 @@ export function OrderKingPassbookReceipts({
 }: OrderKingPassbookReceiptsProps) {
   const { walletBalancePaise } = useRealKingPayWallet();
   const { user } = useCurrentUserState();
-  const [entries, setEntries] = useState<LedgerEntry[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    try {
-      if (typeof window !== "undefined") {
-        const raw = window.localStorage.getItem("orderking_authentic_ledger_rows_v2");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed)) {
-            // Strict Fintech Audit: Sanitize any synthetic train receipts, fake refund credits, or fabricated records
-            const sanitized = parsed.filter((e: LedgerEntry) => {
-              const memo = (e.memo || "").toLowerCase();
-              if (memo.includes("mock") || memo.includes("synthetic") || memo.includes("fake") || memo.includes("ok-tr-")) {
-                return false;
-              }
-              return true;
-            });
-            setEntries(sanitized);
-          }
-        }
-      }
-    } catch {
-      // safe fallback
-    }
-  }, []);
+  const ledgerQuery = useQuery({
+    queryKey: ["kingpay_ledger", user?.id],
+    queryFn: () => getKingpayLedger(),
+    enabled: Boolean(user?.id),
+  });
+  const entries: LedgerEntry[] = Array.isArray(ledgerQuery.data) ? ledgerQuery.data : [];
 
   const handleDownloadStatement = () => {
     try {

@@ -100,7 +100,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
           {
             label: "Problem Statement",
             value:
-              "Multinational delivery aggregators (Dominant Legacy Aggregators) impose 25-35% commission markups on local small restaurants, while charging customers high delivery fees. In Tier-2/3 towns of Assam like Karimganj, small dhabas and home kitchens cannot afford these markups, causing 80% to remain offline.",
+              "Third-party delivery aggregators charge 25-35% commissions alongside delivery fees, making online ordering unaffordable for many small kitchens and home cooks in Tier-2/3 towns.",
           },
           {
             label: "Innovative Solution",
@@ -199,7 +199,7 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
         sectionTitle: "Seed Fund Justification",
         fields: [
           { label: "Target Market Size", value: "North-East India Tier-2/3 food delivery and local logistics market estimated at ₹1,400 Crore annually." },
-          { label: "Direct Competitor Analysis", value: "Dominant Legacy Aggregators suffer from high delivery partner churn (due to low pay) and merchant rebellion (due to 30% cuts). OrderKing solves both with fair pay and direct merchant pricing." },
+          { label: "Market Gap Analysis", value: "High aggregator commissions (25-35%) reduce merchant margins and rider earnings; OrderKing uses transparent partner and courier pricing." },
           { label: "Capital Allocation", value: "₹8L for rider safety & delivery fleet gear, ₹6L for server scaling & GPS infrastructure, ₹6L for working capital & merchant POS tablets." },
         ],
       },
@@ -382,13 +382,13 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       scenes: [
         {
           timestamp: "0:00 - 0:05",
-          visual: "Creator holds two phones showing same restaurant menu: Dominant Legacy Aggregator at ₹320 vs OrderKing at ₹220.",
+          visual: "Side-by-side comparison of dine-in menu pricing vs typical marked-up delivery pricing.",
           audioScript: "Stop! If you order food online in Karimganj, check this out right now.",
         },
         {
           timestamp: "0:05 - 0:15",
           visual: "Zoom into screen comparison showing exact dine-in rates on OrderKing.",
-          audioScript: "Dominant Legacy Aggregators charge ₹320 for the exact same Biryani, but OrderKing gives it to you for ₹220 — original restaurant price!",
+          audioScript: "Check menu price parity directly on OrderKing — same item price as in-store.",
         },
         {
           timestamp: "0:15 - 0:25",
@@ -454,7 +454,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   ],
   whatsAppStatusViralCopy: {
     headline: "Just won 10mg Real 24K Gold on OrderKing! 🪙",
-    body: "I just ordered hot Dum Biryani from Karimganj Kitchen at exact restaurant price (no Dominant Legacy Aggregator markups) and scratched my King Reward to win 24K Gold! Order yours now: https://orderking.in",
+    body: "Ordered fresh Biryani from a local kitchen at restaurant menu prices on OrderKing: https://orderking.in",
     statusText: "Ordered on OrderKing Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
   },
 };

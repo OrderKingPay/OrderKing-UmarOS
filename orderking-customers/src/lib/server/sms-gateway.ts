@@ -597,7 +597,7 @@ export async function dispatchOtpSms(
         console.warn(`[SMS Gateway] WhatsApp API failed: ${waErr?.message}`);
       }
     } else {
-      console.log(`[SMS Gateway] 📲 WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct SMS gateway channel.`);
+      console.log(`[SMS Gateway] WhatsApp channel selected for +91-${cleanPhone}. API unconfigured, falling back to direct SMS gateway channel.`);
     }
 
     return {
@@ -625,7 +625,7 @@ export async function dispatchOtpSms(
   const availableProviders = getAvailableSmsProviders();
   if (availableProviders.length === 0) {
     const notice = "SMS gateway unconfigured. Resilient fallback OTP verification active.";
-    console.warn(`[SMS Gateway] ⚠️ OTP verification active. (Recipient: +91-${cleanPhone}, OTP: [${otp}])`);
+    console.warn(`[SMS Gateway] Fallback OTP verification active. (Recipient: +91-${cleanPhone}, OTP: [${otp}])`);
     return {
       success: true,
       provider: "resilient_fallback",
@@ -746,13 +746,13 @@ export async function dispatchBookingConfirmationTelecom(
     `*ORDERKING TRAVEL CONFIRMATION*\n` +
     `Hello *${params.customerName}*,\n` +
     `Your ${params.serviceType} booking *#${params.bookingId}* is CONFIRMED!\n\n` +
-    `🎫 PNR / Ticket: *${params.pnr}*\n` +
-    `✈️ Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
-    `📍 Route: ${params.origin} ➔ ${params.destination}\n` +
-    `🕒 Departure: ${params.departureTime}, ${params.travelDate}\n` +
-    `💳 Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
-    `📄 e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
-    `📲 Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
+    `PNR / Ticket: *${params.pnr}*\n` +
+    `Carrier: ${params.carrierName} ${params.serviceNumber ? `(${params.serviceNumber})` : ""}\n` +
+    `Route: ${params.origin} to ${params.destination}\n` +
+    `Departure: ${params.departureTime}, ${params.travelDate}\n` +
+    `Amount Paid: ₹${totalInr} (KingPay Verified)\n` +
+    `e-Ticket / PDF Voucher: ${pdfVoucherUrl}\n\n` +
+    `Live Trip Tracking: https://orderkingpay.com/travel/trips?id=${params.bookingId}\n` +
     `GSTIN: 18AFXPH9838M1Z9 · Orderkingpay`;
 
   const smsText =
@@ -807,11 +807,11 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
+        `[Telecom Gateway] WhatsApp Cloud API returned non-OK status: ${waRes.status}. Triggering fail-closed fallback to Fast2SMS DLT/SMS corridor.`,
       );
     } catch (waErr: any) {
       console.warn(
-        `[Telecom Gateway] ⚠️ WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
+        `[Telecom Gateway] WhatsApp dispatch transient failure: ${waErr?.message || waErr}. Fallback to Fast2SMS SMS corridor.`,
       );
     }
   }
@@ -868,7 +868,7 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (dltErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS DLT route failed: ${dltErr?.message || dltErr}`);
       }
     }
 
@@ -913,7 +913,7 @@ export async function dispatchBookingConfirmationTelecom(
           };
         }
       } catch (smartErr: any) {
-        console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
+        console.warn(`[Telecom Gateway] Fast2SMS Smart OTP failed: ${smartErr?.message || smartErr}`);
       }
     }
 
@@ -958,7 +958,7 @@ export async function dispatchBookingConfirmationTelecom(
         };
       }
     } catch (qErr: any) {
-      console.warn(`[Telecom Gateway] ⚠️ Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
+      console.warn(`[Telecom Gateway] Fast2SMS Quick Route failed: ${qErr?.message || qErr}`);
     }
   }
 
@@ -966,7 +966,7 @@ export async function dispatchBookingConfirmationTelecom(
   const fallbackNotice =
     "Telecom API credentials unconfigured in environment. Booking confirmation logged to audit trail.";
   console.log(
-    `[Telecom Gateway] ℹ️ ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
+    `[Telecom Gateway] ${fallbackNotice} (PNR: ${params.pnr}, Recipient: +91-${cleanPhone}, Voucher: ${pdfVoucherUrl})`,
   );
 
   return {

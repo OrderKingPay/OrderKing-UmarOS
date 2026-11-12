@@ -88,7 +88,7 @@ function CartPage() {
             OrderKing Foods is not yet active in {location.cityName || "your region"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
-            Food delivery is currently restricted to active operational hubs. Enjoy standard fee UPI and nationwide bill payments on KingPay!
+            Food delivery is currently limited to active operational zones. Use 0% fee UPI and bill payments on KingPay.
           </p>
           <Button asChild className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
             <Link to="/king-pay">Open KingPay</Link>
@@ -154,8 +154,8 @@ function CartPage() {
           {!items.length ? (
             /* EMPTY CART STATE */
             <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/60 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-8 sm:p-12 text-center shadow-md space-y-5">
-              <div className="size-20 rounded-3xl bg-gradient-to-br from-amber-400/20 via-yellow-400/15 to-amber-500/10 border border-amber-400/40 flex items-center justify-center text-4xl shadow-sm mx-auto">
-                
+              <div className="size-20 rounded-3xl bg-gradient-to-br from-amber-400/20 via-yellow-400/15 to-amber-500/10 border border-amber-400/40 flex items-center justify-center text-amber-600 shadow-sm mx-auto">
+                <ShoppingBag className="size-9" />
               </div>
               <div className="space-y-1.5">
                 <h2 className="font-display text-xl sm:text-2xl font-black text-zinc-900 dark:text-zinc-50">
@@ -289,7 +289,7 @@ function CartPage() {
                   <input
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
-                    placeholder="Enter coupon code (e.g. LOCAL40)"
+                    placeholder="Enter coupon code"
                     aria-label={t("cart.coupon")}
                     className="h-9 w-full rounded-lg bg-transparent px-3 text-xs font-mono font-bold uppercase tracking-wider text-slate-900 placeholder:text-slate-400 focus:outline-none"
                   />
@@ -300,18 +300,6 @@ function CartPage() {
                     {t("cart.apply") || "APPLY"}
                   </button>
                 </form>
-
-                {/* Quick Tap Coupon */}
-                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-1">
-                  <button
-                    type="button"
-                    onClick={() => applyPromoCode("LOCAL40")}
-                    className="shrink-0 flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
-                  >
-                    <Tag className="size-3 text-emerald-600" />
-                    <span>LOCAL40 • Flat ₹40 OFF</span>
-                  </button>
-                </div>
 
                 {quote.data?.promoName && (
                   <div className="flex items-center justify-between rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-200">

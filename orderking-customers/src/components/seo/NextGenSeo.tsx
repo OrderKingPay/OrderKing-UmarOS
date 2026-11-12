@@ -26,12 +26,14 @@ export function NextGenSeo({ config }: { config: any }) {
     : `Best Food Delivery in ${city} | OrderKing`;
 
   const dynamicDescription = isRestaurant
-    ? `Order food online from ${restaurantName}. Fast 30-min food delivery near me, live order tracking, discounts and best offers on OrderKing.`
-    : `Order from top restaurants in ${city}. Get fast delivery, exclusive deals, and premium perks with King Pass.`;
+    ? `Order food online from ${restaurantName}. Live order tracking and partner menu pricing on OrderKing.`
+    : `Order food from restaurants in ${city} with direct menu pricing and live tracking on OrderKing.`;
 
   const dynamicKeywords = isRestaurant
-    ? `${restaurantName}, ${restaurantName} menu, ${restaurantName} online order, food delivery near me, order food online near me, restaurants near me, 30 min food delivery, OrderKing`
-    : `food delivery near me, order food online, best food delivery, restaurants near me, food delivery in ${city}, OrderKing`;
+    ? `${restaurantName}, ${restaurantName} menu, ${restaurantName} online order, food delivery near me, order food online near me, restaurants near me, OrderKing`
+    : `food delivery near me, order food online, restaurants near me, food delivery in ${city}, OrderKing`;
+
+  const supportTelephone = config?.support?.whatsappNumber || "+91-9395065587";
 
   const schema = {
     "@context": "https://schema.org",
@@ -43,9 +45,9 @@ export function NextGenSeo({ config }: { config: any }) {
               "name": restaurantName,
               "url": currentUrl,
               "image": config?.brand?.ogImageUrl || "https://orderking.in/logo.jpg",
-              "telephone": "+91-9999999999",
+              "telephone": supportTelephone,
               "priceRange": "₹₹",
-              "servesCuisine": "Indian, Fast Food, Multi-Cuisine",
+              "servesCuisine": "Indian, Multi-Cuisine",
               "currenciesAccepted": "INR",
               "address": {
                 "@type": "PostalAddress",
@@ -74,14 +76,14 @@ export function NextGenSeo({ config }: { config: any }) {
         "name": isRestaurant ? restaurantName : "OrderKing Local Delivery",
         "image": config?.brand?.ogImageUrl || "https://orderking.in/logo.jpg",
         "url": currentUrl,
-        "telephone": "+91-9999999999",
+        "telephone": supportTelephone,
         "priceRange": "₹₹",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": city,
           "addressCountry": "IN"
         },
-        "servesCuisine": "Indian, Fast Food, Global, Local"
+        "servesCuisine": "Indian, Regional, Local"
       },
       {
         "@type": "WebSite",
@@ -90,21 +92,6 @@ export function NextGenSeo({ config }: { config: any }) {
           "@type": "SearchAction",
           "target": "https://orderking.in/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
-        }
-      },
-      {
-        "@type": "Product",
-        "name": "King Pass",
-        "description": "Priority Food Delivery and Premium Perks across India.",
-        "brand": {
-          "@type": "Brand",
-          "name": "OrderKing"
-        },
-        "offers": {
-          "@type": "Offer",
-          "priceCurrency": "INR",
-          "price": "199",
-          "availability": "https://schema.org/InStock"
         }
       }
     ]

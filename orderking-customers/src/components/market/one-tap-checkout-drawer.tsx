@@ -149,7 +149,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </div>
           </div>
           <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">
-            ~25 Mins
+            {quoteQuery.isLoading ? "Calculating..." : quote ? "Live Quote" : "Standard Delivery"}
           </span>
         </div>
 
@@ -216,7 +216,9 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               <span className="text-[10px] text-stone-400 font-normal">(Direct Chef Dispatch)</span>
             </span>
             <div className="text-right">
-              {deliveryFeePaise === 0 ? (
+              {quoteQuery.isLoading ? (
+                <span className="text-[11px] font-medium text-stone-500">Calculating...</span>
+              ) : quote && deliveryFeePaise === 0 ? (
                 <span className="inline-flex items-center gap-1 text-[10.5px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.2 rounded shadow-2xs">
                   <Sparkles className="size-2 text-emerald-600" />
                   FREE
@@ -244,26 +246,26 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </span>
           </div>
 
-          {/* 4. Platform Fee (Itemized Standard Fee) */}
+          {/* 4. Platform Fee */}
           <div className="flex items-center justify-between text-xs bg-emerald-50/70 p-2 rounded-xl border border-emerald-200/60">
             <div className="flex items-center gap-1.5">
               <Crown className="size-3 text-emerald-700 shrink-0" />
               <div>
                 <span className="font-black text-emerald-950 text-xs block">OrderKing Platform Fee</span>
-                <span className="text-[10px] text-emerald-700 font-medium">Competitors charge ₹9–₹12 extra</span>
+                <span className="text-[10px] text-emerald-700 font-medium">Itemized platform service charge</span>
               </div>
             </div>
             <span className="font-mono font-black text-emerald-800 bg-emerald-200/60 px-2 py-0.5 rounded text-xs">
-              ₹0.00 standard fee
+              {platformFeePaise === 0 ? "₹0.00" : formatPaise(platformFeePaise, { locale })}
             </span>
           </div>
 
-          {/* 5. Royal Savings (Coupons & Gold pass) */}
+          {/* 5. Savings (Coupons & Offers) */}
           {savingsPaise > 0 && (
             <div className="flex items-center justify-between text-xs bg-gradient-to-r from-emerald-500/10 via-teal-500/15 to-emerald-500/10 p-2 rounded-xl border border-emerald-300">
               <span className="font-black text-emerald-900 flex items-center gap-1.5">
                 <Sparkles className="size-3.5 text-emerald-600" />
-                <span>Royal Savings Applied</span>
+                <span>Savings Applied</span>
               </span>
               <span className="font-mono font-black text-emerald-800 text-sm">
                 -{formatPaise(savingsPaise, { locale })}

@@ -1,7 +1,7 @@
 /**
  * OrderKing Money & Tier-1 Algorithmic Payout Matrix
  *
- * Implements 100% of dominant legacy aggregator Indian courier payout algorithms:
+ * Implements Indian courier payout calculations in integer paise:
  * 1. Base Pay (Pickup fee + Drop fee) by city tier (Tier 1/2/3).
  * 2. Progressive Distance Slabs:
  *    - Slab 1 (0.0 to 2.0 km): Included in Base Pay (₹0 extra).

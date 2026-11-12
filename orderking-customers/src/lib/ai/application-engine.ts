@@ -56,10 +56,10 @@ export interface ApplicationDraft {
 export const VERIFIED_FOUNDER_PORTFOLIO = [
   {
     id: "PORT-ORDERKING",
-    title: "OrderKing — custom commission Food Delivery & Logistics Platform",
-    description: "Full-stack React, TypeScript, TanStack Router, PGlite SQL, and Vite architecture with King Pay UPI escrow settlement.",
+    title: "OrderKing — 0% Commission Food Delivery & Logistics Platform",
+    description: "Full-stack React, TypeScript, TanStack Router, PGlite SQL, and Vite architecture with KingPay UPI escrow settlement.",
     liveUrl: "https://orderking-customers.pages.dev/",
-    verifiedMetric: "14 Cloud Kitchens, Geodesic Rider Dispatch, 0% Platform Fee Guarantee",
+    verifiedMetric: "14 Cloud Kitchens, Geodesic Rider Dispatch, 0% Platform Fee Model",
   },
   {
     id: "PORT-VOICE-AI",

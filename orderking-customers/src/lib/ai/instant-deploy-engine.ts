@@ -1,7 +1,7 @@
 
 // Umar OS: 1-Command Instant Live Deployment Engine
 // Autonomously scaffolds and bundles any website, web app, business portal, or product page in 1 command.
-// Produces interactive in-browser sandboxes (data URI), standalone HTML5/PWA codebases, and production Vercel/Cloudflare CLI deploy scripts.
+// Produces interactive in-browser previews (data URI), standalone HTML5/PWA codebases, and production Vercel/Cloudflare CLI deploy scripts.
 
 export interface DeployTarget {
   id: string;
@@ -11,7 +11,7 @@ export interface DeployTarget {
   previewDataUri: string;
   targetDomain: string;
   edgeLatencyMs: number;
-  sslCertificate: "LOCAL_SANDBOX_ISOLATED" | "ACTIVE_LETS_ENCRYPT_256" | "CLOUDFLARE_ENTERPRISE";
+  sslCertificate: "LOCAL_ISOLATED" | "ACTIVE_LETS_ENCRYPT_256" | "CLOUDFLARE_ENTERPRISE";
   bundleSizeBytes: number;
   generatedFiles: {
     filename: string;
@@ -21,7 +21,7 @@ export interface DeployTarget {
   deployScriptVercel: string;
   deployScriptCloudflare: string;
   createdAt: string;
-  status: "SANDBOX_PREVIEW_READY" | "LIVE_AT_EDGE" | "PROVISIONING" | "SYNCED";
+  status: "PREVIEW_READY" | "LIVE_AT_EDGE" | "PROVISIONING" | "SYNCED";
 }
 
 export class InstantDeployEngine {
@@ -49,7 +49,7 @@ export class InstantDeployEngine {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${prompt.slice(0, 40)} | Order King Sandbox</title>
+  <title>${prompt.slice(0, 40)} | OrderKing App</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { background-color: #09090b; color: #f4f4f5; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -60,25 +60,25 @@ export class InstantDeployEngine {
   <header class="max-w-4xl mx-auto w-full flex justify-between items-center py-4 border-b border-white/10">
     <div class="flex items-center gap-2">
       <span class="text-sm font-black text-amber-400">OK</span>
-      <span class="font-bold text-lg text-amber-400">Order King Engine</span>
+      <span class="font-bold text-lg text-amber-400">OrderKing Engine</span>
     </div>
-    <span class="px-3 py-1 rounded-full bg-[#D4AF37]/10 text-emerald-400 text-xs font-mono font-semibold">Interactive Sandbox Ready</span>
+    <span class="px-3 py-1 rounded-full bg-[#D4AF37]/10 text-emerald-400 text-xs font-mono font-semibold">Interactive Preview Ready</span>
   </header>
   <main class="max-w-4xl mx-auto w-full my-auto py-12 text-center space-y-6">
     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-semibold">
-      <span>⚡ 1-Command Autonomously Scaffolded System</span>
+      <span>1-Command Autonomously Scaffolded System</span>
     </div>
     <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight gold-glow">${prompt}</h1>
     <p class="text-muted text-base max-w-xl mx-auto">
-      Standalone reactive bundle compiled live in your browser. All assets, structure, and event loops are 100% operational locally with zero external DNS dependencies.
+      Standalone reactive bundle compiled live in your browser. All assets, structure, and event loops are operational locally.
     </p>
     <div class="flex flex-wrap justify-center gap-4 pt-4">
-      <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold shadow-lg hover:scale-105 transition">Open via King Pay UPI</a>
-      <button onclick="alert('Order King Local Sandbox operational! All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
+      <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold shadow-lg hover:scale-105 transition">Open via KingPay UPI</a>
+      <button onclick="alert('OrderKing Local Preview operational. All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
     </div>
   </main>
   <footer class="max-w-4xl mx-auto w-full text-center text-xs text-subtle border-t border-white/10 pt-4">
-    Powered by King AI · Sovereign Autonomous Founder Infrastructure · Zero Simulated Verification
+    Powered by OrderKing Engineering · Autonomous App Builder
   </footer>
 </body>
 </html>`;
@@ -94,7 +94,7 @@ export class InstantDeployEngine {
       previewDataUri,
       targetDomain,
       edgeLatencyMs: 4,
-      sslCertificate: "LOCAL_SANDBOX_ISOLATED",
+      sslCertificate: "LOCAL_ISOLATED",
       bundleSizeBytes: bundleBytes,
       generatedFiles: [
         { filename: "index.html", content: generatedHtml, language: "html" },
@@ -107,7 +107,7 @@ export class InstantDeployEngine {
       deployScriptVercel: `npx vercel --prod --yes --name ${slug}`,
       deployScriptCloudflare: `npx wrangler pages deploy ./dist --project-name ${slug}`,
       createdAt: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      status: "SANDBOX_PREVIEW_READY",
+      status: "PREVIEW_READY",
     };
   }
 }

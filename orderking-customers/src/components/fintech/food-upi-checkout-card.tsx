@@ -25,9 +25,8 @@ interface FoodUpiCheckoutCardProps {
 }
 
 /**
- * standard fee Direct NPCI UPI Intent Card & Instant Dynamic BharatQR Bridge.
- * Allows customers to bypass 2-3% aggregator/gateway transaction fees,
- * routing 100% of money directly to the founder bank account via NPCI UPI.
+ * Zero-fee Direct NPCI UPI Intent Card & Instant Dynamic BharatQR Bridge.
+ * Allows customers to pay merchants directly via NPCI UPI without gateway markup.
  */
 export function FoodUpiCheckoutCard({
   className = "",
@@ -42,15 +41,16 @@ export function FoodUpiCheckoutCard({
   const hasItems = items.length > 0;
   const isDark = theme === "dark";
 
-  // Calculate total or fallback
-  const calculatedPaise = orderTotalPaise ?? 25000;
-  const amountRupees = calculatedPaise > 0 ? calculatedPaise / 100 : 250;
+  // Use only a verified non-zero order total (never fabricate a fallback amount)
+  const calculatedPaise = orderTotalPaise && orderTotalPaise > 0 ? orderTotalPaise : 0;
+  const hasValidTotal = calculatedPaise > 0;
+  const amountRupees = hasValidTotal ? calculatedPaise / 100 : 0;
   const publicId = orderPublicId || `OK-FOOD-${Date.now().toString().slice(-4)}`;
 
   const upiParams = {
     vpa: FOUNDER_UPI_VPA,
     payeeName: FOUNDER_MERCHANT_NAME,
-    amountInRupees: amountRupees,
+    ...(hasValidTotal ? { amountInRupees: amountRupees } : {}),
     currency: "INR" as const,
     transactionRef: `OKUPI-${publicId}`,
     transactionNote: `Food Order ${publicId} ${restaurantName || ""}`.trim().slice(0, 50),
@@ -85,7 +85,7 @@ export function FoodUpiCheckoutCard({
               </h3>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
                 <ShieldCheck className="size-3 text-emerald-500" />
-                <span>Zero gateway deduction • Direct founder settlement</span>
+                <span>Zero gateway markup · Direct NPCI UPI settlement</span>
               </p>
             </div>
           </div>
@@ -95,7 +95,7 @@ export function FoodUpiCheckoutCard({
           </span>
         </div>
 
-        {hasItems ? (
+        {hasItems && hasValidTotal ? (
           <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 p-3.5 flex items-center justify-between">
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground">Order Total</span>
@@ -112,36 +112,40 @@ export function FoodUpiCheckoutCard({
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Review your cart items, delivery fees, and final total before launching direct UPI intent.
+            Review your cart items, delivery fees, and calculated order total before launching direct UPI intent.
           </p>
         )}
 
         {/* 1-Tap Mobile Intent Buttons */}
         <div className="space-y-2 pt-1">
-          <a
-            href={universalIntentUrl}
-            className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 transition active:scale-95 no-underline"
-          >
-            <Zap className="size-4 fill-zinc-950" />
-            <span>Open in UPI App (PhonePe / Paytm / Cred / BHIM / Amazon Pay)</span>
-          </a>
-
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsQrModalOpen(true)}
-              className="h-10 rounded-xl border-amber-400/40 text-xs font-bold flex items-center justify-center gap-1.5"
+          {hasValidTotal && (
+            <a
+              href={universalIntentUrl}
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 transition active:scale-95 no-underline"
             >
-              <QrCode className="size-3.5 text-amber-500" />
-              <span>Show Live QR Modal</span>
-            </Button>
+              <Zap className="size-4 fill-zinc-950" />
+              <span>Open in UPI App (PhonePe / Paytm / Cred / BHIM / Amazon Pay)</span>
+            </a>
+          )}
+
+          <div className={hasValidTotal ? "grid grid-cols-2 gap-2" : "grid grid-cols-1"}>
+            {hasValidTotal && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsQrModalOpen(true)}
+                className="h-10 rounded-xl border-amber-400/40 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <QrCode className="size-3.5 text-amber-500" />
+                <span>Show Live QR Modal</span>
+              </Button>
+            )}
 
             <a
               href={hasItems ? "/checkout" : "/"}
               className="h-10 rounded-xl bg-surface border border-border hover:bg-surface-2 text-xs font-bold text-foreground flex items-center justify-center gap-1.5 no-underline transition"
             >
-              <span>{hasItems ? "Royal Checkout →" : "Find Restaurants"}</span>
+              <span>{hasItems ? "Proceed to Checkout" : "Browse Restaurants"}</span>
             </a>
           </div>
         </div>
@@ -152,12 +156,14 @@ export function FoodUpiCheckoutCard({
       </div>
 
       {/* Live QR Modal */}
-      <DirectUpiIntentModal
-        isOpen={isQrModalOpen}
-        onClose={() => setIsQrModalOpen(false)}
-        orderTotalPaise={calculatedPaise > 0 ? calculatedPaise : 25000}
-        orderPublicId={publicId}
-      />
+      {hasValidTotal && (
+        <DirectUpiIntentModal
+          isOpen={isQrModalOpen}
+          onClose={() => setIsQrModalOpen(false)}
+          orderTotalPaise={calculatedPaise}
+          orderPublicId={publicId}
+        />
+      )}
     </section>
   );
 }

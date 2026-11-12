@@ -10,7 +10,7 @@
 
 export interface WhatsAppDispatchParams {
   storeType?: "kitchen" | "pharmacy" | "dispatch";
-  recipientPhone?: string; // Optional phone e.g. "919876543210" (default: founder/dispatch line)
+  recipientPhone?: string; // Optional 12-digit E.164 WhatsApp number (defaults to OrderKing dispatch line)
   orderId: string;
   publicId?: string;
   storeName: string;
@@ -34,7 +34,7 @@ export interface GeolocationResult {
 /**
  * Default Dispatch Coordinator phone numbers in India (+91)
  */
-export const DEFAULT_DISPATCH_PHONE = "919876543210";
+export const DEFAULT_DISPATCH_PHONE = "919395065587";
 export const FOUNDER_UPI_VPA = "9395065587@ybl";
 export const OFFICIAL_NPCI_UPI_VPA = "orderking@ybl";
 export const SOVEREIGN_NPCI_UPI_VPA = OFFICIAL_NPCI_UPI_VPA;
@@ -92,10 +92,10 @@ export function formatWhatsAppDispatchMessage(params: WhatsAppDispatchParams): s
   const code = params.publicId || params.orderId;
   const storeLabel =
     params.storeType === "pharmacy"
-      ? "🏥 PHARMACY EMERGENCY DISPATCH"
+      ? "PHARMACY EMERGENCY DISPATCH"
       : params.storeType === "dispatch"
-        ? "🛵 EXPRESS FLEET DISPATCH"
-        : "🍳 KITCHEN LIVE ORDER";
+        ? "EXPRESS FLEET DISPATCH"
+        : "KITCHEN LIVE ORDER";
 
   const totalRupees = (params.totalPaise / 100).toFixed(2);
   const itemsText = params.items
@@ -105,43 +105,43 @@ export function formatWhatsAppDispatchMessage(params: WhatsAppDispatchParams): s
   const lines: string[] = [
     `*ORDERKING DISPATCH NOTIFICATION*`,
     `----------------------------------------`,
-    `⚡ *${storeLabel}*`,
-    `📦 *Order ID:* #${code}`,
-    `🏪 *Store / Kitchen:* ${params.storeName}`,
+    `*${storeLabel}*`,
+    `*Order ID:* #${code}`,
+    `*Store / Kitchen:* ${params.storeName}`,
     ``,
-    `📋 *ORDERED ITEMS:*`,
-    itemsText || "• Standard Order Package",
+    `*ORDERED ITEMS:*`,
+    itemsText || "- Standard Order Package",
     ``,
-    `💰 *BILL TOTAL:* ₹${totalRupees}`,
-    `💳 *PAYMENT:* ${params.paymentMethod} (Direct Settlement - standard fee)`,
+    `*BILL TOTAL:* ₹${totalRupees}`,
+    `*PAYMENT:* ${params.paymentMethod} (Direct Settlement - 0% fee)`,
   ];
 
   if (params.paymentRef) {
-    lines.push(`🔑 *Txn Ref:* ${params.paymentRef}`);
+    lines.push(`*Txn Ref:* ${params.paymentRef}`);
   }
 
   lines.push(``);
-  lines.push(`📍 *DELIVERY DESTINATION:*`);
-  lines.push(`🏠 *Address:* ${params.deliveryAddress}`);
+  lines.push(`*DELIVERY DESTINATION:*`);
+  lines.push(`*Address:* ${params.deliveryAddress}`);
 
   if (params.coordinates) {
     const mapsLink = `https://www.google.com/maps?q=${params.coordinates.lat},${params.coordinates.lng}`;
-    lines.push(`🛰️ *Live GPS Coordinates:* ${params.coordinates.lat}, ${params.coordinates.lng}`);
-    lines.push(`🗺️ *Rider Google Maps Pin:* ${mapsLink}`);
+    lines.push(`*Live GPS Coordinates:* ${params.coordinates.lat}, ${params.coordinates.lng}`);
+    lines.push(`*Rider Google Maps Pin:* ${mapsLink}`);
   } else {
-    lines.push(`🗺️ *Rider Maps:* Address navigation mode`);
+    lines.push(`*Rider Maps:* Address navigation mode`);
   }
 
   if (params.customerName || params.customerPhone) {
-    lines.push(`👤 *Customer:* ${params.customerName || "Customer"} (${params.customerPhone || "In-App"})`);
+    lines.push(`*Customer:* ${params.customerName || "Customer"} (${params.customerPhone || "In-App"})`);
   }
 
   if (params.deliveryInstructions) {
-    lines.push(`📝 *Instructions:* ${params.deliveryInstructions}`);
+    lines.push(`*Instructions:* ${params.deliveryInstructions}`);
   }
 
   lines.push(`----------------------------------------`);
-  lines.push(`🚀 *Action:* Auto-Dispatch triggered. Partner pickup initiated immediately.`);
+  lines.push(`*Action:* Auto-Dispatch triggered. Partner pickup initiated immediately.`);
 
   return lines.join("\n");
 }

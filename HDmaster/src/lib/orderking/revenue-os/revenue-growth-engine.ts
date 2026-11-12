@@ -24,40 +24,7 @@ export interface RepeatBusinessSignal {
 export class RevenueGrowthEngine {
   private signals: Map<string, RepeatBusinessSignal> = new Map();
 
-  constructor() {
-    this.seedSignals();
-  }
-
-  private seedSignals() {
-    const s1: RepeatBusinessSignal = {
-      clientId: "CLI-DARBAR",
-      clientName: "Royal Darbar Palace",
-      completedProjectId: "PROJ-701",
-      csatScore: 9.8,
-      openIssuesCount: 0,
-      contractExpirationDate: "2027-09-20",
-      hostingRenewalDate: "2026-10-20",
-      status: "IDENTIFIED",
-      identifiedExpansionOpportunities: [
-        {
-          type: "MAINTENANCE_RETAINER",
-          title: "Tier-1 24/7 Priority Menu & Fleet Hosting Retainer",
-          monthlyValueInr: 14999,
-          rationale: "Client has completed initial deployment; monthly SLA provides database maintenance, uptime guarantee, and menu promotions.",
-          proposedDeliverables: ["Cloud server hosting & daily backup", "4-hour emergency SLA", "Weekly menu price updates"],
-        },
-        {
-          type: "AUTOMATION",
-          title: "Automated WhatsApp Loyalty & Coupon Soundbox",
-          oneTimeValueInr: 49999,
-          rationale: "Increase repeat direct orders by 22% with automated post-meal review requests and WhatsApp coupons.",
-          proposedDeliverables: ["WhatsApp Cloud API webhook", "Customer loyalty ledger", "Automated broadcast rules"],
-        },
-      ],
-    };
-
-    this.signals.set(s1.clientId, s1);
-  }
+  constructor() {}
 
   getSignals(): RepeatBusinessSignal[] {
     return Array.from(this.signals.values());

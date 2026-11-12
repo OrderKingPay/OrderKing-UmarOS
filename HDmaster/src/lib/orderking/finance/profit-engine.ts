@@ -278,7 +278,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       monthlyGrossRevenuePaise: coreCommissionPaise,
       grossMarginPercentage: "100.0%",
       legalBasis: "Contractual Merchant Agreement (IT Act §10A)",
-      participantMutualBenefit: "Restaurants save 10% on every order vs Tier-1 Legacy Market Leader's 25% take-rate.",
+      participantMutualBenefit: "Restaurants retain more margin at a 15% flat rate compared to 25%–28% aggregator rates.",
     },
     {
       streamId: "stream_2_platform_convenience_fee",
@@ -287,7 +287,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       monthlyGrossRevenuePaise: platformFeePaise,
       grossMarginPercentage: "100.0%",
       legalBasis: "Terms of Service Technology Intermediary Fee (IT Act §79)",
-      participantMutualBenefit: "Customers pay only ₹4 vs ₹10–₹15 on Dominant Legacy Aggregators.",
+      participantMutualBenefit: "Customers pay a flat ₹4 technology fee per order.",
     },
     {
       streamId: "stream_3_ad_auction",
@@ -440,7 +440,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "RESTAURANT",
       orderKingValueProposition:
         "15% flat commission, ₹0 onboarding fee, ₹0 forced ad spend, weekly integer-paise settlement, optional 1-tap instant cashout.",
-      competitorComparison: "Tier-1 Legacy Market Leader charges 25%–28% commission, ₹10,000 onboarding, and mandatory ad spend.",
+      competitorComparison: "Typical delivery marketplaces charge 25%–28% commission plus onboarding and ad fees.",
       averageMonthlyAdvantagePaise: 2_000_000, // ₹20,000 extra profit per ₹2L monthly sales
       verifiedSafeHarbor: "IT Act §79 Intermediary Protection + Binding Arbitration (Arbitration Act 1996)",
     },
@@ -448,7 +448,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "RIDER",
       orderKingValueProposition:
         "100% customer tips pass-through, HPCL/IOCL fleet card saving ₹1,650/mo, 40% cheaper EV battery swaps, complimentary ₹2L accident cover.",
-      competitorComparison: "Tier-1 Legacy Market Leader imposes arbitrary penalty deductions and offers no petrol discount.",
+      competitorComparison: "Standard courier contracts often lack fleet fuel discounts and structured wait-time policies.",
       averageMonthlyAdvantagePaise: 165_000, // ₹1,650/month petrol savings + insurance
       verifiedSafeHarbor: "Code on Social Security 2020 Independent Gig Partner Compliance",
     },
@@ -456,7 +456,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
       participant: "CUSTOMER",
       orderKingValueProposition:
         "Zero inflated menu prices, ₹4 platform fee, King Coins food burn, spare-change 24K gold accumulation, instant KingPay 1-tap checkout.",
-      competitorComparison: "Tier-1 Legacy Market Leader charges ₹10–₹15 platform fee + surge markups on menu prices.",
+      competitorComparison: "Typical marketplaces charge ₹10–₹15 platform fees alongside menu price markups.",
       averageMonthlyAdvantagePaise: 12_000, // ₹120 savings per month across 8 orders
       verifiedSafeHarbor: "Consumer Protection (E-Commerce) Rules 2020 Compliance",
     },
@@ -476,8 +476,7 @@ export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEng
     totalOperatingCostsPaise: totalOperatingCosts,
     founderNetFreeCashFlowPaise: founderNetFreeCashFlowPaise,
     founderEbitdaMarginPercentage: ebitdaMarginPct,
-    competitorBurnMultiplier:
-      "High_Performance Higher Free Cash Flow than Tier-1 Legacy Market Leader (OrderKing has zero corporate bloat, automated AI overhead, 18 synchronized revenue streams, and 2G resilience)",
+    competitorBurnMultiplier: "Lean fixed overhead across automated cloud infrastructure and multi-stream platform billing",
     revenueStreams: streams,
     participantBenefits,
     statutoryComplianceChecklist: {

@@ -19,7 +19,7 @@ export interface ApprovalRequest {
   expectedResult: string;
   risk: "LOW" | "MEDIUM" | "HIGH" | "IRREVERSIBLE";
   cost: string; // e.g. "₹0 (Client pays 50% advance)" or "$0.04 LLM tokens"
-  target: string; // e.g. "Royal Darbar Cloud Kitchens" or "Production Database"
+  target: string; // e.g. "Partner Restaurant" or "Production Database"
   preview: string; // code diff, WhatsApp message text, or invoice payload
   timestamp: string;
 }

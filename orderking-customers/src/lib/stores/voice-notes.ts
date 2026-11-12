@@ -59,7 +59,7 @@ export const useVoiceNoteStore = create<VoiceNoteState>((set, get) => ({
   getFormattedNoteText: (target) => {
     const note = get().notes[target];
     if (!note) return "";
-    const prefix = target === "delivery" ? "🛵 Delivery Voice Note" : "👨‍🍳 Kitchen Voice Note";
+    const prefix = target === "delivery" ? "Delivery Voice Note" : "Kitchen Voice Note";
     const transcriptText = note.transcript || note.sampleTranscript;
     const transcript = transcriptText ? `: "${transcriptText}"` : "";
     return `[${prefix} (${note.durationSeconds}s)${transcript}]`;

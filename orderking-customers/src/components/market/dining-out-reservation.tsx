@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Calendar, Clock, Users, Utensils, CheckCircle2, X, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { createCustomerDiningReservation } from "@/lib/server/catalog";
 
 export interface DiningOutReservationModalProps {
   isOpen?: boolean;
@@ -17,9 +17,9 @@ export function DiningOutReservationModal({
   isOpen = false,
   onClose,
   restaurantId,
-  restaurantName = "Royal Tandoor & Grill",
-  restaurantArea = "GS Road, Central",
-  cuisineSummary = "North Indian · Mughlai · Kebabs",
+  restaurantName = "Restaurant Partner",
+  restaurantArea = "Location on restaurant page",
+  cuisineSummary = "Dine-In",
 }: DiningOutReservationModalProps) {
   const [open, setOpen] = useState(isOpen);
 
@@ -29,10 +29,11 @@ export function DiningOutReservationModal({
   const [guestCount, setGuestCount] = useState<number>(2);
   const [selectedDate, setSelectedDate] = useState<string>("TODAY");
   const [selectedSlot, setSelectedSlot] = useState<string>("8:00 PM");
-  const [seatingArea, setSeatingArea] = useState<"INDOOR" | "ROOFTOP" | "OUTDOOR" | "PRIVATE">("ROOFTOP");
+  const [seatingArea, setSeatingArea] = useState<"INDOOR" | "ROOFTOP" | "OUTDOOR" | "PRIVATE">("INDOOR");
   const [specialOccasion, setSpecialOccasion] = useState<string>("");
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [bookingRef, setBookingRef] = useState("");
 
@@ -48,17 +49,46 @@ export function DiningOutReservationModal({
     { time: "9:30 PM", period: "Dinner" },
   ];
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    if (!restaurantId || restaurantId === "dining-onboarding") {
+      toast.error("Please select a participating restaurant first.");
+      return;
+    }
     if (!guestName.trim()) {
       toast.error("Please enter guest name");
       return;
     }
-    const tbBuf = new Uint32Array(1);
-    crypto.getRandomValues(tbBuf);
-    const code = `TB-${100000 + (tbBuf[0] % 900000)}`;
-    setBookingRef(code);
-    setIsConfirmed(true);
-    toast.message("Request noted on this screen only. No SMS was sent, and the restaurant has not confirmed a table.");
+    if (guestPhone.replace(/\D/g, "").length < 10) {
+      toast.error("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await createCustomerDiningReservation({
+        data: {
+          restaurantId,
+          guestName: guestName.trim(),
+          guestPhone: guestPhone.trim(),
+          guestsCount: guestCount,
+          timeSlot: selectedSlot,
+          date: selectedDate,
+          areaPreference: seatingArea,
+          occasion: specialOccasion || undefined,
+        },
+      });
+      if (!res?.ok) {
+        toast.error(res?.error || "Could not save table reservation.");
+        return;
+      }
+      setBookingRef(res.bookingRef);
+      setIsConfirmed(true);
+      toast.success(`Reservation request saved (${res.bookingRef}). Pending restaurant confirmation; no SMS was sent.`);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to submit table reservation.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -99,21 +129,22 @@ export function DiningOutReservationModal({
               <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="size-8 stroke-[2.5]" />
               </div>
-              <h4 className="font-display text-lg font-bold text-fg">Not booked</h4>
+              <h4 className="font-display text-lg font-bold text-fg">Reservation Request Saved</h4>
               <p className="text-xs text-muted">
-                {restaurantName} has not confirmed this table. No SMS was sent.
+                Your table request at <strong className="text-fg">{restaurantName}</strong> has been saved for the restaurant desk. No SMS was sent.
               </p>
               <div className="mx-auto max-w-xs rounded-xl border border-dashed border-primary/50 bg-primary/5 p-3 text-xs space-y-1">
                 <p className="text-muted">Booking Reference:</p>
                 <p className="font-mono text-base font-bold text-primary">{bookingRef}</p>
                 <p className="text-[11px] text-muted">
-                  {guestCount} Guests · {selectedDate === "TODAY" ? "Today" : "Tomorrow"} at {selectedSlot}
+                  {guestCount} Guests · {selectedDate === "TODAY" ? "Today" : selectedDate === "TOMORROW" ? "Tomorrow" : "This Weekend"} at {selectedSlot}
                 </p>
-                <p className="text-[10px] text-muted capitalize">Area: {seatingArea.toLowerCase()} Seating</p>
+                <p className="text-[10px] text-muted capitalize">Area: {seatingArea.toLowerCase()} Seating · Status: Pending Confirmation</p>
               </div>
               <div className="rounded-lg bg-surface-2 p-3 text-[11px] text-muted text-left">
+                <p className="font-semibold text-fg">Reservation Reference:</p>
                 <p className="mt-1">
-                  This note stays on this screen only. The restaurant does not have this booking.
+                  Show your booking reference above at reception once the restaurant accepts your request.
                 </p>
               </div>
               <Button onClick={handleClose} className="w-full">
@@ -152,9 +183,9 @@ export function DiningOutReservationModal({
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: "TODAY", label: "Today", sub: "Instant Seat" },
+                    { id: "TODAY", label: "Today", sub: "Same Day" },
                     { id: "TOMORROW", label: "Tomorrow", sub: "Pre-book" },
-                    { id: "WEEKEND", label: "This Weekend", sub: "Special" },
+                    { id: "WEEKEND", label: "This Weekend", sub: "Advance" },
                   ].map((d) => (
                     <button
                       key={d.id}
@@ -277,10 +308,10 @@ export function DiningOutReservationModal({
           <div className="border-t border-border bg-surface px-5 py-3.5 flex items-center justify-between">
             <div>
               <p className="text-[11px] text-muted">Zero Cancellation Fee</p>
-              <p className="font-bold text-xs text-fg">Instant Confirmation</p>
+              <p className="font-bold text-xs text-fg">Direct Restaurant Booking</p>
             </div>
-            <Button onClick={handleConfirm} className="gap-1.5">
-              <Sparkles className="size-3.5" /> Confirm Table
+            <Button onClick={handleConfirm} disabled={isSubmitting} className="gap-1.5">
+              <Sparkles className="size-3.5" /> {isSubmitting ? "Submitting..." : "Request Table"}
             </Button>
           </div>
         )}

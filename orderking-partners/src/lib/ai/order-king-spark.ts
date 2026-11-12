@@ -439,7 +439,7 @@ export class OrderKingSpark {
         dietaryBadges: ["Slow Dum Cooked", "Clay Pot Infused", "Halal"],
         allergens: ["Dairy / Pure Ghee", "Tree Nuts (Cashew / Kewra)"],
         portionStrategy: {
-          portionName: "Solo Handi (350g) + Royal Feast (800g)",
+          portionName: "Solo Handi (350g) + Family Feast (800g)",
           weightGrams: 350,
           suggestedPricePaise: 26900,
           marginTargetPercent: 68,

@@ -422,30 +422,6 @@ async function ensurePenaltyDisputesTable(ctx: AccessContext) {
     );
     CREATE INDEX IF NOT EXISTS idx_penalty_disputes_org ON merchant_penalty_disputes (org_id, status, created_at DESC);
   `);
-
-  // Check if we need default seeded disputes for the founder
-  const countRows = await sql.query<{ count: number }>(
-    `SELECT count(*)::int as count FROM merchant_penalty_disputes WHERE org_id = $1`,
-    [ctx.orgId],
-  );
-  if (n(countRows[0]?.count) === 0) {
-    const restaurants = await sql.query<{ id: string; name: string }>(
-      `SELECT id, name FROM restaurants WHERE org_id = $1 LIMIT 5`,
-      [ctx.orgId],
-    );
-    const r1 = restaurants[0] || { id: "rst_royal_darbar", name: "Royal Darbar Palace" };
-    const r2 = restaurants[1] || { id: "rst_shillong_momo", name: "Shillong Momo Corner" };
-    const r3 = restaurants[2] || { id: "rst_surma_biryani", name: "Surma Biryani House" };
-
-    await sql.query(`
-      INSERT INTO merchant_penalty_disputes (id, org_id, restaurant_id, restaurant_name, order_id, penalty_type, penalty_paise, delay_minutes, merchant_notes, status, created_at)
-      VALUES
-        ('disp_prep_001', $1, $2, $3, 'ord_84920', 'LATE_PREPARATION', 10000, 24, 'Severe kitchen gas pipeline leak forced immediate stop. Food cooked fresh immediately after line cleared. Requesting penalty waiver.', 'PENDING', now() - interval '2 hours'),
-        ('disp_cancel_002', $1, $4, $5, 'ord_84988', 'MERCHANT_CANCELLATION', 15000, 0, 'Customer requested custom modifications not on menu in special notes after acceptance. Called customer who agreed to cancel.', 'PENDING', now() - interval '5 hours'),
-        ('disp_prep_003', $1, $6, $7, 'ord_85012', 'LATE_PREPARATION', 7500, 18, 'Rider arrived 15 minutes before the promised prep time and reported kitchen delay prematurely.', 'PENDING', now() - interval '1 day'),
-        ('disp_waived_004', $1, $2, $3, 'ord_83900', 'LATE_PREPARATION', 10000, 22, 'Local transformer burst cut power to POS printer. Proof of power disruption submitted.', 'WAIVED', now() - interval '3 days')
-    `, [ctx.orgId, r1.id, r1.name, r2.id, r2.name, r3.id, r3.name]);
-  }
 }
 
 export async function listPenaltyDisputes(
@@ -980,32 +956,6 @@ async function ensureFeaturedAdCampaignsTable(ctx: AccessContext) {
     );
     CREATE INDEX IF NOT EXISTS idx_ad_campaigns_org ON featured_ad_campaigns (org_id, status);
   `);
-
-  const countRows = await sql.query<{ count: number }>(
-    `SELECT count(*)::int as count FROM featured_ad_campaigns WHERE org_id = $1`,
-    [ctx.orgId],
-  );
-
-  if (n(countRows[0]?.count) === 0) {
-    const restaurants = await sql.query<{ id: string; name: string }>(
-      `SELECT id, name FROM restaurants WHERE org_id = $1 LIMIT 6`,
-      [ctx.orgId],
-    );
-    const r1 = restaurants[0] || { id: "rst_royal_darbar", name: "Royal Darbar Palace" };
-    const r2 = restaurants[1] || { id: "rst_shillong_momo", name: "Shillong Momo Corner" };
-    const r3 = restaurants[2] || { id: "rst_surma_biryani", name: "Surma Biryani House" };
-    const r4 = restaurants[3] || { id: "rst_sribhumi_thali", name: "Sribhumi Thali" };
-
-    await sql.query(`
-      INSERT INTO featured_ad_campaigns
-        (id, org_id, restaurant_id, campaign_name, placement_slot, max_bid_cpc_paise, daily_budget_paise, spent_today_paise, impressions_count, clicks_count, quality_score_x100, status)
-      VALUES
-        ('ad_camp_001', $1, $2, 'Top of Feed Lunch Rush', 'TOP_OF_FEED', 650, 150000, 32500, 4200, 50, 180, 'ACTIVE'),
-        ('ad_camp_002', $1, $3, 'Weekend Biryani Supremacy', 'TOP_OF_FEED', 550, 120000, 24750, 3800, 45, 160, 'ACTIVE'),
-        ('ad_camp_003', $1, $4, 'Evening Snacks Blitz', 'TOP_OF_FEED', 450, 80000, 18000, 2900, 40, 140, 'ACTIVE'),
-        ('ad_camp_004', $1, $5, 'Authentic Thali Top Placement', 'TOP_OF_FEED', 350, 60000, 14000, 2100, 40, 150, 'ACTIVE')
-    `, [ctx.orgId, r1.id, r2.id, r3.id, r4.id]);
-  }
 }
 
 export async function loadFeaturedAdStudio(ctx: AccessContext): Promise<AdAuctionStudioState> {

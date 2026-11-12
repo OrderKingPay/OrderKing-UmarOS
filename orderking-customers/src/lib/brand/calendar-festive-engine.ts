@@ -1,4 +1,3 @@
-
 export type FestiveContext = {
   id: string;
   festivalName: string;
@@ -6,14 +5,12 @@ export type FestiveContext = {
   badge: string;
   icon: string;
   theme: "gold" | "crimson" | "emerald" | "amber" | "indigo";
-  
-  // Order King Food Portal Copy (Large, prominent, zero jargon)
+
   orderKingHeadline: string;
   orderKingTagline: string;
   orderKingCta: string;
   orderKingHighlight: string;
 
-  // King Pay FinTech Portal Copy (Large, prominent, zero jargon)
   kingPayHeadline: string;
   kingPayTagline: string;
   kingPayCta: string;
@@ -21,37 +18,32 @@ export type FestiveContext = {
 };
 
 /**
- * Real-Time Calendar, Holiday & Geographical Demand Engine
- * Automatically senses:
- * - Major National & Regional Seasonal Celebrations (Harvest, Spring, New Year, Regional Celebrations)
- * - Weekly Specials (Sunday Family Feast, Friday/Saturday Weekend Specials)
- * - Monthly Milestones (Payday Week 1st-7th)
- * - Real-Time Meal Hours (Lunch 11:30-15:30, Evening Tea 16:00-18:30, Dinner 19:00-23:30, Midnight 23:30-04:00)
+ * Real-Time Calendar & Geographical Context Engine
  */
 export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
   const now = customDate || new Date();
-  const month = now.getMonth(); // 0 = Jan, 8 = Sep, 9 = Oct, 10 = Nov, 11 = Dec
+  const month = now.getMonth();
   const date = now.getDate();
-  const day = now.getDay(); // 0 = Sun, 5 = Fri, 6 = Sat
+  const day = now.getDay();
   const hour = now.getHours();
 
   // 1. Autumn Season (September - October)
   if ((month === 8 && date >= 20) || (month === 9 && date <= 28)) {
     return {
       id: "autumn_celebration",
-      festivalName: "Autumn Celebration Season",
-      greeting: "Happy Celebration Season! 🎉",
-      badge: "✨ Seasonal Special",
-      icon: "🎉",
+      festivalName: "Autumn Season",
+      greeting: "Seasonal Dining & Local Kitchens",
+      badge: "Seasonal Menu",
+      icon: "",
       theme: "crimson",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 25 Min Delivery",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Send festive gifts, scan any shop QR code directly, clear vehicle challans!",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ Instant UPI · Send Gifts Cashbacks",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order meals and seasonal platters from local restaurants at direct menu prices.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "Live Kitchen Menu",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Send UPI transfers, scan merchant QR codes, and check vehicle challans.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "Instant UPI & BBPS Bills",
     };
   }
 
@@ -59,138 +51,135 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
   if ((month === 9 && date >= 29) || (month === 10 && date <= 20)) {
     return {
       id: "winter_lights",
-      festivalName: "Winter Lights & Grand Savings",
-      greeting: "Happy Winter Celebration! Joy & Prosperity ✨",
-      badge: "✨ Grand Celebration",
-      icon: "✨",
+      festivalName: "Autumn & Winter Season",
+      greeting: "Local Kitchens & Direct Payments",
+      badge: "Seasonal Menu",
+      icon: "",
       theme: "gold",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 Authentic Kitchens",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Send digital gifts to loved ones, pay any market QR directly.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ standard fee Payments Doubled · Instant UPI",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order biryani, platters, and thalis from verified local restaurants.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "Verified Local Kitchens",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Send digital transfers and pay shop QR codes via NPCI UPI.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "0% UPI Gateway Fee · Direct Settlement",
     };
   }
 
-  // 3. Christmas & New Year Holiday Carnival (December 15 - January 5)
+  // 3. Christmas & New Year Season (December 15 - January 5)
   if ((month === 11 && date >= 15) || (month === 0 && date <= 5)) {
     return {
       id: "christmas_new_year",
-      festivalName: "Christmas & New Year Carnival",
-      greeting: "Happy New Year & Festive Carnival! 🎄🎉",
-      badge: "🎉 New Year Celebration",
-      icon: "🎁",
+      festivalName: "Holiday Season",
+      greeting: "Holiday Season Dining & Payments",
+      badge: "Holiday Season",
+      icon: "",
       theme: "emerald",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍔 0% Price Markup · Party Platters · Lightning Fast",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Split party bills with friends in 1 tap, pay any shop QR code with 0 fees & manage all vehicle garage renewals.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Bill Split · Instant UPI · Vehicle Garage",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order group meals, platters, and restaurant dishes at menu pricing.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "0% Menu Markup",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Split bills, pay shop QR codes via UPI, and manage vehicle renewals.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "Bill Split · Instant UPI · Vehicle Garage",
     };
   }
 
-  // 4. Payday Week (1st to 7th of any month)
+  // 4. First Week of Month (1st to 7th)
   if (date >= 1 && date <= 7) {
     return {
       id: "payday_week",
-      festivalName: "Payday Savings Carnival",
-      greeting: "Happy Payday! Celebrate Your Hard Work 💰",
-      badge: "⚡ Payday Special",
-      icon: "💼",
+      festivalName: "Monthly Billing & Dining",
+      greeting: "Utility Bills & Food Orders",
+      badge: "Monthly Cycle",
+      icon: "",
       theme: "gold",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 Save ₹150–₹300 Per Order · Zero Inflated Prices",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Clear monthly electricity & broadband bills, top up FASTag, check vehicle police challans & earn 24K digital gold.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ Quick Payments · BBPS Instant Bills",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order from verified local kitchens with transparent itemized bills.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "Transparent Itemized Pricing",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Pay electricity and broadband bills, recharge FASTag, and check vehicle challans.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "BBPS Utility Bills · Instant UPI",
     };
   }
 
-  // 5. Sunday Grand Feast (Every Sunday)
+  // 5. Sunday
   if (day === 0) {
     return {
       id: "sunday_family_feast",
-      festivalName: "Sunday Grand Family Feast",
-      greeting: "Happy Sunday! Family Feast Day is Here 🍲",
+      festivalName: "Sunday Family Dining",
+      greeting: "Sunday Orders from Local Restaurants",
       badge: "Sunday Special",
-      icon: "🍗",
+      icon: "",
       theme: "amber",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 25 Min Delivery · fast delivery > ₹149",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Scan & pay at any restaurant or local bazaar instantly. Instant 1-tap UPI with secure safety.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Scan & Pay · 0% Charges · Instant Soundbox",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order family combos, biryani, and thalis from local restaurants.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "Live Route Tracking",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Scan and pay at local restaurants or shops with instant UPI settlement.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "Scan & Pay · 0% Charges",
     };
   }
 
-  // 6. Time-of-Day Adaptive Default (Lunch, Dinner, Late Night, All Day)
+  // 6. Time-of-Day Context
   if (hour >= 11 && hour < 16) {
-    // Lunch Rush
     return {
       id: "lunch_hour",
-      festivalName: "Royal Afternoon Lunch Specials",
-      greeting: "Hungry for Lunch? Delicious Meals in 25 Mins 🍱",
-      badge: "⚡ Lunch Express",
-      icon: "🍱",
+      festivalName: "Lunch Service",
+      greeting: "Lunch Orders Open",
+      badge: "Lunch Hours",
+      icon: "",
       theme: "amber",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍱 25-Min Delivery · 0% Price Markup · Hot Gourmet Specials",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Pay for lunch at any cafe or stall with 1-tap QR scan. Fast and secure payments.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Lunch Pay · Zero Extra Fees · Instant UPI",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order fresh lunch thalis, bowls, and local specials at restaurant prices.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "0% Menu Markup",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Scan merchant QR codes for fast UPI checkout.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "1-Tap Scan & Pay · Instant UPI",
     };
   }
 
   if (hour >= 19 && hour <= 23) {
-    // Dinner Peak
     return {
       id: "dinner_hour",
-      festivalName: "Evening Dinner Delights",
-      greeting: "Time for a Royal Dinner Feast! 🍲",
-      badge: "🌙 Dinner Special",
-      icon: "🍲",
+      festivalName: "Dinner Service",
+      greeting: "Dinner Orders Open",
+      badge: "Dinner Hours",
+      icon: "",
       theme: "crimson",
-      orderKingHeadline: "Order King",
-      orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-      orderKingCta: "Open Order King - FOODS",
-      orderKingHighlight: "🍗 Authentic Taste · 0% Price Markup · Live GPS Tracking",
-      kingPayHeadline: "King Pay",
-      kingPayTagline: "Split tonight's dinner bill with friends in 1 tap, pay any shop QR code directlys & earn gold rewards.",
-      kingPayCta: "Open King Pay",
-      kingPayHighlight: "⚡ 1-Tap Bill Split · Instant UPI",
+      orderKingHeadline: "OrderKing",
+      orderKingTagline: "Order dinner dishes directly from local kitchens with live GPS tracking.",
+      orderKingCta: "Open OrderKing - FOODS",
+      orderKingHighlight: "0% Menu Markup · Live GPS Tracking",
+      kingPayHeadline: "KingPay",
+      kingPayTagline: "Split dinner bills and pay any merchant QR code directly via NPCI UPI.",
+      kingPayCta: "Open KingPay",
+      kingPayHighlight: "Bill Split · Instant UPI",
     };
   }
 
-  // Standard Evergreen Luxury Default
   return {
     id: "evergreen_luxury",
-    festivalName: "Daily Savings",
+    festivalName: "Daily Service",
     greeting: "Welcome to OrderKing & KingPay",
-    badge: "✨ Daily Savings",
-    icon: "✨",
+    badge: "Active Hub",
+    icon: "",
     theme: "gold",
-    orderKingHeadline: "Order King",
-    orderKingTagline: "Celebrate with Royal Dum Biryani, festive platters & pure veg thalis from top local restaurants with fast delivery.",
-    orderKingCta: "Open Order King - FOODS",
-    orderKingHighlight: "🍗 Save ₹150+ Per Meal · 25 Min Delivery",
-    kingPayHeadline: "King Pay",
-    kingPayTagline: "Scan any shop QR code, clear vehicle police challans, pay electricity & mobile bills instantly.",
-    kingPayCta: "Open King Pay",
-    kingPayHighlight: "⚡ Quick Payments · Vehicle Garage · 24K Digital Gold",
+    orderKingHeadline: "OrderKing",
+    orderKingTagline: "Order from local kitchens at direct menu prices with live delivery tracking.",
+    orderKingCta: "Open OrderKing - FOODS",
+    orderKingHighlight: "0% Menu Markup · Direct Kitchen Pricing",
+    kingPayHeadline: "KingPay",
+    kingPayTagline: "Scan shop QR codes, check vehicle challans, and pay utility bills.",
+    kingPayCta: "Open KingPay",
+    kingPayHighlight: "UPI Payments · Vehicle Garage · BBPS Bills",
   };
 }

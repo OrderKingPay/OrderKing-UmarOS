@@ -154,15 +154,15 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const hdStatus = await getLocalRepoStatus("HDmaster");
       return [
-        `### 🛠️ Repository Status: HDmaster`,
+        `### Repository Status: HDmaster`,
         `- **Branch**: \`${hdStatus.branch}\``,
-        `- **Working Directory**: ${hdStatus.isClean ? "✅ Clean (no uncommitted changes)" : "⚠️ Changes detected"}`,
+        `- **Working Directory**: ${hdStatus.isClean ? "Clean (no uncommitted changes)" : "Changes detected"}`,
         `- **Changed Files**: ${hdStatus.changedFiles.length > 0 ? hdStatus.changedFiles.slice(0, 10).map((f) => `\`${f}\``).join(", ") : "None"}`,
         `- **Path on Disk**: \`${hdStatus.path}\``,
         `- **Connected Repositories**: ${ORDER_KING_REPOS.join(", ")}`,
       ].join("\n");
     } catch (err) {
-      return `### 🛠️ Repository Inspection\nCould not fetch git status: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Repository Inspection\nCould not fetch git status: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -171,11 +171,11 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const commits = await getLocalRecentCommits("HDmaster", 5);
       return [
-        `### 📜 Recent Commits: HDmaster`,
-        ...commits.map((c) => `- \`${(c as any).sha.slice(0, 8)}\` — **${(c as any).message}** (${(c as any).author}, ${(c as any).date})`),
+        `### Recent Commits: HDmaster`,
+        ...commits.map((c) => `- \`${(c as any).sha.slice(0, 8)}\` - **${(c as any).message}** (${(c as any).author}, ${(c as any).date})`),
       ].join("\n");
     } catch (err) {
-      return `### 📜 Commits\nCould not fetch commits: ${err instanceof Error ? err.message : String(err)}`;
+      return `### Commits\nCould not fetch commits: ${err instanceof Error ? err.message : String(err)}`;
     }
   }
 
@@ -186,7 +186,7 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const fileData = await inspectLocalFile("HDmaster", rawPath);
       return [
-        `### 📄 File: \`${fileData.path}\` (${fileData.totalLines} lines, ${fileData.content.length} characters)`,
+        `### File: \`${fileData.path}\` (${fileData.totalLines} lines, ${fileData.content.length} characters)`,
         "```typescript",
         fileData.content.slice(0, 3500) + (fileData.content.length > 3500 ? "\n... [content truncated for preview]" : ""),
         "```",
@@ -203,10 +203,10 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
     try {
       const results = await searchLocalCode(term, "HDmaster", 5);
       if (results.matches.length === 0) {
-        return `### 🔍 Code Search: \`${term}\`\nNo exact matches found in HDmaster codebase.`;
+        return `### Code Search: \`${term}\`\nNo exact matches found in HDmaster codebase.`;
       }
       return [
-        `### 🔍 Code Search Results for \`${term}\` (${results.totalMatches} matches)`,
+        `### Code Search Results for \`${term}\` (${results.totalMatches} matches)`,
         ...results.matches.map((r: { file: string; line: number; text: string }) => `- **\`${r.file}:${r.line}\`**: \`${r.text.trim()}\``),
       ].join("\n");
     } catch {

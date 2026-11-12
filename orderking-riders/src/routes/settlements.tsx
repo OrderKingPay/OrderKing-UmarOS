@@ -39,7 +39,15 @@ export const Route = createFileRoute("/settlements")({ component: SettlementsDes
 
 type Preset = "today" | "yesterday" | "week" | "month";
 
-const ACK_STORAGE_KEY = "orderking_acknowledged_settlements_v1";
+function parseAcknowledgedSettlements(notes?: string | null): Record<string, string> {
+  const result: Record<string, string> = {};
+  if (!notes) return result;
+  const regex = /ACK_SETTLEMENT:([^@\s|]+)@(\d{4}-\d{2}-\d{2})/g;
+  for (const match of notes.matchAll(regex)) {
+    result[match[1]] = match[2];
+  }
+  return result;
+}
 
 export function SettlementsDesk() {
   const { t } = useI18n();
@@ -56,8 +64,11 @@ export function SettlementsDesk() {
   const [bankLast4Input, setBankLast4Input] = useState("");
   const [savingMandate, setSavingMandate] = useState(false);
 
-  // Settlement Acknowledgement State
-  const [acknowledgedIds, setAcknowledgedIds] = useState<Record<string, string>>({});
+  // Settlement Acknowledgement State (persisted in PostgreSQL rider profile availabilityNotes)
+  const acknowledgedIds = useMemo(
+    () => parseAcknowledgedSettlements(rider?.availabilityNotes),
+    [rider?.availabilityNotes],
+  );
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   // Self-Service Reconciliation Ticket State
@@ -89,39 +100,23 @@ export function SettlementsDesk() {
   }
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(ACK_STORAGE_KEY);
-      if (raw) {
-        setAcknowledgedIds(JSON.parse(raw) as Record<string, string>);
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  useEffect(() => {
     void loadAll(preset);
   }, [preset]);
 
   async function confirmSettlementSeenFn(settlement: Settlement) {
+    if (!rider) {
+      toast.error("Rider profile not loaded. Please retry.");
+      return;
+    }
     setConfirmingId(settlement.id);
     try {
       const stamp = new Date().toISOString();
-      const nextMap = { ...acknowledgedIds, [settlement.id]: stamp };
-      setAcknowledgedIds(nextMap);
-      try {
-        localStorage.setItem(ACK_STORAGE_KEY, JSON.stringify(nextMap));
-      } catch {
-        /* ignore */
-      }
-      if (rider) {
-        const updated = await saveProfileFn({
-          data: {
-            availabilityNotes: `${rider.availabilityNotes ? `${rider.availabilityNotes} | ` : ""}ACK_SETTLEMENT:${settlement.id}@${stamp.slice(0, 10)}`,
-          },
-        });
-        setRider(updated);
-      }
+      const updated = await saveProfileFn({
+        data: {
+          availabilityNotes: `${rider.availabilityNotes ? `${rider.availabilityNotes} | ` : ""}ACK_SETTLEMENT:${settlement.id}@${stamp.slice(0, 10)}`,
+        },
+      });
+      setRider(updated);
       toast.success(`Settlement batch ${settlement.id.slice(0, 8)} acknowledged in Order King Partner Ledger.`);
     } catch (e) {
       toast.error(errorMessage(e, t("actionNotConfirmed")));

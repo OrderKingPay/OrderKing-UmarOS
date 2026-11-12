@@ -440,8 +440,33 @@ describe("OrderKing Customer Payment Security — Red-Team & Blue-Team Verificat
     });
 
     it("rejects webhook settlement when provider amount does not match invoice amount", () => {
-      const invoices: ClientInvoiceRecord[] = structuredClone(INITIAL_CLIENT_INVOICES);
-      const target = invoices[1]!;
+      const invoices: ClientInvoiceRecord[] = [
+        {
+          id: "INV-TEST-SEC-001",
+          clientName: "Test Client",
+          clientEmail: "billing@example.com",
+          projectName: "Test Settlement",
+          items: [
+            {
+              id: "ITEM-1",
+              description: "Milestone",
+              quantity: 1,
+              unitPriceInr: 74500,
+              totalInr: 74500,
+            },
+          ],
+          subtotalInr: 74500,
+          taxInr: 0,
+          totalInr: 74500,
+          paymentMethod: "UPI_DIRECT",
+          status: "ESCROW_LOCKED",
+          paymentLink: "upi://pay?pa=9395065587@ybl&am=74500&cu=INR",
+          qrPayload: "upi://pay?pa=9395065587@ybl&am=74500&cu=INR",
+          issuedAt: new Date().toISOString(),
+          reconciled: false,
+        },
+      ];
+      const target = invoices[0]!;
       const mismatchedWebhook: PaymentWebhookPayload = {
         eventId: "EVT_MISMATCH_001",
         provider: "RAZORPAY",

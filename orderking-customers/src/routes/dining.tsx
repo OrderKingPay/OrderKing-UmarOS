@@ -1,21 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import {
   Utensils,
   Calendar,
   Clock,
-  Sparkles,
-  MapPin,
   ChevronRight,
   Store,
   ShieldCheck,
   CheckCircle2,
-  Users,
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DiningOutReservationModal } from "@/components/market/dining-out-reservation";
 import { useLocationStore } from "@/lib/stores/location";
 
 export const Route = createFileRoute("/dining")({
@@ -24,7 +18,6 @@ export const Route = createFileRoute("/dining")({
 
 function DiningPage() {
   const location = useLocationStore((s) => s.location);
-  const [reservationModalOpen, setReservationModalOpen] = useState(false);
 
   return (
     <CustomerShell>
@@ -58,13 +51,13 @@ function DiningPage() {
               </p>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
-                <Button
-                  onClick={() => setReservationModalOpen(true)}
-                  className="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-zinc-950 font-black shadow-md hover:scale-105 transition"
+                <Link
+                  to="/"
+                  className="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-zinc-950 font-black shadow-md hover:scale-105 transition px-4 py-2 text-xs inline-flex items-center"
                 >
                   <Calendar className="size-4 mr-1.5" />
-                  Table Reservation Enquiry
-                </Button>
+                  Select Restaurant to Reserve Table
+                </Link>
                 <Link
                   to="/"
                   className="rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white px-4 py-2 text-xs font-bold transition backdrop-blur-md inline-flex items-center"
@@ -121,18 +114,17 @@ function DiningPage() {
                 <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 font-bold">
                   <Calendar className="size-5" />
                 </div>
-                <h3 className="text-sm font-bold text-fg">Special Event Booking</h3>
+                <h3 className="text-sm font-bold text-fg">Restaurant Table Booking</h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  Planning a family gathering, business dinner, or celebration? Submit a reservation enquiry directly to our desk.
+                  Open any participating restaurant page to request a table directly with the venue.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setReservationModalOpen(true)}
+                <Link
+                  to="/"
                   className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline pt-1"
                 >
-                  <span>Submit Reservation Enquiry</span>
+                  <span>Browse Restaurants</span>
                   <ChevronRight className="size-3" />
-                </button>
+                </Link>
               </div>
 
               <div className="rounded-2xl border border-border/80 bg-surface-2/50 p-5 space-y-3">
@@ -166,16 +158,6 @@ function DiningPage() {
           </div>
         </div>
       </div>
-
-      {/* Table Reservation Modal */}
-      <DiningOutReservationModal
-        isOpen={reservationModalOpen}
-        onClose={() => setReservationModalOpen(false)}
-        restaurantId="dining-onboarding"
-        restaurantName={`Dine Out Partner Desk (${location.cityName || "Barak Valley"})`}
-        restaurantArea={location.zoneName || "City Center"}
-        cuisineSummary="Fine Dining & Table Reservations"
-      />
     </CustomerShell>
   );
 }

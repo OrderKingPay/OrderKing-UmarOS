@@ -8,6 +8,7 @@ import {
   Languages,
   UtensilsCrossed,
   Plane,
+  Train,
   GraduationCap,
   Briefcase,
   Sparkles,
@@ -74,13 +75,13 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
 export const PLATFORM_ECOSYSTEM_TABS = SOVEREIGN_ECOSYSTEM_TABS;
 
 export const POPULAR_INDIAN_DISH_CHIPS = [
-  { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "बिरयानी", bengali: "বিরিয়ানি" },
-  { name: "Momos", query: "Momos", emoji: "🥟", hindi: "मोमोज", bengali: "মোমো" },
-  { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", hindi: "बटर चिकन", bengali: "বাটার চিকেন" },
-  { name: "Dosa", query: "Dosa", emoji: "🥞", hindi: "दोसा", bengali: "দোসা" },
-  { name: "Paneer", query: "Paneer", emoji: "🧀", hindi: "पनीर", bengali: "পনির" },
-  { name: "Thali", query: "Thali", emoji: "🍽️", hindi: "थाली", bengali: "থালি" },
-  { name: "Rolls", query: "Rolls", emoji: "🌯", hindi: "काठी रोल", bengali: "কাঠি রোল" },
+  { name: "Biryani", query: "Biryani", hindi: "बिरयानी", bengali: "বিরিয়ানি" },
+  { name: "Momos", query: "Momos", hindi: "मोमोज", bengali: "মোমো" },
+  { name: "Butter Chicken", query: "Butter Chicken", hindi: "बटर चिकन", bengali: "বাটার চিকেন" },
+  { name: "Dosa", query: "Dosa", hindi: "दोसा", bengali: "দোসা" },
+  { name: "Paneer", query: "Paneer", hindi: "पनीर", bengali: "পনির" },
+  { name: "Thali", query: "Thali", hindi: "थाली", bengali: "থালি" },
+  { name: "Rolls", query: "Rolls", hindi: "काठी रोल", bengali: "কাঠি রোল" },
 ];
 
 export function CustomerShell({
@@ -267,9 +268,9 @@ export function CustomerShell({
             )}
           </div>
 
-          {/* Row 1 Center: Fork & Spoon "Food" and KingPay Symbol Pill '✈️ 🚆 🎓' */}
+          {/* Row 1 Center: Fork & Spoon "Food" and KingPay Travel & Tutor Pill */}
           <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-            {/* Minimal Micro-Pill 1: Food Delivery ( 🍔 ) */}
+            {/* Minimal Micro-Pill 1: Food Delivery */}
             <Link
               to="/"
               title="OrderKing Food Delivery"
@@ -285,11 +286,11 @@ export function CustomerShell({
                     : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
               )}
             >
-              <span className="text-sm sm:text-base leading-none select-none">🍔</span>
+              <UtensilsCrossed className="size-3.5 sm:size-4 shrink-0" aria-hidden="true" />
               <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
             </Link>
 
-            {/* KingPay Mode: ONLY '✈️ 🚆 🎓' with no text */}
+            {/* KingPay Mode: Travel & AI Tutor */}
             <Link
               to="/travel"
               title="KingPay Super-App (Flights, Trains, AI Tutor)"
@@ -305,7 +306,11 @@ export function CustomerShell({
                     : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
               )}
             >
-              <span className="text-xs sm:text-sm tracking-wider leading-none select-none">✈️ 🚆 🎓</span>
+              <span className="inline-flex items-center gap-1.5 leading-none select-none" aria-hidden="true">
+                <Plane className="size-3.5 shrink-0" />
+                <Train className="size-3.5 shrink-0" />
+                <GraduationCap className="size-3.5 shrink-0" />
+              </span>
             </Link>
           </nav>
 

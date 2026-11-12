@@ -32,14 +32,16 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
      1. TOP HEADER AUDIT (shell.tsx)
      ===================================================================== */
   describe("1. Top Header Audit & Micro-Pill Invariants", () => {
-    it("renders Minimal Symbol Pills '( 🍔 )' and '( ✈️ 🚆 🎓 )' in center navigation", () => {
+    it("renders Lucide icon pills for Food Delivery and Flights, Trains, AI Tutor in center navigation", () => {
       // Pill 1: Food Delivery
-      expect(shellCode).toContain("🍔");
+      expect(shellCode).toContain("<UtensilsCrossed");
       expect(shellCode).toContain('title="OrderKing Food Delivery"');
       expect(shellCode).toContain('to="/"');
 
       // Pill 2: Super-App (Travel & AI Tutor)
-      expect(shellCode).toContain("✈️ 🚆 🎓");
+      expect(shellCode).toContain("<Plane");
+      expect(shellCode).toContain("<Train");
+      expect(shellCode).toContain("<GraduationCap");
       expect(shellCode).toContain('title="KingPay Super-App (Flights, Trains, AI Tutor)"');
       expect(shellCode).toContain('to="/travel"');
     });
@@ -98,8 +100,8 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
 
     it("supports ultra-narrow mobile viewports (320px) without text clipping or layout shift", () => {
       // Micro-labels for <= 380px screens
-      expect(bottomNavCode).toContain("🧳 Bookings");
-      expect(bottomNavCode).toContain("📋 Orders");
+      expect(bottomNavCode).toContain('"Bookings"');
+      expect(bottomNavCode).toContain('"Orders"');
       expect(bottomNavCode).toContain("xs:hidden");
       expect(bottomNavCode).toContain("hidden xs:inline");
     });
@@ -123,48 +125,48 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
   describe("3. Core Hub Luxury Power Tiles Audit", () => {
     it("renders the 9 pure luxury 3D power tiles in KingPay Super-App Experience", () => {
       // Tile 1: Flights
-      expect(kingpayExperienceCode).toContain("✈️");
+      expect(kingpayExperienceCode).toContain("<Plane");
       expect(kingpayExperienceCode).toContain("Flights");
       expect(kingpayExperienceCode).toContain("/travel?tab=flights");
 
       // Tile 2: Trains
-      expect(kingpayExperienceCode).toContain("🚆");
+      expect(kingpayExperienceCode).toContain("<Train");
       expect(kingpayExperienceCode).toContain("Trains");
       expect(kingpayExperienceCode).toContain("/travel?tab=trains");
 
       // Tile 3: Hotels
-      expect(kingpayExperienceCode).toContain("🏨");
+      expect(kingpayExperienceCode).toContain("<Building2");
       expect(kingpayExperienceCode).toContain("Hotels");
       expect(kingpayExperienceCode).toContain("/travel?tab=hotels");
 
       // Tile 4: Tours & Pilgrimage / Holiday Tours
-      expect(kingpayExperienceCode).toMatch(/🌍|🕋 \/ 🛕/);
+      expect(kingpayExperienceCode).toContain("<Landmark");
       expect(kingpayExperienceCode).toMatch(/Holiday Tours|Tours &amp; Pilgrimage/);
       expect(kingpayExperienceCode).toMatch(/\/travel\?tab=(tours|pilgrimage)/);
 
       // Tile 5: King AI Tutor
-      expect(kingpayExperienceCode).toContain("🎓");
+      expect(kingpayExperienceCode).toContain("<GraduationCap");
       expect(kingpayExperienceCode).toContain("King AI Tutor");
       expect(kingpayExperienceCode).toContain("Academic Tutor");
       expect(kingpayExperienceCode).toContain('to="/tutor"');
 
       // Tile 6: King Jobs
-      expect(kingpayExperienceCode).toContain("💼");
+      expect(kingpayExperienceCode).toContain("<Briefcase");
       expect(kingpayExperienceCode).toContain("King Jobs");
       expect(kingpayExperienceCode).toContain('to="/tutor-jobs"');
 
       // Tile 7: My Garage
-      expect(kingpayExperienceCode).toContain("🚗");
+      expect(kingpayExperienceCode).toContain("<Car");
       expect(kingpayExperienceCode).toContain("My Garage");
       expect(kingpayExperienceCode).toContain('setActiveDesk("garage")');
 
       // Tile 8: Daily Bills
-      expect(kingpayExperienceCode).toContain("⚡");
+      expect(kingpayExperienceCode).toContain("<Lightbulb");
       expect(kingpayExperienceCode).toContain("Daily Bills");
       expect(kingpayExperienceCode).toContain('setActiveDesk("bills")');
 
       // Tile 9: Local Parcel & Courier
-      expect(kingpayExperienceCode).toMatch(/📦|💰/);
+      expect(kingpayExperienceCode).toContain("<Package");
       expect(kingpayExperienceCode).toContain("Local Parcel &amp; Courier");
       expect(kingpayExperienceCode).toMatch(/\/parcel|setActiveDesk\("wealth"\)/);
     });
@@ -253,8 +255,8 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
     });
 
     it("verifies Garage vehicle cards feature 15-Day Alert badge and PUC countdown", () => {
-      expect(kingpayExperienceCode).toContain("🚨 15-Day Alert: Expires in");
-      expect(kingpayExperienceCode).toContain("⚠️");
+      expect(kingpayExperienceCode).toContain("15-Day Alert: Expires in");
+      expect(kingpayExperienceCode).toContain("AlertTriangle");
       expect(kingpayExperienceCode).toContain("d left");
     });
 

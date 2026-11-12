@@ -108,8 +108,7 @@ export function MediaProductionStudio() {
       setSavedConfig(config);
       toast.success("Menu and promo copy settings saved.");
     } catch {
-      setSavedConfig(config);
-      toast.success("Promo copy settings updated.");
+      toast.error("Failed to save promo copy settings to browser storage.");
     }
   };
 

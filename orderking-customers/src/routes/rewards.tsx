@@ -1,250 +1,41 @@
-
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { ArrowRight, CreditCard, MapPin, Tag } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { useLocationStore } from "@/lib/stores/location";
-import { getLoyalty } from "@/lib/server/account";
+import { useCartStore } from "@/lib/stores/cart";
+import { getLoyalty, listPromos } from "@/lib/server/account";
+import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
 import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
-type AllianceReward = {
-  id: string;
-  category: "all" | "orderking" | "ecommerce" | "fuel" | "edtech";
-  brand: string;
-  title: string;
-  description: string;
-  code: string;
-  coinsRequired: number;
-  valueLabel: string;
-  badge: string;
-  icon: string;
-  terms: string;
-  affiliateUrl: string;
-  supportedCities: string[]; // ["ALL"] or specific city IDs like ["city_sribhumi", "city_silchar", "city_karimganj"]
-};
-
-const ALLIANCE_REWARDS: AllianceReward[] = [
-  {
-    id: "ok_food_discount_50",
-    category: "orderking",
-    brand: "OrderKing Loyalty",
-    title: "Flat ₹50 OFF on Food Order",
-    description: "Redeem King Coins for an instant discount on your next delicious meal.",
-    code: "KINGFOOD50",
-    coinsRequired: 250,
-    valueLabel: "Save ₹50",
-    badge: "Food Reward",
-    icon: "🍔",
-    terms: "Valid on min order of ₹249 on OrderKing app. Applied directly at checkout.",
-    affiliateUrl: "/",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ok_free_delivery",
-    category: "orderking",
-    brand: "OrderKing Express",
-    title: "Free Doorstep Delivery",
-    description: "100% waiver on doorstep delivery fees for food and grocery orders.",
-    code: "KINGFREEDEL",
-    coinsRequired: 150,
-    valueLabel: "fast delivery",
-    badge: "Free Delivery",
-    icon: "🚀",
-    terms: "Valid on orders above ₹199 across active delivery zones.",
-    affiliateUrl: "/",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ok_referral_milestone",
-    category: "orderking",
-    brand: "OrderKing Club",
-    title: "₹100 Referral Milestone Feast",
-    description: "Milestone discount for inviting friends to experience OrderKing.",
-    code: "FEAST100",
-    coinsRequired: 500,
-    valueLabel: "Save ₹100",
-    badge: "Referral Reward",
-    icon: "🎁",
-    terms: "Valid on minimum food order of ₹499.",
-    affiliateUrl: "/rewards",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "amazon_deals",
-    category: "ecommerce",
-    brand: "Amazon India",
-    title: "Up to 60% OFF + Extra Cashback",
-    description: "Save big on electronics, home essentials, and pantry items on Amazon.",
-    code: "AMAZONKING",
-    coinsRequired: 200,
-    valueLabel: "Up to 60% OFF",
-    badge: "Amazon Deal",
-    icon: "📦",
-    terms: "Exclusive affiliate deals for OrderKing members across all pin codes in India.",
-    affiliateUrl: "https://www.amazon.in?tag=orderking-21",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "flipkart_deals",
-    category: "ecommerce",
-    brand: "Flipkart",
-    title: "Flat ₹150 OFF on Top Brands",
-    description: "Special savings on smartphones, electronics, and fashion orders.",
-    code: "FLIPKARTKING",
-    coinsRequired: 300,
-    valueLabel: "Flat ₹150 OFF",
-    badge: "Flipkart Deal",
-    icon: "🛍️",
-    terms: "Valid on min order of ₹999 on Flipkart website and app.",
-    affiliateUrl: "https://www.flipkart.com?affid=orderking",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "meesho_deals",
-    category: "ecommerce",
-    brand: "Meesho",
-    title: "Wholesale Prices + Extra 15% OFF",
-    description: "Direct wholesale pricing on trending fashion, home decor, and daily lifestyle items.",
-    code: "MEESHOKING",
-    coinsRequired: 150,
-    valueLabel: "15% Extra OFF",
-    badge: "Meesho Deal",
-    icon: "🛒",
-    terms: "Direct factory prices with free cash on delivery on Meesho.",
-    affiliateUrl: "https://meesho.com?ref=orderking",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "hp_fuel",
-    category: "fuel",
-    brand: "HPCL (HP Pay)",
-    title: "₹50 HPCL Petrol Refill Voucher",
-    description: "Save ₹50 on fuel refills via HP Pay app at all HPCL petrol pumps.",
-    code: "HPFUEL50",
-    coinsRequired: 500,
-    valueLabel: "Worth ₹50 Fuel",
-    badge: "Fuel Voucher",
-    icon: "⛽",
-    terms: "Valid on min ₹300 fuel refill at partner HPCL pumps in Karimganj, Silchar & Sribhumi.",
-    affiliateUrl: "https://hppay.in?ref=orderking",
-    supportedCities: ["city_sribhumi", "city_silchar", "city_karimganj"],
-  },
-  {
-    id: "iocl_fuel",
-    category: "fuel",
-    brand: "IndianOil (IOCL ONE)",
-    title: "₹50 IndianOil Petrol Voucher",
-    description: "Instant QR voucher redeemable at all IndianOil pumps with XTRAREWARDS.",
-    code: "IOCL50",
-    coinsRequired: 500,
-    valueLabel: "Worth ₹50 Fuel",
-    badge: "Fuel Voucher",
-    icon: "🛢️",
-    terms: "Valid on min ₹300 fuel refill at IndianOil stations nationwide.",
-    affiliateUrl: "https://iocl.com/indianoil-one?ref=orderking",
-    supportedCities: ["city_sribhumi", "city_silchar", "city_karimganj"],
-  },
-  {
-    id: "bpcl_fuel",
-    category: "fuel",
-    brand: "BPCL SmartDrive",
-    title: "₹100 BPCL Octane Fuel Cashback",
-    description: "Save ₹100 on premium Speed petrol or diesel refills via BPCL SmartDrive.",
-    code: "BPOCTANE100",
-    coinsRequired: 1000,
-    valueLabel: "Worth ₹100 Fuel",
-    badge: "Fuel Cashback",
-    icon: "⛽",
-    terms: "Valid on min ₹1,000 fuel refill at Bharat Petroleum highway and city outlets.",
-    affiliateUrl: "https://bharatpetroleum.in?ref=orderking",
-    supportedCities: ["city_sribhumi", "city_silchar", "city_karimganj"],
-  },
-  {
-    id: "fastag_fuel_waiver",
-    category: "fuel",
-    brand: "NETC FASTag Fuel Pay",
-    title: "1% Highway Fuel Surcharge Waiver",
-    description: "100% waiver on fuel surcharges when paying via FASTag at partner HPCL/IOCL highway pumps.",
-    code: "FASTAGFREE",
-    coinsRequired: 200,
-    valueLabel: "1% Surcharge Free",
-    badge: "🚗 Highway Pass",
-    icon: "🚗",
-    terms: "Valid on all vehicle FASTag recharges completed through KingPay BBPS switch.",
-    affiliateUrl: "https://paytm.com/fastag-recharge?ref=orderking",
-    supportedCities: ["ALL"],
-  },
-  {
-    id: "ai_course",
-    category: "edtech",
-    brand: "AI Learning Academy",
-    title: "Scholarship AI & Python Masterclass",
-    description: "Comprehensive beginner-to-advanced Generative AI & Python certification course.",
-    code: "AIKINGSCHOLAR",
-    coinsRequired: 1000,
-    valueLabel: "Worth ₹1,999",
-    badge: "Course Access",
-    icon: "🤖",
-    terms: "Full lifetime access with certificate. Sponsored by national EdTech alliance partner.",
-    affiliateUrl: "https://orderking.in/courses/ai-masterclass?ref=affiliate",
-    supportedCities: ["ALL"],
-  },
-];
-
 function RewardsPage() {
   const { user } = useCurrentUserState();
   const location = useLocationStore((s) => s.location);
+  const setCoupon = useCartStore((s) => s.setCoupon);
+
   const loyalty = useQuery({
     queryKey: ["loyalty"],
     queryFn: () => getLoyalty(),
     enabled: Boolean(user),
   });
 
-  const [activeTab, setActiveTab] = useState<"all" | "orderking" | "ecommerce" | "fuel" | "edtech">("all");
-  const [unlockedCodes, setUnlockedCodes] = useState<Record<string, boolean>>({});
-
-  // User's King Coins (10 coins per ₹1 spent, strictly from verified loyalty balance)
-  const basePoints = user ? (loyalty.data?.loyalty.points ?? 0) : 0;
-  const userCoins = basePoints * 10;
-
-  // Location-aware filtering algorithm:
-  // If an offer is restricted to specific cities, check if user's current city matches.
-  // If not supported, seamlessly hide it from the customer view (zero confusing error text).
-  const locationFilteredRewards = ALLIANCE_REWARDS.filter((reward) => {
-    if (reward.supportedCities.includes("ALL")) return true;
-    const currentCityId = location.cityId?.toLowerCase() ?? "";
-    const currentCityName = location.cityName?.toLowerCase() ?? "";
-    return reward.supportedCities.some(
-      (c) =>
-        currentCityId.includes(c) ||
-        currentCityName.includes("karimganj") ||
-        currentCityName.includes("silchar") ||
-        currentCityName.includes("sribhumi")
-    );
+  const promos = useQuery({
+    queryKey: ["promos"],
+    queryFn: () => listPromos(),
   });
 
-  const finalRewards = activeTab === "all"
-    ? locationFilteredRewards
-    : locationFilteredRewards.filter((r) => r.category === activeTab);
-
-  const handleUnlock = (reward: AllianceReward) => {
-    if (userCoins < reward.coinsRequired && !unlockedCodes[reward.id]) {
-      toast.error(`You need ${reward.coinsRequired.toLocaleString()} King Coins to claim this perk.`);
-      return;
-    }
-    setUnlockedCodes((prev) => ({ ...prev, [reward.id]: true }));
-    void navigator.clipboard?.writeText(reward.code);
-    toast.success(`Coupon code ${reward.code} copied!`);
-  };
+  const basePoints = user ? (loyalty.data?.loyalty.points ?? 0) : 0;
+  const userCoins = basePoints * 10;
+  const activePromos = promos.data?.promos ?? [];
 
   return (
     <CustomerShell>
-      <div className="px-4 py-5 space-y-6">
+      <div className="px-4 py-5 space-y-6 pb-28">
         {/* Header Vault Card */}
         <div className="relative overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-surface to-amber-500/5 p-5 shadow-sm">
           <div className="flex items-center justify-between">
@@ -256,7 +47,7 @@ function RewardsPage() {
                 Your King Coins
               </h1>
               <p className="text-xs text-muted">
-                Earn 10 King Coins for every ₹1 spent on food orders
+                Earned from completed food orders
               </p>
             </div>
             <div className="text-right">
@@ -271,12 +62,13 @@ function RewardsPage() {
 
           <div className="mt-4 flex items-center justify-between border-t border-amber-500/20 pt-3 text-xs">
             <div className="flex items-center gap-1.5">
-              <span>📍</span>
+              <MapPin className="size-3.5 text-amber-600" />
               <span className="font-semibold text-fg">{location.cityName || "Barak Valley"}</span>
               <span className="text-muted">({location.zoneName || "Current Zone"})</span>
             </div>
-            <Link to="/king-pay" className="font-medium text-primary hover:underline">
-              KingPay Hub →
+            <Link to="/king-pay" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+              <span>KingPay Hub</span>
+              <ArrowRight className="size-3.5" />
             </Link>
           </div>
         </div>
@@ -284,10 +76,12 @@ function RewardsPage() {
         {/* KingPay Quick Access Banner */}
         <div className="flex items-center justify-between rounded-xl border border-primary/30 bg-primary/5 p-3 text-xs">
           <div className="flex items-center gap-2.5">
-            <span className="text-xl">💳</span>
+            <div className="flex size-9 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <CreditCard className="size-4" />
+            </div>
             <div>
-              <p className="font-semibold text-fg">KingPay Fintech Hub</p>
-              <p className="text-muted">Recharges, Bill Pay, Train & Bus Tickets with extra cashback</p>
+              <p className="font-semibold text-fg">KingPay Wallet &amp; Bill Payments</p>
+              <p className="text-muted">UPI payments, recharges, and utility bill payments</p>
             </div>
           </div>
           <Button size="sm" variant="primary" asChild>
@@ -298,116 +92,76 @@ function RewardsPage() {
         {/* Referral Program */}
         <WhatsAppViralBountiesWidget source="rewards_vault" />
 
-        {/* Category Filters */}
-        <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
-          {(
-            [
-              { id: "all", label: "All Perks" },
-              { id: "orderking", label: "OrderKing Loyalty" },
-              { id: "ecommerce", label: "🛍️ E-Commerce" },
-              { id: "fuel", label: "⛽ Fuel Alliance" },
-              { id: "edtech", label: "🎓 AI Courses" },
-            ] as const
-          ).map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 font-medium transition ${
-                activeTab === tab.id
-                  ? "bg-primary text-fg shadow-xs"
-                  : "bg-surface text-muted hover:bg-surface-2"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Alliance Rewards Grid */}
+        {/* Live Database Promotions */}
         <div className="space-y-3">
-          {finalRewards.map((reward) => {
-            const isUnlocked = unlockedCodes[reward.id];
-            return (
-              <div
-                key={reward.id}
-                className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs transition hover:border-primary/30"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3">
-                    <span className="flex size-11 items-center justify-center rounded-xl bg-surface-2 text-2xl">
-                      {reward.icon}
-                    </span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-muted">
-                          {reward.brand}
-                        </span>
-                        <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[10px] font-bold text-primary">
-                          {reward.badge}
-                        </span>
-                      </div>
-                      <h3 className="mt-0.5 font-semibold text-sm text-fg">
-                        {reward.title}
-                      </h3>
-                      <p className="mt-0.5 text-xs text-muted">
-                        {reward.description}
-                      </p>
-                      <p className="mt-1 text-[11px] text-muted italic">
-                        {reward.terms}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-bold text-fg flex items-center gap-2">
+              <Tag className="size-4 text-primary" />
+              <span>Active Platform &amp; Restaurant Offers</span>
+            </h2>
+            <Link to="/offers" className="text-xs font-medium text-primary hover:underline">
+              View All
+            </Link>
+          </div>
 
-                <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-                      🪙 {reward.coinsRequired.toLocaleString()} Coins
-                    </span>
-                    <span className="text-[11px] text-muted">({reward.valueLabel})</span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {isUnlocked ? (
-                      <span className="rounded border border-dashed border-emerald-500 bg-emerald-500/10 px-2 py-1 font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                        {reward.code}
+          {promos.isPending ? (
+            <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 text-xs text-muted">
+              Loading active promotions...
+            </div>
+          ) : activePromos.length === 0 ? (
+            <div className="rounded-[var(--radius-xl)] border border-border bg-surface p-5 text-center space-y-2">
+              <p className="font-semibold text-sm text-fg">No active promo codes right now</p>
+              <p className="text-xs text-muted">
+                Active restaurant and platform promo codes will appear here once published.
+              </p>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/offers">Check Offers</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {activePromos.map((promo) => (
+                <div
+                  key={promo.id}
+                  className="rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                        {promo.fundedBy === "RESTAURANT"
+                          ? "Restaurant Offer"
+                          : promo.fundedBy === "PLATFORM"
+                            ? "Platform Offer"
+                            : "Partner Offer"}
                       </span>
-                    ) : (
+                      <span className="text-[11px] text-muted">
+                        Min order: {formatPaise(promo.minOrderPaise)}
+                      </span>
+                    </div>
+                    <h3 className="mt-1 font-semibold text-sm text-fg">{promo.name}</h3>
+                  </div>
+
+                  {promo.code && (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="rounded border border-dashed border-amber-400 bg-amber-500/10 px-2.5 py-1 font-mono text-xs font-bold text-fg">
+                        {promo.code}
+                      </span>
                       <Button
                         size="sm"
                         variant="primary"
-                        onClick={() => handleUnlock(reward)}
+                        onClick={() => {
+                          setCoupon(promo.code!);
+                          toast.success(`Coupon ${promo.code} applied to cart.`);
+                        }}
                       >
-                        Unlock Code
+                        Apply
                       </Button>
-                    )}
-
-                    <a
-                      href={reward.affiliateUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => {
-                        toast.success(`Opening ${reward.brand} affiliate portal...`);
-                      }}
-                      className="inline-flex items-center gap-1 rounded-lg bg-surface-2 px-2.5 py-1.5 text-xs font-medium text-fg hover:bg-surface-3 transition"
-                    >
-                      <span>Shop with Link</span>
-                      <span>↗</span>
-                    </a>
-                  </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Zero-Loss Guardrail Notice */}
-        <div className="rounded-[var(--radius-lg)] border border-border bg-surface-2/40 p-3 text-center text-xs text-muted">
-          <p className="font-semibold text-fg">OrderKing Rewards</p>
-          <p className="mt-0.5 text-[11px]">
-            Redeem King Coins earned on food orders for discounts and partner benefits.
-          </p>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </CustomerShell>

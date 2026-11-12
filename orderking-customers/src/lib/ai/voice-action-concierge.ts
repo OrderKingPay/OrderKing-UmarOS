@@ -1,5 +1,5 @@
 /**
- * 🎙️ ORDERKING / KINGPAY AI VOICE ACTION CONCIERGE ENGINE
+ * ORDERKING / KINGPAY AI VOICE ACTION CONCIERGE ENGINE
  * orderking-customers/src/lib/ai/voice-action-concierge.ts
  *
  * Council Directive & Statutory Invariants:

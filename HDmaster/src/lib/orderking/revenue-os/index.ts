@@ -109,77 +109,7 @@ export class PremiumRevenueOperatingSystem {
 
   private loopTransitions: OperatingLoopTransition[] = [];
 
-  constructor() {
-    this.seedLoopTransitions();
-  }
-
-  private seedLoopTransitions() {
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "MARKET_DISCOVERY",
-      toStage: "OPPORTUNITY_DISCOVERY",
-      actor: "AI_RADAR",
-      evidence: ["Scanned 14 local food merchants in Silchar/Karimganj"],
-      metadata: { target: "Royal Darbar Palace" },
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "OPPORTUNITY_DISCOVERY",
-      toStage: "QUALIFICATION",
-      actor: "AI_EVALUATOR",
-      evidence: ["Identified ₹5.18L/mo commission loss to legacy aggregators"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "QUALIFICATION",
-      toStage: "VALUE_SKILL_MATCH",
-      actor: "AI_EVALUATOR",
-      evidence: ["OrderKing Next.js 15 + King Pay UPI maps 100% to requirement"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "VALUE_SKILL_MATCH",
-      toStage: "PROPOSAL",
-      actor: "FOUNDER",
-      evidence: ["Proposal for ₹1,49,999 with 50% milestone advance delivered"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "PROPOSAL",
-      toStage: "CONTRACT_APPROVAL",
-      actor: "FOUNDER",
-      evidence: ["Signed 14-day SLA delivery contract CTR-8801"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "CONTRACT_APPROVAL",
-      toStage: "WORK_ACQUISITION",
-      actor: "FOUNDER",
-      evidence: ["Deposit agreement formed; work scheduled in delivery factory"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "WORK_ACQUISITION",
-      toStage: "INVOICE",
-      actor: "FOUNDER",
-      evidence: ["Invoice INV-8801 issued for ₹74,999 advance"],
-    });
-
-    this.recordTransition({
-      opportunityId: "OPP-003",
-      fromStage: "INVOICE",
-      toStage: "VERIFIED_REVENUE",
-      actor: "BANK_WEBHOOK",
-      evidence: ["Bank settlement UTR 908234710293 verified into founder account"],
-      metadata: { amountInr: 74999, vpa: "9395065587@ybl" },
-    });
-  }
+  constructor() {}
 
   recordTransition(params: {
     opportunityId: string;
@@ -237,7 +167,7 @@ export class PremiumRevenueOperatingSystem {
     const forecastedInr = Math.round(estimatedPipelineInr * 0.65); // 65% historical conversion factor
     const knownCostsInr = this.costControl.getTotalMonthlyExpensesInr();
     const netRevenueInr = verifiedInr - knownCostsInr;
-    const recurringRevenueInr = 14999 * 2; // Active monthly retainers
+    const recurringRevenueInr = 0;
 
     const integrity = await this.truthDb.verifyLedgerIntegrity();
 
@@ -257,11 +187,11 @@ export class PremiumRevenueOperatingSystem {
       applicationsCount: this.applications.getApplications().length,
       prospectsCount: this.acquisition.getProspects().length,
       activeProjectsCount: this.delivery.getProjects().length,
-      proposalsCount: 3,
-      contractsCount: 2,
-      invoicesCount: 2,
-      paymentsPendingCount: 1,
-      paymentsReceivedCount: 2,
+      proposalsCount: 0,
+      contractsCount: 0,
+      invoicesCount: 0,
+      paymentsPendingCount: 0,
+      paymentsReceivedCount: 0,
 
       // Zero-fabrication check
       zeroFabricationConfirmed: true,

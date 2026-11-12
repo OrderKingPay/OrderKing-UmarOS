@@ -327,18 +327,18 @@ describe("Supreme Specialist Mandate: AI Academic Solver & EdTech Audit Suite", 
     });
   });
 
-  describe("Directive 4: EdTech Affiliate Links & Zero-Hallucination Guardrails", () => {
-    it("verifies EdTech alliance affiliate partner in rewards.tsx", () => {
+  describe("Directive 4: Live Promotions & Zero-Hallucination Guardrails", () => {
+    it("verifies rewards.tsx uses live database promos and excludes hardcoded EdTech affiliate sponsors", () => {
       const rewardsCode = readFileSync(
         new URL("../routes/rewards.tsx", import.meta.url),
         "utf8"
       );
 
-      // Verify category and affiliate structure
-      expect(rewardsCode).toContain('category: "edtech"');
-      expect(rewardsCode).toContain("AI Learning Academy");
-      expect(rewardsCode).toContain("affiliateUrl: \"https://orderking.in/courses/ai-masterclass?ref=affiliate\"");
-      expect(rewardsCode).toContain("Sponsored by national EdTech alliance partner.");
+      expect(rewardsCode).toContain("listPromos");
+      expect(rewardsCode).toContain("getLoyalty");
+      expect(rewardsCode).not.toContain("AI Learning Academy");
+      expect(rewardsCode).not.toContain("?ref=affiliate");
+      expect(rewardsCode).not.toContain("Sponsored by national EdTech alliance partner.");
     });
 
     it("verifies zero-hallucination guardrails and purge of all unverified promotional claims", () => {

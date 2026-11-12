@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Mic, Square, Play, Pause, RotateCcw, Trash2, Volume2, Sparkles } from "lucide-react";
+import { Mic, Square, Play, Pause, RotateCcw, Trash2, Bike, ChefHat } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   MAX_VOICE_NOTE_DURATION_SECONDS,
@@ -36,7 +36,7 @@ export function AudioVoiceNote({
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
-  const defaultSample =
+  const defaultHint =
     instructionPrompt ||
     (target === "delivery"
       ? "Ghar ke gate par black bell hai, bell mat bajana baby so raha hai"
@@ -89,7 +89,7 @@ export function AudioVoiceNote({
             recordedAt: new Date().toISOString(),
           };
           setStoreNote(target, newNote);
-          toast.success("Voice note recorded successfully! 🎙️");
+          toast.success("Voice note recorded successfully.");
         };
 
         recorder.start(100);
@@ -152,7 +152,7 @@ export function AudioVoiceNote({
   };
 
   const label = target === "delivery" ? "Delivery Partner Audio Note" : "Kitchen Chef Audio Note";
-  const iconEmoji = target === "delivery" ? "🛵" : "👨‍🍳";
+  const TargetIcon = target === "delivery" ? Bike : ChefHat;
 
   return (
     <div
@@ -161,8 +161,8 @@ export function AudioVoiceNote({
     >
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-400 text-sm">
-            {iconEmoji}
+          <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-400">
+            <TargetIcon className="size-4" aria-hidden="true" />
           </span>
           <div>
             <h4 className="text-xs font-black text-fg">{label}</h4>
@@ -272,7 +272,7 @@ export function AudioVoiceNote({
         /* State 3: Idle 1-Tap Recording Button */
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1">
           <p className="text-xs text-muted leading-relaxed max-w-sm">
-            E.g. <span className="italic text-fg font-medium">&ldquo;{defaultSample}&rdquo;</span>
+            Note hint: <span className="italic text-fg font-medium">&ldquo;{defaultHint}&rdquo;</span>
           </p>
 
           <Button

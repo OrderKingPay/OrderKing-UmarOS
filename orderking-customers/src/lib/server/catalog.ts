@@ -534,3 +534,97 @@ export const searchDishes = createServerFn({ method: "POST" })
     return { dishes: results.slice(0, 40) };
   });
 
+export const createCustomerDiningReservation = createServerFn({ method: "POST" })
+  .validator(
+    (input: {
+      restaurantId: string;
+      guestName: string;
+      guestPhone: string;
+      guestsCount: number;
+      timeSlot: string;
+      date: string;
+      areaPreference: string;
+      occasion?: string;
+    }) => input,
+  )
+  .handler(async ({ data }: any) => {
+    const restaurantId = String(data?.restaurantId ?? "").trim();
+    const guestName = String(data?.guestName ?? "").trim();
+    const guestPhone = String(data?.guestPhone ?? "").trim();
+    const guestsCount = Number(data?.guestsCount ?? 2);
+    const timeSlot = String(data?.timeSlot ?? "").trim();
+    const date = String(data?.date ?? "TODAY").trim();
+    const areaPreference = String(data?.areaPreference ?? "INDOOR").trim();
+    const occasion = data?.occasion ? String(data.occasion).trim() : null;
+
+    if (!restaurantId || restaurantId === "dining-onboarding") {
+      return { ok: false as const, error: "Please select a participating restaurant before booking a table." };
+    }
+    if (!guestName) {
+      return { ok: false as const, error: "Please enter guest name." };
+    }
+    if (guestPhone.replace(/\D/g, "").length < 10) {
+      return { ok: false as const, error: "Please enter a valid 10-digit phone number." };
+    }
+
+    const sql = await getSql();
+    const existing = await sql<{ id: string; name: string }>`
+      select id, name from restaurants where id = ${restaurantId} and active = true limit 1
+    `;
+    if (existing.length === 0) {
+      return { ok: false as const, error: "Selected restaurant is not available for table reservations." };
+    }
+
+    await sql`
+      create table if not exists dining_reservations (
+        id text primary key,
+        restaurant_id text not null references restaurants(id) on delete cascade,
+        booking_ref text not null,
+        guest_name text not null,
+        phone text not null,
+        guests_count integer not null default 2,
+        time_slot text not null,
+        date text not null default 'Today',
+        area_preference text not null,
+        occasion text,
+        status text not null default 'PENDING',
+        assigned_table text,
+        deposit_amount integer not null default 0,
+        platform_fee_percent numeric(5,2) not null default 5.00,
+        platform_fee_amount integer not null default 0,
+        net_restaurant_payable integer not null default 0,
+        merchant_commission_percent numeric(5,2) not null default 0.00,
+        seated_at text,
+        completed_at text,
+        bill_amount integer,
+        notes text,
+        is_walk_in boolean not null default false,
+        created_at timestamptz not null default now(),
+        updated_at timestamptz not null default now()
+      );
+    `;
+
+    const id = `dres_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
+    const tbBuf = new Uint32Array(1);
+    crypto.getRandomValues(tbBuf);
+    const bookingRef = `TB-${100000 + (tbBuf[0] % 900000)}`;
+
+    await sql`
+      insert into dining_reservations (
+        id, restaurant_id, booking_ref, guest_name, phone, guests_count,
+        time_slot, date, area_preference, occasion, status, is_walk_in
+      ) values (
+        ${id}, ${restaurantId}, ${bookingRef}, ${guestName}, ${guestPhone}, ${Math.max(1, Math.min(30, Math.round(guestsCount)))},
+        ${timeSlot}, ${date}, ${areaPreference}, ${occasion}, 'PENDING', false
+      )
+    `;
+
+    return {
+      ok: true as const,
+      id,
+      bookingRef,
+      status: "PENDING",
+      restaurantName: existing[0].name,
+    };
+  });
+

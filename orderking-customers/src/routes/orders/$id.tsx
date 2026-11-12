@@ -3,6 +3,17 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  AlertTriangle,
+  Bike,
+  Clock,
+  Headset,
+  MapPin,
+  MessageSquare,
+  Receipt,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { QuoteLines } from "@/components/market/quote-lines";
 import { LiveDeliveryMap } from "@/components/market/live-delivery-map";
@@ -51,19 +62,19 @@ function OrderDetailPage() {
   const [restaurantRating, setRestaurantRating] = useState(5);
   const [riderRating, setRiderRating] = useState(5);
   const [appRating, setAppRating] = useState(5);
-  const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "Advanced fast delivery"]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "On-time delivery"]);
   const [reviewComment, setReviewComment] = useState("");
   const [splitCount, setSplitCount] = useState(2);
   const [dishReviewOpen, setDishReviewOpen] = useState(false);
 
-  // Gold-Standard Verified Customer Complaint Room State
+  // Order Dispute & Complaint Resolution State
   const [complaintOpen, setComplaintOpen] = useState(false);
   const [complaintCategory, setComplaintCategory] = useState<
     "MISSING_ITEMS" | "SPILLED_FOOD" | "COLD_FOOD" | "DELAYED_DELIVERY" | "RIDER_CONDUCT" | "BILLING_ISSUE"
   >("MISSING_ITEMS");
   const [complaintText, setComplaintText] = useState("");
   const [complaintImage, setComplaintImage] = useState<string | null>(null);
-  const [preferredResolution, setPreferredResolution] = useState<"REFUND" | "REDELIVERY" | "HDMASTER">("REFUND");
+  const [preferredResolution, setPreferredResolution] = useState<"REFUND" | "REDELIVERY" | "OPERATIONS">("REFUND");
   const [submittedComplaint, setSubmittedComplaint] = useState<{
     ticketId: string;
     category: string;
@@ -97,7 +108,7 @@ function OrderDetailPage() {
           ? "Customer requested a refund."
           : preferredResolution === "REDELIVERY"
             ? "Customer requested redelivery."
-            : "Customer requested HDmaster review.";
+            : "Customer requested operations support review.";
       const result = await createTicket({
         data: {
           orderId: id,
@@ -225,8 +236,8 @@ function OrderDetailPage() {
         <div className="mt-4 rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)]">
           <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-900/10">
             <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
-                
+              <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+                <Clock className="size-4" />
               </span>
               <h2 className="font-display font-extrabold text-stone-900 text-base">
                 Live Order Journey
@@ -289,8 +300,8 @@ function OrderDetailPage() {
         {order.deliveryOtp && !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER"].includes(order.status) ? (
           <div className="mt-4 rounded-2xl border-2 border-amber-400/90 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs text-xl">
-                
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs">
+                <ShieldCheck className="size-5" />
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
@@ -307,13 +318,13 @@ function OrderDetailPage() {
           </div>
         ) : null}
 
-        {/* Platinum Delivery Partner Live Card */}
+        {/* Delivery Partner Live Card */}
         {["RIDER_ASSIGNED", "PICKED_UP", "ON_THE_WAY"].includes(order.status) ? (
           <div className="mt-4 rounded-[var(--radius-xl)] border border-border bg-surface p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-xl">
-                  
+                <div className="flex size-11 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Bike className="size-5" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-fg">
@@ -324,14 +335,17 @@ function OrderDetailPage() {
                   <p className="text-xs text-muted">
                     {order.status === "RIDER_ASSIGNED"
                       ? "Reaching restaurant for pickup"
-                      : "Safely delivering your warm food"}
+                      : "Delivering your order to your address"}
                   </p>
                 </div>
               </div>
-              <span className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-muted">
-                <span></span>
-                <span>Call Support</span>
-              </span>
+              <Link
+                to="/support"
+                className="flex items-center gap-1.5 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-fg hover:bg-surface transition"
+              >
+                <Headset className="size-3.5 text-primary" />
+                <span>Support</span>
+              </Link>
             </div>
             {order.notes ? (
               <div className="mt-3 rounded-lg bg-surface-2/60 p-2 text-xs text-muted">
@@ -356,8 +370,8 @@ function OrderDetailPage() {
           <div className="mt-6 space-y-2">
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="flex size-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 text-xs shadow-2xs">
-                  
+                <span className="flex size-6 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600 shadow-2xs">
+                  <MapPin className="size-3.5" />
                 </span>
                 <span className="text-sm font-black text-stone-900">
                   Live Map Tracking
@@ -378,9 +392,7 @@ function OrderDetailPage() {
           </div>
         )}
 
-        
-
-        {/* Dish Review Modal with 3-Photo Upload & ₹25 Gold Reward */}
+        {/* Dish Review Modal */}
         {order.status === "DELIVERED" && (
           <div className="mt-4">
             <Button
@@ -388,11 +400,8 @@ function OrderDetailPage() {
               onClick={() => setDishReviewOpen(true)}
               className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black py-3 rounded-2xl shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 border border-amber-300 transition-all active:scale-98 cursor-pointer"
             >
-              <span className="text-base"></span>
-              <span>Review Dishes &amp; Earn ₹25 Gold Reward</span>
-              <span className="rounded-full bg-stone-950 text-amber-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider">
-                ₹25 Discount
-              </span>
+              <Star className="size-4 fill-stone-950" />
+              <span>Rate &amp; Review Dishes</span>
             </Button>
             <DishReviewModal
               isOpen={dishReviewOpen}
@@ -503,7 +512,6 @@ function OrderDetailPage() {
                   {/* Category 3: Rider & Delivery Speed */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg"></span>
                       <div>
                         <span className="text-xs font-bold text-foreground block">Rider &amp; Delivery</span>
                         <span className="text-[10px] text-muted">Speed, politeness &amp; care</span>
@@ -528,7 +536,6 @@ function OrderDetailPage() {
                   {/* Category 4: Order King App Experience */}
                   <div className="flex items-center justify-between gap-2 p-1.5 rounded-xl bg-surface">
                     <div className="flex items-center gap-2">
-                      
                       <div>
                         <span className="text-xs font-bold text-foreground block">Order King App</span>
                         <span className="text-[10px] text-muted">Ease &amp; speed</span>
@@ -558,12 +565,12 @@ function OrderDetailPage() {
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {[
-                      "Fresh & piping hot ",
-                      "Fast delivery ",
-                      "Polite rider ",
-                      "Leak-proof packaging ",
-                      "Delicious taste ",
-                      "Great value ",
+                      "Fresh & hot",
+                      "On-time delivery",
+                      "Polite rider",
+                      "Leak-proof packaging",
+                      "Delicious taste",
+                      "Great value",
                     ].map((tag) => {
                       const isSelected = selectedTags.includes(tag);
                       return (
@@ -593,7 +600,7 @@ function OrderDetailPage() {
                 <textarea
                   className="w-full rounded-xl border border-border bg-surface p-2.5 text-xs placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
                   rows={2}
-                  placeholder="Anything else you'd like to share? (Your review directly supports local chefs and riders)"
+                  placeholder="Share your feedback about this order..."
                   value={reviewComment}
                   onChange={(e) => setReviewComment(e.target.value)}
                 />
@@ -608,7 +615,7 @@ function OrderDetailPage() {
                   }}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg font-bold py-2 rounded-xl shadow-md transition"
                 >
-                  {submitReview.isPending ? "Submitting..." : "Submit Verified Review (Supports Local Kitchens & Riders) "}
+                  {submitReview.isPending ? "Submitting..." : "Submit Review"}
                 </Button>
               </div>
             )}
@@ -622,8 +629,8 @@ function OrderDetailPage() {
           <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-rose-500/30 bg-gradient-to-br from-rose-500/10 via-surface to-rose-500/5 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-rose-500/20 text-xl">
-                  
+                <span className="flex size-10 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400">
+                  <AlertTriangle className="size-5" />
                 </span>
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -686,8 +693,8 @@ function OrderDetailPage() {
                       { id: "MISSING_ITEMS", label: "Missing / Wrong Dish" },
                       { id: "SPILLED_FOOD", label: "Spilled / Damaged Box" },
                       { id: "COLD_FOOD", label: "Cold / Quality Issue" },
-                      { id: "DELAYED_DELIVERY", label: "⏱️ Excessive Delay" },
-                      { id: "RIDER_CONDUCT", label: " Rider Misbehavior" },
+                      { id: "DELAYED_DELIVERY", label: "Excessive Delay" },
+                      { id: "RIDER_CONDUCT", label: "Rider Misbehavior" },
                       { id: "BILLING_ISSUE", label: "Billing Discrepancy" },
                     ].map((cat) => (
                       <button
@@ -758,8 +765,8 @@ function OrderDetailPage() {
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {[
-                      { id: "REFUND", label: "Instant Wallet Refund", desc: "Credited to KingPay Wallet" },
-                      { id: "REDELIVERY", label: " Priority Redelivery", desc: "Fresh hot dish priority dispatch" },
+                      { id: "REFUND", label: "Wallet Refund Request", desc: "Reviewed against order items" },
+                      { id: "REDELIVERY", label: "Priority Redelivery", desc: "Replacement dish dispatch" },
                       { id: "OPERATIONS", label: "Operations Escalation", desc: "Senior Support Review" },
                     ].map((res) => (
                       <button
@@ -790,7 +797,7 @@ function OrderDetailPage() {
                     className="text-xs font-bold px-4"
                     onClick={handleComplaintSubmit}
                   >
-                    Submit Verified Complaint ➔
+                    Submit Complaint ➔
                   </Button>
                 </div>
               </div>
@@ -851,8 +858,9 @@ function OrderDetailPage() {
         <div className="mt-4 rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-white to-green-500/5 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-zinc-850 p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 text-sm">
-                </span>
+              <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600">
+                <MessageSquare className="size-4" />
+              </span>
               <div>
                 <h3 className="font-semibold text-sm text-emerald-950 dark:text-emerald-100">
                   WhatsApp Kitchen &amp; Dispatch GPS Auto-Bridge
@@ -908,8 +916,9 @@ function OrderDetailPage() {
         {/* Order Bill Invoice */}
         <div className="mt-6 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-900/10">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs shadow-xs">
-              </span>
+            <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+              <Receipt className="size-4" />
+            </span>
             <h2 className="font-display font-extrabold text-stone-900 text-base">{t("orders.invoice")}</h2>
           </div>
           <ul className="mb-3 space-y-1.5 text-sm">

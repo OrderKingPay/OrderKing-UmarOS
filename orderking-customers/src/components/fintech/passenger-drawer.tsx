@@ -167,10 +167,12 @@ export function PassengerDrawer({
         return;
       }
 
-      // Execute sub-second atomic transaction
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      if (!quote.verifiedPaymentToken || !quote.supplierReservationId) {
+        toast.error(SUPPLIER_UNAVAILABLE_MESSAGE);
+        return;
+      }
 
-      // If onDeductWallet is provided, invoke it
+      // If onDeductWallet is provided, invoke it only when supplier reservation is confirmed
       if (paymentMethod === "kingpay_wallet" && onDeductWallet) {
         onDeductWallet?.(
           fareCalc.totalCheckoutPaise,
@@ -178,7 +180,7 @@ export function PassengerDrawer({
         );
       }
 
-      // Generate sovereign ticket with verified supplier & payment token
+      // Generate ticket strictly from confirmed supplier & payment token
       const ticket = issueSovereignETicket({
         quote,
         passengers,
@@ -187,8 +189,8 @@ export function PassengerDrawer({
         rebateDestination: rebateChoice,
         selectedSeats,
         travelDate,
-        verifiedPaymentToken: `KP-PAY-${user.id}-${Date.now()}`,
-        supplierReservationId: `SUP-CONF-${quote.carrierCode || "CRIS"}-${Date.now()}`,
+        verifiedPaymentToken: quote.verifiedPaymentToken,
+        supplierReservationId: quote.supplierReservationId,
         isConfirmedSupplier: true,
       });
 
@@ -525,7 +527,7 @@ export function PassengerDrawer({
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">
-                    Instant cash usable across 10,000+ dining, airport restaurants, and partner food delivery orders.
+                    Usable across participating OrderKing dining and partner delivery orders.
                   </p>
                 </div>
               </label>
@@ -538,7 +540,7 @@ export function PassengerDrawer({
               <span className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <CreditCard className="size-4 text-slate-500" /> In-App Direct Settlement Method
               </span>
-              <span className="text-[11px] text-emerald-600 font-bold">0% Payment Gateway Fee</span>
+              <span className="text-[11px] text-emerald-600 font-bold">Direct Wallet &amp; UPI Options</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

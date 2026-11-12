@@ -62,8 +62,8 @@ export const Route = createFileRoute("/r/$slug")({
           .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
           .join(" ")
       : "Restaurant";
-    const title = `${cleanName} - Food Delivery Near Me | Order Online | OrderKing`;
-    const desc = `Order food online from ${cleanName}. Fast 30-min food delivery, live tracking, and fair pricing on OrderKing.`;
+    const title = `${cleanName} - Food Delivery | Order Online | OrderKing`;
+    const desc = `Order food online from ${cleanName}. Live order tracking and transparent menu pricing on OrderKing.`;
     const pageUrl = `https://orderking.in/r/${slug}`;
     const ogImg = `https://orderking.in/icon-512.png`;
     return {
@@ -340,11 +340,6 @@ function RestaurantPage() {
               </button>
 
               <div className="flex items-center gap-2">
-                {false && (
-                  <Badge tone="warn" className="shadow-md">
-                    {null}
-                  </Badge>
-                )}
                 {restaurant.card.promoted && (
                   <Badge className="bg-amber-500 text-zinc-950 font-bold shadow-md">
                     {t("common.ad") || "Promoted"}
@@ -391,7 +386,7 @@ function RestaurantPage() {
             <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
               <span className="flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-md">
                 <Sparkles className="size-3.5 text-amber-400" />
-                OrderKing Verified Kitchen
+                OrderKing Partner Kitchen
               </span>
               {restaurant.card.vegOnly && (
                 <span className="flex items-center gap-1.5 rounded-full bg-emerald-950/80 backdrop-blur-md border border-emerald-500/50 px-3 py-1 text-xs font-bold text-emerald-300 shadow-md">
@@ -412,7 +407,7 @@ function RestaurantPage() {
                     {restaurant.card.name}
                   </h1>
                   <p className="mt-1 text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    {restaurant.card.cuisineSummary} <span className="text-amber-500">✦</span> {restaurant.area}
+                    {restaurant.card.cuisineSummary} <span className="text-amber-500 mx-1">·</span> {restaurant.area}
                   </p>
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                     {restaurant.hoursLabel}
@@ -424,20 +419,17 @@ function RestaurantPage() {
                   <div className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 px-3.5 py-1.5 text-white shadow-md">
                     <Star className="size-4 fill-white" />
                     <span className="text-base font-black">
-                      {restaurant.card.ratingAvg != null
-                        ? (typeof restaurant.card.ratingAvg === "number"
-                            ? restaurant.card.ratingAvg
-                            : Number(restaurant.card.ratingAvg || 0)
-                          ).toFixed(1)
-                        : "4.8"}
+                      {restaurant.card.ratingAvg != null && Number(restaurant.card.ratingAvg) > 0
+                        ? Number(restaurant.card.ratingAvg).toFixed(1)
+                        : "New"}
                     </span>
                   </div>
                   <div className="text-left">
                     <span className="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
-                      {restaurant.card.ratingCount ? `${restaurant.card.ratingCount}+ ratings` : "1.2k+ ratings"}
+                      {restaurant.card.ratingCount ? `${restaurant.card.ratingCount}+ ratings` : "No ratings yet"}
                     </span>
                     <span className="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                      OrderKing Top 1%
+                      Partner Outlet
                     </span>
                   </div>
                 </div>
@@ -488,7 +480,7 @@ function RestaurantPage() {
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Delivery Fee</span>
                     <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                       {restaurant.card.deliveryFeePaise === 0
-                        ? "fast delivery"
+                        ? "Free Delivery"
                         : formatPaise(restaurant.card.deliveryFeePaise, { locale })}
                     </span>
                   </div>
@@ -513,39 +505,16 @@ function RestaurantPage() {
                 </div>
               )}
 
-              {/* Offers Banner */}
-              <div className="mt-3.5 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-xs">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 font-bold">
-                      <Percent className="size-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-slate-900 block">
-                        Flat ₹40 OFF above ₹299
-                      </span>
-                      <p className="text-[11px] text-slate-500">
-                        Use coupon code <strong className="font-mono text-emerald-700 font-bold">LOCAL40</strong> at checkout
-                      </p>
-                    </div>
-                  </div>
-                  <span className="rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 text-[11px] font-bold">
-                    Offer Active
-                  </span>
-                </div>
-              </div>
-
-              {/* FSSAI Hygiene & Kitchen Safety Audit Card */}
+              {/* FSSAI Regulatory Information Card */}
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 px-4 py-2.5 text-xs">
                 <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
                   <span className="font-bold flex items-center gap-1.5 text-zinc-900 dark:text-white">
                     <ShieldCheck className="size-4 text-emerald-600" />
-                    FSSAI Verified Kitchen
+                    {restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license
+                      ? "FSSAI Licensed Kitchen"
+                      : "FSSAI Declaration"}
                   </span>
-                  <span>•</span>
-                  <span className="text-emerald-600 font-bold">4.8/5 Clean Kitchen Audit</span>
                 </div>
-
               </div>
 
               {/* Action Ribbon */}
@@ -775,7 +744,8 @@ function RestaurantPage() {
 
                               {it.bestseller && (
                                 <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 border border-amber-400/40 shadow-2xs">
-                                  ★ Bestseller
+                                  <Flame className="size-3 text-amber-600" />
+                                  <span>Bestseller</span>
                                 </span>
                               )}
                             </div>
@@ -894,7 +864,7 @@ function RestaurantPage() {
 
             {/* Exact Zomato-Parity FSSAI Regulatory & Statutory Card */}
             <div className="my-8 rounded-3xl border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-6 text-xs text-zinc-600 dark:text-zinc-400 space-y-4 shadow-sm">
-              {/* Header: Official FSSAI emblem & 14-digit verified license */}
+              {/* Header: Official FSSAI emblem & license */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-16 items-center justify-center rounded-xl border border-orange-200 dark:border-zinc-700 bg-gradient-to-br from-amber-50 to-orange-50 dark:bg-zinc-800 text-orange-950 dark:text-orange-400 font-black tracking-tighter text-xs shadow-2xs uppercase">
@@ -903,14 +873,18 @@ function RestaurantPage() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-black text-zinc-900 dark:text-zinc-100 text-sm tracking-wider">
-                        Lic. No. {restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license || "10324001000842"}
+                        {restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license
+                          ? `Lic. No. ${restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license}`
+                          : "FSSAI License Verification In Progress"}
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
-                        <ShieldCheck className="size-3" />
-                        Verified Active
-                      </span>
+                      {(restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license) && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+                          <ShieldCheck className="size-3" />
+                          On File
+                        </span>
+                      )}
                     </div>
-                    <p className="text-[11px] text-zinc-400 font-medium">Food Safety and Standards Authority of India · Central & State FBO Registry</p>
+                    <p className="text-[11px] text-zinc-400 font-medium">Food Safety and Standards Authority of India · Central &amp; State FBO Registry</p>
                   </div>
                 </div>
               </div>
@@ -949,7 +923,7 @@ function RestaurantPage() {
                     GSTIN / Tax ID
                   </span>
                   <p className="font-mono font-black text-zinc-900 dark:text-zinc-100 text-xs">
-                    {(restaurant as any).gstin || "18AFXPH9838M1Z9"}
+                    {(restaurant as any).gstin || "Not Provided by Merchant"}
                   </p>
                 </div>
               </div>
@@ -1062,9 +1036,10 @@ function RestaurantPage() {
               setShowNutritionDrawer(false);
               setNutritionItem(null);
             }}
-            dishName={nutritionItem?.name || "Selected Dish"}
-            caloriesKcal={nutritionItem?.veg ? 280 : 420}
-            dietaryBadges={nutritionItem?.veg ? ["100% Pure Veg", "Fresh Ingredients"] : ["Halal Certified", "High Protein"]}
+            dishName={nutritionItem?.name || restaurant.card.name}
+            caloriesKcal={(nutritionItem as any)?.caloriesKcal}
+            allergens={(nutritionItem as any)?.allergens || []}
+            dietaryBadges={nutritionItem ? [nutritionItem.veg ? "Pure Veg" : "Non-Veg"] : []}
           />
         </article>
       )}

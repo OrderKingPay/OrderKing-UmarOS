@@ -57,7 +57,7 @@ export class LocalDeterministicProvider implements AIProvider {
     // Specific domain evaluation:
     if (lower.includes("ebitda") || lower.includes("valuation") || lower.includes("profit margin")) {
       responseText = [
-        "### 📊 Financial Intelligence: EBITDA & Enterprise Valuation Analysis",
+        "### Financial Intelligence: EBITDA & Enterprise Valuation Analysis",
         "",
         "**EBITDA** (Earnings Before Interest, Taxes, Depreciation, and Amortization) isolates operating profitability by neutralizing financing structure, jurisdiction taxes, and legacy capital accounting.",
         "",
@@ -65,14 +65,14 @@ export class LocalDeterministicProvider implements AIProvider {
         "$$\\text{EBITDA} = \\text{Operating Income (EBIT)} + \\text{Depreciation} + \\text{Amortization}$$",
         "$$\\text{EBITDA} = \\text{Net Income} + \\text{Interest} + \\text{Taxes} + \\text{D\\&A}$$",
         "",
-        "#### Commercial Example",
+        "#### Reference Calculation",
         "- **Revenue**: ₹10,00,000 | **Opex**: ₹7,50,000 | **EBIT**: ₹2,50,000",
         "- **Depreciation & Amortization**: ₹50,000",
         "- **EBITDA**: **₹3,00,000** (30% EBITDA Margin)",
       ].join("\n");
     } else if (lower.includes("code") || lower.includes("typescript") || lower.includes("python") || lower.includes("function")) {
       responseText = [
-        "### 💻 Software Engineering & Systems Architecture",
+        "### Software Engineering & Systems Architecture",
         "",
         "```typescript",
         "// Production-grade resilient handler conforming to OrderKing / HDmaster contracts",
@@ -90,14 +90,14 @@ export class LocalDeterministicProvider implements AIProvider {
       ].join("\n");
     } else if (lower.startsWith("hello") || lower.startsWith("hi ") || lower === "hi") {
       responseText = [
-        "### 👑 Greetings, Founder",
-        "I am your unified AI interface for Order King / King AI.",
+        "### Greetings",
+        "I am your unified AI interface for OrderKing.",
         "I am ready to help you with general knowledge, software engineering, business intelligence, order operations, financial ledgers, and multilingual communication.",
         "*How may I assist you right now?*",
       ].join("\n");
     } else {
       responseText = [
-        "### 👑 OrderKing Founder AI — Sovereign Operating Core",
+        "### OrderKing AI — Operating Core",
         `Executive request processed with deterministic precision for: **"${text}"**`,
         "",
         "- **Execution Mode**: Instant local execution with database integrity and audit logs.",

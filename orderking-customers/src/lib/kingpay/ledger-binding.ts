@@ -39,48 +39,6 @@ export interface KingPayTransactionRecord {
   timestamp: string;
 }
 
-const LOCAL_LEDGER_STORAGE_KEY = "orderking_authentic_ledger_rows_v2";
-
-/**
- * Retrieve raw local ledger entries (used when Supabase is offline or unconfigured).
- * Starts strictly with EMPTY array — ZERO simulated default credits.
- */
-function getLocalLedgerEntries(): KingPayLedgerEntry[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(LOCAL_LEDGER_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    // Strict Fintech Audit: Zero synthetic train receipts, fake refund credits, or fabricated records
-    const sanitized = parsed.filter((e: KingPayLedgerEntry) => {
-      const memo = (e.memo || "").toLowerCase();
-      if (memo.includes("mock") || memo.includes("synthetic") || memo.includes("fake") || memo.includes("ok-tr-")) {
-        return false;
-      }
-      return true;
-    });
-    if (sanitized.length !== parsed.length) {
-      localStorage.setItem(LOCAL_LEDGER_STORAGE_KEY, JSON.stringify(sanitized));
-    }
-    return sanitized;
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Save raw local ledger entries to storage.
- */
-function saveLocalLedgerEntries(entries: KingPayLedgerEntry[]): void {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(LOCAL_LEDGER_STORAGE_KEY, JSON.stringify(entries));
-  } catch (err) {
-    console.warn("Failed to persist local ledger entry:", err);
-  }
-}
-
 /**
  * Computes authentic balance for a user strictly by summing all Credits
  * and subtracting all Debits from immutable ledger rows.
@@ -107,8 +65,7 @@ export function calculateBalanceFromEntries(
 
 /**
  * Fetches the user's authentic KingPay balance from Supabase `kingpay_ledger_entries`.
- * If Supabase is unconfigured or offline, falls back to locally persisted authentic ledger rows.
- * GUARANTEE: Never returns simulated initial money. Default is strictly 0 paise.
+ * Never reads browser localStorage or returns simulated credits. Default is 0 paise.
  */
 export async function fetchAuthenticKingPayBalance(userId: string): Promise<number> {
   if (!userId) return 0;
@@ -136,21 +93,15 @@ export async function fetchAuthenticKingPayBalance(userId: string): Promise<numb
         return calculateBalanceFromEntries(mapped, userId);
       }
     }
-  } catch (err) {
-    // Supabase query failed or not configured, proceed to authentic local ledger
+  } catch {
+    // Database query failed or not configured
   }
 
-  // Fallback to locally persisted authentic rows
-  const localEntries = getLocalLedgerEntries();
-  return calculateBalanceFromEntries(localEntries, userId);
+  return 0;
 }
 
 /**
- * Records an authentic wallet top-up transaction with double-entry accounting.
- * Double Entry:
- *   DEBIT  -> BANK_CLEARING   (Funds received by partner bank gateway)
- *   CREDIT -> CUSTOMER_WALLET (Funds credited to customer's authentic balance)
- * Returns the recalculated authentic balance.
+ * Records an authentic wallet top-up transaction with double-entry accounting in PostgreSQL/Supabase.
  */
 export async function recordAuthenticTopUp(params: {
   userId: string;
@@ -189,37 +140,28 @@ export async function recordAuthenticTopUp(params: {
     timestamp: now,
   };
 
-  // Math invariant validation: debits must equal credits
   if (debitEntry.amount_paise !== creditEntry.amount_paise) {
     throw new Error("Double-entry violation: Debit does not equal Credit.");
   }
 
-  // 1. Try Supabase insert
-  try {
-    if (supabase && typeof supabase.from === "function") {
-      await supabase.from("kingpay_ledger_entries").insert([
-        debitEntry,
-        creditEntry,
-      ]);
-    }
-  } catch {
-    // Ignore error if table not migrated in cloud yet
+  if (!supabase || typeof supabase.from !== "function") {
+    throw new Error("KingPay database client not configured.");
   }
 
-  // 2. Persist to local authentic ledger
-  const local = getLocalLedgerEntries();
-  local.push(debitEntry, creditEntry);
-  saveLocalLedgerEntries(local);
+  const { error } = await supabase.from("kingpay_ledger_entries").insert([
+    debitEntry,
+    creditEntry,
+  ]);
+  if (error) {
+    throw new Error(`Failed to persist wallet top-up: ${error.message}`);
+  }
 
-  const newBalance = calculateBalanceFromEntries(local, params.userId);
+  const newBalance = await fetchAuthenticKingPayBalance(params.userId);
   return { newBalancePaise: newBalance, transactionId };
 }
 
 /**
- * Records an authentic payment / merchant deduction with double-entry accounting.
- * Double Entry:
- *   DEBIT  -> CUSTOMER_WALLET (Funds deducted from customer's authentic balance)
- *   CREDIT -> MERCHANT_PAYABLE / ESCROW_HOLDING (Funds moved to merchant payable/escrow)
+ * Records an authentic payment / merchant deduction with double-entry accounting in PostgreSQL/Supabase.
  */
 export async function recordAuthenticPayment(params: {
   userId: string;
@@ -233,8 +175,6 @@ export async function recordAuthenticPayment(params: {
 
   const currentBalance = await fetchAuthenticKingPayBalance(params.userId);
 
-  // Audit Guard: Ensure zero payment can be captured for train tickets anywhere in the customer app.
-  // Fail closed with explicit IRCTC_PAYMENT_BLOCKED before any card, wallet, or UPI transaction can be created.
   const isTrainPayment =
     params.memo?.toLowerCase().includes("train") ||
     params.memo?.toLowerCase().includes("irctc") ||
@@ -285,28 +225,30 @@ export async function recordAuthenticPayment(params: {
     timestamp: now,
   };
 
-  // Math invariant validation
   if (debitEntry.amount_paise !== creditEntry.amount_paise) {
     throw new Error("Double-entry violation: Debit does not equal Credit.");
   }
 
-  // 1. Try Supabase insert
-  try {
-    if (supabase && typeof supabase.from === "function") {
-      await supabase.from("kingpay_ledger_entries").insert([
-        debitEntry,
-        creditEntry,
-      ]);
-    }
-  } catch {
-    // Ignore error if table not migrated in cloud yet
+  if (!supabase || typeof supabase.from !== "function") {
+    return {
+      success: false,
+      newBalancePaise: currentBalance,
+      error: "KingPay database client not configured.",
+    };
   }
 
-  // 2. Persist to local authentic ledger
-  const local = getLocalLedgerEntries();
-  local.push(debitEntry, creditEntry);
-  saveLocalLedgerEntries(local);
+  const { error } = await supabase.from("kingpay_ledger_entries").insert([
+    debitEntry,
+    creditEntry,
+  ]);
+  if (error) {
+    return {
+      success: false,
+      newBalancePaise: currentBalance,
+      error: `Failed to record payment in database: ${error.message}`,
+    };
+  }
 
-  const newBalance = calculateBalanceFromEntries(local, params.userId);
+  const newBalance = await fetchAuthenticKingPayBalance(params.userId);
   return { success: true, newBalancePaise: newBalance };
 }

@@ -581,19 +581,30 @@ function CommissionOverridesSection() {
     const targetBps = Math.round(targetPct * 100);
     toast.info(`Updating all outlets to ${targetPct}%...`);
 
-    let count = 0;
+    let succeeded = 0;
+    let failed = 0;
     for (const o of outlets) {
-      await updateOutletCommissionFn({
-        data: {
-          restaurantId: o.id,
-          commissionBps: targetBps,
-          reason: `Founder bulk preset (${label}): ${targetPct}%`,
-        },
-      }).catch(() => null);
-      count++;
+      try {
+        await updateOutletCommissionFn({
+          data: {
+            restaurantId: o.id,
+            commissionBps: targetBps,
+            reason: `Founder bulk preset (${label}): ${targetPct}%`,
+          },
+        });
+        succeeded++;
+      } catch {
+        failed++;
+      }
     }
 
-    toast.success(`Bulk updated ${count} outlets to ${targetPct}% commission!`);
+    if (succeeded === 0 && failed > 0) {
+      toast.error(`Failed to update commission for all ${failed} outlets.`);
+    } else if (failed > 0) {
+      toast.warning(`Updated ${succeeded} outlets to ${targetPct}%; ${failed} failed.`);
+    } else {
+      toast.success(`Bulk updated ${succeeded} outlets to ${targetPct}% commission!`);
+    }
     void qc.invalidateQueries({ queryKey: ["outlet-commissions"] });
     void qc.invalidateQueries({ queryKey: ["commercial-dials"] });
   };
@@ -673,7 +684,7 @@ function CommissionOverridesSection() {
               tierLabel = "Enterprise / Cloud Kitchen Cap";
             } else if (currentPct >= 19) {
               tierColor = "bg-amber-500/20 text-amber-300 border-amber-500/30";
-              tierLabel = "Dominant Legacy Aggregator Parity";
+              tierLabel = "Standard Aggregator Parity";
             } else if (currentPct >= 8) {
               tierColor = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
               tierLabel = "OrderKing Standard Advantage";

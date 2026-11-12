@@ -336,7 +336,7 @@ describe("3. Native Audio Cooking & Delivery Partner Voice Note State Management
 
     // Formatted note for checkout instructions
     const formatted = useVoiceNoteStore.getState().getFormattedNoteText("delivery");
-    expect(formatted).toContain("🛵 Delivery Voice Note (12s)");
+    expect(formatted).toContain("Delivery Voice Note (12s)");
     expect(formatted).toContain("Ghar ke gate par black bell hai");
   });
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Share2, Copy, Check, QrCode, X, Sparkles, UserPlus, ShoppingBag } from "lucide-react";
+import { Users, Share2, Copy, Check, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -17,13 +17,15 @@ export interface GroupOrderingModalProps {
   onClose?: () => void;
   restaurantName?: string;
   groupSessionId?: string;
+  members?: GroupOrderingMember[];
 }
 
 export function GroupOrderingModal({
   isOpen = false,
   onClose,
-  restaurantName = "Royal Biryani House",
-  groupSessionId = "GRP-88412",
+  restaurantName = "Group Order",
+  groupSessionId = "",
+  members = [],
 }: GroupOrderingModalProps) {
   const [open, setOpen] = useState(isOpen);
 
@@ -32,28 +34,33 @@ export function GroupOrderingModal({
   }, [isOpen]);
   const [copied, setCopied] = useState(false);
   const [spendLimit, setSpendLimit] = useState<number | null>(null);
-  const [members, setMembers] = useState<GroupOrderingMember[]>([
-    { id: "m-1", name: "You (Host)", isHost: true, itemCount: 2, totalPaise: 48000 },
-    { id: "m-2", name: "Priya K.", isHost: false, itemCount: 1, totalPaise: 24000 },
-    { id: "m-3", name: "Vikram S.", isHost: false, itemCount: 3, totalPaise: 59000 },
-  ]);
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/group-order/${groupSessionId}`
-    : `https://orderking.in/group-order/${groupSessionId}`;
+  const shareUrl = groupSessionId
+    ? typeof window !== "undefined"
+      ? `${window.location.origin}/group-order/${groupSessionId}`
+      : `https://orderking.in/group-order/${groupSessionId}`
+    : "";
 
   const handleCopyLink = () => {
+    if (!shareUrl) {
+      toast.error("Start a group order session from a restaurant page first.");
+      return;
+    }
     navigator.clipboard?.writeText(shareUrl);
     setCopied(true);
-    toast.success("Group order invite link copied!");
+    toast.success("Group order invite link copied.");
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShareNative = () => {
+    if (!shareUrl) {
+      toast.error("Start a group order session from a restaurant page first.");
+      return;
+    }
     if (navigator.share) {
       navigator.share({
-        title: `Order food together with me from ${restaurantName}!`,
-        text: `Add your favorite items to our OrderKing group cart:`,
+        title: `Group order from ${restaurantName}`,
+        text: `Add items to our OrderKing group cart:`,
         url: shareUrl,
       }).catch(() => undefined);
     } else {
@@ -71,15 +78,18 @@ export function GroupOrderingModal({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-5 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-xl">
-              👥
+            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
+              <Users className="size-5" />
             </span>
             <div>
               <div className="flex items-center gap-1.5">
                 <h3 className="font-display text-base font-bold text-fg">Group Order Session</h3>
-                <Badge tone="primary">Live Sync</Badge>
+                {groupSessionId ? <Badge tone="primary">Shared Cart</Badge> : null}
               </div>
-              <p className="text-xs text-muted">{restaurantName} · #{groupSessionId}</p>
+              <p className="text-xs text-muted">
+                {restaurantName}
+                {groupSessionId ? ` · #${groupSessionId}` : ""}
+              </p>
             </div>
           </div>
           <button
@@ -102,63 +112,77 @@ export function GroupOrderingModal({
               <span className="font-bold text-fg flex items-center gap-1.5">
                 <Share2 className="size-4 text-primary" /> Invite Friends to Order
               </span>
-              <span className="text-[10px] text-muted font-mono">{groupSessionId}</span>
+              {groupSessionId && (
+                <span className="text-[10px] text-muted font-mono">{groupSessionId}</span>
+              )}
             </div>
             <p className="text-[11px] text-muted">
-              Everyone adds their favorite dishes to one shared basket. The host pays or splits the bill.
+              Everyone adds their dishes to one shared cart. The host pays or splits the bill.
             </p>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                readOnly
-                value={shareUrl}
-                className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-[11px] font-mono text-muted select-all"
-              />
-              <Button size="sm" variant="outline" onClick={handleCopyLink} className="gap-1 shrink-0">
-                {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-                {copied ? "Copied" : "Copy"}
-              </Button>
-              <Button size="sm" onClick={handleShareNative} className="gap-1 shrink-0">
-                <Share2 className="size-3.5" /> Share
-              </Button>
-            </div>
+            {shareUrl ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={shareUrl}
+                  className="flex-1 rounded-xl border border-border bg-surface px-3 py-2 text-[11px] font-mono text-muted select-all"
+                />
+                <Button size="sm" variant="outline" onClick={handleCopyLink} className="gap-1 shrink-0">
+                  {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                  {copied ? "Copied" : "Copy"}
+                </Button>
+                <Button size="sm" onClick={handleShareNative} className="gap-1 shrink-0">
+                  <Share2 className="size-3.5" /> Share
+                </Button>
+              </div>
+            ) : (
+              <p className="text-[11px] font-medium text-muted">
+                No active group session ID yet. Launch a group cart from a restaurant menu to generate an invite link.
+              </p>
+            )}
           </div>
 
           {/* Active Members & Baskets */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h4 className="font-bold text-fg flex items-center gap-1.5">
-                <Users className="size-3.5 text-primary" /> Joined Patrons ({members.length})
+                <Users className="size-3.5 text-primary" /> Joined Participants ({members.length})
               </h4>
               <span className="text-muted">Total: ₹{(totalCartPaise / 100).toFixed(0)}</span>
             </div>
 
-            <div className="space-y-2">
-              {members.map((mem) => (
-                <div
-                  key={mem.id}
-                  className="flex items-center justify-between rounded-xl border border-border bg-surface-2/60 p-3"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
-                      {mem.name.charAt(0)}
+            {members.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border bg-surface-2/40 p-4 text-center text-[11px] text-muted">
+                No participants have joined this session yet. Share the invite link above once active.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {members.map((mem) => (
+                  <div
+                    key={mem.id}
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2/60 p-3"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-bold text-primary">
+                        {mem.name.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-fg flex items-center gap-1.5">
+                          {mem.name}
+                          {mem.isHost && (
+                            <span className="rounded-full bg-primary/20 px-1.5 py-0.2 text-[9px] font-bold text-primary">
+                              HOST
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-[10px] text-muted">{mem.itemCount} items in basket</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-fg flex items-center gap-1.5">
-                        {mem.name}
-                        {mem.isHost && (
-                          <span className="rounded-full bg-primary/20 px-1.5 py-0.2 text-[9px] font-bold text-primary">
-                            HOST
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-[10px] text-muted">{mem.itemCount} items in basket</p>
-                    </div>
+                    <span className="font-bold text-fg">₹{(mem.totalPaise / 100).toFixed(0)}</span>
                   </div>
-                  <span className="font-bold text-fg">₹{(mem.totalPaise / 100).toFixed(0)}</span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Spending Limit Setting (Host Only) */}
@@ -197,8 +221,9 @@ export function GroupOrderingModal({
             </p>
           </div>
           <Button
+            disabled={members.length === 0}
             onClick={() => {
-              toast.success("Proceeding to group checkout with all items combined!");
+              toast.success("Proceeding to group checkout.");
               setOpen(false);
               onClose?.();
             }}

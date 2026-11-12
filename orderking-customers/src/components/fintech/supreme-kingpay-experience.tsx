@@ -28,7 +28,6 @@ import {
   Sparkles,
   Send,
   Crown,
-  Loader2,
   Car,
   CreditCard,
   Lightbulb,
@@ -153,54 +152,82 @@ export interface CatalogSearchHit {
 
 export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // Flights
-  { id: "s-fl-1", category: "Flights", title: "IndiGo 6E-2051 (DEL ➔ BOM)", sub: "Non-Stop · 2h 15m · From ₹4,199", icon: "✈️", url: "/travel?tab=flights", keywords: "flight delhi mumbai indigo 6e 2051 air ticket" },
-  { id: "s-fl-2", category: "Flights", title: "Air India AI-887 (DEL ➔ BOM)", sub: "Boeing 777 · Hot Meal Included · ₹4,850", icon: "✈️", url: "/travel?tab=flights", keywords: "flight air india ai 887 delhi mumbai" },
-  { id: "s-fl-3", category: "Flights", title: "Akasa Air QP-1102 (DEL ➔ BOM)", sub: "Boeing 737 MAX 8 · From ₹3,890", icon: "✈️", url: "/travel?tab=flights", keywords: "flight akasa qp 1102 delhi mumbai" },
-  { id: "s-fl-4", category: "Flights", title: "Guwahati ➔ Kolkata Daily Air Corridor", sub: "GAU ➔ CCU Non-stop · ₹2,890", icon: "✈️", url: "/travel?tab=flights", keywords: "flight guwahati kolkata gau ccu assam bengal" },
+  { id: "s-fl-1", category: "Flights", title: "IndiGo 6E-2051 (DEL - BOM)", sub: "Non-Stop · 2h 15m · From ₹4,199", icon: "flight", url: "/travel?tab=flights", keywords: "flight delhi mumbai indigo 6e 2051 air ticket" },
+  { id: "s-fl-2", category: "Flights", title: "Air India AI-887 (DEL - BOM)", sub: "Boeing 777 · Hot Meal Included · ₹4,850", icon: "flight", url: "/travel?tab=flights", keywords: "flight air india ai 887 delhi mumbai" },
+  { id: "s-fl-3", category: "Flights", title: "Akasa Air QP-1102 (DEL - BOM)", sub: "Boeing 737 MAX 8 · From ₹3,890", icon: "flight", url: "/travel?tab=flights", keywords: "flight akasa qp 1102 delhi mumbai" },
+  { id: "s-fl-4", category: "Flights", title: "Guwahati to Kolkata Daily Air Corridor", sub: "GAU - CCU Non-stop · ₹2,890", icon: "flight", url: "/travel?tab=flights", keywords: "flight guwahati kolkata gau ccu assam bengal" },
 
   // Trains
-  { id: "s-tr-1", category: "Trains", title: "Rajdhani Express (12424)", sub: "KingConfirm Berth Quota · NDLS ➔ DBRT", icon: "🚆", url: "/travel?tab=trains", keywords: "train rajdhani express 12424 ndls dbrt irctc" },
-  { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast", icon: "🚆", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
-  { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH ➔ GHY Superfast · Berth Tracking", icon: "🚆", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati" },
+  { id: "s-tr-1", category: "Trains", title: "Rajdhani Express (12424)", sub: "KingConfirm Berth Quota · NDLS to DBRT", icon: "train", url: "/travel?tab=trains", keywords: "train rajdhani express 12424 ndls dbrt irctc" },
+  { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast", icon: "train", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
+  { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH to GHY Superfast · Berth Tracking", icon: "train", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati" },
 
   // Tours & Leisure
-  { id: "s-to-1", category: "Tours", title: "Kashmir Valley Paradise (5N/6D)", sub: "Houseboat, Shikara & Gulmarg Gondola · ₹26,500", icon: "🏔️", url: "/travel?tab=pilgrimage", keywords: "tour kashmir srinagar gulmarg dal lake holiday" },
-  { id: "s-to-2", category: "Tours", title: "Dubai Luxury Oasis Tour (4N/5D)", sub: "Burj Khalifa, Desert Safari & Marina · ₹48,000", icon: "🏙️", url: "/travel?tab=pilgrimage", keywords: "tour dubai burj khalifa desert safari uae" },
-  { id: "s-to-3", category: "Tours", title: "Shillong & Meghalaya Northeast Escapes", sub: "Cherrapunji & Crystal Dawki River · ₹16,500", icon: "🌿", url: "/travel?tab=pilgrimage", keywords: "tour shillong meghalaya dawki cherrapunji northeast" },
-  { id: "s-to-4", category: "Tours", title: "Goa Beachfront & Sun Splash Luxury Resort", sub: "Candolim Beach & Mandovi Cruise · ₹14,500", icon: "🏖️", url: "/travel?tab=pilgrimage", keywords: "tour goa beach candolim resort sun vacation" },
+  { id: "s-to-1", category: "Tours", title: "Kashmir Valley Paradise (5N/6D)", sub: "Houseboat, Shikara & Gulmarg Gondola · ₹26,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour kashmir srinagar gulmarg dal lake holiday" },
+  { id: "s-to-2", category: "Tours", title: "Dubai Luxury Oasis Tour (4N/5D)", sub: "Burj Khalifa, Desert Safari & Marina · ₹48,000", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour dubai burj khalifa desert safari uae" },
+  { id: "s-to-3", category: "Tours", title: "Shillong & Meghalaya Northeast Escapes", sub: "Cherrapunji & Crystal Dawki River · ₹16,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour shillong meghalaya dawki cherrapunji northeast" },
+  { id: "s-to-4", category: "Tours", title: "Goa Beachfront & Sun Splash Luxury Resort", sub: "Candolim Beach & Mandovi Cruise · ₹14,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour goa beach candolim resort sun vacation" },
 
   // Sacred Pilgrimages
-  { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Verified Quota · ₹78,500", icon: "🕋", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
-  { id: "s-sc-2", category: "Sacred", title: "Umrah Makkah Clock Tower 5-Star Hotel", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "🕋", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram hotel stay islamic muslim pilgrimage" },
-  { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir Yatra", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
-  { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple Yatra", sub: "Nilachal Hills Priority Entry & River Cruise · ₹12,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
-  { id: "s-sc-5", category: "Sacred", title: "Maha Char Dham Yatra (Kedarnath & Badrinath)", sub: "Himalayan Sacred Circuit with Helicopter · ₹32,500", icon: "🕉️", url: "/travel?tab=pilgrimage", keywords: "char dham kedarnath badrinath gangotri yamunotri uttarakhand hindu" },
-  { id: "s-sc-6", category: "Sacred", title: "Amritsar Golden Temple & Wagah Border Yatra", sub: "Sri Harmandir Sahib Palki Seva · ₹11,500", icon: "☬", url: "/travel?tab=pilgrimage", keywords: "amritsar golden temple harmandir sahib wagah sikh gurdwara" },
-  { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "✝️", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
+  { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Verified Quota · ₹78,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
+  { id: "s-sc-2", category: "Sacred", title: "Umrah Makkah Clock Tower 5-Star Hotel", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram hotel stay islamic muslim pilgrimage" },
+  { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir Yatra", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
+  { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple Yatra", sub: "Nilachal Hills Priority Entry & River Cruise · ₹12,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
+  { id: "s-sc-5", category: "Sacred", title: "Maha Char Dham Yatra (Kedarnath & Badrinath)", sub: "Himalayan Sacred Circuit with Helicopter · ₹32,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "char dham kedarnath badrinath gangotri yamunotri uttarakhand hindu" },
+  { id: "s-sc-6", category: "Sacred", title: "Amritsar Golden Temple & Wagah Border Yatra", sub: "Sri Harmandir Sahib Palki Seva · ₹11,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "amritsar golden temple harmandir sahib wagah sikh gurdwara" },
+  { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
 
   // Utility Bills & BBPS
-  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "⚡", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
-  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant 1-Tap Prepaid Top-Up", icon: "📱", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
-  { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "🚗", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
-  { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "📺", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
+  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "bill-electric", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
+  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant 1-Tap Prepaid Top-Up", icon: "bill-mobile", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
+  { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "garage", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
+  { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "bill-tv", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
 
   // Vehicles & Garage
-  { id: "s-vg-1", category: "Garage", title: "Vehicle Garage & Expiry Shield", sub: "Track RC, PUC, Insurance & 1-Tap Renewal", icon: "🚗", action: "garage", keywords: "garage vehicle car bike puc rc insurance challan rto fine" },
+  { id: "s-vg-1", category: "Garage", title: "Vehicle Garage & Expiry Shield", sub: "Track RC, PUC, Insurance & 1-Tap Renewal", icon: "garage", action: "garage", keywords: "garage vehicle car bike puc rc insurance challan rto fine" },
 
   // Jobs & Workforce
-  { id: "s-jb-1", category: "Jobs", title: "Work From Home Data Entry Specialist", sub: "Remote / Pan-India · ₹22,000–₹35,000/mo", icon: "💼", url: "/tutor-jobs", keywords: "job remote work from home wfh data entry typing assistant" },
-  { id: "s-jb-2", category: "Jobs", title: "OrderKing Last-Mile Fleet Captain", sub: "Guaranteed Weekly Payouts · Up to ₹35,000/mo", icon: "🛵", url: "/tutor-jobs", keywords: "job delivery rider fleet captain orderking biker delivery" },
-  { id: "s-jb-3", category: "Jobs", title: "Virtual Assistant & Content Specialist", sub: "Freelance & Remote · Verified Weekly Escrow", icon: "💻", url: "/tutor-jobs", keywords: "job virtual assistant freelance content writing remote" },
-  { id: "s-jb-4", category: "Jobs", title: "Official Govt Career Openings (NCS)", sub: "Ministry of Labour & Employment Verified", icon: "🏛️", url: "/tutor-jobs", keywords: "job government sarkari ssc rrb upsc ncs public sector" },
+  { id: "s-jb-1", category: "Jobs", title: "Work From Home Data Entry Specialist", sub: "Remote / Pan-India · ₹22,000–₹35,000/mo", icon: "job", url: "/tutor-jobs", keywords: "job remote work from home wfh data entry typing assistant" },
+  { id: "s-jb-2", category: "Jobs", title: "OrderKing Last-Mile Fleet Captain", sub: "Weekly Payouts · Up to ₹35,000/mo", icon: "job-fleet", url: "/tutor-jobs", keywords: "job delivery rider fleet captain orderking biker delivery" },
+  { id: "s-jb-3", category: "Jobs", title: "Virtual Assistant & Content Specialist", sub: "Freelance & Remote · Verified Weekly Escrow", icon: "job", url: "/tutor-jobs", keywords: "job virtual assistant freelance content writing remote" },
+  { id: "s-jb-4", category: "Jobs", title: "Official Govt Career Openings (NCS)", sub: "Ministry of Labour & Employment Verified", icon: "tour", url: "/tutor-jobs", keywords: "job government sarkari ssc rrb upsc ncs public sector" },
 
   // AI Academic Tutor
-  { id: "s-tu-1", category: "Tutor", title: "King AI Academic Tutor (CBSE / State)", sub: "Step-by-step Math & Science problem solver", icon: "🎓", url: "/tutor", keywords: "tutor study math cbse ncert class 10 physics exam school homework" },
+  { id: "s-tu-1", category: "Tutor", title: "King AI Academic Tutor (CBSE / State)", sub: "Step-by-step Math & Science problem solver", icon: "tutor", url: "/tutor", keywords: "tutor study math cbse ncert class 10 physics exam school homework" },
 
   // Loans & Wealth
-  { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "💰", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
-  { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "📈", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
-  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "🪙", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
+  { id: "s-wl-1", category: "Wealth", title: "Pre-Approved Instant Credit Line (₹5,00,000)", sub: "Zero Paperwork · Instant Bank Disbursement", icon: "wealth", action: "wealth", keywords: "loan credit line money instant cash pre approved finance" },
+  { id: "s-wl-2", category: "Wealth", title: "9.10% High-Yield Fixed Deposit (FD)", sub: "CRISIL AAA-Rated · Shriram Finance & Bajaj", icon: "wealth", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
+  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "wealth", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
 ];
+
+function CatalogHitIcon({ icon }: { icon: string }) {
+  switch (icon) {
+    case "flight":
+      return <Plane className="size-4 text-sky-400 shrink-0" aria-hidden="true" />;
+    case "train":
+      return <Train className="size-4 text-indigo-400 shrink-0" aria-hidden="true" />;
+    case "tour":
+      return <Landmark className="size-4 text-emerald-400 shrink-0" aria-hidden="true" />;
+    case "sacred":
+      return <Building2 className="size-4 text-amber-400 shrink-0" aria-hidden="true" />;
+    case "bill-electric":
+      return <Zap className="size-4 text-yellow-400 shrink-0" aria-hidden="true" />;
+    case "bill-mobile":
+      return <Smartphone className="size-4 text-cyan-400 shrink-0" aria-hidden="true" />;
+    case "bill-tv":
+      return <Tv className="size-4 text-purple-400 shrink-0" aria-hidden="true" />;
+    case "garage":
+      return <Car className="size-4 text-rose-400 shrink-0" aria-hidden="true" />;
+    case "job":
+    case "job-fleet":
+      return <Briefcase className="size-4 text-purple-400 shrink-0" aria-hidden="true" />;
+    case "tutor":
+      return <GraduationCap className="size-4 text-teal-400 shrink-0" aria-hidden="true" />;
+    default:
+      return <Wallet className="size-4 text-emerald-400 shrink-0" aria-hidden="true" />;
+  }
+}
 
 export function SupremeKingPayExperience() {
   const navigate = useNavigate();
@@ -215,46 +242,36 @@ export function SupremeKingPayExperience() {
   // Active Dedicated Desk Navigation (Eliminates page-scroll duplication)
   const [activeDesk, setActiveDesk] = useState<"garage" | "bills" | "wealth" | "pay" | "passbook" | null>(null);
 
-  // DigiLocker RBI Full-KYC ₹1,00,000 Wallet Upgrade State
+  // DigiLocker RBI Full-KYC State
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
-  const [kycStep, setKycStep] = useState<"aadhaar" | "otp" | "verified">(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("kingpay_kyc_status") === "VERIFIED") {
-      return "verified";
-    }
-    return "aadhaar";
-  });
-  const [aadhaarInput, setAadhaarInput] = useState("");
-  const [kycOtpInput, setKycOtpInput] = useState("");
-  const [isVerifyingKyc, setIsVerifyingKyc] = useState(false);
 
   // Universal Deep Search Query
   const [universalSearch, setUniversalSearch] = useState("");
 
-  // My Vehicle Garage State (Permanent Retention & Expiry Tracker)
-  const [garageVehicles, setGarageVehicles] = useState([
-    {
-      id: "veh-1",
-      regNo: "AS-10-AB-1234",
-      model: "Hero Splendor Plus (Black)",
-      type: "2-Wheeler",
-      insuranceExpiryDays: 14,
-      pucExpiryDays: 12,
-      pucValidUntil: "15 Nov 2026",
-      fastagBalancePaise: 42000,
-      insurer: "Bajaj Allianz",
-    },
-    {
-      id: "veh-2",
-      regNo: "AS-10-CD-5678",
-      model: "Maruti Suzuki Swift VXi",
-      type: "4-Wheeler",
-      insuranceExpiryDays: 68,
-      pucExpiryDays: 84,
-      pucValidUntil: "20 Jan 2027",
-      fastagBalancePaise: 85000,
-      insurer: "HDFC ERGO",
-    },
-  ]);
+  // My Vehicle Garage State (User-Saved Vehicles in localStorage — Zero Fake Defaults)
+  interface SavedGarageVehicle {
+    id: string;
+    regNo: string;
+    model: string;
+    type: string;
+    insuranceExpiryDays: number;
+    pucExpiryDays: number;
+    pucValidUntil: string;
+    fastagBalancePaise: number;
+    insurer: string;
+  }
+  const GARAGE_STORAGE_KEY = "kingpay_garage_vehicles_v1";
+  const [garageVehicles, setGarageVehicles] = useState<SavedGarageVehicle[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(GARAGE_STORAGE_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
   const [newRegInput, setNewRegInput] = useState("");
   const [isAddingVehicle, setIsAddingVehicle] = useState(false);
 
@@ -262,8 +279,8 @@ export function SupremeKingPayExperience() {
   const currentCity =
     location?.cityName && location.cityName !== "Locating..."
       ? location.cityName
-      : "New Delhi";
-  const currentZone = location?.zoneName || "Connaught Place";
+      : "Select City";
+  const currentZone = location?.zoneName || "Current Location";
 
   // Contractually preserved station state for test suites
   const [trainFrom, setTrainFrom] = useState("New Delhi (NDLS)");
@@ -448,7 +465,9 @@ export function SupremeKingPayExperience() {
                     className="w-full p-2.5 rounded-xl hover:bg-slate-800/80 transition flex items-center justify-between text-left group cursor-pointer border border-transparent hover:border-slate-700"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <span className="text-xl shrink-0">{hit.icon}</span>
+                      <span className="flex size-8 items-center justify-center rounded-xl bg-slate-800/80 border border-slate-700/80 shrink-0">
+                        <CatalogHitIcon icon={hit.icon} />
+                      </span>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs font-black text-white group-hover:text-amber-300 transition truncate">
@@ -526,8 +545,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-sky-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-sky-300 transition truncate flex items-center gap-1">
-                  <span>✈️</span> <span>Flights</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-sky-300 transition truncate">
+                  Flights
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   Domestic &amp; International
@@ -547,8 +566,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-indigo-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-indigo-300 transition truncate flex items-center gap-1">
-                  <span>🚆</span> <span>Trains</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-indigo-300 transition truncate">
+                  Trains
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   IRCTC Trains &amp; PNR Status
@@ -568,8 +587,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-amber-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-amber-300 transition truncate flex items-center gap-1">
-                  <span>🏨</span> <span>Hotels</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-amber-300 transition truncate">
+                  Hotels
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   Hotels &amp; Resorts Worldwide
@@ -589,8 +608,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-emerald-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>🌍</span> <span>Holiday Tours</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate">
+                  Holiday Tours
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   National &amp; International Packages
@@ -610,8 +629,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-teal-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-teal-300 transition truncate flex items-center gap-1">
-                  <span>🎓</span> <span>King AI Tutor</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-teal-300 transition truncate">
+                  King AI Tutor
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   Academic Tutor · CBSE &amp; State
@@ -631,8 +650,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-purple-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate flex items-center gap-1">
-                  <span>💼</span> <span>King Jobs</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-purple-300 transition truncate">
+                  King Jobs
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   Hyperlocal Gigs &amp; Direct Apply
@@ -653,8 +672,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-rose-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-rose-300 transition truncate flex items-center gap-1">
-                  <span>🚗</span> <span>My Garage</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-rose-300 transition truncate">
+                  My Garage
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   RC, PUC &amp; 1-Click Insurance
@@ -675,8 +694,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-yellow-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-yellow-300 transition truncate flex items-center gap-1">
-                  <span>Daily Bills</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-yellow-300 transition truncate">
+                  Daily Bills
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   APDCL, Mobile, FASTag, DTH
@@ -696,8 +715,8 @@ export function SupremeKingPayExperience() {
                 <ChevronRight className="size-3.5 text-slate-600 group-hover:text-emerald-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate flex items-center gap-1">
-                  <span>📦</span> <span>Local Parcel &amp; Courier</span>
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-emerald-300 transition truncate">
+                  Local Parcel &amp; Courier
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
                   Point-to-Point Pickup &amp; Drop · ₹30 Base
@@ -718,10 +737,10 @@ export function SupremeKingPayExperience() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
-              <span>← Back to KingPay</span>
+              <span>Back to KingPay</span>
             </button>
             <span className="text-xs font-black uppercase tracking-wider text-rose-400">
-              🚗 Vehicle Garage &amp; Insurance Desk
+              Vehicle Garage &amp; Insurance Desk
             </span>
           </div>
 
@@ -743,7 +762,7 @@ export function SupremeKingPayExperience() {
                 </span>
               </h3>
               <p className="text-[11px] text-slate-400">
-                Track RC, PUC, FASTag and renew insurance in 1 tap (Earn ₹500–₹1,500 partner rebate)
+                Track saved vehicle details and access direct PolicyBazaar &amp; Acko renewal links
               </p>
             </div>
           </div>
@@ -770,7 +789,7 @@ export function SupremeKingPayExperience() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-black uppercase tracking-wider text-amber-400">
-                  🚨 Automated 15-Day Expiry Alert Active
+                  Automated 15-Day Expiry Alert Active
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
                   MoRTH &amp; RTO Expiry Radar
@@ -798,27 +817,34 @@ export function SupremeKingPayExperience() {
               <button
                 type="button"
                 onClick={() => {
-                  if (!newRegInput.trim()) {
+                  const cleanReg = newRegInput.trim().toUpperCase();
+                  if (!cleanReg) {
                     toast.error("Please enter a valid registration number.");
                     return;
                   }
-                  setGarageVehicles((prev) => [
-                    ...prev,
+                  const nextVehicles: SavedGarageVehicle[] = [
+                    ...garageVehicles,
                     {
                       id: `veh-${Date.now()}`,
-                      regNo: newRegInput.trim(),
-                      model: "Private Vehicle (Verified via mParivahan)",
+                      regNo: cleanReg,
+                      model: "Saved Vehicle",
                       type: "Motor Vehicle",
-                      insuranceExpiryDays: 320,
-                      pucExpiryDays: 365,
-                      pucValidUntil: "30 Oct 2027",
-                      fastagBalancePaise: 50000,
-                      insurer: "Digit Insurance",
+                      insuranceExpiryDays: 365,
+                      pucExpiryDays: 180,
+                      pucValidUntil: "Update expiry",
+                      fastagBalancePaise: 0,
+                      insurer: "Not linked",
                     },
-                  ]);
+                  ];
+                  setGarageVehicles(nextVehicles);
+                  try {
+                    localStorage.setItem(GARAGE_STORAGE_KEY, JSON.stringify(nextVehicles));
+                  } catch {
+                    // ignore storage quota errors
+                  }
                   setNewRegInput("");
                   setIsAddingVehicle(false);
-                  toast.success(`Vehicle ${newRegInput.trim()} added to your Garage!`);
+                  toast.success(`Vehicle ${cleanReg} saved to your Garage.`);
                 }}
                 className="h-10 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs transition active:scale-95"
               >
@@ -828,7 +854,15 @@ export function SupremeKingPayExperience() {
           </div>
         )}
 
-        {/* Vehicle list */}
+        {/* Empty state or Vehicle list */}
+        {garageVehicles.length === 0 ? (
+          <div className="p-6 rounded-2xl border border-dashed border-rose-500/30 bg-[#070b12]/70 text-center space-y-2">
+            <p className="text-xs font-bold text-slate-200">No saved vehicles in your Garage yet.</p>
+            <p className="text-[11px] text-slate-400">
+              Add your vehicle registration number above to access direct PolicyBazaar and Acko renewal links.
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {garageVehicles.map((veh) => {
             const expiryStatus = checkVehicleExpiryAlert(veh);
@@ -856,7 +890,7 @@ export function SupremeKingPayExperience() {
                     )}
                   >
                     {expiryStatus.isInsuranceExpiringSoon
-                      ? `🚨 15-Day Alert: Expires in ${veh.insuranceExpiryDays}d`
+                      ? `15-Day Alert: Expires in ${veh.insuranceExpiryDays}d`
                       : `Active (${veh.insuranceExpiryDays}d)`}
                   </span>
                 </div>
@@ -867,8 +901,9 @@ export function SupremeKingPayExperience() {
                     <span className="font-bold text-slate-200 flex items-center gap-1">
                       <span>{veh.pucValidUntil}</span>
                       {expiryStatus.isPucExpiringSoon && (
-                        <span className="text-[9.5px] font-black text-amber-400 bg-amber-400/10 px-1 rounded border border-amber-400/30">
-                          ⚠️ {veh.pucExpiryDays}d left
+                        <span className="inline-flex items-center gap-0.5 text-[9.5px] font-black text-amber-400 bg-amber-400/10 px-1 rounded border border-amber-400/30">
+                          <AlertTriangle className="size-2.5 shrink-0" aria-hidden="true" />
+                          <span>{veh.pucExpiryDays}d left</span>
                         </span>
                       )}
                     </span>
@@ -912,6 +947,7 @@ export function SupremeKingPayExperience() {
             );
           })}
         </div>
+        )}
       </section>
     </div>
   )}
@@ -926,7 +962,7 @@ export function SupremeKingPayExperience() {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
         >
           <ArrowLeft className="size-3.5" />
-          <span>← Back to KingPay</span>
+          <span>Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-yellow-400">
           BBPS APDCL Assam, Mobile &amp; FASTag Desk
@@ -1004,10 +1040,10 @@ export function SupremeKingPayExperience() {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
         >
           <ArrowLeft className="size-3.5" />
-          <span>← Back to KingPay</span>
+          <span>Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-          💰 Pre-Approved Loans &amp; 9.1% High-Yield Wealth Desk
+          Pre-Approved Loans &amp; 9.1% High-Yield Wealth Desk
         </span>
       </div>
 
@@ -1107,7 +1143,7 @@ export function SupremeKingPayExperience() {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
         >
           <ArrowLeft className="size-3.5" />
-          <span>← Back to KingPay</span>
+          <span>Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-amber-400">
           Direct UPI &amp; Dynamic BharatQR Desk
@@ -1345,10 +1381,10 @@ export function SupremeKingPayExperience() {
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
         >
           <ArrowLeft className="size-3.5" />
-          <span>← Back to KingPay</span>
+          <span>Back to KingPay</span>
         </button>
         <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-          📜 In-App Transaction Passbook &amp; Audit Ledger
+          In-App Transaction Passbook &amp; Audit Ledger
         </span>
       </div>
 
@@ -1380,11 +1416,10 @@ export function SupremeKingPayExperience() {
         }}
       />
 
-      {/* ─── 7. DIGILOCKER RBI FULL-KYC UPGRADE MODAL ─── */}
+      {/* ─── 7. DIGILOCKER KYC INFORMATION MODAL ─── */}
       {isKycModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
           <div className="relative w-full max-w-md rounded-3xl border border-amber-500/40 bg-[#0d111a] p-6 shadow-2xl text-white space-y-5">
-            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300">
@@ -1392,7 +1427,7 @@ export function SupremeKingPayExperience() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-white">DigiLocker RBI Full-KYC</h3>
-                  <p className="text-[10px] text-slate-400">UIDAI Paperless e-KYC · ₹1,00,000 Wallet Cap</p>
+                  <p className="text-[10px] text-slate-400">UIDAI Paperless e-KYC</p>
                 </div>
               </div>
               <button
@@ -1404,164 +1439,32 @@ export function SupremeKingPayExperience() {
               </button>
             </div>
 
-            {/* Step 1: Aadhaar Input */}
-            {kycStep === "aadhaar" && (
-              <div className="space-y-4">
-                <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1">
-                  <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                    <Sparkles className="size-3.5" /> RBI PPI Compliance Master Direction
-                  </span>
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
-                    Link your 12-digit Aadhaar number to verify your identity instantly via DigiLocker. Unlocks un-capped travel bookings, instant bank cashouts, and 0% wallet surcharge.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">
-                    Enter 12-Digit Aadhaar Number
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={14}
-                    placeholder="XXXX - XXXX - XXXX"
-                    value={aadhaarInput}
-                    onChange={(e) => {
-                      const cleaned = e.target.value.replace(/\D/g, "").slice(0, 12);
-                      const formatted = cleaned.replace(/(\d{4})(?=\d)/g, "$1 ");
-                      setAadhaarInput(formatted);
-                    }}
-                    className="w-full h-12 px-4 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-base tracking-widest focus:border-amber-400 outline-none"
-                  />
-                  <p className="text-[10px] text-slate-500">
-                    🔒 256-bit AES encrypted transmission directly to DigiLocker / UIDAI gateway.
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  disabled={aadhaarInput.replace(/\s/g, "").length !== 12 || isVerifyingKyc}
-                  onClick={() => {
-                    setIsVerifyingKyc(true);
-                    setTimeout(() => {
-                      setIsVerifyingKyc(false);
-                      setKycStep("otp");
-                      toast.success("DigiLocker UIDAI OTP sent to registered mobile ending with 5587");
-                    }, 900);
-                  }}
-                  className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-slate-950 font-black text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                >
-                  {isVerifyingKyc ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      <span>Contacting DigiLocker Gateway...</span>
-                    </>
-                  ) : (
-                    <span>Send DigiLocker OTP ➔</span>
-                  )}
-                </button>
+            <div className="space-y-4">
+              <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1">
+                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <ShieldCheck className="size-3.5" /> Official DigiLocker Portal
+                </span>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  In-app Aadhaar e-KYC requires an active UIDAI/DigiLocker OAuth integration. Manage your verified identity documents directly on the official DigiLocker portal.
+                </p>
               </div>
-            )}
-
-            {/* Step 2: OTP Verification */}
-            {kycStep === "otp" && (
-              <div className="space-y-4">
-                <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-1">
-                  <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
-                    <CheckCircle2 className="size-3.5" /> OTP Dispatched
-                  </span>
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
-                    Enter the 6-digit verification code received on the mobile number linked to Aadhaar: <strong className="text-white font-mono">{aadhaarInput}</strong>.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-300 block">
-                    Enter 6-Digit DigiLocker OTP
-                  </label>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="• • • • • •"
-                    value={kycOtpInput}
-                    onChange={(e) => setKycOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    className="w-full h-12 px-4 text-center rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-xl tracking-[0.5em] focus:border-amber-400 outline-none"
-                  />
-                </div>
-
-                <div className="flex gap-2.5">
-                  <button
-                    type="button"
-                    onClick={() => setKycStep("aadhaar")}
-                    className="h-12 px-4 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition cursor-pointer"
-                  >
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    disabled={kycOtpInput.length !== 6 || isVerifyingKyc}
-                    onClick={() => {
-                      setIsVerifyingKyc(true);
-                      setTimeout(() => {
-                        setIsVerifyingKyc(false);
-                        setKycStep("verified");
-                        if (typeof window !== "undefined") {
-                          localStorage.setItem("kingpay_kyc_status", "VERIFIED");
-                        }
-                        toast.success("DigiLocker KYC Verified. ₹1,00,000 wallet limit activated.");
-                      }, 1000);
-                    }}
-                    className="flex-1 h-12 rounded-xl bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:pointer-events-none text-white font-black text-sm transition flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                  >
-                    {isVerifyingKyc ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        <span>Authorizing with UIDAI...</span>
-                      </>
-                    ) : (
-                      <span>Activate ₹1,00,000 Limit ➔</span>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3: Verified Badge / Certificate */}
-            {kycStep === "verified" && (
-              <div className="space-y-4 text-center py-2">
-                <div className="size-16 mx-auto rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-400">
-                  <ShieldCheck className="size-8" />
-                </div>
-                <div>
-                  <h4 className="text-base font-black text-white">Full-KYC Verified</h4>
-                  <p className="text-xs text-emerald-400 font-bold mt-0.5">RBI Master Direction PPI Compliant</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left space-y-2 text-xs">
-                  <div className="flex justify-between text-slate-400">
-                    <span>Identity Status</span>
-                    <span className="text-emerald-400 font-bold">UIDAI Certified</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Monthly Wallet Limit</span>
-                    <span className="text-white font-mono font-bold">₹1,00,000.00</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>Wallet Compliance</span>
-                    <span className="text-emerald-400 font-bold">RBI PPI Master Direction</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400">
-                    <span>TDS Deduction</span>
-                    <span className="text-emerald-400 font-bold">Exempt (0%)</span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsKycModalOpen(false)}
-                  className="w-full h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition cursor-pointer"
-                >
-                  Close &amp; Return to KingPay
-                </button>
-              </div>
-            )}
+              <a
+                href="https://www.digilocker.gov.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 no-underline"
+              >
+                <span>Open Official DigiLocker Portal</span>
+                <ExternalLink className="size-3.5" />
+              </a>
+              <button
+                type="button"
+                onClick={() => setIsKycModalOpen(false)}
+                className="w-full h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -41,6 +41,7 @@ export function SelfServeLandingModule() {
   const [closingTime, setClosingTime] = useState("23:00");
 
   const [fssaiNumber, setFssaiNumber] = useState("");
+  const [fssaiExpiryDate, setFssaiExpiryDate] = useState("");
   const [pan, setPan] = useState("");
   const [hasGst, setHasGst] = useState(false);
   const [gstin, setGstin] = useState("");
@@ -66,6 +67,7 @@ export function SelfServeLandingModule() {
         if (d.cuisine) setCuisine(d.cuisine);
         if (d.diet) setDiet(d.diet);
         if (d.fssaiNumber) setFssaiNumber(d.fssaiNumber);
+        if (d.fssaiExpiryDate) setFssaiExpiryDate(d.fssaiExpiryDate);
         if (d.pan) setPan(d.pan);
         if (d.gstin) {
           setGstin(d.gstin);
@@ -103,6 +105,10 @@ export function SelfServeLandingModule() {
   function validateStep2(): boolean {
     if (fssaiNumber.replace(/\D/g, "").length !== 14) {
       setError("Please enter a valid 14-digit FSSAI Food License Number.");
+      return false;
+    }
+    if (!fssaiExpiryDate) {
+      setError("Enter the actual FSSAI certificate expiry before submitting.");
       return false;
     }
     if (pan.trim().length !== 10) {
@@ -155,7 +161,7 @@ export function SelfServeLandingModule() {
       cuisine: cuisine.trim() || "North Indian, Biryani",
       diet,
       fssaiNumber: cleanFssai,
-      fssaiExpiryDate: "",
+      fssaiExpiryDate,
       pan: cleanPan,
       gstin: cleanGst,
       exemptFromGst: !hasGst,
@@ -192,37 +198,38 @@ export function SelfServeLandingModule() {
           },
         });
         const restId = (draftRes as any)?.restaurantId || (draftRes as any)?.id;
-        if (restId) {
-          await updateRestaurantProfile({
-            data: {
-              restaurantId: restId,
-              name: draftPayload.name,
-              displayName: draftPayload.displayName,
-              ownerName: draftPayload.ownerName,
-              phone: draftPayload.phone,
-              email: draftPayload.email,
-              city: draftPayload.city,
-              fboName: draftPayload.ownerName,
-              address: draftPayload.address,
-              landmark: draftPayload.landmark,
-              cuisine: draftPayload.cuisine,
-              diet: draftPayload.diet,
-              description: `${draftPayload.name} — ${draftPayload.cuisine}`,
-              gstin: draftPayload.gstin,
-              fssaiNumber: draftPayload.fssaiNumber,
-              fssaiLicenseNumber: draftPayload.fssaiNumber,
-              fssaiExpiryDate: draftPayload.fssaiExpiryDate,
-              pan: draftPayload.pan,
-              bankAccount: draftPayload.bankAccount,
-              bankIfsc: draftPayload.bankIfsc,
-              bankName: draftPayload.bankName,
-              bankHolder: draftPayload.holder,
-              openingTime: draftPayload.openingTime,
-              closingTime: draftPayload.closingTime,
-            },
-          });
-          await submitForReview({ data: { restaurantId: restId } }).catch(() => {});
+        if (!restId || String(restId).startsWith("local_")) {
+          throw new Error("Failed to create restaurant draft on server.");
         }
+        await updateRestaurantProfile({
+          data: {
+            restaurantId: restId,
+            name: draftPayload.name,
+            displayName: draftPayload.displayName,
+            ownerName: draftPayload.ownerName,
+            phone: draftPayload.phone,
+            email: draftPayload.email,
+            city: draftPayload.city,
+            fboName: draftPayload.ownerName,
+            address: draftPayload.address,
+            landmark: draftPayload.landmark,
+            cuisine: draftPayload.cuisine,
+            diet: draftPayload.diet,
+            description: `${draftPayload.name} — ${draftPayload.cuisine}`,
+            gstin: draftPayload.gstin,
+            fssaiNumber: draftPayload.fssaiNumber,
+            fssaiLicenseNumber: draftPayload.fssaiNumber,
+            fssaiExpiryDate: draftPayload.fssaiExpiryDate,
+            pan: draftPayload.pan,
+            bankAccount: draftPayload.bankAccount,
+            bankIfsc: draftPayload.bankIfsc,
+            bankName: draftPayload.bankName,
+            bankHolder: draftPayload.holder,
+            openingTime: draftPayload.openingTime,
+            closingTime: draftPayload.closingTime,
+          },
+        });
+        await submitForReview({ data: { restaurantId: restId } });
         window.location.assign("/dashboard");
         return;
       }
@@ -417,6 +424,15 @@ export function SelfServeLandingModule() {
                 onChange={(e) => setPan(e.target.value.toUpperCase().slice(0, 10))}
                 placeholder="ABCDE1234F"
                 className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono uppercase"
+              />
+            </div>
+            <div>
+              <Label className="text-xs font-semibold text-gray-700">FSSAI Certificate Expiry Date *</Label>
+              <Input
+                type="date"
+                value={fssaiExpiryDate}
+                onChange={(e) => setFssaiExpiryDate(e.target.value)}
+                className="mt-1 bg-white border-gray-300 text-gray-900 focus:border-[#E23744] h-11 font-mono"
               />
             </div>
           </div>

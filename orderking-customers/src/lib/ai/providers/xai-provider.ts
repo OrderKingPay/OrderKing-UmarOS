@@ -293,7 +293,7 @@ export class XAIProvider implements AIProvider {
       messages: [
         {
           role: "user",
-          content: `Write High_Performance ${input.language} code for: ${input.specification}`,
+          content: `Write production-grade ${input.language} code for: ${input.specification}`,
         },
       ],
       systemPrompt: "You are Grok, writing concise, high-throughput software. Return strictly valid JSON with keys: 'code' (string), 'explanation' (string), 'unitTests' (optional string), 'dependencies' (optional array of strings).",

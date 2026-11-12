@@ -4,6 +4,7 @@ import {
   Train,
   ShieldCheck,
   AlertCircle,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -103,7 +104,7 @@ export function SovereignTravelConcierge({
       providerName: `${pnrResult.trainNumber || "IRCTC"} ${pnrResult.trainName || "Express"}`.trim(),
       bookingRef: pnrResult.pnr,
       travelDate: pnrResult.boardingDate || new Date().toISOString().split("T")[0],
-      routeOrLocation: `${pnrResult.originStationCode || "—"} ➔ ${pnrResult.destinationStationCode || "MMCT"}`,
+      routeOrLocation: `${pnrResult.originStationCode || "—"} - ${pnrResult.destinationStationCode || "MMCT"}`,
       notes: `Class: ${pnrResult.journeyClass || "General"}, Chart: ${pnrResult.chartStatus || "Status unavailable"}`,
       createdAt: new Date().toISOString(),
     };
@@ -130,7 +131,7 @@ export function SovereignTravelConcierge({
       providerName: `${flightResult.carrierName || "Aviation"} (${flightResult.flightNumber})`,
       bookingRef: flightResult.flightNumber,
       travelDate: new Date().toISOString().split("T")[0],
-      routeOrLocation: `${flightResult.originIata || "DEL"} ➔ ${flightResult.destinationIata || "BOM"}`,
+      routeOrLocation: `${flightResult.originIata || "DEL"} - ${flightResult.destinationIata || "BOM"}`,
       notes: `Terminal: ${flightResult.terminal || "T3"}, Gate: ${flightResult.departureGate || "TBA"}`,
       createdAt: new Date().toISOString(),
     };
@@ -156,10 +157,10 @@ export function SovereignTravelConcierge({
         <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-2">Travel bookings without invented prices</h2>
         <p className="text-sm text-slate-300 mt-2 max-w-2xl">Choose an actual provider to see live availability, final fare, payment and confirmation. OrderKing does not issue railway tickets or guarantee third-party savings, wallet credits or gold rebates.</p>
         <div className="mt-5 flex flex-wrap gap-2">
-          <a href="https://www.irctc.co.in/nget/train-search" rel="noopener noreferrer" target="_blank" className="rounded-xl bg-emerald-400 px-4 py-2.5 text-slate-950 font-black text-sm no-underline hover:bg-emerald-300">Trains · IRCTC ↗</a>
-          <a href="https://www.goindigo.in/" rel="noopener noreferrer" target="_blank" className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Flights · IndiGo ↗</a>
-          <a href="https://www.redbus.in/" rel="noopener noreferrer" target="_blank" className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Buses · redBus ↗</a>
-          <a href="https://www.booking.com/" rel="noopener noreferrer" target="_blank" className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Hotels · Booking.com ↗</a>
+          <a href="https://www.irctc.co.in/nget/train-search" rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-400 px-4 py-2.5 text-slate-950 font-black text-sm no-underline hover:bg-emerald-300">Trains · IRCTC <ExternalLink className="size-3.5" /></a>
+          <a href="https://www.goindigo.in/" rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Flights · IndiGo <ExternalLink className="size-3.5" /></a>
+          <a href="https://www.redbus.in/" rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Buses · redBus <ExternalLink className="size-3.5" /></a>
+          <a href="https://www.booking.com/" rel="noopener noreferrer" target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-white font-bold text-sm no-underline">Hotels · Booking.com <ExternalLink className="size-3.5" /></a>
         </div>
         <p className="mt-3 text-[11px] text-slate-400">Provider terms, availability, ticket or reservation issue, refunds and fees apply. These are external booking links, not OrderKing-issued tickets.</p>
       </section>
@@ -219,7 +220,7 @@ export function SovereignTravelConcierge({
                 </span>
               </div>
               <p className="text-slate-600">
-                {pnrResult.originStationCode || "NDLS"} ➔ {pnrResult.destinationStationCode || "—"} · {pnrResult.journeyClass || "General"}
+                {pnrResult.originStationCode || "NDLS"} - {pnrResult.destinationStationCode || "—"} · {pnrResult.journeyClass || "General"}
               </p>
               {Array.isArray(pnrResult?.passengers) && pnrResult.passengers.length > 0 && (
                 <div className="pt-2 border-t border-indigo-200/60 space-y-1">
@@ -308,7 +309,7 @@ export function SovereignTravelConcierge({
                 </span>
               </div>
               <p className="text-slate-600">
-                {flightResult.originIata || "DEP"} ➔ {flightResult.destinationIata || "ARR"} · {flightResult.terminal || "Terminal TBA"}
+                {flightResult.originIata || "DEP"} - {flightResult.destinationIata || "ARR"} · {flightResult.terminal || "Terminal TBA"}
               </p>
               <div className="pt-2 border-t border-cyan-200/60 grid grid-cols-2 gap-2 text-slate-800">
                 <div className="bg-white p-2 rounded-lg border border-cyan-100">

@@ -189,8 +189,8 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
 
   // Contextual Dynamic Tab 3: Food Orders vs Travel Bookings & PNRs (Zero layout shift)
   const rightTab = isSuperApp
-    ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "🧳 My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
-    : { id: "activity", label: "My Food Orders", displayLabel: "📋 My Food Orders", to: "/orders", icon: ClipboardList };
+    ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
+    : { id: "activity", label: "My Food Orders", displayLabel: "My Food Orders", to: "/orders", icon: ClipboardList };
 
   const tabs = [
     { id: "food", label: "OrderKing", displayLabel: "OrderKing", to: "/", icon: UtensilsCrossed },
@@ -232,7 +232,7 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
                 <span className="block w-full truncate text-center leading-tight">
                   <span className="xs:hidden">
                     {id === "activity"
-                      ? (isSuperApp ? "🧳 Bookings" : "📋 Orders")
+                      ? (isSuperApp ? "Bookings" : "Orders")
                       : label}
                   </span>
                   <span className="hidden xs:inline">

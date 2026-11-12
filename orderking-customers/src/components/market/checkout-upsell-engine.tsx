@@ -60,7 +60,7 @@ export function CheckoutUpsellEngine({
     return null;
   }
 
-  // Calculate progress toward fast delivery
+  // Calculate progress toward free delivery
   const diffToFreeDelivery = freeDeliveryThresholdPaise - currentSubtotalPaise;
   const showFreeDeliveryGamification = diffToFreeDelivery > 0 && diffToFreeDelivery <= 15000;
   const freeDeliveryUnlocked = currentSubtotalPaise >= freeDeliveryThresholdPaise && freeDeliveryThresholdPaise > 0;
@@ -99,10 +99,10 @@ export function CheckoutUpsellEngine({
 
   return (
     <section
-      aria-label="Royal Chef Pairings Engine"
+      aria-label="Recommended Chef Pairings"
       className="mt-6 rounded-3xl border border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-white to-amber-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-amber-950/20 p-4 sm:p-5 shadow-[0_8px_30px_rgba(245,158,11,0.08)] backdrop-blur-sm"
     >
-      {/* Luxury Monetization Header */}
+      {/* Upsell Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 shadow-md">
@@ -121,13 +121,13 @@ export function CheckoutUpsellEngine({
           </div>
         </div>
 
-        {/* fast delivery Gamification Progress */}
+        {/* Free delivery progress */}
         {showFreeDeliveryGamification && (
           <div className="flex flex-col gap-1 rounded-xl bg-amber-500/15 border border-amber-400/40 px-3 py-1.5 text-xs">
             <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
               <Zap className="size-3.5 text-amber-600 fill-amber-500" />
               <span>
-                Add <strong className="text-amber-950 dark:text-amber-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for fast delivery!
+                Add <strong className="text-amber-950 dark:text-amber-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for free delivery!
               </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-amber-200/60 dark:bg-zinc-700 overflow-hidden">
@@ -142,7 +142,7 @@ export function CheckoutUpsellEngine({
         {freeDeliveryUnlocked && (
           <div className="flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-600" />
-            <span>Priority delivery applied</span>
+            <span>Free delivery unlocked</span>
           </div>
         )}
       </div>

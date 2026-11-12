@@ -69,7 +69,7 @@ export class PremiumTaskExecutor {
         title: "Verify Actual Merchant Demand & Pain Points",
         status: "COMPLETED",
         automatedArtifacts: ["Merchant-Feedback-Logs.json"],
-        outputSummary: "Validated with Royal Darbar Palace & Assam Valley Tea.",
+        outputSummary: "Pending live merchant validation interviews.",
       },
       {
         pillar: "OFFER",

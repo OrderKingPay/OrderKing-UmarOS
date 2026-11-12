@@ -41,7 +41,13 @@ function getEnv(key: string): string | undefined {
 export function isRiderBankingLive(): boolean {
   const keyId = (getEnv("RAZORPAYX_KEY_ID") || getEnv("RAZORPAY_KEY_ID") || "").trim();
   const keySecret = (getEnv("RAZORPAYX_KEY_SECRET") || getEnv("RAZORPAY_KEY_SECRET") || "").trim();
-  return Boolean(keyId && keySecret);
+  const accountNumber = (
+    getEnv("RAZORPAYX_ACCOUNT_NUMBER") ||
+    getEnv("RAZORPAY_MERCHANT_ACCOUNT_ID") ||
+    getEnv("RAZORPAY_ACCOUNT_NUMBER") ||
+    ""
+  ).trim();
+  return Boolean(keyId && keySecret && accountNumber);
 }
 
 /**

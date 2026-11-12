@@ -12,12 +12,15 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
   const testUserId = "rider-payout-user-1";
   let origKeyId: string | undefined;
   let origKeySecret: string | undefined;
+  let origAccountNumber: string | undefined;
 
   beforeEach(async () => {
     origKeyId = process.env.RAZORPAYX_KEY_ID;
     origKeySecret = process.env.RAZORPAYX_KEY_SECRET;
+    origAccountNumber = process.env.RAZORPAYX_ACCOUNT_NUMBER;
     process.env.RAZORPAYX_KEY_ID = "rzp_test_payout_key";
     process.env.RAZORPAYX_KEY_SECRET = "rzp_test_payout_secret";
+    process.env.RAZORPAYX_ACCOUNT_NUMBER = "4564560011223344";
 
     vi.stubGlobal(
       "fetch",
@@ -57,6 +60,11 @@ describe("OrderKing Rider RazorpayX Banking & T+1 Instant Payout Suite", () => {
       process.env.RAZORPAYX_KEY_SECRET = origKeySecret;
     } else {
       delete process.env.RAZORPAYX_KEY_SECRET;
+    }
+    if (origAccountNumber !== undefined) {
+      process.env.RAZORPAYX_ACCOUNT_NUMBER = origAccountNumber;
+    } else {
+      delete process.env.RAZORPAYX_ACCOUNT_NUMBER;
     }
   });
 

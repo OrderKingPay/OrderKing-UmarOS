@@ -588,7 +588,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
               </div>
               <p className="text-[11px] text-muted-foreground">
                 Crucial psychological trigger: This credit is pre-loaded directly into the customer&apos;s KingPay wallet upon
-                first tap, eliminating friction and locking in the first transaction over Dominant Legacy Aggregators.
+                first tap to encourage checkout completion and repeat orders.
               </p>
 
               <div className="grid grid-cols-4 gap-2">
@@ -884,10 +884,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                       className="w-full h-8 rounded border border-border bg-background px-2.5 text-xs text-foreground focus:ring-1 focus:ring-primary"
                     >
                       <option value="OrderKing Internal Network">OrderKing Network (Internal Growth)</option>
-                      <option value="Haldiram's Express Hub">Haldiram&apos;s Express Hub (Sponsored Slot #1)</option>
-                      <option value="Bikanervala Cloud Operations">Bikanervala Cloud Operations (Sponsored Slot #2)</option>
-                      <option value="Chaayos Direct">Chaayos Direct (Breakfast Slot #3)</option>
-                      <option value="External High-Ticket FMCG Advertiser">External High-Ticket FMCG Advertiser</option>
+                      <option value="External High-Ticket FMCG Advertiser">External Advertiser Campaign</option>
                     </select>
                   </div>
 

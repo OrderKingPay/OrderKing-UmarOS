@@ -1,33 +1,21 @@
-import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { CustomerShell } from "@/components/market/shell";
 import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
 import { TravelQuotationModal } from "@/components/fintech/travel-quotation-modal";
 import {
   type SovereignETicket,
-  type Passenger,
-  type BookingContact,
-  type PaymentMethod,
-  type RebateChoice,
   getStoredETickets,
-  saveETicketToStorage,
-  generateSovereignPnr,
-  calculateFareBreakdown,
 } from "@/lib/travel/in-app-booking-service";
-import { buildOfficialAirlineDeepLink, extractAirportCode } from "@/lib/travel/airline-deep-links";
+import { buildOfficialAirlineDeepLink } from "@/lib/travel/airline-deep-links";
 import {
   Plane,
   Train,
   Bus,
   Building2,
   Car,
-  CreditCard,
   ShieldCheck,
   Sparkles,
-  GraduationCap,
-  Briefcase,
-  Landmark,
-  ArrowRight,
   ArrowLeftRight,
   MapPin,
   Calendar,
@@ -40,12 +28,7 @@ import {
   ChevronRight,
   ExternalLink,
   Crown,
-  Tag,
-  Star,
-  X,
-  Phone,
-  Mail,
-  Wallet,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -369,9 +352,9 @@ const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
     halts: ["Kota Jn (KOTA)", "Vadodara Jn (BRC)", "Surat (ST)", "Borivali (BVI)"],
     pantry: "Complimentary Dynamic Hot Catering & Mineral Water",
     classes: [
-      { code: "1A", name: "First AC (Coupe)", fareInr: 4850, quotaAvailability: "Available (GN)" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 3120, quotaAvailability: "Available (GN)" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 2240, quotaAvailability: "Available (GN)" },
+      { code: "1A", name: "First AC (Coupe)", fareInr: 4850, quotaAvailability: "Check on IRCTC" },
+      { code: "2A", name: "AC 2-Tier", fareInr: 3120, quotaAvailability: "Check on IRCTC" },
+      { code: "3A", name: "AC 3-Tier", fareInr: 2240, quotaAvailability: "Check on IRCTC" },
     ],
   },
   {
@@ -388,9 +371,9 @@ const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
     halts: ["Kanpur Central (CNB)", "Pt. Deen Dayal Upadhyaya (DDU)", "Gaya Jn (GAYA)", "Dhanbad Jn (DHN)", "Asansol Jn (ASN)"],
     pantry: "Standard IRCTC Continental & North Indian Catering",
     classes: [
-      { code: "1A", name: "First AC", fareInr: 4980, quotaAvailability: "Available (GN)" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 3210, quotaAvailability: "Available (GN)" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 2290, quotaAvailability: "Available (GN)" },
+      { code: "1A", name: "First AC", fareInr: 4980, quotaAvailability: "Check on IRCTC" },
+      { code: "2A", name: "AC 2-Tier", fareInr: 3210, quotaAvailability: "Check on IRCTC" },
+      { code: "3A", name: "AC 3-Tier", fareInr: 2290, quotaAvailability: "Check on IRCTC" },
     ],
   },
   {
@@ -407,8 +390,8 @@ const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
     halts: ["Katpadi Jn (KPD)", "KSR Bengaluru (SBC 10:20)", "Mysuru Jn (MYS 12:20)"],
     pantry: "On-Seat Welcome Drink & Fresh Breakfast Included",
     classes: [
-      { code: "EC", name: "Executive Chair Car", fareInr: 2350, quotaAvailability: "Available (GN)" },
-      { code: "CC", name: "AC Chair Car", fareInr: 1270, quotaAvailability: "Available (GN)" },
+      { code: "EC", name: "Executive Chair Car", fareInr: 2350, quotaAvailability: "Check on IRCTC" },
+      { code: "CC", name: "AC Chair Car", fareInr: 1270, quotaAvailability: "Check on IRCTC" },
     ],
   },
   {
@@ -425,8 +408,8 @@ const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
     halts: ["Kanpur Central (CNB)", "Prayagraj Jn (PRYJ)"],
     pantry: "Pure Vegetarian Indian Hospitality Meal Included",
     classes: [
-      { code: "EC", name: "Executive Chair Car", fareInr: 3300, quotaAvailability: "Available (GN)" },
-      { code: "CC", name: "AC Chair Car", fareInr: 1750, quotaAvailability: "Available (GN)" },
+      { code: "EC", name: "Executive Chair Car", fareInr: 3300, quotaAvailability: "Check on IRCTC" },
+      { code: "CC", name: "AC Chair Car", fareInr: 1750, quotaAvailability: "Check on IRCTC" },
     ],
   },
   {
@@ -443,10 +426,10 @@ const AUTHENTIC_RAILWAY_SCHEDULES: RailwaySchedule[] = [
     halts: ["Surat (ST)", "Vadodara (BRC)", "Ratlam (RTM)", "Kota (KOTA)", "New Delhi (NDLS 10:40)", "Ambala Cantt", "Ludhiana Jn"],
     pantry: "Attached Pantry Car with Fresh Thali & Regional Meals",
     classes: [
-      { code: "1A", name: "First AC", fareInr: 3920, quotaAvailability: "Available (GN)" },
-      { code: "2A", name: "AC 2-Tier", fareInr: 2380, quotaAvailability: "Available (GN)" },
-      { code: "3A", name: "AC 3-Tier", fareInr: 1680, quotaAvailability: "Available (GN)" },
-      { code: "SL", name: "Sleeper Class", fareInr: 640, quotaAvailability: "Available (GN)" },
+      { code: "1A", name: "First AC", fareInr: 3920, quotaAvailability: "Check on IRCTC" },
+      { code: "2A", name: "AC 2-Tier", fareInr: 2380, quotaAvailability: "Check on IRCTC" },
+      { code: "3A", name: "AC 3-Tier", fareInr: 1680, quotaAvailability: "Check on IRCTC" },
+      { code: "SL", name: "Sleeper Class", fareInr: 640, quotaAvailability: "Check on IRCTC" },
     ],
   },
 ];
@@ -672,24 +655,6 @@ export function TravelPage() {
   const [activeTicketModal, setActiveTicketModal] = useState<SovereignETicket | null>(null);
   const [quotationModal, setQuotationModal] = useState<{ isOpen: boolean; category?: "UMRAH" | "TRAIN" | "FLIGHT" | "PILGRIMAGE" | "HOLIDAY"; destination?: string; origin?: string } | null>(null);
 
-  // In-App Seamless Booking Flow State (Eliminating external popups)
-  const [inAppBookingModal, setInAppBookingModal] = useState<{
-    type: "flight" | "train" | "hotel" | "pilgrimage";
-    data: any;
-    selectedClass?: string;
-  } | null>(null);
-
-  const [optInTripProtection, setOptInTripProtection] = useState(true);
-  const [bookingPaxName, setBookingPaxName] = useState("");
-  const [bookingPaxAge, setBookingPaxAge] = useState(28);
-  const [bookingPaxGender, setBookingPaxGender] = useState<"male" | "female" | "other">("male");
-  const [bookingSeatPref, setBookingSeatPref] = useState("Window / Lower Berth");
-  const [bookingPhone, setBookingPhone] = useState("");
-  const [bookingEmail, setBookingEmail] = useState("");
-  const [bookingIrctcUserId, setBookingIrctcUserId] = useState("");
-  const [bookingPaymentMethod, setBookingPaymentMethod] = useState<PaymentMethod>("kingpay_wallet");
-  const [isProcessingBooking, setIsProcessingBooking] = useState(false);
-
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(SAVED_TRIPS_STORAGE_KEY);
@@ -726,7 +691,7 @@ export function TravelPage() {
   };
 
   const handleLaunchFlightSearch = () => {
-    toast.success(`Verified airline fares loaded for ${flightFrom} ➔ ${flightTo}`);
+    toast.success(`Showing airline schedules & official portals for ${flightFrom} ➔ ${flightTo}`);
   };
 
   const handleSaveTripReference = (e: React.FormEvent) => {
@@ -821,162 +786,10 @@ export function TravelPage() {
     }
   };
 
-  // Complete In-App Seamless Booking Execution (Zero Popups)
-  const handleExecuteInAppBooking = async () => {
-    if (!bookingPaxName.trim()) {
-      toast.error("Please enter traveler full name.");
-      return;
-    }
-    if (bookingPhone.replace(/\D/g, "").length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number.");
-      return;
-    }
-    if (inAppBookingModal?.type === "train" && !bookingIrctcUserId.trim()) {
-      toast.error("Please enter your IRCTC User ID for Indian Railways PRS reservation.");
-      return;
-    }
-
-    setIsProcessingBooking(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-
-      const modalData = inAppBookingModal?.data;
-      const modalType = inAppBookingModal?.type;
-
-      if (!modalData || !modalType) return;
-
-      const pnrGenerated =
-        modalType === "flight" ? `OK-FL-${Math.random().toString(36).substring(2, 7).toUpperCase()}` :
-        modalType === "train" ? `24${Math.floor(10000000 + Math.random() * 90000000)}` :
-        `HT-${Math.floor(100000 + Math.random() * 900000)}`;
-
-      const baseFarePaise =
-        modalType === "flight" ? (modalData.baseFarePaise || 419900) :
-        modalType === "train" ? ((modalData.selectedClassFare || 2240) * 100) :
-        (modalData.tariffPerNightInr * 100);
-
-      const taxPaise =
-        modalType === "flight" ? (modalData.taxesPaise || 45100) :
-        modalType === "train" ? Math.round(baseFarePaise * 0.05) :
-        Math.round(baseFarePaise * 0.18);
-
-      const convenienceFeePaise =
-        modalType === "flight" ? 49_900 : // Mandatory ₹499 platform fee (MakeMyTrip benchmark)
-        modalType === "train" ? 4_000 :   // Mandatory ₹40 IRCTC platform fee
-        25_000;                          // Mandatory ₹250 Hotel booking fee
-
-      const tripProtectionPaise = (modalType === "flight" && optInTripProtection) ? 14_900 : 0; // ₹149 shield
-      const totalPaise = baseFarePaise + taxPaise + convenienceFeePaise + tripProtectionPaise;
-
-      const createdTicket: SovereignETicket = {
-        pnr: pnrGenerated,
-        bookingId: `OK-BK-${Date.now().toString().slice(-6)}`,
-        mode: modalType === "flight" ? "flight" : modalType === "train" ? "train" : "flight",
-        carrierCode: modalData.carrierCode || "CRIS",
-        carrierName: modalData.carrierName || modalData.trainName || modalData.name,
-        serviceNumber: modalData.flightNumber || modalData.trainNumber || "Palace Stay",
-        serviceTitle: modalData.flightNumber ? `${modalData.carrierName} ${modalData.flightNumber}` : (modalData.trainName || modalData.name),
-        origin: {
-          city: modalData.fromName || modalData.fromCode || flightFrom.split("(")[0]?.trim() || "New Delhi",
-          code: modalData.fromCode || "DEL",
-          terminalOrPlatform: modalData.terminalDep || "Platform 1",
-          departureDate: modalType === "train" ? trainDate : modalType === "hotel" ? hotelCheckIn : flightDate,
-          departureTime: modalData.departureTime || "12:00 PM",
-        },
-        destination: {
-          city: modalData.toName || modalData.toCode || flightTo.split("(")[0]?.trim() || modalData.city || "Mumbai",
-          code: modalData.toCode || "BOM",
-          terminalOrPlatform: modalData.terminalArr || "Platform 2",
-          arrivalDate: modalType === "train" ? trainDate : flightDate,
-          arrivalTime: modalData.arrivalTime || "02:00 PM",
-        },
-        duration: modalData.duration || "Direct",
-        classOrTier: inAppBookingModal?.selectedClass || modalData.roomType || flightClass,
-        stopsDisplay: modalData.stops || "Direct",
-        passengers: [
-          {
-            id: "pax-1",
-            fullName: bookingPaxName.trim(),
-            age: bookingPaxAge,
-            gender: bookingPaxGender,
-            seatPreference: bookingSeatPref,
-            allocatedSeat: modalType === "train" ? "B2-14 (Confirmed)" : "12A (Confirmed)",
-            bookingStatus: "CONFIRMED",
-          },
-        ],
-        contact: {
-          phone: bookingPhone,
-          email: bookingEmail,
-        },
-        fareBreakdown: {
-          passengerCount: 1,
-          baseFarePaiseTotal: baseFarePaise,
-          taxesPaiseTotal: taxPaise,
-          orderKingDeskFeePaise: 0,
-          totalCheckoutPaise: totalPaise,
-          otaBenchmarkFeePaiseTotal: 39900,
-          instantSavingsPaise: 39900,
-          partnerRebatePaiseTotal: Math.floor(baseFarePaise * 0.02),
-          rebateGoldMilligrams: 18,
-          rebateFoodWalletPaise: Math.floor(baseFarePaise * 0.02),
-          effectiveNetCostPaise: totalPaise - Math.floor(baseFarePaise * 0.02),
-        },
-        payment: {
-          method: bookingPaymentMethod,
-          paidAt: new Date().toISOString(),
-          transactionId: `KP-TXN-${Date.now().toString().slice(-8)}`,
-          rebateDestination: "food_wallet",
-          rebateAmountCredited: formatPaise(Math.floor(baseFarePaise * 0.02)),
-        },
-        cancellationPolicy: {
-          refundableUntil: new Date(Date.now() + 86400000).toISOString(),
-          refundablePaise: Math.round(baseFarePaise * 0.9),
-          orderKingPenaltyPaise: 0,
-          terms: "Full refund minus standard carrier cancellation clerkage.",
-        },
-        departureTimestamp: new Date(Date.now() + 86400000).toISOString(),
-        status: "CONFIRMED",
-        qrCodeData: `ORDERKING-TICKET|${pnrGenerated}|${bookingPaxName}|${totalPaise}`,
-        bookedAt: new Date().toISOString(),
-      };
-
-      // Record in saved trips
-      const newTripRecord: SavedTripReference = {
-        id: `trip-${Date.now()}`,
-        bookingType:
-          modalType === "flight"
-            ? "Flight"
-            : modalType === "train"
-              ? "Train"
-              : modalType === "hotel"
-                ? "Hotel"
-                : "Tour",
-        providerName: modalData.carrierName || modalData.trainName || modalData.name,
-        bookingRef: pnrGenerated,
-        travelDate: createdTicket.origin.departureDate,
-        routeOrLocation: `${createdTicket.origin.city} ➔ ${createdTicket.destination.city}`,
-        notes: `${createdTicket.classOrTier} · Paid ${formatPaise(totalPaise)} · Live Corridor Tariff`,
-        createdAt: new Date().toISOString(),
-        sovereignETicket: createdTicket,
-      };
-
-      persistTrips([newTripRecord, ...savedTrips]);
-      saveETicketToStorage(createdTicket);
-      setInAppBookingModal(null);
-      setActiveTicketModal(createdTicket);
-      toast.success(`🎉 Booking Confirmed! PNR ${pnrGenerated} issued in-app with verified carrier tariff.`);
-    } catch {
-      toast.error("Unable to complete booking. Please try again.");
-    } finally {
-      setIsProcessingBooking(false);
-    }
-  };
-
   return (
     <CustomerShell maxWidth="max-w-7xl">
       <div className="mx-auto max-w-7xl px-3 sm:px-6 py-4 sm:py-6 space-y-6">
-        
+
         {/* Authoritative Single Travel Desk Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-6 text-white border border-slate-800 shadow-xl">
           <div>
@@ -989,7 +802,7 @@ export function TravelPage() {
               Flights, Trains, Hotels, Buses &amp; Holiday Tours
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Search and book domestic and international flights, IRCTC train tickets, verified hotels, and curated holiday packages.
+              Search and book domestic and international flights, IRCTC train tickets, luxury hotels, and holiday packages.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
@@ -1004,26 +817,25 @@ export function TravelPage() {
             <button
               type="button"
               onClick={() => setActiveTab("trips")}
-            className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-black transition flex items-center gap-2 border self-start sm:self-auto ${
-              activeTab === "trips"
-                ? "bg-sky-500 text-slate-950 border-sky-400 shadow-md"
-                : "bg-white/10 text-white border-white/20 hover:bg-white/20"
-            }`}
-          >
-            <span>My Bookings</span>
-            {savedTrips.length > 0 && (
-              <span className="bg-sky-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">
-                {savedTrips.length}
-              </span>
-            )}
-            <ChevronRight className="size-3.5" />
-          </button>
+              className={`shrink-0 rounded-2xl px-4 py-2.5 text-xs font-black transition flex items-center gap-2 border self-start sm:self-auto ${activeTab === "trips"
+                  ? "bg-sky-500 text-slate-950 border-sky-400 shadow-md"
+                  : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+                }`}
+            >
+              <span>My Bookings</span>
+              {savedTrips.length > 0 && (
+                <span className="bg-sky-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                  {savedTrips.length}
+                </span>
+              )}
+              <ChevronRight className="size-3.5" />
+            </button>
           </div>
         </div>
 
         {/* AUTHORITATIVE SINGLE TRAVEL DESK */}
         <div className="rounded-3xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm space-y-6">
-          
+
           {/* ─── CORE HUB: 4 TRAVEL TILES ─── */}
           <div className="space-y-3 pb-3 border-b border-slate-100">
             {/* Row 1: The 4 Travel Tiles */}
@@ -1050,7 +862,7 @@ export function TravelPage() {
                 </div>
                 <div className="min-w-0 mt-2">
                   <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "flights" ? "text-white" : "text-slate-950")}>
-                    ✈️ Flights
+                    Flights
                   </span>
                   <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "flights" ? "text-sky-200/80" : "text-slate-500")}>
                     Domestic &amp; International
@@ -1080,7 +892,7 @@ export function TravelPage() {
                 </div>
                 <div className="min-w-0 mt-2">
                   <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "trains" ? "text-white" : "text-slate-950")}>
-                    🚆 Trains
+                    Trains
                   </span>
                   <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "trains" ? "text-indigo-200/80" : "text-slate-500")}>
                     IRCTC Trains &amp; PNR Status
@@ -1110,7 +922,7 @@ export function TravelPage() {
                 </div>
                 <div className="min-w-0 mt-2">
                   <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "hotels" ? "text-white" : "text-slate-950")}>
-                    🏨 Hotels
+                    Hotels
                   </span>
                   <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "hotels" ? "text-amber-200/80" : "text-slate-500")}>
                     Hotels &amp; Resorts Worldwide
@@ -1140,7 +952,7 @@ export function TravelPage() {
                 </div>
                 <div className="min-w-0 mt-2">
                   <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "pilgrimage" ? "text-white" : "text-slate-950")}>
-                    🌍 Holiday Tours
+                    Holiday Tours
                   </span>
                   <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "pilgrimage" ? "text-emerald-200/80" : "text-slate-500")}>
                     World &amp; Domestic Destinations
@@ -1200,7 +1012,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "flights" && (
             <div className="space-y-6">
-              
+
               {/* Concession Fare Selector */}
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -1213,11 +1025,10 @@ export function TravelPage() {
                         key={fare}
                         type="button"
                         onClick={() => setSpecialFareType(fare)}
-                        className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${
-                          specialFareType === fare
+                        className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${specialFareType === fare
                             ? "bg-sky-600 text-white border-sky-600 shadow-xs"
                             : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                        }`}
+                          }`}
                       >
                         {fare}
                       </button>
@@ -1225,7 +1036,7 @@ export function TravelPage() {
                   </div>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  Verified Airline Fares · Live Corridor Tariffs
+                  Direct Airline Portal Redirect · Zero Markup
                 </span>
               </div>
 
@@ -1319,7 +1130,7 @@ export function TravelPage() {
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 flex items-center justify-center gap-2"
                 >
                   <Search className="size-4" />
-                  Search Verified Airline Fares
+                  Search Airline Portals
                 </Button>
               </div>
 
@@ -1352,24 +1163,32 @@ export function TravelPage() {
                 </div>
               </div>
 
-              {/* AUTHENTIC DOMESTIC FLIGHT SCHEDULES (Zero Popups · In-App Booking) */}
+              {/* SCHEDULED DOMESTIC FLIGHT CORRIDORS (Direct Official Carrier Portals) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Plane className="size-4 text-sky-600" />
-                    <span>Available Scheduled Flights ({AUTHENTIC_FLIGHTS.length})</span>
+                    <span>Reference Flight Schedules ({AUTHENTIC_FLIGHTS.length})</span>
                     <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      In-App Instant E-Ticket
+                      Official Carrier Portals
                     </span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    Authentic DGCA Flight Numbers &amp; Timings
+                    Scheduled Carrier Flight Numbers &amp; Timings
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
                   {AUTHENTIC_FLIGHTS.map((flight) => {
                     const totalPaise = flight.baseFarePaise + flight.taxesPaise;
+                    const carrierPortal = buildOfficialAirlineDeepLink({
+                      carrierCode: flight.carrierCode,
+                      from: flight.fromCode,
+                      to: flight.toCode,
+                      departureDate: flightDate,
+                      passengers: flightPassengers,
+                      cabinClass: flightClass,
+                    });
                     return (
                       <div
                         key={flight.id}
@@ -1413,47 +1232,43 @@ export function TravelPage() {
 
                         <div className="flex flex-col md:items-end justify-between gap-2.5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-200">
                           <div>
-                            <span className="text-xs text-slate-400 block line-through">
-                              {formatPaise(totalPaise + 39900)}
-                            </span>
+                            <span className="text-[10px] text-slate-500 block">Indicative Base + Tax</span>
                             <span className="text-xl font-black font-mono text-slate-900">
                               {formatPaise(totalPaise)}
                             </span>
                             <span className="text-[10px] font-bold text-emerald-700 block">
-                              Verified Airline Fares · Live Corridor Tariffs
+                              Reference Tariff · Check Live Fare on Airline Portal
                             </span>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                setInAppBookingModal({
-                                  type: "flight",
-                                  data: flight,
-                                  selectedClass: flightClass,
-                                });
-                              }}
-                              className="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20"
-                            >
-                              Book Flight (In-App) ➔
-                            </Button>
                             <a
-                              href={buildOfficialAirlineDeepLink({
-                                carrierCode: flight.carrierCode,
-                                from: flight.fromCode,
-                                to: flight.toCode,
-                                departureDate: flightDate,
-                                passengers: flightPassengers,
-                                cabinClass: flightClass,
-                              }).bookingUrl}
+                              href={carrierPortal.bookingUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="h-10 px-3 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition"
-                              title="Official Airline Portal"
+                              onClick={() => {
+                                toast.success(`Opening official ${flight.carrierName} portal (${carrierPortal.portalName})...`);
+                              }}
+                              className="h-10 px-4 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 inline-flex items-center gap-1.5 transition"
                             >
+                              <span>Book on {flight.carrierName}</span>
                               <ExternalLink className="size-3.5" />
                             </a>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setQuotationModal({
+                                  isOpen: true,
+                                  category: "FLIGHT",
+                                  origin: flight.fromCode,
+                                  destination: flight.toCode,
+                                });
+                              }}
+                              className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
+                            >
+                              Request Quote
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -1580,7 +1395,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "trains" && (
             <div className="space-y-6">
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600">
@@ -1591,7 +1406,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full self-start">
-                  Official Railway Desk · Live Corridor Tariffs
+                  Official IRCTC Portal Handoff · ₹0 Markup
                 </span>
               </div>
 
@@ -1708,18 +1523,18 @@ export function TravelPage() {
                 </Button>
               </div>
 
-              {/* AUTHENTIC CORRIDOR TRAIN SCHEDULES (Rajdhani, Vande Bharat, Paschim) */}
+              {/* REFERENCE CORRIDOR TRAIN SCHEDULES (Direct Official IRCTC Handoff) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Train className="size-4 text-indigo-600" />
                     <span>Premier Express Corridors ({AUTHENTIC_RAILWAY_SCHEDULES.length})</span>
                     <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
-                      Authentic Indian Railways PRS
+                      Reference Schedule · Check Live Availability on IRCTC
                     </span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    1A · 2A · 3A · SL · EC · CC Tariffs
+                    1A · 2A · 3A · SL · EC · CC Guide
                   </span>
                 </div>
 
@@ -1768,37 +1583,31 @@ export function TravelPage() {
                       {/* Halts */}
                       <div className="text-[11px] text-slate-500 flex flex-wrap items-center gap-1.5">
                         <span className="font-bold text-slate-700">Key Halts:</span>
-                        {trainItem.halts.map((halt, idx) => (
+                        {trainItem.halts.map((halt) => (
                           <span key={halt} className="bg-white border border-slate-200 px-2 py-0.5 rounded">
                             {halt}
                           </span>
                         ))}
                       </div>
 
-                      {/* Available Classes & Tariffs */}
+                      {/* Reference Class Fares & Direct IRCTC Redirect */}
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                         {trainItem.classes.map((cls) => (
                           <button
                             key={cls.code}
                             type="button"
                             onClick={() => {
-                              setInAppBookingModal({
-                                type: "train",
-                                data: {
-                                  ...trainItem,
-                                  selectedClass: cls.code,
-                                  selectedClassFare: cls.fareInr,
-                                },
-                                selectedClass: `${cls.code} (${cls.name})`,
-                              });
+                              const irctcUrl = `https://www.irctc.co.in/nget/train-search?from=${trainItem.fromCode}&to=${trainItem.toCode}&date=${trainDate}`;
+                              toast.info("OrderKing does not issue railway tickets directly. Redirecting to official IRCTC portal...");
+                              window.open(irctcUrl, "_blank", "noopener,noreferrer");
                             }}
                             className="p-3 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 transition text-left group"
                           >
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between gap-1">
                               <span className="text-xs font-black text-indigo-950 group-hover:text-indigo-600">
                                 {cls.code} · {cls.name}
                               </span>
-                              <span className="text-[10px] font-bold text-emerald-700">
+                              <span className="text-[10px] font-bold text-slate-500">
                                 {cls.quotaAvailability}
                               </span>
                             </div>
@@ -1807,7 +1616,7 @@ export function TravelPage() {
                                 ₹{cls.fareInr.toLocaleString("en-IN")}
                               </span>
                               <span className="text-[10px] font-bold text-indigo-600">
-                                Book In-App ➔
+                                Check on IRCTC ➔
                               </span>
                             </div>
                           </button>
@@ -1890,11 +1699,10 @@ export function TravelPage() {
                           {pnrLiveResult.originStationCode} ➔ {pnrLiveResult.destinationStationCode}
                         </p>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-black uppercase border self-start ${
-                        pnrLiveResult.chartStatus === "CHART PREPARED"
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-black uppercase border self-start ${pnrLiveResult.chartStatus === "CHART PREPARED"
                           ? "bg-emerald-100 text-emerald-800 border-emerald-300"
                           : "bg-amber-100 text-amber-800 border-amber-300"
-                      }`}>
+                        }`}>
                         {pnrLiveResult.chartStatus}
                       </span>
                     </div>
@@ -1960,7 +1768,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "hotels" && (
             <div className="space-y-6">
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-amber-600">
@@ -1971,7 +1779,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full self-start">
-                  Instant Confirmation · GST Invoicing
+                  Direct Hotel Portals &amp; Concierge Quotes
                 </span>
               </div>
 
@@ -2063,39 +1871,39 @@ export function TravelPage() {
                 </Button>
               </div>
 
-              {/* AUTHENTIC HOTELS (In-App Booking · Zero Popups) */}
+              {/* FEATURED ACCOMMODATIONS (Booking.com / Direct Quote) */}
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
                     <Building2 className="size-4 text-amber-600" />
                     <span>Available Accommodations ({
-                      AUTHENTIC_LUXURY_HOTELS.filter((h) => 
-                        !hotelCity.trim() || 
-                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
+                      AUTHENTIC_LUXURY_HOTELS.filter((h) =>
+                        !hotelCity.trim() ||
+                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
                         h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
                         h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
                       ).length || AUTHENTIC_LUXURY_HOTELS.length
                     })</span>
                   </h3>
                   <span className="text-xs text-slate-500 font-bold hidden sm:inline">
-                    Verified Rates
+                    Published Reference Tariffs
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {(
-                    AUTHENTIC_LUXURY_HOTELS.filter((h) => 
-                      !hotelCity.trim() || 
-                      h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
+                    AUTHENTIC_LUXURY_HOTELS.filter((h) =>
+                      !hotelCity.trim() ||
+                      h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
                       h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
                       h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
                     ).length > 0
-                      ? AUTHENTIC_LUXURY_HOTELS.filter((h) => 
-                          !hotelCity.trim() || 
-                          h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) || 
-                          h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
-                          h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
-                        )
+                      ? AUTHENTIC_LUXURY_HOTELS.filter((h) =>
+                        !hotelCity.trim() ||
+                        h.city.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
+                        h.name.toLowerCase().includes(hotelCity.toLowerCase().trim()) ||
+                        h.locationDetail.toLowerCase().includes(hotelCity.toLowerCase().trim())
+                      )
                       : AUTHENTIC_LUXURY_HOTELS
                   ).map((hotel) => (
                     <div
@@ -2114,7 +1922,7 @@ export function TravelPage() {
                             <p className="text-xs text-slate-500 mt-0.5">{hotel.locationDetail}</p>
                           </div>
                           <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[10px] shrink-0">
-                            ★ 5-Star Hotel
+                            5-Star Hotel
                           </span>
                         </div>
 
@@ -2130,9 +1938,9 @@ export function TravelPage() {
                         </div>
                       </div>
 
-                      <div className="border-t border-slate-200/80 pt-3 flex items-center justify-between">
+                      <div className="border-t border-slate-200/80 pt-3 flex items-center justify-between gap-2">
                         <div>
-                          <span className="text-xs text-slate-400 block">Per Night Rate</span>
+                          <span className="text-xs text-slate-400 block">Reference Tariff / Night</span>
                           <span className="text-lg font-black font-mono text-slate-900">
                             ₹{hotel.tariffPerNightInr.toLocaleString("en-IN")}
                           </span>
@@ -2140,29 +1948,32 @@ export function TravelPage() {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <a
+                            href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(`${hotel.name}, ${hotel.city}`)}&checkin=${encodeURIComponent(hotelCheckIn)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => {
+                              toast.info(`Checking live room rates for ${hotel.name} on Booking.com...`);
+                            }}
+                            className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 inline-flex items-center gap-1.5 transition"
+                          >
+                            <span>Check Live Rates</span>
+                            <ExternalLink className="size-3.5" />
+                          </a>
                           <Button
                             type="button"
+                            variant="outline"
                             onClick={() => {
-                              setInAppBookingModal({
-                                type: "hotel",
-                                data: hotel,
-                                selectedClass: hotel.roomType,
+                              setQuotationModal({
+                                isOpen: true,
+                                category: "HOLIDAY",
+                                destination: `${hotel.name}, ${hotel.city}`,
                               });
                             }}
-                            className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20"
+                            className="h-10 px-3 rounded-xl border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold"
                           >
-                            Reserve Stay ➔
+                            Request Quote
                           </Button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              toast.info(`${hotel.name}: 24/7 front desk, room service & verified booking.`);
-                            }}
-                            className="h-10 px-3 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition"
-                            title="Hotel Details"
-                          >
-                            <Building2 className="size-3.5" />
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -2178,7 +1989,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "buses" && (
             <div className="space-y-6">
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-orange-600">
@@ -2316,7 +2127,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "cabs" && (
             <div className="space-y-6">
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-emerald-600">
@@ -2327,7 +2138,7 @@ export function TravelPage() {
                   </h2>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full self-start">
-                  Verified Chauffeur Services
+                  Ride-Hailing &amp; Transfer Links
                 </span>
               </div>
 
@@ -2459,7 +2270,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "pilgrimage" && (
             <div className="space-y-6">
-              
+
               {/* Holiday Tours & Travel Packages Header */}
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 text-white border border-slate-800 shadow-lg">
                 <div className="relative z-10 max-w-2xl space-y-2">
@@ -2486,7 +2297,7 @@ export function TravelPage() {
                         : "bg-white/10 text-white border-white/20 hover:bg-white/20"
                     )}
                   >
-                    <span>🌍</span>
+                    <Globe className="size-3.5" />
                     <span>National &amp; International</span>
                   </button>
 
@@ -2512,11 +2323,11 @@ export function TravelPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-200">
                     <div>
                       <h3 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                        <span>🌍</span>
+                        <Globe className="size-5 text-sky-600" />
                         <span>National &amp; International Tours</span>
                       </h3>
                       <p className="text-xs text-slate-500">
-                        Top-rated international vacations and national domestic retreats with verified flights and accommodations.
+                        Domestic and international holiday itineraries arranged via direct concierge quotation.
                       </p>
                     </div>
                     <button
@@ -2742,36 +2553,26 @@ export function TravelPage() {
                         <div className="mt-3 pt-2.5 border-t border-slate-100 space-y-2">
                           <div className="flex items-baseline justify-between">
                             <div>
-                              <span className="text-[10px] font-bold text-slate-400 line-through mr-1">
-                                {formatPaise(pkg.publishedMrp)}
-                              </span>
                               <span className="text-base font-black text-slate-900">
-                                {formatPaise(pkg.orderkingPrice)}
+                                From {formatPaise(pkg.orderkingPrice)}
                               </span>
                             </div>
                             <span className="text-[9px] font-bold text-slate-500">
-                              per person
+                              indicative / person
                             </span>
                           </div>
                           <Button
                             type="button"
                             onClick={() => {
-                              setInAppBookingModal({
-                                type: "pilgrimage",
-                                data: {
-                                  carrierName: "OrderKing Travel",
-                                  name: pkg.title,
-                                  baseFarePaise: pkg.orderkingPrice,
-                                  totalFarePaise: pkg.orderkingPrice,
-                                  taxesPaise: 0,
-                                  departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-                                },
-                                selectedClass: "Standard Deluxe",
+                              setQuotationModal({
+                                isOpen: true,
+                                category: "HOLIDAY",
+                                destination: pkg.destination,
                               });
                             }}
                             className="w-full h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition active:scale-98"
                           >
-                            Book Package ➔
+                            Request Package Quote ➔
                           </Button>
                         </div>
                       </div>
@@ -2825,28 +2626,24 @@ export function TravelPage() {
                               id: "ISLAMIC",
                               label: "Muslim",
                               sub: "Umrah, Ziyarat & Holy Sites",
-                              icon: "🕋",
                               color: "from-emerald-950/80 to-emerald-900/60 border-emerald-500/40 hover:border-emerald-400 text-emerald-300",
                             },
                             {
                               id: "SANATAN",
                               label: "Hindu",
                               sub: "Kashi, Ayodhya, Kamakhya & Char Dham",
-                              icon: "🕉️",
                               color: "from-amber-950/80 to-orange-900/60 border-orange-500/40 hover:border-orange-400 text-orange-300",
                             },
                             {
                               id: "SIKH",
                               label: "Sikh",
                               sub: "Golden Temple & Sri Hemkund",
-                              icon: "☬",
                               color: "from-blue-950/80 to-indigo-900/60 border-blue-500/40 hover:border-blue-400 text-blue-300",
                             },
                             {
                               id: "CHRISTIAN",
                               label: "Christian",
                               sub: "Old Goa Shrines & Heritage",
-                              icon: "✝️",
                               color: "from-purple-950/80 to-violet-900/60 border-purple-500/40 hover:border-purple-400 text-purple-300",
                             },
                           ].map((item) => (
@@ -2859,11 +2656,11 @@ export function TravelPage() {
                                 if (typeof window !== "undefined") {
                                   localStorage.setItem("orderking_faith_tradition", faith);
                                 }
-                                toast.success(`Viewing verified ${item.label} itineraries`);
+                                toast.success(`Viewing ${item.label} tour itineraries`);
                               }}
                               className={`p-3.5 rounded-2xl border bg-gradient-to-br ${item.color} text-left transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer shadow-md flex flex-col justify-between min-h-[92px]`}
                             >
-                              <span className="text-2xl">{item.icon}</span>
+                              <Compass className="size-5" />
                               <div>
                                 <span className="text-xs font-black block leading-tight text-white">{item.label}</span>
                                 <span className="text-[10px] opacity-75 block mt-0.5">{item.sub}</span>
@@ -3070,14 +2867,11 @@ export function TravelPage() {
                             <div className="mt-4 pt-3 border-t border-slate-100 space-y-2.5">
                               <div className="flex items-baseline justify-between">
                                 <div>
-                                  <span className="text-[11px] font-bold text-slate-400 line-through mr-1.5">
-                                    {formatPaise(pkg.publishedMrp)}
-                                  </span>
                                   <span className="text-lg font-black text-slate-900">
-                                    {formatPaise(pkg.orderkingPrice)}
+                                    From {formatPaise(pkg.orderkingPrice)}
                                   </span>
                                   <span className="text-[10px] text-slate-500 block font-medium">
-                                    All inclusive per person
+                                    Indicative tariff per person
                                   </span>
                                 </div>
                               </div>
@@ -3085,23 +2879,16 @@ export function TravelPage() {
                               <Button
                                 type="button"
                                 onClick={() => {
-                                  setInAppBookingModal({
-                                    type: "pilgrimage",
-                                    data: {
-                                      carrierName: "OrderKing Travel",
-                                      name: pkg.title,
-                                      baseFarePaise: pkg.orderkingPrice,
-                                      totalFarePaise: pkg.orderkingPrice,
-                                      taxesPaise: 0,
-                                      departureDate: new Date(Date.now() + 86400000 * 7).toISOString().split("T")[0],
-                                    },
-                                    selectedClass: "Standard Yatra",
+                                  setQuotationModal({
+                                    isOpen: true,
+                                    category: spiritualFaithSelection === "ISLAMIC" ? "UMRAH" : "PILGRIMAGE",
+                                    destination: pkg.destination,
                                   });
                                 }}
                                 className="w-full h-11 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
                               >
                                 <Crown className="size-4 text-amber-200" />
-                                <span>Book Yatra Package</span>
+                                <span>Request Tour Quote</span>
                               </Button>
                             </div>
                           </div>
@@ -3119,7 +2906,7 @@ export function TravelPage() {
              ===================================================================== */}
           {activeTab === "trips" && (
             <div className="space-y-6">
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
                   <span className="text-[11px] font-black uppercase tracking-wider text-purple-600">
@@ -3135,11 +2922,10 @@ export function TravelPage() {
                       key={filterType}
                       type="button"
                       onClick={() => setTripFilter(filterType)}
-                      className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${
-                        tripFilter === filterType
+                      className={`px-3 py-1 rounded-xl text-xs font-bold border transition ${tripFilter === filterType
                           ? "bg-slate-900 text-white border-slate-900 shadow-xs"
                           : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                      }`}
+                        }`}
                     >
                       {filterType === "ALL" ? "All Bookings" : `${filterType}s`}
                     </button>
@@ -3269,8 +3055,8 @@ export function TravelPage() {
                             <span className="font-mono text-xs font-black text-slate-900 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
                               {trip.bookingRef}
                             </span>
-                            <span className="text-xs font-bold text-slate-500">
-                              📅 {trip.travelDate}
+                            <span className="text-xs font-bold text-slate-500 inline-flex items-center gap-1">
+                              <Calendar className="size-3.5 text-slate-400" /> {trip.travelDate}
                             </span>
                           </div>
                           <h4 className="text-sm font-black text-slate-900">
@@ -3346,7 +3132,7 @@ export function TravelPage() {
                     {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Direct verified checkout
+                    Direct official portal
                   </p>
                 </div>
 
@@ -3397,295 +3183,6 @@ export function TravelPage() {
             ))}
           </div>
         </div>
-
-        {/* IN-APP SEAMLESS BOOKING MODAL (Zero External Popups) */}
-        {inAppBookingModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
-            <div className="relative w-full max-w-xl bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto max-h-[92vh] flex flex-col">
-              
-              {/* Modal Header */}
-              <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white p-5 flex items-start justify-between shrink-0">
-                <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase">
-                      <Crown className="size-3 text-amber-400" />
-                      Travel King Direct Reservation
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-sky-400/20 text-sky-300 border border-sky-400/30 text-[10px] font-bold">
-                      Verified Carrier Tariffs
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-black text-white">
-                    {inAppBookingModal.type === "flight" && `Confirm Flight: ${inAppBookingModal.data.carrierName} ${inAppBookingModal.data.flightNumber}`}
-                    {inAppBookingModal.type === "train" && `Confirm Train: ${inAppBookingModal.data.trainName}`}
-                    {inAppBookingModal.type === "hotel" && `Confirm Stay: ${inAppBookingModal.data.name}`}
-                  </h3>
-                  <p className="text-xs text-slate-300 mt-0.5">
-                    {inAppBookingModal.type === "flight" && `${inAppBookingModal.data.fromCode} ➔ ${inAppBookingModal.data.toCode} · ${inAppBookingModal.selectedClass || flightClass}`}
-                    {inAppBookingModal.type === "train" && `${inAppBookingModal.data.fromCode} ➔ ${inAppBookingModal.data.toCode} · Class ${inAppBookingModal.selectedClass || trainClass}`}
-                    {inAppBookingModal.type === "hotel" && `${inAppBookingModal.data.city} · ${inAppBookingModal.selectedClass || inAppBookingModal.data.roomType}`}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setInAppBookingModal(null)}
-                  className="size-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center transition"
-                >
-                  <X className="size-4" />
-                </button>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-5 space-y-4 overflow-y-auto">
-                
-                {/* Passenger / Guest Information Form */}
-                <div className="space-y-3">
-                  <span className="text-xs font-black uppercase tracking-wider text-slate-700 block">
-                    Traveler / Guest Details
-                  </span>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Full Name (as per Govt ID) *
-                      </label>
-                      <input
-                        type="text"
-                        value={bookingPaxName}
-                        onChange={(e) => setBookingPaxName(e.target.value)}
-                        placeholder="e.g. Rahul Sharma"
-                        className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                          Age *
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={120}
-                          value={bookingPaxAge}
-                          onChange={(e) => setBookingPaxAge(Number(e.target.value))}
-                          className="w-full bg-transparent text-sm font-bold text-slate-900 outline-none"
-                        />
-                      </div>
-                      <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                        <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                          Gender *
-                        </label>
-                        <select
-                          value={bookingPaxGender}
-                          onChange={(e) => setBookingPaxGender(e.target.value as any)}
-                          className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none cursor-pointer"
-                        >
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="other">Other</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Seat / Berth Preference
-                      </label>
-                      <select
-                        value={bookingSeatPref}
-                        onChange={(e) => setBookingSeatPref(e.target.value)}
-                        className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none cursor-pointer"
-                      >
-                        <option value="Window / Lower Berth">Window / Lower Berth</option>
-                        <option value="Aisle / Middle Berth">Aisle / Middle Berth</option>
-                        <option value="Upper Berth">Upper Berth</option>
-                        <option value="Side Lower">Side Lower (Train)</option>
-                        <option value="Side Upper">Side Upper (Train)</option>
-                        <option value="No Preference">No Preference</option>
-                      </select>
-                    </div>
-
-<div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
-                        Mobile Number (for SMS &amp; WhatsApp E-Ticket) *
-                      </label>
-                      <input
-                        type="tel"
-                        maxLength={10}
-                        value={bookingPhone}
-                        onChange={(e) => setBookingPhone(e.target.value.replace(/\D/g, ""))}
-                        placeholder="10-digit mobile"
-                        className="w-full bg-transparent text-sm font-mono font-bold text-slate-900 outline-none"
-                      />
-                    </div>
-                  </div>
-
-                  {inAppBookingModal.type === "train" && (
-                    <div className="bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-200">
-                      <label className="text-[10px] font-bold text-indigo-900 uppercase block mb-1">
-                        IRCTC User ID (Mandatory for Indian Railways PRS) *
-                      </label>
-                      <input
-                        type="text"
-                        value={bookingIrctcUserId}
-                        onChange={(e) => setBookingIrctcUserId(e.target.value)}
-                        placeholder="e.g. irctc_user"
-                        className="w-full bg-transparent text-sm font-bold text-indigo-950 uppercase outline-none"
-                      />
-                    </div>
-                  )}
-                </div>
-
-                {/* Tariff & Mathematical Fare Breakdown */}
-                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-slate-600">
-                    <span>Base Tariff (1 Passenger)</span>
-                    <span className="font-mono font-bold">
-                      {inAppBookingModal.type === "flight" && formatPaise(inAppBookingModal.data.baseFarePaise || 419900)}
-                      {inAppBookingModal.type === "train" && `₹${(inAppBookingModal.data.selectedClassFare || 2240).toLocaleString("en-IN")}`}
-                      {inAppBookingModal.type === "hotel" && `₹${inAppBookingModal.data.tariffPerNightInr.toLocaleString("en-IN")}`}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-slate-600">
-                    <span>Statutory Taxes &amp; GST (Orderkingpay GSTIN: 18AFXPH9838M1Z9)</span>
-                    <span className="font-mono font-bold">
-                      {inAppBookingModal.type === "flight" && formatPaise(inAppBookingModal.data.taxesPaise || 45100)}
-                      {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 0.05).toLocaleString("en-IN")}`}
-                      {inAppBookingModal.type === "hotel" && `₹${Math.round(inAppBookingModal.data.tariffPerNightInr * 0.18).toLocaleString("en-IN")}`}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-slate-700 bg-slate-100/80 px-2.5 py-1.5 rounded-lg border border-slate-200">
-                    <span className="font-bold flex items-center gap-1.5">
-                      <span>Platform Convenience &amp; Processing</span>
-                    </span>
-                    <span className="font-mono font-black text-slate-950">
-                      {inAppBookingModal.type === "flight" && "₹499.00"}
-                      {inAppBookingModal.type === "train" && "₹40.00"}
-                      {inAppBookingModal.type === "hotel" && "₹250.00"}
-                    </span>
-                  </div>
-
-                  {inAppBookingModal.type === "flight" && (
-                    <label className="flex items-center justify-between text-xs bg-sky-50/80 p-2.5 rounded-xl border border-sky-200/80 cursor-pointer transition hover:bg-sky-50">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={optInTripProtection}
-                          onChange={(e) => setOptInTripProtection(e.target.checked)}
-                          className="size-4 rounded text-sky-600 focus:ring-sky-500 cursor-pointer"
-                        />
-                        <div>
-                          <span className="font-black text-sky-950 block">Trip Delay &amp; Baggage Shield</span>
-                          <span className="text-[10px] text-sky-700 font-medium block">Instant ₹5,000 compensation for delays &gt; 2 hrs</span>
-                        </div>
-                      </div>
-                      <span className="font-mono font-black text-sky-950">+₹149.00</span>
-                    </label>
-                  )}
-
-                  <div className="flex items-center justify-between text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded">
-                    <span>Instant KingPay Food Wallet Rebate (2%)</span>
-                    <span className="font-mono font-black">
-                      +
-                      {inAppBookingModal.type === "flight" && formatPaise(Math.floor((inAppBookingModal.data.baseFarePaise || 419900) * 0.02))}
-                      {inAppBookingModal.type === "train" && `₹${Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 0.02).toLocaleString("en-IN")}`}
-                      {inAppBookingModal.type === "hotel" && `₹${Math.round(inAppBookingModal.data.tariffPerNightInr * 0.02).toLocaleString("en-IN")}`}
-                    </span>
-                  </div>
-
-                  <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-sm font-black text-slate-900">
-                    <span>Total Amount Payable</span>
-                    <span className="font-mono text-base text-indigo-700">
-                      {inAppBookingModal.type === "flight" &&
-                        formatPaise(
-                          (inAppBookingModal.data.baseFarePaise || 419900) +
-                          (inAppBookingModal.data.taxesPaise || 45100) +
-                          49900 +
-                          (optInTripProtection ? 14900 : 0)
-                        )}
-                      {inAppBookingModal.type === "train" && `₹${(Math.round((inAppBookingModal.data.selectedClassFare || 2240) * 1.05) + 40).toLocaleString("en-IN")}`}
-                      {inAppBookingModal.type === "hotel" && `₹${(Math.round(inAppBookingModal.data.tariffPerNightInr * 1.18) + 250).toLocaleString("en-IN")}`}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Payment Method Selector */}
-                <div className="space-y-2">
-                  <span className="text-xs font-bold text-slate-600 uppercase tracking-wider block">
-                    Select Payment Method:
-                  </span>
-                  <div className="grid grid-cols-3 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setBookingPaymentMethod("kingpay_wallet")}
-                      className={`p-2.5 rounded-xl border text-left text-xs font-bold transition ${
-                        bookingPaymentMethod === "kingpay_wallet"
-                          ? "border-sky-600 bg-sky-50 text-sky-950 font-black shadow-xs"
-                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      <Wallet className="size-3.5 mb-1 text-sky-600" />
-                      <span>KingPay Wallet</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setBookingPaymentMethod("razorpay_upi")}
-                      className={`p-2.5 rounded-xl border text-left text-xs font-bold transition ${
-                        bookingPaymentMethod === "razorpay_upi"
-                          ? "border-emerald-600 bg-emerald-50 text-emerald-950 font-black shadow-xs"
-                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      <CheckCircle2 className="size-3.5 mb-1 text-emerald-600" />
-                      <span>NPCI UPI Intent</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setBookingPaymentMethod("razorpay_card")}
-                      className={`p-2.5 rounded-xl border text-left text-xs font-bold transition ${
-                        bookingPaymentMethod === "razorpay_card"
-                          ? "border-indigo-600 bg-indigo-50 text-indigo-950 font-black shadow-xs"
-                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      <CreditCard className="size-3.5 mb-1 text-indigo-600" />
-                      <span>Debit/Credit Card</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
-                  <Button
-                    type="button"
-                    disabled={isProcessingBooking}
-                    onClick={handleExecuteInAppBooking}
-                    className="flex-1 h-12 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-black text-sm shadow-md transition"
-                  >
-                    {isProcessingBooking ? "Confirming Booking..." : "Confirm & Complete Booking In-App ➔"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setInAppBookingModal(null)}
-                    className="h-12 rounded-xl border-slate-200 text-slate-700 font-bold text-xs"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Digital E-Ticket Modal */}
         {activeTicketModal && (

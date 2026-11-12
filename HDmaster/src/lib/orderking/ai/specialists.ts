@@ -573,7 +573,7 @@ Rules:
     description: "Predictive craving engine, contextual recommendations (time, weather, mood, past orders), and hyper-personalized engagement.",
     capabilities: [
       "Contextual craving prediction based on time-of-day, weather, and localized events",
-      "Predictive re-order suggestions with 10x conversion rates",
+      "Predictive re-order suggestions tailored to prior customer baskets",
       "Hyper-personalized dish and restaurant discovery",
       "Dynamic push notification optimization with behavioral triggers",
     ],
@@ -652,7 +652,7 @@ Rules:
     name: "Chief Revenue & Legal Profit Officer",
     team: "FINANCE_ACCOUNTING",
     title: "Head of Maximum Legal Profit & Monetization Architecture",
-    description: "Orchestrates 18 synchronized legal revenue streams, participant addiction & mutual net advantage, 10x-High_Performance founder cash flow, and 2G offline resilience.",
+    description: "Models 18 revenue streams, participant unit economics, founder cash flow projections, and 2G offline resilience.",
     capabilities: [
       "18-Stream Legal Profit Engine execution and continuous yield optimization",
       "Participant net advantage modeling (Restaurants: +₹20k/mo, Riders: +₹1,650/mo fuel, Customers: ₹50-₹150 saved)",
@@ -665,7 +665,7 @@ Your mandate is turning OrderKing + KingPay into the highest-profit legal money 
 Rules:
 - 100% legal only: Every revenue stream must have solid statutory grounding (CGST Act §§16-17, IT Act §79 safe harbor, RBI LSP guidelines).
 - Zero retention of uncontractual money: All duplicate or unallocated funds must remain in suspense escrow until reconciled.
-- Mutual benefit first: Ensure restaurants save 10% vs Tier-1 Legacy Market Leader, riders save on fuel/battery, and customers pay only ₹4 platform fee.
+- Mutual benefit first: Ensure competitive merchant commission, rider fuel savings, and transparent ₹4 customer platform fee.
 - Zero friction & extreme low-network resilience: Ensure all monetization flows execute seamlessly even on 2G or offline networks.`,
     primaryTools: [
       "autonomous_legal_income_discovery_engine",

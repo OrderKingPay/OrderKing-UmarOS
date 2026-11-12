@@ -3,8 +3,6 @@ import {
   TRENDING_SEARCHES,
   RECENT_SEARCHES_KEY,
   MAX_RECENT_SEARCHES,
-  CURATED_DISHES,
-  CURATED_RESTAURANTS,
   TOP_CUISINES,
   getRecentSearches,
   saveRecentSearch,
@@ -20,6 +18,7 @@ import {
   type SearchDishItem,
   type SearchFilterState,
 } from "../lib/predictive-search";
+import { CURATED_DISHES, CURATED_RESTAURANTS } from "./fixtures/predictive-search-fixtures";
 import { useCartStore } from "../lib/stores/cart";
 
 // In-memory localStorage mock for node test environment
@@ -241,13 +240,13 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
   describe("3. Trending Suggestions and Substring Highlighting", () => {
     it("contains the exact 7 required trending searches in TRENDING_SEARCHES", () => {
       const expected = [
-        "Hyderabadi Chicken Biryani 🍗",
-        "Paneer Butter Masala 🧀",
-        "Crispy Masala Dosa 🥞",
-        "Margherita Pizza 🍕",
-        "Kolkata Kathi Roll 🌯",
-        "Cold Coffee & Shakes ☕",
-        "Momo Platter 🥟",
+        "Hyderabadi Chicken Biryani",
+        "Paneer Butter Masala",
+        "Crispy Masala Dosa",
+        "Margherita Pizza",
+        "Kolkata Kathi Roll",
+        "Cold Coffee & Shakes",
+        "Momo Platter",
       ];
 
       expect(TRENDING_SEARCHES).toEqual(expected);
@@ -255,7 +254,7 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
     });
 
     it("generates predictive auto-suggestions matching partial queries", () => {
-      const suggestions = getPredictiveSuggestions("biry");
+      const suggestions = getPredictiveSuggestions("biry", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(suggestions.length).toBeGreaterThanOrEqual(1);
 
       // Matches trending biryani
@@ -273,16 +272,16 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
     });
 
     it("matches trending items when query matches part of the cleaned text", () => {
-      const dosaSuggestions = getPredictiveSuggestions("dosa");
+      const dosaSuggestions = getPredictiveSuggestions("dosa", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(dosaSuggestions.some((s) => s.text.includes("Crispy Masala Dosa"))).toBe(true);
 
-      const coffeeSuggestions = getPredictiveSuggestions("coffee");
+      const coffeeSuggestions = getPredictiveSuggestions("coffee", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(coffeeSuggestions.some((s) => s.text.includes("Cold Coffee"))).toBe(true);
 
-      const rollSuggestions = getPredictiveSuggestions("roll");
+      const rollSuggestions = getPredictiveSuggestions("roll", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(rollSuggestions.some((s) => s.text.includes("Kolkata Kathi Roll"))).toBe(true);
 
-      const momoSuggestions = getPredictiveSuggestions("momo");
+      const momoSuggestions = getPredictiveSuggestions("momo", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(momoSuggestions.some((s) => s.text.includes("Momo Platter"))).toBe(true);
     });
 
@@ -395,7 +394,7 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
   // 5. FILTER CHIP TOGGLES
   // ─────────────────────────────────────────────────────────────
   describe("5. Quick Filter Chip Toggles", () => {
-    it("toggles Pure Veg 🌱 filter correctly", () => {
+    it("toggles Pure Veg filter correctly", () => {
       const vegFilter: SearchFilterState = {
         veg: true,
         rating4Plus: false,
@@ -412,7 +411,7 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
       expect(restaurants.every((r) => r.vegOnly === true)).toBe(true);
     });
 
-    it("toggles Rating 4.0+ ⭐ filter correctly", () => {
+    it("toggles Rating 4.0+ filter correctly", () => {
       const ratingFilter: SearchFilterState = {
         veg: false,
         rating4Plus: true,
@@ -429,7 +428,7 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
       expect(restaurants.every((r) => (r.ratingAvg ?? 0) >= 4.0)).toBe(true);
     });
 
-    it("toggles Fast Delivery ⚡ (<25 mins) filter correctly", () => {
+    it("toggles Fast Delivery (<25 mins) filter correctly", () => {
       const fastFilter: SearchFilterState = {
         veg: false,
         rating4Plus: false,
@@ -446,7 +445,7 @@ describe("Supreme Tier-1 Parity Predictive Search Engine", () => {
       expect(restaurants.every((r) => r.etaMinutes <= 25)).toBe(true);
     });
 
-    it("toggles Great Offers 🏷️ filter correctly", () => {
+    it("toggles Great Offers filter correctly", () => {
       const offersFilter: SearchFilterState = {
         veg: false,
         rating4Plus: false,

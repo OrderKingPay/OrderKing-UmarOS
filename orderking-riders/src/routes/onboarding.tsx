@@ -97,13 +97,12 @@ export function RiderOnboardingPage() {
 
   function validateStep2(): boolean {
     const cleanAadhaar = aadhaarNumber.replace(/\D/g, "");
-    if (cleanAadhaar.length === 12) {
-      if (!validateVerhoeffChecksum(cleanAadhaar)) {
-        setError("Invalid 12-digit Aadhaar number");
-        return false;
-      }
-    } else if (cleanAadhaar.length !== 4 && cleanAadhaar.length !== 12) {
+    if (cleanAadhaar.length !== 12) {
       setError("Enter 12-digit Aadhaar number");
+      return false;
+    }
+    if (!validateVerhoeffChecksum(cleanAadhaar)) {
+      setError("Invalid 12-digit Aadhaar number");
       return false;
     }
 
@@ -151,6 +150,11 @@ export function RiderOnboardingPage() {
       setError("Enter valid 11-digit IFSC code");
       return false;
     }
+    const cleanUpi = upiId.trim();
+    if (!cleanUpi || !/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/.test(cleanUpi)) {
+      setError("Enter a valid UPI ID for instant payouts (e.g. mobile@upi)");
+      return false;
+    }
     return true;
   }
 
@@ -179,7 +183,7 @@ export function RiderOnboardingPage() {
           fullName: fullName.trim(),
           phone: cleanPhone,
           address: formattedAddress,
-          payoutUpi: upiId.trim() || `bank.${bankLast4}@orderking.internal`,
+          payoutUpi: upiId.trim(),
           payoutBankLast4: bankLast4,
           preferredZones: [cityZone.trim() || (ZONES?.[0] ?? "Guwahati")],
           availabilityNotes: `Vehicle: ${vehicleCategory}`,
@@ -205,11 +209,13 @@ export function RiderOnboardingPage() {
         } as any,
       });
 
-      await submitKycFn().catch(() => {});
+      await submitKycFn();
       toast.success("Account saved. Redirecting to orders...");
       window.location.assign("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Profile was not saved.");
+      const msg = err instanceof Error ? err.message : "Profile was not saved.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setPending(false);
     }
@@ -545,7 +551,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">UPI ID (Optional)</Label>
+                  <Label className="text-xs text-slate-300">UPI ID *</Label>
                   <Input
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}

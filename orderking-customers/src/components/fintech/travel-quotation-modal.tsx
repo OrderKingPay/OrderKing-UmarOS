@@ -41,7 +41,7 @@ export interface TravelInquiryRecord {
   createdAt: string;
 }
 
-const FOUNDER_TRAVEL_DESK_PHONE = "9395065587";
+const TRAVEL_CONCIERGE_DESK_PHONE = "9395065587";
 
 export function TravelQuotationModal({
   isOpen,
@@ -106,19 +106,21 @@ export function TravelQuotationModal({
         localStorage.setItem("orderking_travel_inquiries", JSON.stringify(list));
       }
 
-      // Try sending SMS alert to founder desk
+      // Send SMS alert to Travel Concierge Desk
       try {
         await fetch("/api/travel/booking-confirmed", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             bookingId: inquiryId,
-            recipientPhone: FOUNDER_TRAVEL_DESK_PHONE,
+            recipientPhone: TRAVEL_CONCIERGE_DESK_PHONE,
             phone: cleanPhone,
-            travelerName: name.trim(),
+            customerName: name.trim(),
+            origin: origin.trim() || "India",
+            destination: destination.trim(),
+            travelDate: departureDate || new Date().toISOString().split("T")[0],
             serviceType: category,
             pnr: inquiryId,
-            routeSummary: `${origin || "India"} ➔ ${destination} (${travelers} pax, Date: ${departureDate || "Flex"})`,
           }),
         });
       } catch {
@@ -146,7 +148,7 @@ export function TravelQuotationModal({
       (inq.notes ? `*Special Request:* ${inq.notes}\n` : "") +
       `\nPlease provide the best quotation & available quota.`
     );
-    return `https://wa.me/91${FOUNDER_TRAVEL_DESK_PHONE}?text=${text}`;
+    return `https://wa.me/91${TRAVEL_CONCIERGE_DESK_PHONE}?text=${text}`;
   };
 
   return (
@@ -181,11 +183,11 @@ export function TravelQuotationModal({
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { id: "UMRAH", label: "🕋 Umrah Special", sub: "Makkah/Madinah" },
-                  { id: "TRAIN", label: "🚆 Confirmed Train", sub: "Tatkal / Quota" },
-                  { id: "FLIGHT", label: "✈️ Flights", sub: "Group / Best Fare" },
-                  { id: "PILGRIMAGE", label: "🕉️ Religious Yatra", sub: "Hindu & Shrines" },
-                  { id: "HOLIDAY", label: "🏖️ Holiday Tour", sub: "Domestic & Abroad" },
+                  { id: "UMRAH", label: "Umrah Special", sub: "Makkah/Madinah" },
+                  { id: "TRAIN", label: "Confirmed Train", sub: "Tatkal / Quota" },
+                  { id: "FLIGHT", label: "Flights", sub: "Group / Best Fare" },
+                  { id: "PILGRIMAGE", label: "Religious Yatra", sub: "Hindu & Shrines" },
+                  { id: "HOLIDAY", label: "Holiday Tour", sub: "Domestic & Abroad" },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -330,7 +332,7 @@ export function TravelQuotationModal({
                 {submittedInquiry.id}
               </h3>
               <p className="text-xs text-slate-300 max-w-sm mx-auto">
-                Your request for <strong>{submittedInquiry.category}</strong> to <strong>{submittedInquiry.destination}</strong> has been transmitted directly to our Founder Travel Desk.
+                Your request for <strong>{submittedInquiry.category}</strong> to <strong>{submittedInquiry.destination}</strong> has been transmitted directly to the OrderKing Travel &amp; Concierge Desk.
               </p>
             </div>
 
@@ -347,11 +349,11 @@ export function TravelQuotationModal({
               </a>
 
               <a
-                href={`tel:+91${FOUNDER_TRAVEL_DESK_PHONE}`}
+                href={`tel:+91${TRAVEL_CONCIERGE_DESK_PHONE}`}
                 className="w-full h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-2 border border-slate-700 cursor-pointer"
               >
                 <Phone className="size-3.5 text-amber-400" />
-                <span>Direct Call Desk: +91 {FOUNDER_TRAVEL_DESK_PHONE}</span>
+                <span>Direct Call Desk: +91 {TRAVEL_CONCIERGE_DESK_PHONE}</span>
               </a>
             </div>
 

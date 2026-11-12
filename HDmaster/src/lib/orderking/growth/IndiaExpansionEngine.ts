@@ -134,7 +134,7 @@ export class IndiaExpansionEngine {
       influencerId,
       targetPincode: metrics.pincode,
       franchiseLink: invite.url,
-      businessPitch: `Tier-1 Legacy Market Leader takes 25%. We take 5%. Onboard your favorite eateries in ${metrics.pincode} to OrderKing. We save them 20%, and pay YOU a perpetual 2% of their total GMV.`,
+      businessPitch: `OrderKing charges a 5% direct platform fee compared to typical 25% aggregator commissions in ${metrics.pincode}. Partner onboarding shares 2% GMV referral commission.`,
       estimatedMonthlyPassiveIncomePerRestaurantINR: Math.floor(monthlyInfluencerCutPerRest),
       platformCompetitiveAdvantage: '2000bps margin improvement for restaurants',
     };

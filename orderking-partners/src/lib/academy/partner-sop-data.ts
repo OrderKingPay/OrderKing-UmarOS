@@ -2,7 +2,7 @@
  * OrderKing Partner Operations & SOP Academy Knowledge Base
  * 100% genuine, authentic operational standard operating procedures (SOPs)
  * for Indian commercial restaurant kitchens. Eliminates staff training overhead
- * by aligning with industry-standard terminology while delivering 10x AI clarity.
+ * by aligning with industry-standard terminology and structured operational steps.
  */
 
 export interface SopStep {

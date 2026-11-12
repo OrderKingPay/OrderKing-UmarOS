@@ -136,32 +136,7 @@ agentTools.register({
       data: {
         queriedLocation: location,
         category,
-        identifiedProspects: [
-          {
-            name: "Royal Darbar Palace & Cloud Kitchens",
-            location,
-            estimatedMonthlyGmv: 1850000,
-            aggregatorLossMonthly: 518000,
-            recommendedPitch: "Zero-commission direct ordering app + fleet delivery",
-            dealValue: 149999,
-          },
-          {
-            name: "Assam Valley Organic Tea & Spices",
-            location,
-            estimatedMonthlyGmv: 4500000,
-            aggregatorLossMonthly: 0,
-            recommendedPitch: "Headless Next.js 15 export storefront with 1-tap King Pay UPI",
-            dealValue: 299999,
-          },
-          {
-            name: "Sribhumi Multi-Specialty Hospital & OPD Hub",
-            location,
-            estimatedMonthlyGmv: 6200000,
-            aggregatorLossMonthly: 0,
-            recommendedPitch: "ABDM compliant hospital ERP & queue management",
-            dealValue: 349999,
-          },
-        ],
+        identifiedProspects: [],
       },
       auditRecord: {
         action: "WEB_RESEARCH_PROSPECTS",

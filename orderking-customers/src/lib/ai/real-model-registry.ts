@@ -83,7 +83,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
   return [
     {
       id: "sovereign-ultra",
-      displayName: "👑 King AI Sovereign Local Engine",
+      displayName: "OrderKing Sovereign Local Engine",
       provider: "Local Sovereign",
       realApiId: "sovereign-local-core",
       connectionStatus: "UNAVAILABLE",
@@ -106,7 +106,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "auto-supreme-orchestrator",
-      displayName: "⚡ Auto-Select Best Model (Premium Orchestrator)",
+      displayName: "Auto-Select Best Model (Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
@@ -129,7 +129,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "auto-Enterprise-orchestrator",
-      displayName: "⚡ Auto-Select Best Model (Enterprise Orchestrator)",
+      displayName: "Auto-Select Best Model (Enterprise Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",
@@ -152,7 +152,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     },
     {
       id: "ensemble-consensus",
-      displayName: "🧠 Multi-Model Ensemble Consensus",
+      displayName: "Multi-Model Ensemble Consensus",
       provider: "Consensus",
       realApiId: "multi-model-consensus-v1",
       connectionStatus: (openaiKey || geminiKey || anthropicKey || xaiKey) ? "CONNECTED" : "CONFIGURATION_REQUIRED",

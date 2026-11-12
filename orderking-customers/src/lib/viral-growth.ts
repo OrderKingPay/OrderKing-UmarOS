@@ -44,11 +44,10 @@ export const ViralGrowthEngine = {
 
     return {
       whatsapp: `https://wa.me/?text=${encodedCopy}`,
-// @ts-ignore
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodeURIComponent(String(`Claim ₹${amount} free food on OrderKing!` ?? ""))}`,
+      telegram: `https://t.me/share/url?url=${encodeURIComponent(String(link ?? ""))}&text=${encodedCopy}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodedCopy}`,
       navigatorShare: typeof navigator !== "undefined" && typeof navigator.share === 'function' ? {
-        title: "OrderKing Welcome Bonus",
+        title: "OrderKing",
         text: copy,
         url: link
       } : null,
@@ -515,7 +514,7 @@ export const PRESTIGE_AWARDS_REGISTRY: FounderAwardProgram[] = [
     prReachProjected: "Press Information Bureau (PIB), DD News, National Award Ceremony felicitation.",
     institutionalPerks: [
       "National Trophy presented by Hon'ble Prime Minister / Minister of MSME",
-      "₹3,00,000 Cash Prize directly to founder bank account",
+      "₹3,00,000 Cash Prize",
       "Priority procurement status under Public Procurement Policy (PPP)",
     ],
   },
@@ -543,7 +542,7 @@ export const PRESTIGE_AWARDS_REGISTRY: FounderAwardProgram[] = [
     prestigeLevel: "INDUSTRY_LEADERSHIP",
     category: "Ethical Commerce & Fair-Pay Marketplace Leadership",
     impactMetricsRequired: [
-      "custom commission exploitation vs 30% aggregator norm",
+      "0% menu price markup vs standard aggregator commission",
       "Algorithmic instant tip pass-through to delivery partners",
     ],
     nominationWindow: "September – November",
@@ -591,7 +590,7 @@ export const ACADEMIC_INVITATIONS_REGISTRY: AcademicInstitutionInvite[] = [
     institution: "IIM Calcutta Innovation Park (IIMCIP)",
     cellOrDepartment: "North-East Startup Conclave",
     eventType: "Panelist & Showcase Champion",
-    topic: "Empowering 500+ Kitchens with direct menu pricing Food Aggregation",
+    topic: "Empowering Local Kitchens with Direct Menu Pricing",
     invitationStatus: "READY_FOR_FOUNDER_PITCH",
     perksAndHonorarium: "Direct institutional mentorship, investor introductions, and matching grant fast-track.",
   },
@@ -636,16 +635,16 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
 
   const town = payload.townName ?? "Karimganj";
   const rewardSnippet = payload.goldMgWon
-    ? `🎁 I just won ${payload.goldMgWon}mg 24K Pure Digital Gold on OrderKing!`
+    ? `Received ${payload.goldMgWon}mg 24K Pure Digital Gold on OrderKing.`
     : payload.jackpotRewardText
-    ? `🎁 I just unlocked a ${payload.jackpotRewardText} on OrderKing!`
-    : `🍗 Just ordered delicious food at direct menu pricing on OrderKing!`;
+    ? `Unlocked ${payload.jackpotRewardText} on OrderKing.`
+    : `Ordered at direct menu pricing on OrderKing.`;
 
   const savingsSnippet = payload.savingsPaise && payload.savingsPaise > 0
-    ? ` Saved ₹${(payload.savingsPaise / 100).toFixed(0)} with Fair Pricing!`
+    ? ` Saved ₹${(payload.savingsPaise / 100).toFixed(0)} with Fair Pricing.`
     : "";
 
-  const fullText = `${rewardSnippet}${savingsSnippet}\n\nOrder from your favorite ${town} restaurants with 24/7 fast delivery & win guaranteed 24K Gold scratch cards on every order:\n👉 ${link}`;
+  const fullText = `${rewardSnippet}${savingsSnippet}\n\nOrder from ${town} restaurants on OrderKing:\n${link}`;
 
   switch (platform) {
     case "WHATSAPP_STATUS":
@@ -698,14 +697,14 @@ export function generateMetaAdCampaignSpec(
     dailyBudgetInr,
     adCreatives: [
       {
-        headline: `${townName}'s Own Food App: direct menu pricing + 24K Gold`,
-        primaryText: `Why pay extra on every food order? Order from ${townName}'s top restaurants with transparent restaurant menu rates and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
+        headline: `${townName}: Direct Menu Pricing + 24K Gold`,
+        primaryText: `Order from ${townName} restaurants at standard kitchen menu rates.`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_feed&utm_campaign=${townName.toLowerCase()}_launch`,
       },
       {
-        headline: `Hot Biryani in 20 Mins · fast delivery Pass Available`,
-        primaryText: `Craving delicious food? Order on OrderKing & get guaranteed scratch cards. Support your local ${townName} kitchens!`,
+        headline: `Order from ${townName} Kitchens`,
+        primaryText: `Support local ${townName} restaurants on OrderKing.`,
         callToAction: "ORDER_NOW",
         targetUrl: `https://orderking.in?utm_source=meta_ads&utm_medium=instagram_reels&utm_campaign=${townName.toLowerCase()}_reels`,
       },
@@ -805,7 +804,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "SCALE_MATCHING_GRANT",
       formIdentifier: "MAS_FORM_A1",
       requiredDocuments: ["Udyam Certificate", "DPIIT Recognition", "Assam PRC", "Pitch Deck"],
-      pitchSummary: "OrderKing provides custom commission food delivery and 2G offline resilience in Assam, employing 50+ local youth.",
+      pitchSummary: "OrderKing provides direct-menu-price food delivery and low-bandwidth resilience in Assam.",
     },
   },
   {
@@ -1131,12 +1130,6 @@ export type AutoBookingDossier = {
     categoryCode: string;
     formIdentifier: string;
     executiveSummary: string;
-    auditedMetrics: {
-      activePartnersCount: number;
-      localEmploymentCreated: number;
-      consumerSavingsVsDuopolyPaise: number;
-      zeroDowntimeUptime: string;
-    };
     statutoryDeclarations: string[];
   };
   submissionStatus: "READY_FOR_ONE_CLICK_DISPATCH";
@@ -1161,16 +1154,16 @@ export function generateAutoBookingDossier(
   }
 ): AutoBookingDossier {
   const opp = OPPORTUNITY_RADAR_REGISTRY.find((o) => o.id === opportunityId) || OPPORTUNITY_RADAR_REGISTRY[0];
-  const founderName = founderDetails.name || "Founder & Chief Architect";
+  const founderName = founderDetails.name ?? "";
   const entityName = founderDetails.entityName || "Orderkingpay";
-  const email = founderDetails.email || "founder@orderking.in";
-  const phone = founderDetails.phone || "+91 98765 43210";
-  const udyamNumber = founderDetails.udyamNumber || "UDYAM-AS-03-0012345";
-  const dpiitNumber = founderDetails.dpiitNumber || "DIPP123456";
+  const email = founderDetails.email ?? "";
+  const phone = founderDetails.phone ?? "";
+  const udyamNumber = founderDetails.udyamNumber ?? "";
+  const dpiitNumber = founderDetails.dpiitNumber ?? "";
   const bankAccount = founderDetails.bankAccount || {
-    accountNumber: "98765432101234",
-    ifsc: "SBIN0000123",
-    bankName: "State Bank of India (Karimganj Main Branch)",
+    accountNumber: "",
+    ifsc: "",
+    bankName: "",
   };
 
   return {
@@ -1190,12 +1183,6 @@ export function generateAutoBookingDossier(
       categoryCode: opp.autoBookingPayload.categoryCode,
       formIdentifier: opp.autoBookingPayload.formIdentifier,
       executiveSummary: opp.autoBookingPayload.pitchSummary,
-      auditedMetrics: {
-        activePartnersCount: 220,
-        localEmploymentCreated: 85,
-        consumerSavingsVsDuopolyPaise: 4250000,
-        zeroDowntimeUptime: "99.99%",
-      },
       statutoryDeclarations: [
         "Applicant confirms entity is incorporated under Indian Companies Act / registered under MSME Udyam.",
         "Zero foreign corporate control; 100% founder sovereign Indian equity holding.",
@@ -1282,7 +1269,7 @@ export function generateMetaMarketingApiPayload(
     creative: {
       name: `${townName}_Food_King_Creative_V1`,
       title: `${townName}'s Own Food App: Fair Pricing + 24K Gold`,
-      body: `Why pay extra on every food order? Order from ${townName}'s top restaurants with real prices and sub-25 min delivery. Win pure 24K Digital Gold on every order above ₹299!`,
+      body: `Order from ${townName} restaurants at standard menu prices on OrderKing.`,
       call_to_action: {
         type: "ORDER_NOW",
         value: {
@@ -1329,15 +1316,13 @@ export function generateGoogleAdsPMaxPayload(
       name: `${townName}_Food_Delivery_Assets`,
       final_urls: [`https://orderking.in?utm_source=google_ads&utm_medium=pmax&utm_campaign=${townName.toLowerCase()}`],
       headlines: [
-        `Fastest Food Delivery in ${townName}`,
-        `Order Food at 0% Price Markup`,
-        `Win 24K Digital Gold on Food`,
+        `Order Food in ${townName}`,
+        `Direct Menu Pricing`,
         `OrderKing - Local ${townName} App`,
-        `Sub-25 Mins Hot Food Delivery`,
       ],
       descriptions: [
-        `Save ₹50 to ₹150 on every meal with direct menu pricing. Support local ${townName} kitchens.`,
-        `Guaranteed 24K Gold scratch cards on every order above ₹299. Order now!`,
+        `Order from local ${townName} kitchens at direct menu prices.`,
+        `Live kitchen and rider tracking on OrderKing.`,
       ],
       call_to_actions: ["ORDER_NOW", "GET_OFFER"],
     },
@@ -1369,11 +1354,11 @@ export function generateViralReelsScripts(townName: string = "Karimganj"): Viral
       callToAction: `Order your food tonight on OrderKing and claim your guaranteed scratch card!`,
     },
     {
-      title: "Why All Local Restaurants Love OrderKing",
+      title: "Local Restaurant Menu Pricing on OrderKing",
       durationSeconds: 25,
-      visualHook: "Fast montage of local restaurant chefs cooking and smiling, showing OrderKing soundbox announcing orders.",
-      audioHook: `${townName}'s restaurant owners have united! Traditional apps charge up to 3custom commission, but OrderKing supports local kitchens with fair 10% rates and transparent restaurant menu rates!`,
-      callToAction: `Support your local town food heroes. Order on OrderKing today!`,
+      visualHook: "Kitchen preparation view with OrderKing terminal receiving an order.",
+      audioHook: `Order from local restaurants in ${townName} at standard kitchen menu rates.`,
+      callToAction: `Order from local kitchens on OrderKing.`,
     },
   ];
 }
@@ -1390,7 +1375,7 @@ export function generateLocalInfluencerBarterPitch(
 ): InfluencerBarterPitch {
   return {
     influencerHandle,
-    dmMessage: `Hey ${influencerHandle}! 👋 We love your content representing ${townName}!\n\nWe are OrderKing—${townName}'s very own food delivery app bringing fair pricing with transparent restaurant menu rates, 25-minute delivery, and pure 24K gold scratch cards for foodies.\n\nWe'd love to treat you and your friends to a complimentary banquet feast worth ₹750 from your favorite restaurant in town! All we ask is 2 honest Instagram Stories showing the food and your 24K gold scratch card win.\n\nAre you up for a complimentary tasting experience? Reply YES and we'll credit your OrderKing wallet immediately! 🍗`,
+    dmMessage: `Hello ${influencerHandle}, we would like to collaborate with you in ${townName} to showcase local partner restaurants on OrderKing with standard menu pricing.`,
     perksOffered: "₹750 Tasting Experience Wallet Credit + Custom Referral Code earning ₹50 cash per follower order",
   };
 }

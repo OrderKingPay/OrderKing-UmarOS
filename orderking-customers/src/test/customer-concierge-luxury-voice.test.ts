@@ -1,5 +1,5 @@
 /**
- * 👑 ZERO-DEFECT QUALITY GATE: LUXURY VOICE CONCIERGE & ACTION POP-UP UI
+ * ZERO-DEFECT QUALITY GATE: LUXURY VOICE CONCIERGE & ACTION POP-UP UI
  * orderking-customers/src/test/customer-concierge-luxury-voice.test.ts
  *
  * Council Directive & Specialization Gate:

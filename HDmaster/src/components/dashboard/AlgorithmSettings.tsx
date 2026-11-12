@@ -660,7 +660,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               City Tier Matrix
             </label>
             <p className="text-[11px] text-slate-500">
-              Dominant Legacy Aggregator Indian courier payout tier.
+              Indian courier payout tier matrix.
             </p>
             <select
               value={settings.activeCityTier ?? "TIER_1"}
@@ -778,7 +778,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               Distance Rate beyond 2km (₹/km)
             </label>
             <p className="text-[11px] text-slate-500">
-              Dominant Legacy Aggregator distance rate bracket: ₹10 - ₹14/km.
+              Standard distance rate bracket: ₹10 - ₹14/km.
             </p>
             <input
               type="number"

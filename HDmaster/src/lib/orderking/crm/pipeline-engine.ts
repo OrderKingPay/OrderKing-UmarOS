@@ -303,11 +303,11 @@ export interface CrmLead {
 export const INITIAL_LEADS: CrmLead[] = [
   {
     id: "LEAD-201",
-    businessName: "Royal Darbar Palace & Cloud Kitchens",
+    businessName: "Partner Restaurant Group [Scenario Template]",
     category: "restaurant",
     contactPerson: "Afzal Hussain (Managing Director)",
     phone: "+91 94350 XXXXX",
-    email: "management@royaldarbar.in",
+    email: "management@partner-template.local",
     location: "Karimganj / Silchar",
     monthlyRevenueEst: "₹18,50,000",
     painPoint: "Losing 28% margins (₹5,18,000/mo) to legacy aggregator commission taxes.",

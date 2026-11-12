@@ -132,7 +132,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     line1: "Inner Circle, Connaught Place, New Delhi",
     lat: 28.6315,
     lng: 77.2167,
-    highlight: "Saravanaa Bhavan, Karim's, Wenger's and more",
+    highlight: "Central Delhi Delivery Zone",
     gradient: "from-amber-500 to-orange-500",
   },
   {

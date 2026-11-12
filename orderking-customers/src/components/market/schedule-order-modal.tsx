@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, Calendar, Check, X, BellRing, Sparkles } from "lucide-react";
+import { Clock, Calendar, Check, X, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -14,7 +14,7 @@ export function ScheduleOrderModal({
   isOpen = false,
   onClose,
   onSchedule,
-  restaurantName = "Tandoori Nights",
+  restaurantName = "Selected Restaurant",
 }: ScheduleOrderModalProps) {
   const [open, setOpen] = useState(isOpen);
 
@@ -25,9 +25,9 @@ export function ScheduleOrderModal({
   const [selectedSlot, setSelectedSlot] = useState<string>("8:00 PM - 8:30 PM");
 
   const DAYS = [
-    { id: "TODAY", label: "Today", dateLabel: "Tonight's Meal" },
-    { id: "TOMORROW", label: "Tomorrow", dateLabel: "Advance Booking" },
-    { id: "DAY_AFTER", label: "Day After", dateLabel: "Weekend Plan" },
+    { id: "TODAY", label: "Today", dateLabel: "Same Day" },
+    { id: "TOMORROW", label: "Tomorrow", dateLabel: "Next Day" },
+    { id: "DAY_AFTER", label: "Day After", dateLabel: "In 2 Days" },
   ];
 
   const TIME_SLOTS = [
@@ -43,8 +43,9 @@ export function ScheduleOrderModal({
   ];
 
   const handleConfirm = () => {
+    const dayLabel = DAYS.find((d) => d.id === selectedDay)?.label ?? selectedDay;
     onSchedule?.({ date: selectedDay, timeSlot: selectedSlot });
-    toast.success(`Order scheduled for ${selectedDay === "TODAY" ? "Today" : "Tomorrow"} between ${selectedSlot}`);
+    toast.success(`Order scheduled for ${dayLabel} between ${selectedSlot}`);
     setOpen(false);
     onClose?.();
   };
@@ -56,12 +57,12 @@ export function ScheduleOrderModal({
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden space-y-4 p-5">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-xl">
-              ⏰
+            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
+              <Clock className="size-5" />
             </span>
             <div>
               <h3 className="font-display text-base font-bold text-fg">Schedule Order Delivery</h3>
-              <p className="text-xs text-muted">Freshly prepared right before delivery</p>
+              <p className="text-xs text-muted">{restaurantName} · Freshly prepared before dispatch</p>
             </div>
           </div>
           <button

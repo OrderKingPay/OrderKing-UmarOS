@@ -76,7 +76,7 @@ export function persistDraftLocally(data: {
       savedAt: new Date().toISOString(),
     };
     window.localStorage.setItem(ORDERKING_ONBOARDING_DRAFT_KEY, JSON.stringify(payload));
-  } catch {}
+  } catch { }
 }
 
 function OnboardingPage() {
@@ -161,7 +161,7 @@ function OnboardingPage() {
           setHasGst(true);
         }
       }
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -316,45 +316,48 @@ function OnboardingPage() {
         }
       }
 
-      if (targetRestaurantId && !targetRestaurantId.startsWith("local_")) {
-        await updateRestaurantProfile({
-          data: {
-            restaurantId: targetRestaurantId,
-            name: effectiveName,
-            displayName: effectiveDisplayName,
-            ownerName: effectiveOwner,
-            phone: effectivePhone,
-            email: effectiveEmail,
-            city: form.city.trim() || "Guwahati",
-            fboName: effectiveOwner || effectiveName,
-            address: effectiveAddress,
-            landmark: effectiveLandmark,
-            cuisine: effectiveCuisine,
-            diet: form.diet,
-            description: form.description || `${effectiveName} — ${effectiveCuisine}`,
-            gstin: hasGst ? cleanGst : "",
-            fssaiNumber: cleanFssai,
-            fssaiLicenseNumber: cleanFssai,
-            fssaiExpiryDate: form.fssaiExpiryDate,
-            pan: cleanPan,
-            bankAccount: cleanAcc,
-            bankIfsc: cleanIfsc,
-            bankName: form.bankName.trim() || "Partner Settlement Bank",
-            bankHolder: effectiveHolder,
-            openingTime: form.openingTime || "10:00",
-            closingTime: form.closingTime || "23:00",
-          },
-        });
-
-        await submitForReview({ data: { restaurantId: targetRestaurantId } }).catch(() => {});
+      if (!targetRestaurantId || targetRestaurantId.startsWith("local_")) {
+        throw new Error("Failed to create restaurant draft on server. Please sign in and try again.");
       }
 
-      await qc.invalidateQueries().catch(() => {});
+      await updateRestaurantProfile({
+        data: {
+          restaurantId: targetRestaurantId,
+          name: effectiveName,
+          displayName: effectiveDisplayName,
+          ownerName: effectiveOwner,
+          phone: effectivePhone,
+          email: effectiveEmail,
+          city: form.city.trim() || "Guwahati",
+          fboName: effectiveOwner || effectiveName,
+          address: effectiveAddress,
+          landmark: effectiveLandmark,
+          cuisine: effectiveCuisine,
+          diet: form.diet,
+          description: form.description || `${effectiveName} — ${effectiveCuisine}`,
+          gstin: hasGst ? cleanGst : "",
+          fssaiNumber: cleanFssai,
+          fssaiLicenseNumber: cleanFssai,
+          fssaiExpiryDate: form.fssaiExpiryDate,
+          pan: cleanPan,
+          bankAccount: cleanAcc,
+          bankIfsc: cleanIfsc,
+          bankName: form.bankName.trim() || "Partner Settlement Bank",
+          bankHolder: effectiveHolder,
+          openingTime: form.openingTime || "10:00",
+          closingTime: form.closingTime || "23:00",
+        },
+      });
+
+      await submitForReview({ data: { restaurantId: targetRestaurantId } });
+
+      await qc.invalidateQueries().catch(() => { });
       setSuccessMsg("Restaurant onboarding completed! Redirecting to your Partner Dashboard...");
       setTimeout(() => {
         window.location.assign("/dashboard");
       }, 600);
     } catch (err) {
+      setSuccessMsg(null);
       setError(err instanceof Error ? err.message : "Restaurant profile was not saved. Nothing was verified.");
     } finally {
       setBusy(false);
@@ -380,13 +383,12 @@ function OnboardingPage() {
                 onClick={() => {
                   if (item.num < step) setStep(item.num as 1 | 2 | 3);
                 }}
-                className={`rounded-2xl border p-3.5 text-left transition-all ${
-                  active
-                    ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
-                    : done
+                className={`rounded-2xl border p-3.5 text-left transition-all ${active
+                  ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
+                  : done
                     ? "border-emerald-500 bg-emerald-50 text-emerald-800"
                     : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
-                }`}
+                  }`}
               >
                 <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
                   <span>{item.title}</span>

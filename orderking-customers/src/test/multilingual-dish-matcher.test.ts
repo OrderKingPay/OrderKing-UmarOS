@@ -11,10 +11,9 @@ import {
   filterRestaurants,
   getPredictiveSuggestions,
   createDebounce,
-  CURATED_DISHES,
-  CURATED_RESTAURANTS,
   type SearchFilterState,
 } from "../lib/search/predictive-search";
+import { CURATED_DISHES, CURATED_RESTAURANTS } from "./fixtures/predictive-search-fixtures";
 
 const defaultFilters: SearchFilterState = {
   veg: false,
@@ -279,7 +278,7 @@ describe("Multilingual Indian Dish Autocorrect & Predictive Matcher", () => {
   // ─────────────────────────────────────────────────────────────
   describe("8. Predictive Suggestions & 150ms Debounced Wiring", () => {
     it("returns multilingual predictive suggestions for Hindi query 'बिरयानी'", () => {
-      const suggestions = getPredictiveSuggestions("बिरयानी");
+      const suggestions = getPredictiveSuggestions("बिरयानी", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(suggestions.length).toBeGreaterThanOrEqual(1);
 
       // Includes multilingual badge or dish match
@@ -293,7 +292,7 @@ describe("Multilingual Indian Dish Autocorrect & Predictive Matcher", () => {
     });
 
     it("returns multilingual predictive suggestions for Bengali query 'মোমো'", () => {
-      const suggestions = getPredictiveSuggestions("মোমো");
+      const suggestions = getPredictiveSuggestions("মোমো", CURATED_DISHES, CURATED_RESTAURANTS);
       expect(suggestions.length).toBeGreaterThanOrEqual(1);
       const dishMatches = suggestions.filter((s) => s.type === "dish");
       expect(dishMatches.some((d) => d.text.toLowerCase().includes("momo"))).toBe(true);

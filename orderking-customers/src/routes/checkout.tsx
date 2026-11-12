@@ -31,6 +31,8 @@ import {
   Share2,
   Smartphone,
   Copy,
+  AlertCircle,
+  Landmark,
 } from "lucide-react";
 import { toast } from "sonner";
 import { DirectUpiIntentModal } from "@/components/fintech/direct-upi-intent-modal";
@@ -412,7 +414,7 @@ function CheckoutPage() {
             </Link>
 
             <div className="flex items-center gap-2 text-xs font-black">
-              <span className="text-zinc-400">Cart ✓</span>
+              <span className="inline-flex items-center gap-1 text-zinc-400"><span>Cart</span><Check className="size-3.5 text-emerald-500" /></span>
               <span className="text-amber-500">──</span>
               <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 px-2.5 py-0.5 shadow-xs">
                 2. Checkout
@@ -515,7 +517,7 @@ function CheckoutPage() {
 
                     <div className="flex items-center gap-2">
                       <span className="rounded-xl bg-amber-400/20 border border-amber-400/40 px-2.5 py-1 text-xs font-black text-amber-300">
-                        25-30 Mins
+                        {scheduledSlot ? scheduledSlot.timeSlot : "Live Route"}
                       </span>
                       <span className="text-[11px] font-mono text-zinc-400">
                         [{location.lat.toFixed(2)}, {location.lng.toFixed(2)}]
@@ -534,10 +536,10 @@ function CheckoutPage() {
                     </div>
                     <div>
                       <span className="block font-display text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                        {scheduledSlot ? `Scheduled: ${scheduledSlot.date} (${scheduledSlot.timeSlot})` : "Standard Express Delivery (~25-30 mins)"}
+                        {scheduledSlot ? `Scheduled: ${scheduledSlot.date} (${scheduledSlot.timeSlot})` : "Standard Delivery"}
                       </span>
                       <span className="block text-xs text-zinc-500">
-                        {scheduledSlot ? "Order will be prepared fresh right before your chosen slot" : "Food prepared and delivered right away"}
+                        {scheduledSlot ? "Order will be prepared fresh right before your chosen slot" : "ETA confirmed upon kitchen acceptance"}
                       </span>
                     </div>
                   </div>
@@ -556,8 +558,8 @@ function CheckoutPage() {
               {/* Kitchen & Zone Availability Banner */}
               {!restaurantOpen ? (
                 <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 shadow-sm">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 text-xl font-bold">
-                    
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 font-bold">
+                    <AlertCircle className="size-5" />
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-rose-700 dark:text-rose-400">
@@ -571,7 +573,7 @@ function CheckoutPage() {
               ) : (
                 <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 shadow-sm">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 font-black">
-                    ✓
+                    <Check className="size-5 stroke-[2.5]" />
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
@@ -682,7 +684,7 @@ function CheckoutPage() {
                             : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100"
                         }`}
                       >
-                        {active ? "✓ " : "+ "}
+                        {active ? <Check className="inline size-3 mr-1" /> : "+ "}
                         {chip}
                       </button>
                     );
@@ -707,8 +709,8 @@ function CheckoutPage() {
               <section className="rounded-3xl border border-rose-400/30 bg-gradient-to-r from-rose-500/10 via-white to-amber-500/5 dark:from-rose-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
                 <label className="flex cursor-pointer items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 font-bold text-lg">
-                      
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600">
+                      <Heart className="size-4 fill-rose-500/30" />
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
@@ -908,18 +910,18 @@ function CheckoutPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
                           <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
-                            
+                            <QrCode className="size-4" />
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
                             Direct NPCI UPI Intent &amp; Live QR
                           </span>
                         </div>
                         <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-300 self-start sm:self-auto">
-                          0% Gateway Deduction
+                          Direct NPCI UPI
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-                        100% of money settles directly into the founder bank account via NPCI UPI network. Zero intermediary gateway commission.
+                        Settles directly to the verified OrderKingPay settlement VPA via the NPCI UPI network.
                       </p>
                     </div>
                   </label>
@@ -928,7 +930,7 @@ function CheckoutPage() {
                     <div className="mt-3.5 border-t border-amber-400/30 pt-3 space-y-3">
                       {/* VPA Details */}
                       <div className="flex items-center justify-between bg-black/40 rounded-xl p-2.5 text-xs">
-                        <span className="text-zinc-400">Founder Settlement VPA:</span>
+                        <span className="text-zinc-400">Merchant Settlement VPA:</span>
                         <div className="flex items-center gap-1.5 font-mono font-bold text-amber-300">
                           <span>{FOUNDER_UPI_VPA}</span>
                           <button
@@ -936,7 +938,7 @@ function CheckoutPage() {
                             onClick={() => {
                               if (typeof navigator !== "undefined" && navigator.clipboard) {
                                 void navigator.clipboard.writeText(FOUNDER_UPI_VPA);
-                                toast.success("Founder VPA copied to clipboard!");
+                                toast.success("UPI ID copied to clipboard!");
                               }
                             }}
                             className="p-1 hover:text-white transition"
@@ -979,7 +981,7 @@ function CheckoutPage() {
                           }).replace(/^upi:\/\/pay/, "tez://upi/pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
                         >
-                          
+                          <Smartphone className="size-4 text-emerald-600" />
                           <span className="text-[10px] font-bold mt-0.5">GPay</span>
                         </a>
 
@@ -995,7 +997,7 @@ function CheckoutPage() {
                           }).replace(/^upi:\/\/pay/, "phonepe://pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
                         >
-                          <span className="text-base">🟣</span>
+                          <Smartphone className="size-4 text-violet-600" />
                           <span className="text-[10px] font-bold mt-0.5">PhonePe</span>
                         </a>
 
@@ -1011,7 +1013,7 @@ function CheckoutPage() {
                           }).replace(/^upi:\/\/pay/, "paytmmp://pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
                         >
-                          
+                          <Smartphone className="size-4 text-sky-600" />
                           <span className="text-[10px] font-bold mt-0.5">Paytm</span>
                         </a>
 
@@ -1048,7 +1050,7 @@ function CheckoutPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
                           <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold shadow-xs">
-                            
+                            <Wallet className="size-4" />
                           </span>
                           <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
                             KingPay Wallet
@@ -1134,8 +1136,14 @@ function CheckoutPage() {
                       <div className="grid grid-cols-4 gap-2">
                         {(["UPI QR", "Fast UPI", "NetBanking", "Cards"] as const).map((appLabel) => {
                           const isSelected = preferredUpiApp === appLabel;
-                          const icon =
-                            appLabel === "UPI QR" ? "📱" : appLabel === "Fast UPI" ? "" : appLabel === "NetBanking" ? "🏛️" : "";
+                          const IconComp =
+                            appLabel === "UPI QR"
+                              ? QrCode
+                              : appLabel === "Fast UPI"
+                                ? Zap
+                                : appLabel === "NetBanking"
+                                  ? Landmark
+                                  : CreditCard;
                           return (
                             <button
                               key={appLabel}
@@ -1151,7 +1159,7 @@ function CheckoutPage() {
                                   : "border-zinc-200 dark:border-zinc-800 bg-surface text-zinc-700 dark:text-zinc-300"
                               }`}
                             >
-                              <span className="text-xl">{icon}</span>
+                              <IconComp className="size-5" />
                               <span className="text-[11px] font-bold mt-1">{appLabel}</span>
                             </button>
                           );
@@ -1425,10 +1433,10 @@ function CheckoutPage() {
                     {donateFeedingIndia && (
                       <div className="flex items-center justify-between text-sm font-bold border-t border-zinc-200 dark:border-zinc-800 pt-2">
                         <div className="flex items-center gap-1.5">
-                          
+                          <Heart className="size-4 text-rose-500 fill-rose-500" />
                           <span className="text-zinc-800 dark:text-zinc-200">Feeding India Donation</span>
                           <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 px-1.5 py-0.5 rounded-full">
-                            Feed a person in need
+                            Hunger Relief
                           </span>
                         </div>
                         <span className="text-rose-600 font-extrabold tabular-nums">+{formatPaise(donationPaise, { locale })}</span>
@@ -1459,8 +1467,8 @@ function CheckoutPage() {
               <section className="rounded-3xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-500/15 via-white to-green-500/10 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-md space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 font-bold text-lg">
-                      
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600">
+                      <Share2 className="size-4" />
                     </div>
                     <div>
                       <h3 className="font-display text-sm sm:text-base font-extrabold text-emerald-950 dark:text-emerald-100 flex items-center gap-1.5">
@@ -1528,7 +1536,7 @@ function CheckoutPage() {
                       <>
                         <Share2 className="size-4" />
                         <span>
-                          {whatsappDispatched ? "✓ WhatsApp Sent (Resend)" : "Share Location via WhatsApp"}
+                          {whatsappDispatched ? "WhatsApp Sent (Resend)" : "Share Location via WhatsApp"}
                         </span>
                       </>
                     )}

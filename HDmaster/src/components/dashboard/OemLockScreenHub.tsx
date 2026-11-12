@@ -721,7 +721,7 @@ export function OemLockScreenHub({
                   required
                   value={advName}
                   onChange={(e) => setAdvName(e.target.value)}
-                  placeholder="e.g. Biryani Blues / Urban Pizza Co."
+                  placeholder="Enter advertiser business name"
                   className="w-full h-9 rounded-lg border border-slate-300 px-3 text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
                 />
               </div>

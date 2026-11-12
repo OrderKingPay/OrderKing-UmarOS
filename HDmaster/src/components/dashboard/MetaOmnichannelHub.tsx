@@ -321,7 +321,8 @@ export function MetaOmnichannelHub({
 
       if (res.ok) {
         setBlastReport(res);
-        setLiveStreamLogs(res.sampleLogs || []);
+        const logs = (res as { sampleLogs?: any[] }).sampleLogs;
+        setLiveStreamLogs(Array.isArray(logs) ? logs : []);
         handleFieldChange("lastBlastAt", new Date().toISOString());
         setActiveTab("telemetry");
       } else {
@@ -364,28 +365,26 @@ export function MetaOmnichannelHub({
                 TLS 1.3 ENCRYPTED
               </span>
               <span
-                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                  form.status === "CONNECTED"
+                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${form.status === "CONNECTED"
                     ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                     : form.status === "DEGRADED"
-                    ? "bg-amber-100 text-amber-800 border border-amber-300"
-                    : "bg-slate-100 text-slate-600 border border-slate-200"
-                }`}
+                      ? "bg-amber-100 text-amber-800 border border-amber-300"
+                      : "bg-slate-100 text-slate-600 border border-slate-200"
+                  }`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${
-                    form.status === "CONNECTED"
+                  className={`h-2 w-2 rounded-full ${form.status === "CONNECTED"
                       ? "bg-emerald-600 animate-pulse"
                       : form.status === "DEGRADED"
-                      ? "bg-amber-500"
-                      : "bg-slate-400"
-                  }`}
+                        ? "bg-amber-500"
+                        : "bg-slate-400"
+                    }`}
                 />
                 {form.status === "CONNECTED"
                   ? "SYSTEMS OPERATIONAL"
                   : form.status === "DEGRADED"
-                  ? "CONFIGURED (STANDBY)"
-                  : "AWAITING CREDENTIALS"}
+                    ? "CONFIGURED (STANDBY)"
+                    : "AWAITING CREDENTIALS"}
               </span>
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-slate-900">
@@ -405,22 +404,20 @@ export function MetaOmnichannelHub({
               <button
                 type="button"
                 onClick={() => handleFieldChange("mode", "sandbox")}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
-                  form.mode === "sandbox"
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${form.mode === "sandbox"
                     ? "bg-white text-slate-900 shadow-sm font-semibold"
                     : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 Sandbox Test
               </button>
               <button
                 type="button"
                 onClick={() => handleFieldChange("mode", "live")}
-                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
-                  form.mode === "live"
+                className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${form.mode === "live"
                     ? "bg-emerald-600 text-white shadow-sm font-semibold"
                     : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 Live Production
               </button>
@@ -480,11 +477,10 @@ export function MetaOmnichannelHub({
         {/* Handshake Result Banner */}
         {testResult && (
           <div
-            className={`mt-4 rounded-lg border p-3.5 text-xs font-mono ${
-              testResult.ok
+            className={`mt-4 rounded-lg border p-3.5 text-xs font-mono ${testResult.ok
                 ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                 : "border-red-200 bg-red-50 text-red-800"
-            }`}
+              }`}
           >
             <div className="flex items-start gap-2">
               {testResult.ok ? (
@@ -507,11 +503,10 @@ export function MetaOmnichannelHub({
           <button
             type="button"
             onClick={() => setActiveTab("blast")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-              activeTab === "blast"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "blast"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Target className="h-3.5 w-3.5" />
             1. Geospatial DM Blast Radar
@@ -519,11 +514,10 @@ export function MetaOmnichannelHub({
           <button
             type="button"
             onClick={() => setActiveTab("matrix")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-              activeTab === "matrix"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "matrix"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Key className="h-3.5 w-3.5" />
             2. Meta Graph API Configuration Matrix
@@ -531,11 +525,10 @@ export function MetaOmnichannelHub({
           <button
             type="button"
             onClick={() => setActiveTab("payload")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-              activeTab === "payload"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "payload"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
+              }`}
           >
             <MessageSquare className="h-3.5 w-3.5" />
             3. Zero-Fee Acquisition DM Payload & Preview
@@ -543,11 +536,10 @@ export function MetaOmnichannelHub({
           <button
             type="button"
             onClick={() => setActiveTab("telemetry")}
-            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${
-              activeTab === "telemetry"
+            className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all ${activeTab === "telemetry"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
+              }`}
           >
             <Terminal className="h-3.5 w-3.5" />
             4. Live Telemetry & Graph Batch Logs
@@ -613,11 +605,10 @@ export function MetaOmnichannelHub({
                         handleFieldChange("targetLng", m.lng);
                         handleFieldChange("targetLocationLabel", m.label);
                       }}
-                      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium border transition-all ${
-                        isSelected
+                      className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium border transition-all ${isSelected
                           ? "border-blue-600 bg-blue-50 text-blue-700 font-semibold shadow-sm"
                           : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                      }`}
+                        }`}
                     >
                       <Crosshair className={`h-3 w-3 ${isSelected ? "text-blue-600" : "text-slate-400"}`} />
                       {m.short}
@@ -718,11 +709,10 @@ export function MetaOmnichannelHub({
                     key={item.r}
                     type="button"
                     onClick={() => handleFieldChange("radiusKm", item.r)}
-                    className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-all ${
-                      form.radiusKm === item.r
+                    className={`px-2.5 py-1 text-xs font-medium rounded-md border transition-all ${form.radiusKm === item.r
                         ? "border-blue-600 bg-blue-600 text-white font-semibold shadow-sm"
                         : "border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </button>
@@ -740,11 +730,10 @@ export function MetaOmnichannelHub({
                 {/* Instagram Direct */}
                 <div
                   onClick={() => handleFieldChange("targetInstagram", !form.targetInstagram)}
-                  className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                    form.targetInstagram
+                  className={`cursor-pointer rounded-xl border p-4 transition-all ${form.targetInstagram
                       ? "border-rose-400 bg-gradient-to-br from-rose-50/70 to-orange-50/40 shadow-sm"
                       : "border-slate-200 bg-white opacity-70 hover:opacity-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
@@ -759,7 +748,7 @@ export function MetaOmnichannelHub({
                     <input
                       type="checkbox"
                       checked={form.targetInstagram}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="h-4 w-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
                     />
                   </div>
@@ -778,11 +767,10 @@ export function MetaOmnichannelHub({
                 {/* Facebook Messenger */}
                 <div
                   onClick={() => handleFieldChange("targetMessenger", !form.targetMessenger)}
-                  className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                    form.targetMessenger
+                  className={`cursor-pointer rounded-xl border p-4 transition-all ${form.targetMessenger
                       ? "border-blue-400 bg-blue-50/60 shadow-sm"
                       : "border-slate-200 bg-white opacity-70 hover:opacity-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
@@ -797,7 +785,7 @@ export function MetaOmnichannelHub({
                     <input
                       type="checkbox"
                       checked={form.targetMessenger}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                     />
                   </div>
@@ -816,11 +804,10 @@ export function MetaOmnichannelHub({
                 {/* WhatsApp Cloud API */}
                 <div
                   onClick={() => handleFieldChange("targetWhatsapp", !form.targetWhatsapp)}
-                  className={`cursor-pointer rounded-xl border p-4 transition-all ${
-                    form.targetWhatsapp
+                  className={`cursor-pointer rounded-xl border p-4 transition-all ${form.targetWhatsapp
                       ? "border-emerald-400 bg-emerald-50/60 shadow-sm"
                       : "border-slate-200 bg-white opacity-70 hover:opacity-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2">
@@ -835,7 +822,7 @@ export function MetaOmnichannelHub({
                     <input
                       type="checkbox"
                       checked={form.targetWhatsapp}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                     />
                   </div>
@@ -1302,7 +1289,7 @@ export function MetaOmnichannelHub({
                   value={form.acquisitionPitchBody}
                   onChange={(e) => handleFieldChange("acquisitionPitchBody", e.target.value)}
                   className="w-full rounded-lg border border-slate-300 bg-white p-3 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed font-sans"
-                  placeholder="Hello {{restaurant_name}} Team! Why sacrifice 28-32% margins to Dominant Legacy Aggregators?..."
+                  placeholder="Hello {{restaurant_name}} Team! Switch to direct online ordering with OrderKing..."
                 />
               </div>
 
@@ -1377,27 +1364,24 @@ export function MetaOmnichannelHub({
                   <button
                     type="button"
                     onClick={() => setPreviewChannel("instagram")}
-                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${
-                      previewChannel === "instagram" ? "bg-white text-rose-600 shadow-xs" : "text-slate-600"
-                    }`}
+                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${previewChannel === "instagram" ? "bg-white text-rose-600 shadow-xs" : "text-slate-600"
+                      }`}
                   >
                     IG DM
                   </button>
                   <button
                     type="button"
                     onClick={() => setPreviewChannel("whatsapp")}
-                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${
-                      previewChannel === "whatsapp" ? "bg-white text-emerald-600 shadow-xs" : "text-slate-600"
-                    }`}
+                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${previewChannel === "whatsapp" ? "bg-white text-emerald-600 shadow-xs" : "text-slate-600"
+                      }`}
                   >
                     WhatsApp
                   </button>
                   <button
                     type="button"
                     onClick={() => setPreviewChannel("messenger")}
-                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${
-                      previewChannel === "messenger" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600"
-                    }`}
+                    className={`px-2 py-0.5 text-[10px] font-semibold rounded ${previewChannel === "messenger" ? "bg-white text-blue-600 shadow-xs" : "text-slate-600"
+                      }`}
                   >
                     Messenger
                   </button>
@@ -1420,13 +1404,12 @@ export function MetaOmnichannelHub({
 
                   {/* Chat Header */}
                   <div
-                    className={`px-3 py-2 flex items-center gap-2 border-b text-white ${
-                      previewChannel === "instagram"
+                    className={`px-3 py-2 flex items-center gap-2 border-b text-white ${previewChannel === "instagram"
                         ? "bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500"
                         : previewChannel === "whatsapp"
-                        ? "bg-emerald-700"
-                        : "bg-blue-600"
-                    }`}
+                          ? "bg-emerald-700"
+                          : "bg-blue-600"
+                      }`}
                   >
                     <div className="h-7 w-7 rounded-full bg-white text-slate-900 font-bold flex items-center justify-center text-[11px] shadow-sm">
                       OK
@@ -1588,13 +1571,12 @@ export function MetaOmnichannelHub({
                     <div className="flex items-center gap-2 truncate">
                       <span className="text-slate-500">[{log.timestamp?.substring(11, 19)}]</span>
                       <span
-                        className={`font-bold uppercase ${
-                          log.channel === "instagram"
+                        className={`font-bold uppercase ${log.channel === "instagram"
                             ? "text-rose-400"
                             : log.channel === "whatsapp"
-                            ? "text-emerald-400"
-                            : "text-blue-400"
-                        }`}
+                              ? "text-emerald-400"
+                              : "text-blue-400"
+                          }`}
                       >
                         [{log.channel}]
                       </span>

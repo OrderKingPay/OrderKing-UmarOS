@@ -38,7 +38,7 @@ export interface FounderTool {
 export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
   web_research: {
     name: "web_research",
-    label: "🌐 Web Intelligence & Market Research",
+    label: "Web Intelligence & Market Research",
     description: "Searches the web for market intelligence, prospective clients, competitors, or technical documentation.",
     category: "research",
     risk: "READ",
@@ -56,7 +56,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
           sourcesConsulted: 14,
           timestamp: new Date().toISOString(),
           keyFindings: [
-            "Identified growing demand for custom commission local food delivery SaaS in Tier 2/3 Indian cities.",
+            "Identified growing demand for 0% commission local food delivery SaaS in Tier 2/3 Indian cities.",
             "Standard food delivery marketplace commission ranges typically between 15-25% of GMV.",
             "High appetite for direct WhatsApp and UPI order management tools among regional cloud kitchens.",
           ],
@@ -67,7 +67,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   scan_remote_opportunities: {
     name: "scan_remote_opportunities",
-    label: "💼 Remote Work & Gig Scanner",
+    label: "Remote Work & Gig Scanner",
     description: "Scans remote job sources and freelancer networks for high-ticket contract opportunities matching founder capabilities.",
     category: "crm",
     risk: "READ",
@@ -96,7 +96,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   generate_code_blueprint: {
     name: "generate_code_blueprint",
-    label: "⚡ App Factory Code Generator",
+    label: "App Factory Code Generator",
     description: "Generates complete multi-file production blueprints including frontend, backend, database schema, and tests.",
     category: "coding",
     risk: "LOW_RISK_WRITE",
@@ -132,7 +132,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   generate_client_proposal: {
     name: "generate_client_proposal",
-    label: "📄 Client Proposal & Contract Generator",
+    label: "Client Proposal & Contract Generator",
     description: "Generates a formal customized enterprise proposal, scope of work, and contract terms for a qualified prospect.",
     category: "crm",
     risk: "LOW_RISK_WRITE",
@@ -162,7 +162,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   create_verifiable_invoice: {
     name: "create_verifiable_invoice",
-    label: "💳 Verifiable Invoice & UPI Link Generator",
+    label: "Verifiable Invoice & UPI Link Generator",
     description: "Creates an official tax invoice with dynamic UPI QR code, payment intent links, and settlement tracking.",
     category: "payments",
     risk: "FINANCIAL",
@@ -195,7 +195,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   deploy_production_app: {
     name: "deploy_production_app",
-    label: "🚀 Production Deployment & Domain Provisioning",
+    label: "Production Deployment & Domain Provisioning",
     description: "Deploys a generated application to production cloud infrastructure and binds domain routing.",
     category: "deployment",
     risk: "HIGH_RISK",
@@ -221,7 +221,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   system_health_audit: {
     name: "system_health_audit",
-    label: "🛡️ Sovereign Security & System Health Audit",
+    label: "Sovereign Security & System Health Audit",
     description: "Inspects database connections, memory usage, background worker health, and security invariants.",
     category: "system",
     risk: "READ",

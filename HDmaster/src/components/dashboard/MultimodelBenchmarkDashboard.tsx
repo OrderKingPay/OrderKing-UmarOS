@@ -96,8 +96,7 @@ export function MultimodelBenchmarkDashboard() {
       setSavedSettings(settings);
       toast.success("AI model and budget settings saved.");
     } catch {
-      setSavedSettings(settings);
-      toast.success("AI model settings updated.");
+      toast.error("Failed to save AI model settings to browser storage.");
     }
   };
 

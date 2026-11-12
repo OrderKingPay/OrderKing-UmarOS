@@ -1,5 +1,5 @@
 /**
- * 👑 ZERO-DEFECT QUALITY GATE: AI VOICE ACTION CONCIERGE TEST SUITE
+ * ZERO-DEFECT QUALITY GATE: AI VOICE ACTION CONCIERGE TEST SUITE
  * orderking-customers/src/test/ai-voice-action-concierge.test.ts
  *
  * Council Directive & Specialization Gate:

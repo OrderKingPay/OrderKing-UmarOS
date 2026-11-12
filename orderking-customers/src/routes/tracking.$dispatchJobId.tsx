@@ -5,12 +5,13 @@ import {
   Bike,
   CheckCircle2,
   ChefHat,
-  Clock,
   HelpCircle,
   MapPin,
+  Package,
   Phone,
   ShieldAlert,
   ShieldCheck,
+  X,
 } from "lucide-react";
 import { supabase } from "@/lib/db-cloud";
 import { formatPaise } from "@/lib/money";
@@ -81,20 +82,20 @@ function getStepIndex(status: string): number {
   return 0; // PLACED
 }
 
-function getStatusDescription(status: string): { title: string; subtitle: string; icon: string } {
+function getStatusDescription(status: string): { title: string; subtitle: string; iconKey: "delivered" | "transit" | "ready" | "kitchen" | "placed" } {
   const normalized = status.toUpperCase();
   if (["DELIVERED", "COMPLETED"].includes(normalized)) {
     return {
-      title: "Order Delivered!",
-      subtitle: "Your food was safely handed over. Enjoy your meal!",
-      icon: "🎉",
+      title: "Order Delivered",
+      subtitle: "Your food was safely handed over. Enjoy your meal.",
+      iconKey: "delivered",
     };
   }
   if (["PICKED_UP", "ON_THE_WAY", "OUT_FOR_DELIVERY", "ARRIVED_AT_CUSTOMER"].includes(normalized)) {
     return {
       title: "Out for Delivery",
       subtitle: "Your delivery partner has picked up your food and is on the way to you.",
-      icon: "🛵",
+      iconKey: "transit",
     };
   }
   if (["READY", "RIDER_ASSIGNED", "ARRIVING_AT_RESTAURANT", "ARRIVED_AT_RESTAURANT"].includes(normalized)) {
@@ -103,26 +104,26 @@ function getStatusDescription(status: string): { title: string; subtitle: string
       return {
         title: "Food Ready for Pickup",
         subtitle: "Food is packed and ready. Dispatching delivery partner for pickup.",
-        icon: "📦",
+        iconKey: "ready",
       };
     }
     return {
       title: "Delivery Partner Assigned",
       subtitle: "Food is packed and ready. Partner is picking up your order from the kitchen.",
-      icon: "📦",
+      iconKey: "ready",
     };
   }
   if (["ACCEPTED", "AUTO_ACCEPTED", "PREPARING"].includes(normalized)) {
     return {
       title: "Kitchen Preparing Food",
-      subtitle: "The chef is preparing your meal fresh with verified hygiene standards.",
-      icon: "🍳",
+      subtitle: "The chef is preparing your meal fresh in the restaurant kitchen.",
+      iconKey: "kitchen",
     };
   }
   return {
     title: "Order Placed & Confirmed",
     subtitle: "Your order was sent to the restaurant kitchen for immediate preparation.",
-    icon: "✅",
+    iconKey: "placed",
   };
 }
 
@@ -135,7 +136,7 @@ function TrackingRoute() {
   const [showSos, setShowSos] = useState(false);
   const [restaurantPos, setRestaurantPos] = useState<TrackingPosition | null>(null);
 
-  // Dynamic turn-by-turn ETA recalculation: Haversine × 1.35 Indian road traffic multiplier
+  // Dynamic turn-by-turn ETA recalculation only when real GPS coordinates exist
   const computedEta = useMemo(() => {
     if (!order) return null;
     const status = (order.status || "").toUpperCase();
@@ -143,11 +144,9 @@ function TrackingRoute() {
       return { minutes: 0, effectiveKm: 0, isDelivered: true };
     }
 
-    // Default reference coordinates if GPS stream is establishing
-    const rider = position || { lat: 28.6315, lng: 77.2167 };
-    const dest = restaurantPos || { lat: 28.6448, lng: 77.2167 };
+    if (!position || !restaurantPos) return null;
 
-    const rawKm = haversineDistanceKm(rider, dest);
+    const rawKm = haversineDistanceKm(position, restaurantPos);
     // Indian road traffic multiplier: 1.35x
     const effectiveKm = Math.max(0.5, rawKm * 1.35);
 
@@ -315,8 +314,8 @@ function TrackingRoute() {
           </ErrorBoundary>
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center bg-zinc-950 p-6 text-center text-zinc-300">
-            <div className="mb-3 size-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl animate-pulse">
-              📍
+            <div className="mb-3 size-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 animate-pulse">
+              <MapPin className="size-7" />
             </div>
             <h3 className="text-base font-bold text-white">Live Tracking Active</h3>
             <p className="mt-1 text-xs text-zinc-400 max-w-sm">
@@ -334,7 +333,13 @@ function TrackingRoute() {
           {/* Main Status Headline & Dynamic 1.35x Indian Traffic ETA */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{statusInfo.icon}</span>
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
+                {statusInfo.iconKey === "delivered" && <CheckCircle2 className="size-5" />}
+                {statusInfo.iconKey === "transit" && <Bike className="size-5" />}
+                {statusInfo.iconKey === "ready" && <Package className="size-5" />}
+                {statusInfo.iconKey === "kitchen" && <ChefHat className="size-5" />}
+                {statusInfo.iconKey === "placed" && <CheckCircle2 className="size-5" />}
+              </span>
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-bold text-white leading-tight">{statusInfo.title}</h2>
@@ -363,22 +368,22 @@ function TrackingRoute() {
             ) : null}
           </div>
 
-          {/* 1-Tap Call Partner & Emergency SOS Dialers */}
+          {/* Support Desk & Emergency SOS Dialers */}
           <div className="grid grid-cols-2 gap-2.5">
-            <a
-              href="tel:+918045671234"
+            <Link
+              to="/support"
               className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 px-3 py-2.5 text-xs font-bold text-white shadow-md active:scale-95 transition"
             >
-              <span>📞</span>
-              <span>1-Tap Call Partner</span>
-            </a>
+              <HelpCircle className="size-4" />
+              <span>Order Support</span>
+            </Link>
 
             <button
               type="button"
               onClick={() => setShowSos(true)}
               className="flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 px-3 py-2.5 text-xs font-black text-white shadow-md shadow-red-600/30 active:scale-95 transition"
             >
-              <span className="animate-pulse">🚨</span>
+              <ShieldAlert className="size-4" />
               <span>1-Tap SOS Safety (112)</span>
             </button>
           </div>
@@ -467,13 +472,13 @@ function TrackingRoute() {
             <div className="flex items-center justify-between border-b border-red-500/20 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="flex size-9 items-center justify-center rounded-xl bg-red-600/30 text-red-400 border border-red-500/40">
-                  <span className="text-lg">🚨</span>
+                  <ShieldAlert className="size-5" />
                 </div>
                 <div>
                   <h3 className="font-display text-sm font-black uppercase tracking-wider text-red-400">
                     Emergency Safety Helpline
                   </h3>
-                  <p className="text-[11px] text-slate-400">24x7 Police & Medical Response</p>
+                  <p className="text-[11px] text-slate-400">24x7 Police &amp; Medical Response</p>
                 </div>
               </div>
               <button
@@ -481,7 +486,7 @@ function TrackingRoute() {
                 onClick={() => setShowSos(false)}
                 className="rounded-full bg-white/10 p-1.5 text-slate-400 hover:text-white"
               >
-                ✕
+                <X className="size-4" />
               </button>
             </div>
 
@@ -490,26 +495,31 @@ function TrackingRoute() {
                 href="tel:112"
                 className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-gradient-to-b from-red-600 to-rose-700 p-3.5 text-center text-white shadow-md active:scale-95 transition"
               >
-                <span className="text-base font-black">📞 Call 112</span>
-                <span className="text-[10px] text-rose-100">National Police & SOS</span>
+                <span className="text-base font-black flex items-center gap-1.5">
+                  <Phone className="size-4" /> Call 112
+                </span>
+                <span className="text-[10px] text-rose-100">National Police &amp; SOS</span>
               </a>
 
               <a
                 href="tel:108"
                 className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-gradient-to-b from-amber-600 to-yellow-700 p-3.5 text-center text-white shadow-md active:scale-95 transition"
               >
-                <span className="text-base font-black">🚑 Call 108</span>
-                <span className="text-[10px] text-amber-100">Ambulance & Medical</span>
+                <span className="text-base font-black flex items-center gap-1.5">
+                  <Phone className="size-4" /> Call 108
+                </span>
+                <span className="text-[10px] text-amber-100">Ambulance &amp; Medical</span>
               </a>
             </div>
 
-            <a
-              href="tel:18001000"
+            <Link
+              to="/support"
+              onClick={() => setShowSos(false)}
               className="flex items-center justify-center gap-2 rounded-2xl border border-slate-700 bg-slate-900 p-3 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
             >
-              <span>🛡️</span>
-              <span>OrderKing 24x7 Safety Command Desk (1800-100-ORDER)</span>
-            </a>
+              <ShieldCheck className="size-4 text-emerald-400" />
+              <span>OrderKing Support &amp; Safety Ticket Desk</span>
+            </Link>
 
             {position && (
               <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs space-y-1 font-mono text-slate-300">

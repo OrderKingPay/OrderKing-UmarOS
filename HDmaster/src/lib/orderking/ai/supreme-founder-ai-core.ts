@@ -408,11 +408,11 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "High_Performance cleaner than browser cache tools active" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Cache Purifier Cockpit", status: "COMPLETED", detail: "Browser cache inspection active" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
-    const responseMarkdown = `### 🧹 Sovereign Cache & Storage Purifier Armed (High_Performance Cleaner)
+    const responseMarkdown = `### Cache & Storage Purifier Armed
 - **Total Temporary Storage**: **${inspection.formattedTotalSize}** (${inspection.itemCount} cached items)
 - **Generated Media Footprint**: ${(inspection.breakdown.generatedImagesBytes / (1024 * 1024)).toFixed(1)} MB Images · ${(inspection.breakdown.generatedVideosBytes / (1024 * 1024)).toFixed(1)} MB Videos
 - **Current Performance Score**: **${inspection.speedOptimizationScore}%**
@@ -420,7 +420,7 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
 > [!IMPORTANT]
 > **🛡️ 100% Core Protection Shield**: Zero danger to critical assets. Your verified Client Leads, King Pay UPI Invoices, MSA Contracts, and Founder Vault Keys are **permanently locked & protected**.
 
-Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and boost engine performance by High_Performance!`;
+Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cached items and reclaim storage.`;
 
     const voiceSpokenText = isHindi
       ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
@@ -481,9 +481,9 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
     ];
 
-    const responseMarkdown = `### 🎨 Premium AI Image Generated (Sovereign Unlimited Capacity)
+    const responseMarkdown = `### AI Image Generation Output
 - **Prompt**: *"${rawPrompt}"*
-- **Resolution**: **1024 × 1024 (Ultra HD)** | **Cost**: **$0.00 (Unlimited Forever)**
+- **Resolution**: **1024 × 1024** | **Provider**: Pollinations AI
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
 
 ![Generated AI Image](${imageUrl})
@@ -491,9 +491,9 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
 You can download this image, copy its direct CDN link, or command further edits below!`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai. Yeh unlimited capacity hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye high-resolution AI image generate kar diya hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-      ? `Ami apnar jonno high-resolution AI image toiri korechi. Eta unlimited capacity ebong apnar media vault e save hoyeche.`
+      ? `Ami apnar jonno high-resolution AI image toiri korechi ebong apnar media vault e save hoyeche.`
       : `I have generated your high-resolution AI image. It has unlimited generation capacity and has been saved to your Media Vault.`;
 
     return {
@@ -553,9 +553,9 @@ You can download this image, copy its direct CDN link, or command further edits 
       { stepNumber: 4, totalSteps: 4, label: "Registering in HD Master Media Vault", status: "COMPLETED", detail: "Playback ready with instant download option" },
     ];
 
-    const responseMarkdown = `### 🎬 Premium AI Video Generated (Sovereign Unlimited Capacity)
+    const responseMarkdown = `### AI Video Studio Preview
 - **Prompt**: *"${rawPrompt}"*
-- **Format**: **MP4 60FPS** | **Cost**: **$0.00 (Unlimited Forever)**
+- **Format**: **MP4** | **Delivery**: Preview Asset
 - **Vault Status**: Indexed in **HD Master Media Vault** (ready to play, download, and showcase to enterprise clients).
 
 The video is ready for playback below with full audio-visual motion capabilities!`;

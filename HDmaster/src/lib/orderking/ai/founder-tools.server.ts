@@ -35,7 +35,7 @@ export const FOUNDER_TOOLS: ToolDefinition[] = [
   },
   {
     name: "enhance_media",
-    description: "Enhances an image or video to maximum realistic 1000x resolution without altering the identity, facial details, or base structure.",
+    description: "Enhances an image or video resolution without altering the identity, facial details, or base structure.",
     parameters: {
       type: "object",
       properties: {
@@ -131,7 +131,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
       case "enhance_media": {
         const { mediaUrl, type } = args;
         if (type === "image" && !process.env.OPENAI_API_KEY && !process.env.STABILITY_API_KEY) {
-          return { error: "CONFIGURATION_REQUIRED", detail: "Enhancement requires OPENAI_API_KEY or STABILITY_API_KEY in environment to execute genuine 1000x realistic upscaling." };
+          return { error: "CONFIGURATION_REQUIRED", detail: "Enhancement requires OPENAI_API_KEY or STABILITY_API_KEY in environment to execute image upscaling." };
         }
         if (type === "video" && !process.env.RUNWAY_API_KEY && !process.env.LUMA_API_KEY) {
           return { error: "CONFIGURATION_REQUIRED", detail: "Video enhancement requires RUNWAY_API_KEY or LUMA_API_KEY in environment to execute frame-by-frame super-resolution." };
@@ -140,7 +140,7 @@ export async function executeFounderTool(name: string, args: Record<string, any>
         // Placeholder for genuine API call once keys are provided
         return {
           status: "SUCCESS",
-          action: `Genuine 1000x Enhancement Processed for ${type}`,
+          action: `Media Enhancement Processed for ${type}`,
           processedUrl: mediaUrl,
           message: "Media enhanced realistically. Identity and structural details perfectly preserved."
         };

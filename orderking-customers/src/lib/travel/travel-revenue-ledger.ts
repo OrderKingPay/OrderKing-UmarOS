@@ -151,18 +151,5 @@ export async function recordTravelCommissionLedger(
     console.warn("[TravelRevenueLedger] Supabase insertion skipped, falling back to local ledger:", err);
   }
 
-  // Also persist to local storage cache if in browser environment
-  if (typeof window !== "undefined") {
-    try {
-      const storageKey = "orderking_travel_commissions_v1";
-      const existingRaw = window.localStorage.getItem(storageKey);
-      const existing = existingRaw ? JSON.parse(existingRaw) : [];
-      existing.unshift(record);
-      window.localStorage.setItem(storageKey, JSON.stringify(existing.slice(0, 100)));
-    } catch {
-      // ignore quota
-    }
-  }
-
   return record;
 }

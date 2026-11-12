@@ -22,6 +22,8 @@ import {
   Mic,
   MicOff,
   Zap,
+  MapPin,
+  Check,
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { toast } from "sonner";
@@ -613,6 +615,7 @@ export const bookTutorSessionFn = createServerFn({ method: "POST" })
     studentName?: string;
     studentContact?: string;
     notes?: string;
+    meetingLink?: string;
   }) => data)
   .handler(async ({ data }: any) => {
     try {
@@ -705,7 +708,7 @@ export const bookTutorSessionFn = createServerFn({ method: "POST" })
               ${data.deliveryMode},
               ${amountPaise},
               'HELD',
-              ${'https://meet.orderking.in/tutor-' + bookingId.slice(0, 8)},
+              ${data.meetingLink ?? null},
               ${data.studentName || (user as any).name || 'Student'},
               ${data.studentContact || (user as any).phone || user.email || 'Registered Contact'},
               ${data.notes || '1-on-1 Syllabus Problem Solving & Concept Mastery'}
@@ -730,7 +733,7 @@ export const bookTutorSessionFn = createServerFn({ method: "POST" })
             ${data.deliveryMode},
             ${amountPaise},
             'HELD',
-            ${'https://meet.orderking.in/tutor-' + bookingId.slice(0, 8)},
+            ${data.meetingLink ?? null},
             ${data.studentName || 'Student'},
             ${data.studentContact || 'Direct Contact'},
             ${data.notes || '1-on-1 Syllabus Problem Solving & Concept Mastery'}
@@ -753,7 +756,7 @@ export const bookTutorSessionFn = createServerFn({ method: "POST" })
           amountPaise,
           status: "Confirmed" as const,
           escrowStatus: "HELD" as const,
-          meetingLink: `https://meet.orderking.in/tutor-${bookingId.slice(0, 8)}`,
+          meetingLink: (data.meetingLink ?? null) as string | null,
           createdAt: new Date().toISOString(),
         },
       };
@@ -1158,8 +1161,9 @@ export function AcademicSolutionCard({
               {billingStatus.billed ? (
                 <>
                   <span className="inline-block size-1.5 rounded-full bg-emerald-400" />
+                  <Zap className="size-3.5 text-emerald-400 shrink-0" />
                   <span className="font-semibold text-emerald-400">
-                    ⚡ KingPay Micro-Transaction Settled (₹{(billingStatus.amountPaise ?? 100) / 100})
+                    KingPay Micro-Transaction Settled (₹{(billingStatus.amountPaise ?? 100) / 100})
                   </span>
                   {typeof billingStatus.remainingBalancePaise === "number" && (
                     <span className="text-zinc-500 font-mono">
@@ -1726,7 +1730,7 @@ function IntelligencePage() {
 
       recognition.onstart = () => {
         setIsListening(true);
-        toast.info("🎙️ Listening... Speak your academic question clearly.");
+        toast.info("Listening... Speak your academic question clearly.");
       };
 
       recognition.onresult = (event: any) => {
@@ -1887,7 +1891,7 @@ function IntelligencePage() {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="inline-flex items-center gap-1 rounded-full bg-purple-400/20 border border-purple-400/40 px-2 py-0.5 text-[10px] font-black text-purple-300">
-                  <span>🎓</span>
+                  <GraduationCap className="size-3 text-purple-300" />
                   <span>King Tutor · Academic Tutor</span>
                 </span>
                 <span className="rounded-full bg-emerald-500/20 text-emerald-300 px-2 py-0.5 text-[10px] font-bold">
@@ -2217,7 +2221,7 @@ function IntelligencePage() {
                   <textarea 
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder={isListening ? "🎙️ Listening... Speak your academic question clearly..." : "Enter your academic question or problem (e.g. 'Derive Bernoulli equation with SI units' or 'Step-by-step integration of sin^2(x)')..."}
+                    placeholder={isListening ? "Listening... Speak your academic question clearly..." : "Enter your academic question or problem (e.g. 'Derive Bernoulli equation with SI units' or 'Step-by-step integration of sin^2(x)')..."}
                     className={`flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none text-[13px] p-2.5 text-white placeholder:text-zinc-600 ${isListening ? "placeholder:text-rose-400 placeholder:animate-pulse" : ""}`}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
@@ -2382,7 +2386,7 @@ function IntelligencePage() {
                 </div>
                 {candidateSkillsInput.trim() && (
                   <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-                    <span className="font-bold text-emerald-400">✓ Deterministic Skill-Matching Active:</span>
+                    <span className="inline-flex items-center gap-1 font-bold text-emerald-400"><Check className="size-3.5" /> Deterministic Skill-Matching Active:</span>
                     <span>Fit scores computed strictly from requirement token intersection. No randomised scoring.</span>
                   </div>
                 )}
@@ -2482,8 +2486,8 @@ function IntelligencePage() {
                           <h3 className="text-sm sm:text-base font-black text-white mt-1">
                             {job.title}
                           </h3>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">
-                            📍 {job.location} · {job.employmentType}
+                          <p className="text-[11px] text-zinc-400 mt-0.5 inline-flex items-center gap-1">
+                            <MapPin className="size-3 text-emerald-400 shrink-0" /> {job.location} · {job.employmentType}
                           </p>
                         </div>
 
@@ -2542,7 +2546,7 @@ function IntelligencePage() {
                             onClick={() => setActiveJobModal(job)}
                             className="px-4 py-2 rounded-xl bg-white hover:bg-zinc-200 text-black text-xs font-black transition active:scale-95 self-start sm:self-auto"
                           >
-                            Apply for Role ➔
+                            <span>Apply for Role</span> <ArrowRight className="inline size-3.5 ml-1" />
                           </button>
                         )}
                       </div>
@@ -2650,7 +2654,7 @@ function IntelligencePage() {
                   type="submit"
                   className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black transition shadow-md shadow-emerald-500/20"
                 >
-                  Submit Application ➔
+                  <span>Submit Application</span> <ArrowRight className="inline size-3.5 ml-1" />
                 </button>
               </div>
             </form>

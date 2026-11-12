@@ -218,8 +218,8 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
         hasOffer: Boolean(offer),
         offerLabel: offer?.name_en ?? null,
         zoneName: row.zone_name,
-        ratingAvg: row.rating_avg ? Number(row.rating_avg) : 4.8,
-        ratingCount: row.rating_count || 120,
+        ratingAvg: row.rating_avg ? Number(row.rating_avg) : null,
+        ratingCount: Number(row.rating_count) || 0,
       });
     }
 
@@ -231,15 +231,14 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
           .join(" ");
 
     const canonicalUrl = `https://orderking.in/delivery/${data.town.toLowerCase()}/${data.area.toLowerCase()}`;
-    const topCuisines = Array.from(cuisineSet).slice(0, 4).join(", ") || "Biryani, Fast Food, Indian";
+    const topCuisines = Array.from(cuisineSet).slice(0, 4).join(", ") || "Biryani, Indian";
     const totalOutlets = cards.length;
 
     // Rich SEO Meta Tags
-    const title = `Best Food Delivery in ${areaDisplayName}, ${city.name} | Order Online | OrderKing`;
-    const description = `Order food online in ${areaDisplayName}, ${city.name}. Fast 25-30 min delivery from ${Math.max(
-      totalOutlets,
-      1
-    )}+ top restaurants. Authentic ${topCuisines}, fresh menus, live tracking & rewards on OrderKing.`;
+    const title = `Food Delivery in ${areaDisplayName}, ${city.name} | Order Online | OrderKing`;
+    const description = `Order food online in ${areaDisplayName}, ${city.name}${
+      totalOutlets > 0 ? ` from ${totalOutlets} active kitchens` : ""
+    }. ${topCuisines}, direct restaurant menu pricing, live tracking and rewards on OrderKing.`;
     const keywords = `food delivery ${areaDisplayName}, restaurants in ${areaDisplayName}, order food online ${city.name}, best food delivery in ${city.name}, biryani delivery ${areaDisplayName}, best food delivery alternative ${city.name}, direct ordering ${city.name}, OrderKing ${city.name}`;
 
     // Schema.org Structured Data Graph
@@ -263,18 +262,20 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
               image: card.coverImage || "https://orderking.in/icon-512.png",
               servesCuisine: (card.cuisineSummary || "").split(",").map((s) => s.trim()),
               priceRange: "₹100 - ₹500",
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: card.ratingAvg != null
-                  ? (typeof card.ratingAvg === "number"
-                      ? card.ratingAvg
-                      : Number(card.ratingAvg || 0)
-                    ).toFixed(1)
-                  : "4.8",
-                bestRating: "5",
-                worstRating: "1",
-                ratingCount: card.ratingCount || 100,
-              },
+              ...(card.ratingAvg != null && (card.ratingCount ?? 0) > 0
+                ? {
+                    aggregateRating: {
+                      "@type": "AggregateRating",
+                      ratingValue: (typeof card.ratingAvg === "number"
+                        ? card.ratingAvg
+                        : Number(card.ratingAvg)
+                      ).toFixed(1),
+                      bestRating: "5",
+                      worstRating: "1",
+                      ratingCount: card.ratingCount,
+                    },
+                  }
+                : {}),
               address: {
                 "@type": "PostalAddress",
                 addressLocality: areaDisplayName,
@@ -289,7 +290,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
           "@id": `${canonicalUrl}#service`,
           name: `OrderKing Food Delivery - ${areaDisplayName}, ${city.name}`,
           url: canonicalUrl,
-          telephone: "+91-3843-295000",
+          telephone: "+91-9395065587",
           priceRange: "₹₹",
           currenciesAccepted: "INR",
           paymentAccepted: "Cash on Delivery, UPI, Credit Card, Debit Card, Net Banking, King Pay",
@@ -437,7 +438,6 @@ function DeliveryTownAreaPage() {
       areaName: area.name,
       restaurantCount: restaurants.length,
       cuisine: cuisines.slice(0, 3).join(", "),
-      referralCode: "KING500",
     });
     void shareViaWebShare(payload);
   };
@@ -467,15 +467,15 @@ function DeliveryTownAreaPage() {
                 <MapPin className="size-3.5" /> {area.name}, {town.name}
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700">
-                <ShieldCheck className="size-3.5" /> 0% Menu Markup Guaranteed
+                <ShieldCheck className="size-3.5" /> 0% Menu Markup
               </span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-              Best Food Delivery in {area.name}, {town.name}
+              Food Delivery in {area.name}, {town.name}
             </h1>
             <p className="mt-2 text-sm sm:text-base text-gray-600 leading-relaxed">
-              Order authentic meals online with 25-minute hyperlocal delivery, live GPS tracking, and genuine restaurant prices.
+              Order meals online with hyperlocal delivery, live GPS tracking, and direct restaurant menu prices.
             </p>
 
             {area.isTownLevelFallback && (
@@ -545,7 +545,11 @@ function DeliveryTownAreaPage() {
             <h2 className="text-lg font-bold text-gray-900">
               {filtered.length} Active Kitchens Serving {area.name}
             </h2>
-            <span className="text-xs text-gray-500 font-medium">Average ETA: 25 mins</span>
+            {filtered.length > 0 && (
+              <span className="text-xs text-gray-500 font-medium">
+                Avg ETA: {Math.round(filtered.reduce((acc, r) => acc + r.etaMinutes, 0) / filtered.length)} mins
+              </span>
+            )}
           </div>
 
           {filtered.length === 0 ? (
@@ -579,7 +583,7 @@ function DeliveryTownAreaPage() {
             About Online Food Delivery in {area.name}, {town.name}
           </h3>
           <p>
-            Looking for authentic food delivery in {area.name}, {town.name}? OrderKing connects you directly with top local restaurants and cloud kitchens across {town.name}. Enjoy hot Biryani, fast food, traditional North-Eastern dishes, and sweets delivered to your doorstep in 25-30 minutes. Unlike legacy delivery aggregators charging inflated prices, OrderKing operates on strict 0% menu markups — guaranteeing you pay the exact dine-in price.
+            Order food in {area.name}, {town.name} directly from verified local restaurants and cloud kitchens across {town.name} with live order tracking and direct dine-in menu pricing.
           </p>
           <p>
             Payment options in {area.name} include Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and King Pay with instant rewards on qualifying orders.

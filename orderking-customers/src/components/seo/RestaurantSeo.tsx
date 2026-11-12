@@ -14,8 +14,9 @@ export function getRestaurantSeoMeta(restaurant: RestaurantDetail | null | undef
     .join(" ");
 
   const area = restaurant?.area || "Local Area";
-  const cuisine = restaurant?.card.cuisineSummary || "Multi-Cuisine, Fast Food, Indian";
-  const rating = restaurant?.card.ratingAvg ? `${Number(restaurant.card.ratingAvg).toFixed(1)}★` : "4.8★";
+  const cuisine = restaurant?.card.cuisineSummary || "Multi-Cuisine, Indian";
+  const hasVerifiedRating = Boolean(restaurant?.card.ratingAvg && (restaurant?.card.ratingCount ?? 0) > 0);
+  const rating = hasVerifiedRating ? `${Number(restaurant!.card.ratingAvg).toFixed(1)} rating` : "";
   const eta = restaurant?.card.etaMinutes || 30;
 
   const dynamicTitle = restaurant
@@ -23,10 +24,10 @@ export function getRestaurantSeoMeta(restaurant: RestaurantDetail | null | undef
     : `${cleanName} - Food Delivery Near Me | Order Online | OrderKing`;
 
   const dynamicDescription = restaurant
-    ? `Order food online from ${cleanName} in ${area}. Fast ${eta}-min food delivery near me, authentic ${cuisine}, ${rating} rating, live order tracking, and exclusive discounts on OrderKing.`
-    : `Order food online from ${cleanName}. Fast 30-min food delivery near me, live order tracking, and best offers on OrderKing.`;
+    ? `Order food online from ${cleanName} in ${area}. Estimated ${eta}-min delivery, ${cuisine}${rating ? `, ${rating}` : ""}, live order tracking on OrderKing.`
+    : `Order food online from ${cleanName}. Live order tracking and direct menu pricing on OrderKing.`;
 
-  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, 30 min food delivery, late night food delivery near me, veg food delivery near me, direct delivery alternative, aggregator alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
+  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, late night food delivery near me, veg food delivery near me, direct delivery alternative, aggregator alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
 
   const canonicalUrl = `https://orderking.in/r/${slug}`;
 
@@ -124,11 +125,13 @@ export function buildRestaurantJsonLd(
     ],
     description: restaurant.description || meta.dynamicDescription,
     url: canonicalUrl,
-    telephone: (restaurant as unknown as { phone?: string })?.phone || "+91-3843-295000",
+    ...((restaurant as unknown as { phone?: string })?.phone
+      ? { telephone: (restaurant as unknown as { phone?: string }).phone }
+      : {}),
     priceRange,
     servesCuisine: restaurant.card.cuisineSummary
       ? restaurant.card.cuisineSummary.split(",").map((s) => s.trim())
-      : ["Indian", "Fast Food", "Biryani"],
+      : ["Indian", "Biryani"],
     currenciesAccepted: "INR",
     paymentAccepted: "Cash, UPI, Credit Card, Debit Card, Net Banking, Razorpay, King Pay",
     image: dishImages,
@@ -145,14 +148,18 @@ export function buildRestaurantJsonLd(
       latitude: location.lat || (restaurantArea.toLowerCase().includes("silchar") ? 24.8333 : 24.8690),
       longitude: location.lng || (restaurantArea.toLowerCase().includes("silchar") ? 92.7789 : 92.3550),
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: restaurant.card.ratingAvg ? Number(restaurant.card.ratingAvg).toFixed(1) : "4.8",
-      bestRating: "5",
-      worstRating: "1",
-      ratingCount: restaurant.card.ratingCount && restaurant.card.ratingCount > 0 ? restaurant.card.ratingCount : 185,
-      reviewCount: restaurant.card.ratingCount && restaurant.card.ratingCount > 0 ? restaurant.card.ratingCount : 185,
-    },
+    ...(restaurant.card.ratingAvg && restaurant.card.ratingCount && restaurant.card.ratingCount > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: Number(restaurant.card.ratingAvg).toFixed(1),
+            bestRating: "5",
+            worstRating: "1",
+            ratingCount: restaurant.card.ratingCount,
+            reviewCount: restaurant.card.ratingCount,
+          },
+        }
+      : {}),
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -183,34 +190,20 @@ export function buildRestaurantJsonLd(
       },
       deliveryMethod: ["http://purl.org/goodrelations/v1#DeliveryModeOwnFleet"],
     },
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "OrderKing Exclusive Restaurant Deals & Discounts",
-      itemListElement: [
-        {
-          "@type": "Offer",
-          name: "OrderKing VIP fast delivery",
-          description: "fast delivery on orders above ₹199 with OrderKing VIP Member pass",
-          priceCurrency: "INR",
-          price: "0",
-          availability: "https://schema.org/InStock",
-        },
-        {
-          "@type": "Offer",
-          name: "Extra 15% OFF (VIPGOLD)",
-          description: "Use coupon VIPGOLD for 15% extra discount at checkout",
-          priceCurrency: "INR",
-          price: "0",
-          availability: "https://schema.org/InStock",
-        },
-      ],
-    },
     additionalProperty: [
-      {
-        "@type": "PropertyValue",
-        name: "FSSAI_License",
-        value: "10321999000124",
-      },
+      ...((restaurant as unknown as { fssaiLicenseNumber?: string; fssai_license?: string })?.fssaiLicenseNumber ||
+      (restaurant as unknown as { fssaiLicenseNumber?: string; fssai_license?: string })?.fssai_license
+        ? [
+            {
+              "@type": "PropertyValue",
+              name: "FSSAI_License",
+              value:
+                (restaurant as unknown as { fssaiLicenseNumber?: string; fssai_license?: string })
+                  .fssaiLicenseNumber ||
+                (restaurant as unknown as { fssaiLicenseNumber?: string; fssai_license?: string }).fssai_license,
+            },
+          ]
+        : []),
       {
         "@type": "PropertyValue",
         name: "DeliveryETA",

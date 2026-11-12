@@ -3,10 +3,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  Bot,
+  FileText,
+  Landmark,
+  Phone,
+  Scale,
+  ShieldAlert,
+  ShieldCheck,
+  Utensils,
+  Zap,
+} from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
-import { RedirectToSignIn } from "@/lib/auth/gates";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { createTicket, listTickets } from "@/lib/server/account";
 import { listMyOrders } from "@/lib/server/orders";
@@ -107,7 +117,7 @@ export function SupportPage() {
       };
       setChatMessages((prev) => [...prev, botMsg]);
     } catch {
-      toast.error("AI assistant is momentarily busy. ");
+      toast.error("Support assistant is temporarily unavailable. Please try again.");
     } finally {
       setIsChatting(false);
     }
@@ -165,8 +175,8 @@ export function SupportPage() {
         <div className="rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 sm:p-6 shadow-[0_12px_40px_rgba(245,158,11,0.12)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-md shadow-amber-400/30 text-xl">
-                🤖
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-md shadow-amber-400/30">
+                <Bot className="size-6" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
@@ -250,13 +260,13 @@ export function SupportPage() {
           {/* Quick Inquiry Chips */}
           <div className="mt-3.5 flex flex-wrap gap-1.5">
             {[
-              "Where is my order? ⚡",
-              "Which King Pay services are active? 💳",
-              "LPG Cylinder Booking 🔥",
-              "Cancellation & Refunds 🛑",
-              "Food Hygiene & FSSAI 🥗",
-              "Govt Ombudsman Links 🏛️",
-              "Record a support request 📝",
+              "Where is my order?",
+              "Which King Pay services are active?",
+              "LPG Cylinder Booking",
+              "Cancellation & Refunds",
+              "Food Hygiene & FSSAI",
+              "Govt Ombudsman Links",
+              "Record a support request",
             ].map((promptText) => (
               <button
                 key={promptText}
@@ -349,7 +359,7 @@ export function SupportPage() {
                   void triggerQuickResolve("missing_item");
                 }}
               >
-                🍜 Missing item
+                Missing item
               </Button>
               <Button
                 type="button"
@@ -362,7 +372,7 @@ export function SupportPage() {
                   void triggerQuickResolve("food_spilled");
                 }}
               >
-                🥣 Spilled / Damaged
+                Spilled / Damaged
               </Button>
               <Button
                 type="button"
@@ -375,7 +385,7 @@ export function SupportPage() {
                   void triggerQuickResolve("payment_issue");
                 }}
               >
-                💳 Refund status
+                Refund status
               </Button>
             </div>
           ) : null}
@@ -456,8 +466,8 @@ export function SupportPage() {
         <div className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-xs text-lg">
-                🏛️
+              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-xs">
+                <Landmark className="size-5" />
               </div>
               <div>
                 <h2 className="font-display text-base font-black text-stone-900">
@@ -479,15 +489,15 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">National Consumer Helpline (NCH)</span>
-                  <span className="text-xs">⚖️</span>
+                  <Scale className="size-4 text-amber-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Dept of Consumer Affairs, Govt of India. Direct consumer grievance resolution.
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
-                <a href="tel:1915" className="font-black text-amber-800 hover:underline">
-                  📞 Toll-Free 1915
+                <a href="tel:1915" className="font-black text-amber-800 hover:underline inline-flex items-center gap-1">
+                  <Phone className="size-3.5" /> Toll-Free 1915
                 </a>
                 <a
                   href="https://consumerhelpline.gov.in"
@@ -505,7 +515,7 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">RBI Banking Ombudsman (CMS)</span>
-                  <span className="text-xs">🏦</span>
+                  <Landmark className="size-4 text-amber-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Reserve Bank of India Complaint Management System for digital wallet &amp; UPI payment disputes.
@@ -529,15 +539,15 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">Cyber Crime Reporting (MHA)</span>
-                  <span className="text-xs">🛡️</span>
+                  <ShieldAlert className="size-4 text-rose-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Ministry of Home Affairs. For financial cyber fraud, unauthorized debits, and phishing.
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
-                <a href="tel:1930" className="font-black text-rose-700 hover:underline">
-                  🚨 Helpline 1930
+                <a href="tel:1930" className="font-black text-rose-700 hover:underline inline-flex items-center gap-1">
+                  <Phone className="size-3.5" /> Helpline 1930
                 </a>
                 <a
                   href="https://cybercrime.gov.in"
@@ -555,7 +565,7 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">FSSAI Food Safety (FoSCoS)</span>
-                  <span className="text-xs">🥗</span>
+                  <Utensils className="size-4 text-emerald-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Food Safety &amp; Standards Authority of India. Official restaurant hygiene grievances.
@@ -579,7 +589,7 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">NPCI UPI Dispute Redressal</span>
-                  <span className="text-xs">⚡</span>
+                  <Zap className="size-4 text-amber-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   National Payments Corporation of India. Information about UPI dispute mechanisms.
@@ -603,14 +613,14 @@ export function SupportPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">OrderKing Grievance Officer</span>
-                  <span className="text-xs">📜</span>
+                  <ShieldCheck className="size-4 text-amber-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Direct statutory customer redressal under Consumer Protection (E-Commerce) Rules, 2020.
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
-                <span className="text-stone-400 text-[11px]">Founder Cell</span>
+                <span className="text-stone-400 text-[11px]">Grievance Desk</span>
                 <a
                   href="#support-request"
                   className="font-black text-amber-800 hover:underline"
@@ -625,7 +635,7 @@ export function SupportPage() {
         {/* Standard Manual Ticket Submission */}
         <div id="support-request" className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2 pb-2 border-b border-amber-900/10">
-            <span className="text-amber-600 text-sm">📝</span>
+            <FileText className="size-4 text-amber-600" />
             <h2 className="font-display text-lg font-black text-stone-900">Submit Formal Support Ticket</h2>
           </div>
           <form

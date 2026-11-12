@@ -575,7 +575,7 @@ export function computeQuote(input: QuoteInput): Quote {
       reason:
         baseDeliveryFeePaise === 0
           ? deliveryDiscountPaise > 0
-            ? (input.promo?.name ?? "fast delivery offer applied.")
+            ? (input.promo?.name ?? "Free delivery offer applied.")
             : "Delivery waived because the order crossed the free-delivery threshold."
           : "Base distance slab fee for this zone.",
     });
@@ -617,7 +617,7 @@ export function computeQuote(input: QuoteInput): Quote {
       amountPaise: platformFeePaise,
       source: "platform",
       fundedBy: "CUSTOMER",
-      reason: "Flat fee for continuous platform uptime and founder-grade tech operations.",
+      reason: "Flat fee for continuous platform uptime and platform operations.",
     });
   }
   if (smallCartFeePaise > 0) {

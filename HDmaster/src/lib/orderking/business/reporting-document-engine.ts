@@ -415,7 +415,7 @@ export class ReportingDocumentEngine {
           'All affected customers automatically received ₹30 apologies coupon funded from surge escrow.',
         ],
         recommendations: [
-          'Calibrate default prep time for Biryani dishes at Royal Darbar from 15 mins to 22 mins.',
+          'Calibrate default prep time for Biryani dishes for high-demand outlets from 15 mins to 22 mins.',
           'Increase rider standby pool in Koramangala hub by 3 riders between 7:30 PM and 9:30 PM.',
         ],
       },

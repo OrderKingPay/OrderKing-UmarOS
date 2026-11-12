@@ -12,7 +12,7 @@ import {
   type CloudflareEdgeEnv,
 } from "@/lib/travel/corridor-tariffs-cache";
 
-describe("👑 Cloudflare KV Edge Caching for Domestic Corridors (Mandate 183f728c)", () => {
+describe("Cloudflare KV Edge Caching for Domestic Corridors (Mandate 183f728c)", () => {
   beforeEach(() => {
     clearInMemoryEdgeCache();
   });

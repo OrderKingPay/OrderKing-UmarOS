@@ -1212,40 +1212,6 @@ export function FinancePage() {
         <MetricCard label="Contribution" value={money(s.contribution.total)} source="ESTIMATE" />
       </div>
 
-      {/* KingPay Bank-Grade Escrow & Ledger Invariant Card */}
-      <Panel title="KingPay Autonomous Escrow & Double-Entry Ledger (100% Invariant)">
-        <div className="space-y-3 text-xs">
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Total Customer Wallet Float:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-fg">₹4,85,250.00</p>
-              <p className="mt-0.5 text-[11px] text-muted">Customer pre-funded balances</p>
-            </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Escrow Bank Trust Account:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-emerald-600">₹4,85,250.00</p>
-              <p className="mt-0.5 text-[11px] text-muted">Verified 1:1 backed in bank escrow</p>
-            </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Double-Entry Match:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-emerald-600">100% MATCH</p>
-              <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Zero Float Leakage (₹0.00)</p>
-            </div>
-          </div>
-          <div className="rounded-lg border border-border bg-surface p-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-base">🤖</span>
-              <div>
-                <p className="font-semibold text-fg">Autonomous CFO Agent Status</p>
-                <p className="text-muted text-[11px]">Continuous double-entry ledger audits active. Reconciles every PG webhook with 0 math errors.</p>
-              </div>
-            </div>
-            <Button size="sm" variant="secondary" onClick={() => toast.success("Ledger invariant verified: All 4,852 wallet entries 100% balanced with bank escrow!")}>
-              Run AI Audit
-            </Button>
-          </div>
-        </div>
-      </Panel>
 
       <Panel title="Restaurant contribution (ESTIMATE)">
         <DataTable
@@ -1846,7 +1812,7 @@ function MarketingPage() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl">Strategic Marketing & Growth Command</h1>
-          <p className="mt-1 text-sm text-muted">High_Performance Growth Engine with zero-loss unit economics and viral customer loops.</p>
+          <p className="mt-1 text-sm text-muted">Marketing campaigns, acquisition budgets, and referral tracking.</p>
         </div>
       </header>
 
@@ -1903,138 +1869,6 @@ function MarketingPage() {
         </Panel>
       </div>
 
-      {/* Brand Alliance & Zero-Cost Loyalty Command Panel */}
-      <Panel title="Brand Alliance & King Club Rewards Vault (Zero Cash Burn)">
-        <div className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Active Partners:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-fg">8 Brands</p>
-              <p className="mt-0.5 text-[11px] text-emerald-600 font-semibold">Amazon, Flipkart, Meesho, HP, IOCL, Vishal</p>
-            </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">King Coins Multiplier:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-amber-500">10 Coins / ₹1</p>
-              <p className="mt-0.5 text-[11px] text-muted">100% brand-sponsored (₹0 liability)</p>
-            </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">KingPay Fintech Hub:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-primary">Active</p>
-              <p className="mt-0.5 text-[11px] text-muted">Recharges, BBPS & Travel</p>
-            </div>
-            <div className="rounded-xl border border-border bg-elevated p-3">
-              <span className="text-muted">Location Algorithm:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-emerald-600">Geo-Filtered</p>
-              <p className="mt-0.5 text-[11px] text-muted">Hides out-of-zone perks</p>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-border text-muted">
-                  <th className="pb-2 font-medium">Alliance Partner</th>
-                  <th className="pb-2 font-medium">Category</th>
-                  <th className="pb-2 font-medium">Coupon / Link</th>
-                  <th className="pb-2 font-medium">You Earn (Affiliate)</th>
-                  <th className="pb-2 font-medium">Coverage</th>
-                  <th className="pb-2 font-medium">Status & Control</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                <tr>
-                  <td className="py-2.5 font-semibold">📦 Amazon India</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">AMAZONKING</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">Up to 8% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Amazon Affiliate paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">🛍️ Flipkart</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">FLIPKARTKING</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">Up to 7% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Flipkart Affiliate paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">🛒 Meesho</td>
-                  <td className="py-2.5 text-muted">E-Commerce</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">MEESHOKING</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">Flat 10% Commission</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Meesho Affiliate paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">⛽ HPCL & IndianOil</td>
-                  <td className="py-2.5 text-muted">Fuel</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">HPFUEL50 (₹50 Off)</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">₹0 Cost (Co-Promo)</td>
-                  <td className="py-2.5 text-muted">Karimganj, Silchar, Sribhumi</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Fuel alliance paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">🔥 IndianOil (Indane Gas)</td>
-                  <td className="py-2.5 text-muted">LPG Utility</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">INDANE50</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">₹15 / booking</td>
-                  <td className="py-2.5 text-muted">Karimganj, Silchar, Sribhumi</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Indane LPG paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">🛒 Vishal Mega Mart</td>
-                  <td className="py-2.5 text-muted">Retail</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">VISHAL100 (₹100 Off)</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">Cross-Promo (₹0)</td>
-                  <td className="py-2.5 text-muted">Karimganj & Silchar Outlets</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("Vishal Mega Mart paused")}>Pause</button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-semibold">💳 KingPay Fintech Hub</td>
-                  <td className="py-2.5 text-muted">Wallet & BBPS</td>
-                  <td className="py-2.5 font-mono text-primary font-bold">/king-pay</td>
-                  <td className="py-2.5 font-mono text-emerald-600 font-bold">Float + 1.8% PG Savings</td>
-                  <td className="py-2.5 text-muted">Pan-India (ALL)</td>
-                  <td className="py-2.5 flex items-center gap-1.5">
-                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">ACTIVE</span>
-                    <button className="rounded border border-border px-1.5 py-0.5 text-[10px] hover:bg-surface-2" onClick={() => toast.success("KingPay paused")}>Pause</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {/* Location-Aware Diagnostics Section */}
-          <div className="rounded-lg border border-border bg-elevated p-3 text-xs space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-fg">🛡️ Location-Aware Smart Filter & Internal Diagnostics</span>
-              <span className="text-[11px] text-emerald-600 font-semibold">Zero Customer Rejection Friction</span>
-            </div>
-            <p className="text-muted text-[11px]">
-              The smart algorithm dynamically matches active pin codes. If a physical merchant (like Vishal or local petrol pump) is outside the user's coverage, it is marked <span className="font-mono text-amber-600">OUT_OF_ZONE</span> internally and completely hidden from the customer. Customers only see 100% redeemable offers.
-            </p>
-          </div>
-        </div>
-      </Panel>
 
       {/* /* Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard */}
       <Panel title="🏛️ Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
@@ -2333,7 +2167,7 @@ function MarketingPage() {
                 <li className="flex items-start gap-2">
                   <span className="text-primary font-bold">3.</span>
                   <div>
-                    <strong className="text-foreground">Assam University (Commerce Dept):</strong> Guest Lecture on "Zero-Loss Unit Economics vs Cash-Burning Giants".
+                    <strong className="text-foreground">Assam University (Commerce Dept):</strong> Guest Lecture on Unit Economics &amp; Local Marketplace Operations.
                   </div>
                 </li>
               </ul>
@@ -3237,7 +3071,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                 >
-                  <option value="antigravity">Antigravity Multi-Agent Core (10x Autonomous Capacity)</option>
+                  <option value="antigravity">Antigravity Multi-Agent Core</option>
                   <option value="anthropic">Claude 3.7 Sonnet (Anthropic Deep Engineering)</option>
                   <option value="openai">GPT-4o (OpenAI Reasoning)</option>
                   <option value="xai">Grok 3 (xAI Real-time Search)</option>
@@ -3955,7 +3789,7 @@ function SettingsPage() {
             <span>🎯</span> Strategic Nearest-Rider Cascading Dispatch
           </h3>
           <span className="text-[11px] rounded bg-emerald-500/20 px-2 py-0.5 text-emerald-300 font-mono">
-            10x Precision GPS Proximity
+            GPS Proximity Radius
           </span>
         </div>
         <p className="text-xs text-muted">

@@ -1,6 +1,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, Tag, Utensils } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useT } from "@/components/providers";
 import { listPromos } from "@/lib/server/account";
@@ -10,41 +11,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/offers")({ component: OffersPage });
-
-const FEATURED_OFFERS = [
-  {
-    id: "feat_local40",
-    name: "Hyperlocal Launch: ₹40 OFF",
-    code: "LOCAL40",
-    description: "Flat ₹40 OFF on orders above ₹299 for the first 100 neighborhood food lovers.",
-    minOrderPaise: 29900,
-    badge: "⚡ Launch Special",
-  },
-  {
-    id: "feat_bogo",
-    name: "Buy 1 Get 1 Free (BOGO Feast)",
-    code: "BOGO2026",
-    description: "Get 1 free on selected main course dishes and biryanis.",
-    minOrderPaise: 29900,
-    badge: "🔥 Most Popular",
-  },
-  {
-    id: "feat_welcome",
-    name: "Welcome 50% OFF (Up to ₹100)",
-    code: "ORDERKING",
-    description: "Promotional restaurant discount on eligible orders.",
-    minOrderPaise: 14900,
-    badge: "🎉 First Order",
-  },
-  {
-    id: "feat_freedel",
-    name: "Free Delivery Above ₹199",
-    code: "FREEDEL",
-    description: "Free delivery on orders above ₹199 from nearby partner restaurants.",
-    minOrderPaise: 19900,
-    badge: "Free Delivery",
-  },
-];
 
 function OffersPage() {
   const { t, lang } = useT();
@@ -66,61 +32,25 @@ function OffersPage() {
             </p>
           </div>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-950 shadow-2xs">
-            <span>🎟️</span>
-            <span>{FEATURED_OFFERS.length + serverPromos.length} Deals</span>
+            <Tag className="size-3.5 text-amber-700" />
+            <span>{serverPromos.length} Deals</span>
           </span>
         </div>
 
-        {/* Featured Deals */}
-        <div className="mt-5 space-y-3.5">
-          {FEATURED_OFFERS.map((f) => (
-            <div
-              key={f.id}
-              className="relative overflow-hidden rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/50 to-yellow-50/30 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)] hover:shadow-[0_12px_40px_rgba(245,158,11,0.2)] transition-all group"
-            >
-              {/* Subtle ambient radial shimmer */}
-              <div className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/10 blur-2xl" />
-
-              <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-400/20 border border-amber-400/50 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-950 shadow-2xs">
-                      {f.badge}
-                    </span>
-                    <span className="text-[10px] font-bold text-stone-500">
-                      Min order: {formatPaise(f.minOrderPaise, { locale })}
-                    </span>
-                  </div>
-                  <h2 className="mt-2 font-display text-lg font-black text-stone-900 leading-snug">
-                    {f.name}
-                  </h2>
-                  <p className="mt-0.5 text-xs text-stone-600 leading-relaxed">{f.description}</p>
-                </div>
-
-                <div className="flex sm:flex-col items-center justify-between sm:justify-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 sm:border-l border-amber-900/10 sm:pl-4">
-                  <span className="inline-block rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-400/20 via-yellow-300/30 to-amber-400/20 px-3 py-1 font-mono text-xs font-black tracking-widest text-amber-950 shadow-2xs">
-                    {f.code}
-                  </span>
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black text-xs px-5 py-2 rounded-xl shadow-md shadow-orange-500/25 hover:from-amber-600 hover:to-orange-600 active:scale-95 transition-all h-9"
-                    onClick={() => {
-                      setCoupon(f.code);
-                      toast.success(`Coupon ${f.code} applied to cart!`);
-                    }}
-                  >
-                    {t("cart.apply")} ➔
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {serverPromos.length > 0 && (
+        {serverPromos.length === 0 ? (
+          <div className="mt-8 rounded-3xl border border-stone-200 bg-white p-8 text-center shadow-xs">
+            <Tag className="mx-auto size-8 text-stone-400" />
+            <h2 className="mt-3 font-display text-base font-bold text-stone-900">
+              No active coupons right now
+            </h2>
+            <p className="mt-1 text-xs text-stone-500">
+              Active restaurant and platform promotions will appear here once published.
+            </p>
+          </div>
+        ) : (
           <div className="mt-8 space-y-3.5">
             <div className="flex items-center gap-2">
-              <span className="text-amber-600 text-base">🍽️</span>
+              <Utensils className="size-4 text-amber-600" />
               <h2 className="font-display text-lg font-black text-stone-900">Partner Kitchen Deals</h2>
             </div>
             <ul className="space-y-3">

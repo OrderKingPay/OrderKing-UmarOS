@@ -563,7 +563,7 @@ export function generateKiwiFlightLink(
   }
 
   const targetUrl = kiwiUrl.toString();
-  const routeSummary = `Flight ${origin} ➔ ${destination} on ${departureDate} (${passengers} Pax, ${currency})`;
+  const routeSummary = `Flight ${origin} to ${destination} on ${departureDate} (${passengers} Pax, ${currency})`;
 
   return createResultWrapper({
     partner: "kiwi",
@@ -617,7 +617,7 @@ export function generateSkyscannerFlightLink(
   url.searchParams.set("utm_campaign", "b2b_travel_engine");
 
   const targetUrl = url.toString();
-  const routeSummary = `Flight ${origin.toUpperCase()} ➔ ${destination.toUpperCase()} on ${departureDate} (${passengers} Pax, ${currency})`;
+  const routeSummary = `Flight ${origin.toUpperCase()} to ${destination.toUpperCase()} on ${departureDate} (${passengers} Pax, ${currency})`;
 
   return createResultWrapper({
     partner: "skyscanner",
@@ -689,7 +689,7 @@ export function generateConfirmTktTrainLink(
      ?? ""))}&subId=${encodeURIComponent(String(subId ?? ""))}`;
   }
 
-  const routeSummary = `Train ${fromCode} ➔ ${toCode} on ${travelDate} [Quota: ${quota}]`;
+  const routeSummary = `Train ${fromCode} to ${toCode} on ${travelDate} [Quota: ${quota}]`;
 
   return createResultWrapper({
     partner: "confirmtkt",
@@ -750,7 +750,7 @@ export function generateIrctcTrainLink(
   url.searchParams.set("journeyQuota", irctcQuota);
 
   const targetUrl = url.toString();
-  const routeSummary = `IRCTC NextGen Ticketing ${fromCode} ➔ ${toCode} on ${irctcDate} (${irctcQuota})`;
+  const routeSummary = `IRCTC NextGen Ticketing ${fromCode} to ${toCode} on ${irctcDate} (${irctcQuota})`;
 
   return createResultWrapper({
     partner: "irctc",
@@ -796,7 +796,7 @@ export function generateRedBusLink(
   url.searchParams.set("subId", subId);
 
   const targetUrl = url.toString();
-  const routeSummary = `RedBus Corridor ${params.sourceCity} ➔ ${params.destinationCity} on ${formattedDoj}`;
+  const routeSummary = `RedBus Corridor ${params.sourceCity} to ${params.destinationCity} on ${formattedDoj}`;
 
   return createResultWrapper({
     partner: "redbus",

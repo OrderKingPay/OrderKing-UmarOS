@@ -1,6 +1,6 @@
 /**
  * TIMED ITEM OUT-OF-STOCK AUTO-RESET ENGINE
- * Authentic Tier-1 Legacy Market Leader Partner Parity:
+ * Standard Restaurant Partner Stockout Presets:
  * 1. 'Turn off for 2 Hours' (Lunch rush recovery)
  * 2. 'Turn off for 4 Hours'
  * 3. 'Turn off until Tomorrow 8:00 AM' (Standard end-of-day stockout)

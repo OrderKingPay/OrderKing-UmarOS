@@ -141,8 +141,7 @@ export function DesignStudio() {
       setSavedConfig(config);
       toast.success("Brand colors and banner saved.");
     } catch {
-      setSavedConfig(config);
-      toast.success("Brand colors updated.");
+      toast.error("Failed to save brand colors to browser storage.");
     }
   };
 

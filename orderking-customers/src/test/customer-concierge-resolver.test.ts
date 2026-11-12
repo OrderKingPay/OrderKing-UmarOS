@@ -7,7 +7,7 @@ import {
 } from "../components/ai/customer-concierge-drawer";
 import { detectLanguage } from "../lib/ai-lang-detect";
 
-describe("👑 AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
+describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
   const getDialect = (code: string): SupportedDialect =>
     CONCIERGE_DIALECTS.find((d) => d.code === code) || CONCIERGE_DIALECTS[0];
 

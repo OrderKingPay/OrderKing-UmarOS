@@ -12,9 +12,9 @@ export interface TipOption {
 }
 
 export const TIP_PRESETS: readonly TipOption[] = [
-  { label: "₹20", valuePaise: 2000, tag: "Thank you 🙏", emoji: "🙏" },
-  { label: "₹30", valuePaise: 3000, tag: "Most Popular ⭐", emoji: "⭐" },
-  { label: "₹50", valuePaise: 5000, tag: "Super Hero 🦸", emoji: "🦸" },
+  { label: "₹20", valuePaise: 2000, tag: "Thank you", emoji: "" },
+  { label: "₹30", valuePaise: 3000, tag: "Most Popular", emoji: "" },
+  { label: "₹50", valuePaise: 5000, tag: "Super Hero", emoji: "" },
 ] as const;
 
 export const FEEDING_INDIA_DONATION_PAISE = 200; // ₹2.00
@@ -57,7 +57,7 @@ export function calculateTipPayout(tipPaise: number): {
     platformFeePaise: 0,
     platformCommissionBps: 0,
     riderPayoutPaise: safeTip,
-    note: "100% of your tip goes directly to your delivery partner. OrderKing charges custom commission or fee on tips.",
+    note: "100% of your tip goes directly to your delivery partner. OrderKing charges 0% commission or fee on tips.",
   };
 }
 

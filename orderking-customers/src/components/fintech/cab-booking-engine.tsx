@@ -275,7 +275,7 @@ export function CabBookingEngine({
                       href={`https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(drop ?? ""))}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => toast.success(`Opening Uber dispatch for ${pickup} ➔ ${drop}...`)}
+                      onClick={() => toast.success(`Opening Uber dispatch for ${pickup} to ${drop}...`)}
                       className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs shadow-md inline-flex items-center gap-1.5 no-underline transition"
                     >
                       <span>Uber</span>

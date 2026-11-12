@@ -1924,101 +1924,18 @@ export const dispatchMetaOmnichannelGeoBlastFn = createServerFn({ method: "POST"
       // Rate limit capping against daily quota
       const cappedDispatches = Math.min(deliverableContacts, dailyDmQuota);
 
-      // Representative authentic restaurants in catchment
-      const sampleNames = [
-        "The Big Chill Cafe",
-        "Biryani By Kilo",
-        "Cafe Delhi Heights",
-        "Chai Point Hub",
-        "Punjab Grill Express",
-        "Smoke House Deli",
-        "Bikanervala Sweets & Chaat",
-        "Haldiram's Express Outlet",
-        "Social Offline Eatery",
-        "Burgerama Artisan Burgers",
-        "Madras Cafe Tiffin Room",
-        "Wow! Momo Kitchen",
-        "Sagar Ratna South Indian",
-        "Nirula's Heritage Kitchen",
-        "Behrouz Biryani Cloud",
-        "Faasos Quick Bites",
-      ];
-
-      const blastId = `BLAST-META-GEO-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const executionTimestamp = new Date().toISOString();
-
-      // Sample verified dispatch logs
-      const sampleLogs = sampleNames.slice(0, Math.min(8, sampleNames.length)).map((name, idx) => {
-        const dist = Number(((idx + 1) * (radiusKm / 9) + 0.2).toFixed(2));
-        const channel: "instagram" | "whatsapp" | "messenger" =
-          idx % 3 === 0 && targetInstagram
-            ? "instagram"
-            : idx % 3 === 1 && targetWhatsapp
-            ? "whatsapp"
-            : targetMessenger
-            ? "messenger"
-            : targetInstagram
-            ? "instagram"
-            : "whatsapp";
-
-        const recipientHandle =
-          channel === "instagram"
-            ? `@${name.toLowerCase().replace(/[^a-z0-9]/g, "")}_official`
-            : channel === "whatsapp"
-            ? `+91 98${Math.floor(10000000 + Math.random() * 89999999)}`
-            : `${name} Official FB Page`;
-
+      const metaToken = (process.env.META_SYSTEM_ACCESS_TOKEN || "").trim();
+      const waPhoneId = (process.env.META_WHATSAPP_PHONE_NUMBER_ID || "").trim();
+      if (!metaToken || !waPhoneId) {
         return {
-          id: `MSG-${idx + 1}-${Math.floor(1000 + Math.random() * 9000)}`,
-          restaurantName: name,
-          distanceKm: dist,
-          channel,
-          recipient: recipientHandle,
-          status: "DELIVERED" as const,
-          httpCode: 200,
-          latencyMs: 140 + Math.floor(Math.random() * 110),
-          graphBatchId: `b_meta_${Date.now().toString(36)}_${idx}`,
-          timestamp: new Date(Date.now() - (7 - idx) * 1200).toISOString(),
+          ok: false as const,
+          error: "Meta Graph API credentials (META_SYSTEM_ACCESS_TOKEN, META_WHATSAPP_PHONE_NUMBER_ID) are not configured.",
         };
-      });
+      }
 
       return {
-        ok: true as const,
-        blastId,
-        executionTimestamp,
-        polygon: {
-          center: { lat: targetLat, lng: targetLng },
-          radiusKm,
-          areaSqKm: Number(areaSqKm.toFixed(2)),
-          locationLabel: targetLocationLabel || `${targetLat.toFixed(4)}, ${targetLng.toFixed(4)}`,
-        },
-        payload: {
-          headline: acquisitionHeadline,
-          bodyTemplate: acquisitionPitchBody,
-          ctaUrl: acquisitionCtaUrl,
-          offerCode: acquisitionOfferCode,
-        },
-        telemetry: {
-          totalCatchmentRestaurants: totalAreaRestaurants,
-          totalRawContacts,
-          dndScrubbedCount,
-          deliverableContacts,
-          cappedDispatches,
-          channelBreakdown: {
-            instagramDirectDms: targetInstagram && totalRawContacts > 0 ? Math.round(cappedDispatches * (igAvailable / totalRawContacts)) : 0,
-            facebookMessengerDms: targetMessenger && totalRawContacts > 0 ? Math.round(cappedDispatches * (messengerAvailable / totalRawContacts)) : 0,
-            whatsAppCloudMessages: targetWhatsapp && totalRawContacts > 0 ? Math.round(cappedDispatches * (whatsappAvailable / totalRawContacts)) : 0,
-          },
-          compliance: {
-            metaGraphApiVersion: "v21.0",
-            messagingWindowPolicy: "24h Standard + Account Claim Template Fallback",
-            dndScrubbingEnforced: dndFilterEnforced,
-            rateLimitEnforced: `${rateLimitPerMinute} requests/min`,
-            status: "DISPATCHED_TO_META_GRAPH_RAILS",
-          },
-        },
-        sampleLogs,
-        message: `Geospatial DM Blast successfully triggered! ${cappedDispatches.toLocaleString("en-IN")} restaurant acquisition messages queued across Official Meta Graph API v21.0 rails within ${radiusKm} km of ${targetLocationLabel || "target polygon"}.`,
+        ok: false as const,
+        error: "Direct Meta Graph geo-radius blast requires verified business recipient IDs stored in database.",
       };
     } catch (err) {
       return fail(err);

@@ -393,13 +393,15 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
       })
         .then(() => {
           void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+          toast.success(`Booking ${booking.bookingRef} confirmed on Table ${tableToAssign}`);
         })
         .catch((err) => {
           console.error("Failed to persist booking confirmation:", err);
           toast.error("Failed to sync booking confirmation to server.");
         });
+    } else {
+      toast.success(`Booking ${booking.bookingRef} confirmed on Table ${tableToAssign}`);
     }
-    toast.success(`Booking ${booking.bookingRef} confirmed on Table ${tableToAssign}`);
   };
 
   const handleSeat = (id: string) => {
@@ -442,13 +444,15 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
       })
         .then(() => {
           void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+          toast.success(`Guest ${booking.guestName} seated at Table ${booking.assignedTable || "assigned"}`);
         })
         .catch((err) => {
           console.error("Failed to persist seating status:", err);
           toast.error("Failed to sync seating status to server.");
         });
+    } else {
+      toast.success(`Guest ${booking.guestName} seated at Table ${booking.assignedTable || "assigned"}`);
     }
-    toast.success(`Guest ${booking.guestName} seated at Table ${booking.assignedTable || "assigned"}`);
   };
 
   const handleCompleteAndBill = (id: string, billAmount = 3500) => {
@@ -499,13 +503,15 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
       })
         .then(() => {
           void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+          toast.success(`Table ${booking.assignedTable || ""} released and billed (₹${billAmount.toLocaleString("en-IN")})`);
         })
         .catch((err) => {
           console.error("Failed to persist billing completion:", err);
           toast.error("Failed to sync billing to server.");
         });
+    } else {
+      toast.success(`Table ${booking.assignedTable || ""} released and billed (₹${billAmount.toLocaleString("en-IN")})`);
     }
-    toast.success(`Table ${booking.assignedTable || ""} released and billed (₹${billAmount.toLocaleString("en-IN")})`);
   };
 
   const handleCancelOrNoShow = (id: string, reason?: string) => {
@@ -554,12 +560,15 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
       })
         .then(() => {
           void qc?.invalidateQueries({ queryKey: ["dining_reservations", restaurantId] });
+          toast.info(`Reservation ${booking.bookingRef} cancelled: ${reasonText}`);
         })
         .catch((err) => {
           console.error("Failed to persist cancellation:", err);
+          toast.error("Failed to sync cancellation to server.");
         });
+    } else {
+      toast.info(`Reservation ${booking.bookingRef} cancelled: ${reasonText}`);
     }
-    toast.info(`Reservation ${booking.bookingRef} cancelled: ${reasonText}`);
   };
 
   const handleAddWalkIn = (walkInData: {

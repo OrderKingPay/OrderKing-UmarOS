@@ -5,12 +5,11 @@
  *
  * Strict Work Order Specification:
  * - Real-time only. Never clock-based.
- * - Slow-order periods: Every restaurant menu automatically re-sorts:
- *   lowest-price best-selling items + live geographical demand + current weather + time-of-day need appear first.
- * - Peak-order periods: Highest guest-satisfaction and highest-value items appear first.
+ * - Slow-order periods → Lowest-price best-selling items + comfort food appear first.
+ * - Peak-order periods → Highest guest-satisfaction and highest-value items appear first.
  * - Long-term weak / non-selling items forced to bottom + rare, high-value growth alert sent to restaurant only (never spam).
  * - Exact actionable growth suggestions included.
- * - Home category line auto-sorted by live local demand (example order: Biryani → Pizza → Burger → Indian → Chinese…).
+ * - Home category line auto-sorted by live local demand (example order: Biryani -> Pizza -> Burger -> Indian -> Chinese).
  */
 
 export type DemandPhase = "SLOW_ORDER_PERIOD" | "PEAK_ORDER_PERIOD" | "SURGE_RUSH";
@@ -122,10 +121,10 @@ export function getRealTimeMarketContext(
       headline:
         weather === "Rainy"
           ? "Rainy Day Comfort Bites Under ₹99"
-          : "Budget Advanced Deals: Popular Meals Under ₹129",
+          : "Budget Deals: Popular Meals Under ₹129",
       subheadline:
         "Slow-hour value unlock: Bestselling dishes sorted low-to-high at 0% menu markup.",
-      badge: "⚡ Low-Price Value Boost",
+      badge: "Low-Price Value",
       sortStrategy: "lowest_price_first",
       weatherCondition: weather,
       liveOrderVelocity: velocity,
@@ -137,10 +136,10 @@ export function getRealTimeMarketContext(
   if (demandPhase === "SURGE_RUSH") {
     return {
       demandPhase: "SURGE_RUSH",
-      headline: "Surge Rush: Express Kitchens Under 20 Mins",
+      headline: "High Demand: Fast-Prep Kitchens Nearby",
       subheadline:
-        "High demand active: Top-rated kitchens cooking fast to guarantee on-time delivery.",
-      badge: "🚀 High-Velocity Rush",
+        "High demand active: Top-rated kitchens cooking fast for timely delivery.",
+      badge: "High-Velocity Rush",
       sortStrategy: "highest_value_first",
       weatherCondition: weather,
       liveOrderVelocity: velocity,
@@ -154,7 +153,7 @@ export function getRealTimeMarketContext(
     headline: "Peak Hours: Royal Dum Biryani & Chef Specials",
     subheadline:
       "Hand-crafted meals from top-rated restaurants with 0% menu markup.",
-    badge: "⭐ 4.8+ Top Rated Kitchens",
+    badge: "Top Rated Kitchens",
     sortStrategy: "highest_value_first",
     weatherCondition: weather,
     liveOrderVelocity: velocity,

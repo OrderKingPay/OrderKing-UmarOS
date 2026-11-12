@@ -327,13 +327,13 @@ function PredictiveSearchPage() {
                 <span>Zero-Typing:</span>
               </span>
               {[
-                { name: "Biryani", query: "Biryani", emoji: "🍚", regional: "बिरयानी / বিরিয়ানি" },
-                { name: "Momos", query: "Momos", emoji: "🥟", regional: "मोमोज / মোমো" },
-                { name: "Butter Chicken", query: "Butter Chicken", emoji: "🍗", regional: "बटर चिकन / বাটার চিকেন" },
-                { name: "Dosa", query: "Dosa", emoji: "🥞", regional: "दोसा / দোসা" },
-                { name: "Paneer", query: "Paneer", emoji: "🧀", regional: "पनीर / পনির" },
-                { name: "Thali", query: "Thali", emoji: "🍽️", regional: "थाली / থালি" },
-                { name: "Rolls", query: "Rolls", emoji: "🌯", regional: "কাঠি রোল / ৰোল" },
+                { name: "Biryani", query: "Biryani", regional: "बिरयानी / বিরিয়ানি" },
+                { name: "Momos", query: "Momos", regional: "मोमोज / মোমো" },
+                { name: "Butter Chicken", query: "Butter Chicken", regional: "बटर चिकन / বাটার চিকেন" },
+                { name: "Dosa", query: "Dosa", regional: "दोसा / দোসা" },
+                { name: "Paneer", query: "Paneer", regional: "पनीर / পনির" },
+                { name: "Thali", query: "Thali", regional: "थाली / থালি" },
+                { name: "Rolls", query: "Rolls", regional: "কাঠি রোল / ৰোল" },
               ].map((chip) => (
                 <button
                   key={chip.name}
@@ -350,7 +350,6 @@ function PredictiveSearchPage() {
                   )}
                   title={`Zero-Typing Quick Search: ${chip.name} (${chip.regional})`}
                 >
-                  <span className="text-xs">{chip.emoji}</span>
                   <span>{chip.name}</span>
                   <span className="text-[9.5px] opacity-75 hidden sm:inline">· {chip.regional}</span>
                 </button>
@@ -378,8 +377,16 @@ function PredictiveSearchPage() {
                         className="w-full flex items-center justify-between px-3.5 py-2.5 text-left hover:bg-amber-50/80 transition group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm">
-                            {sug.type === "dish" ? "🍲" : sug.type === "restaurant" ? "🏪" : sug.type === "trending" ? "🔥" : "🍽️"}
+                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                            {sug.type === "dish" ? (
+                              <Utensils className="size-3.5" />
+                            ) : sug.type === "restaurant" ? (
+                              <Store className="size-3.5" />
+                            ) : sug.type === "trending" ? (
+                              <Flame className="size-3.5 text-orange-600" />
+                            ) : (
+                              <Utensils className="size-3.5" />
+                            )}
                           </span>
                           <div className="truncate">
                             <p className="text-sm font-bold text-gray-900 truncate">
@@ -431,7 +438,7 @@ function PredictiveSearchPage() {
                   )}
                 >
                   <span className="size-2 rounded-full bg-emerald-400" />
-                  <span>Pure Veg 🌱</span>
+                  <span>Pure Veg</span>
                 </button>
 
                 {/* Rating 4.0+ Chip */}
@@ -446,10 +453,10 @@ function PredictiveSearchPage() {
                   )}
                 >
                   <Star className={cn("size-3.5", filterRating4Plus ? "fill-white text-white" : "text-amber-500")} />
-                  <span>Rating 4.0+ ⭐</span>
+                  <span>Rating 4.0+</span>
                 </button>
 
-                {/* Fast Delivery (<25 mins) Chip */}
+                {/* Fast Delivery Chip */}
                 <button
                   type="button"
                   onClick={() => setFilterFast(!filterFast)}
@@ -461,7 +468,7 @@ function PredictiveSearchPage() {
                   )}
                 >
                   <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-orange-500")} />
-                  <span>Fast Delivery ⚡ (&lt;25 mins)</span>
+                  <span>Fast Delivery</span>
                 </button>
 
                 {/* Great Offers Chip */}
@@ -476,7 +483,7 @@ function PredictiveSearchPage() {
                   )}
                 >
                   <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
-                  <span>Great Offers 🏷️</span>
+                  <span>Great Offers</span>
                 </button>
               </div>
 
@@ -544,7 +551,7 @@ function PredictiveSearchPage() {
                       onClick={() => executeSearch(clean)}
                       className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-white hover:border-orange-400 hover:bg-orange-50/80 px-3.5 py-1.5 text-xs font-black text-gray-900 hover:text-orange-950 transition active:scale-95 shadow-2xs group"
                     >
-                      <span className="group-hover:scale-110 transition-transform">🔥</span>
+                      <Flame className="size-3 text-orange-500 group-hover:scale-110 transition-transform" />
                       <span>{trending}</span>
                     </button>
                   );
@@ -614,7 +621,6 @@ function PredictiveSearchPage() {
                                 className="inline-flex items-center gap-0.5 rounded-[4px] border border-amber-400/80 bg-amber-50 px-1.5 py-0.5 text-[9px] font-black text-amber-900 shadow-2xs"
                                 title="Sattvic Jain (No onion, no garlic)"
                               >
-                                <span>🕉️</span>
                                 <span>Jain</span>
                               </span>
                             ) : dish.veg ? (
@@ -687,8 +693,8 @@ function PredictiveSearchPage() {
                                 loading="lazy"
                               />
                             ) : (
-                              <div className="flex size-full items-center justify-center bg-amber-50 text-2xl">
-                                🍲
+                              <div className="flex size-full items-center justify-center bg-amber-50">
+                                <Utensils className="size-6 text-amber-500" />
                               </div>
                             )}
                           </div>
@@ -838,8 +844,8 @@ function EmptyState({
 }) {
   return (
     <div className="rounded-3xl border border-amber-200/80 bg-white/95 p-6 sm:p-8 text-center space-y-5 shadow-[0_4px_24px_rgba(245,158,11,0.06)]">
-      <div className="mx-auto flex size-18 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 text-3xl shadow-md text-white">
-        🔍
+      <div className="mx-auto flex size-18 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 shadow-md text-white">
+        <Search className="size-7 text-white" />
       </div>
 
       <div className="space-y-1.5">
@@ -853,8 +859,9 @@ function EmptyState({
 
       {/* 1-Tap Browse Top Cuisines */}
       <div className="space-y-2 pt-2">
-        <span className="text-[11px] font-black uppercase tracking-wider text-amber-900/80 bg-amber-100/70 px-3 py-1 rounded-full border border-amber-200/80">
-          🍽️ Browse Top Cuisines
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-amber-900/80 bg-amber-100/70 px-3 py-1 rounded-full border border-amber-200/80">
+          <Utensils className="size-3 text-amber-700" />
+          <span>Browse Top Cuisines</span>
         </span>
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1 max-w-lg mx-auto">
           {TOP_CUISINES.map((c) => (
@@ -864,7 +871,7 @@ function EmptyState({
               onClick={() => onSelectCuisine(c.query)}
               className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/90 bg-white hover:border-amber-500 hover:bg-amber-50/80 px-3.5 py-1.5 text-xs font-black text-gray-900 transition active:scale-95 shadow-2xs"
             >
-              <span>{c.emoji}</span>
+              <Utensils className="size-3 text-amber-600" />
               <span>{c.name}</span>
             </button>
           ))}

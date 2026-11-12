@@ -135,8 +135,7 @@ export function AppBuilderStudio() {
       setSavedConfig(config);
       toast.success("App settings and PWA links saved.");
     } catch {
-      setSavedConfig(config);
-      toast.success("App settings updated.");
+      toast.error("Failed to save app settings to browser storage.");
     }
   };
 

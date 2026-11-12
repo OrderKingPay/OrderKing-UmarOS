@@ -23,6 +23,39 @@ export const getKingpayBalance = createServerFn({ method: "GET" }).handler(async
   }
 });
 
+export const getKingpayLedger = createServerFn({ method: "GET" }).handler(async () => {
+  try {
+    const user = await getSessionUser();
+    if (!user) return [];
+    const sql = await getSql();
+    const rows = await sql<{
+      id: string;
+      amount_paise: number;
+      type: string;
+      description: string;
+      created_at: string;
+    }>`
+      SELECT id, amount_paise, type, description, created_at
+      FROM kingpay_transactions
+      WHERE user_id = ${user.id}
+      ORDER BY created_at DESC
+      LIMIT 100
+    `;
+    return rows.map((r) => ({
+      entry_id: r.id,
+      transaction_id: r.id,
+      timestamp: r.created_at ? new Date(r.created_at).toISOString() : new Date().toISOString(),
+      direction: (r.type === "CREDIT" ? "CREDIT" : "DEBIT") as "CREDIT" | "DEBIT",
+      amount_paise: Number(r.amount_paise) || 0,
+      account: "CUSTOMER_WALLET",
+      memo: r.description || "",
+    }));
+  } catch (err) {
+    console.error("getKingpayLedger failed:", err);
+    return [];
+  }
+});
+
 export const addKingpayMoney = createServerFn({ method: "POST" })
   .validator((d: { amount: number; description: string; gatewaySignature?: string }) => d)
   .handler(async ({ data }: any) => {
@@ -35,11 +68,11 @@ export const addKingpayMoney = createServerFn({ method: "POST" })
        if (!data.gatewaySignature) {
            throw new Error("Financial Security: Payment gateway signature missing. Unauthorized minting blocked.");
        }
-       throw new Error("Financial Security: Live payment gateways are pending legal/provider authorization. Minting blocked.");
+       throw new Error("Financial Security: Gateway cryptographic verification required. Direct wallet minting blocked.");
     }
     
     if (data.amount > 10000) {
-        throw new Error("Sandbox Security: Maximum test transaction limit exceeded.");
+        throw new Error("Financial Security: Single top-up exceeds ₹10,000 transaction threshold.");
     }
 
     const sql = await getSql();

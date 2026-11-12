@@ -34,18 +34,16 @@ import {
   VERIFIED_FOUNDER_PORTFOLIO,
 } from "../lib/ai/application-engine.ts";
 import {
-  INITIAL_CLIENT_INVOICES,
   verifyAndProcessWebhook,
 } from "../lib/ai/payment-infrastructure.ts";
 import {
-  INITIAL_REPEAT_OPPORTUNITIES,
   generateRepeatProposal,
 } from "../lib/ai/repeat-business-engine.ts";
 import {
   generateCostControlReport,
   INITIAL_EXPENSE_ITEMS,
 } from "../lib/ai/cost-control-engine.ts";
-import { VERIFIED_OPPORTUNITIES } from "../lib/ai/opportunity-hunter.ts";
+import { calculateFrictionMetrics } from "../lib/ai/opportunity-hunter.ts";
 import {
   VOICE_PERSONAS,
   SUPPORTED_LANGUAGES,
@@ -53,9 +51,6 @@ import {
 } from "../lib/ai/supreme-voice-engine.ts";
 import {
   parseFounderQuery,
-  CURATED_CLIENT_LEADS,
-  CURATED_REMOTE_GIGS,
-  ENTERPRISE_BLUEPRINTS,
 } from "../lib/ai/supreme-founder-ai-core.ts";
 
 describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
@@ -121,7 +116,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("4. Searchable Knowledge Engine & Layered Memory (§20, §21)", () => {
     it("should tokenize text and extract keywords", () => {
-      const tokens = tokenize("OrderKing provides custom commission food delivery!");
+      const tokens = tokenize("OrderKing provides 0% commission food delivery!");
       assert.ok(tokens.includes("orderking"));
       assert.ok(tokens.includes("provides"));
       assert.ok(tokens.includes("commission"));
@@ -176,7 +171,23 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("7. Automatic Application Engine (§5)", () => {
     it("should build customized application with genuine portfolio attachments and 0 fabricated credentials", () => {
-      const opp = VERIFIED_OPPORTUNITIES[0];
+      const opp = {
+        id: "OPP-TEST-001",
+        source: "Direct Inquiry",
+        title: "Zero-Commission Direct Food Ordering App & WhatsApp Dispatch",
+        client: "Test Merchant Group",
+        requirements: ["React 19 / PWA", "1-Tap UPI QR", "WhatsApp Merchant Notification", "Fleet Dispatch"],
+        skillsMatched: ["React 19 / PWA", "1-Tap UPI QR", "WhatsApp Merchant Notification", "Fleet Dispatch"],
+        missingSkills: [],
+        estimatedEffortHours: 16,
+        statedBudget: 149999,
+        currency: "INR",
+        deadline: "2026-10-05",
+        evidence: ["Test merchant requirement specification"],
+        status: "QUALIFIED" as const,
+        nextAction: "Emit Advance Invoice",
+        frictionMetrics: calculateFrictionMetrics(149999, 16, 4, 4, true),
+      };
       const draft = buildCustomizedApplication(opp);
       assert.strictEqual(draft.opportunityId, opp.id);
       assert.ok(draft.customCoverLetter.includes("HDmaster Founder Engineering Core"));
@@ -189,7 +200,25 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("8. Automatic Revenue Collection & Payment Infrastructure (§10)", () => {
     it("should process verified webhook and reconcile invoice with provider transaction ID", () => {
-      const invoice = INITIAL_CLIENT_INVOICES[1]; // ESCROW_LOCKED invoice
+      const testInvoices = [
+        {
+          id: "INV-TEST-001",
+          clientName: "Test Client",
+          clientEmail: "billing@example.com",
+          projectName: "POS License",
+          items: [{ id: "ITEM-1", description: "License", quantity: 1, unitPriceInr: 74500, totalInr: 74500 }],
+          subtotalInr: 74500,
+          taxInr: 0,
+          totalInr: 74500,
+          paymentMethod: "UPI_DIRECT" as const,
+          status: "ESCROW_LOCKED" as const,
+          paymentLink: "upi://pay?pa=9395065587@ybl&am=74500&cu=INR",
+          qrPayload: "upi://pay?pa=9395065587@ybl&am=74500&cu=INR",
+          issuedAt: new Date().toISOString(),
+          reconciled: false,
+        },
+      ];
+      const invoice = testInvoices[0]; // ESCROW_LOCKED invoice
       const payload = {
         eventId: "EVT-TEST-WEBHOOK-99",
         provider: "UPI_BANK" as const,
@@ -201,7 +230,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = verifyAndProcessWebhook(payload, INITIAL_CLIENT_INVOICES);
+      const result = verifyAndProcessWebhook(payload, testInvoices);
       assert.strictEqual(result.success, true);
       assert.strictEqual(result.invoice?.status, "RECEIVED");
       assert.strictEqual(result.invoice?.providerEventId, "EVT-TEST-WEBHOOK-99");
@@ -209,7 +238,25 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
     });
 
     it("should reject webhook with invalid signature or mismatched amount", () => {
-      const invoice = INITIAL_CLIENT_INVOICES[0];
+      const testInvoices = [
+        {
+          id: "INV-TEST-002",
+          clientName: "Test Client",
+          clientEmail: "billing@example.com",
+          projectName: "POS License",
+          items: [{ id: "ITEM-1", description: "License", quantity: 1, unitPriceInr: 110000, totalInr: 110000 }],
+          subtotalInr: 110000,
+          taxInr: 0,
+          totalInr: 110000,
+          paymentMethod: "UPI_DIRECT" as const,
+          status: "RECEIVED" as const,
+          paymentLink: "upi://pay?pa=9395065587@ybl&am=110000&cu=INR",
+          qrPayload: "upi://pay?pa=9395065587@ybl&am=110000&cu=INR",
+          issuedAt: new Date().toISOString(),
+          reconciled: true,
+        },
+      ];
+      const invoice = testInvoices[0];
       const badPayload = {
         eventId: "EVT-BAD",
         provider: "UPI_BANK" as const,
@@ -221,7 +268,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
         timestamp: new Date().toISOString(),
       };
 
-      const result = verifyAndProcessWebhook(badPayload, INITIAL_CLIENT_INVOICES);
+      const result = verifyAndProcessWebhook(badPayload, testInvoices);
       assert.strictEqual(result.success, false);
       assert.ok(result.error?.includes("AMOUNT_MISMATCH"));
     });
@@ -229,8 +276,41 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
 
   describe("9. Revenue Growth & Repeat-Business Engine (§13, §14)", () => {
     it("should generate structured proposals for completed high-CSAT client projects", () => {
-      assert.ok(INITIAL_REPEAT_OPPORTUNITIES.length >= 2);
-      const opp = INITIAL_REPEAT_OPPORTUNITIES[0];
+      const testOpps = [
+        {
+          id: "REP-TEST-001",
+          clientId: "CLI-TEST-1",
+          clientName: "Test Merchant Partner",
+          previousProject: "POS & QR Billing Engine",
+          completedAt: new Date(Date.now() - 30 * 86400 * 1000).toISOString(),
+          csatRating: 5,
+          type: "MAINTENANCE_RETAINER" as const,
+          title: "Monthly Uptime SLA & Menu Sync Retainer",
+          rationale: "30 days live operation.",
+          proposedMonthlyInr: 15000,
+          expectedAnnualLtvInr: 180000,
+          approvalStatus: "PENDING_FOUNDER_APPROVAL" as const,
+          proposalDraft:
+            "Following your launch, we propose a Maintenance Retainer (₹15,000/mo) covering uptime SLA and menu syncing.",
+        },
+        {
+          id: "REP-TEST-002",
+          clientId: "CLI-TEST-2",
+          clientName: "Test Logistics Partner",
+          previousProject: "Geodesic Clustering Algorithm",
+          completedAt: new Date(Date.now() - 14 * 86400 * 1000).toISOString(),
+          csatRating: 4.8,
+          type: "ANALYTICS_DASHBOARD" as const,
+          title: "Fleet Route Telemetry Dashboard",
+          rationale: "Requested telemetry visibility.",
+          proposedMonthlyInr: 25000,
+          expectedAnnualLtvInr: 300000,
+          approvalStatus: "PENDING_FOUNDER_APPROVAL" as const,
+          proposalDraft:
+            "We prepared a Fleet Telemetry Dashboard for ₹25,000/month.",
+        },
+      ];
+      const opp = testOpps[0];
       const proposal = generateRepeatProposal(opp);
       assert.ok(proposal.length > 20);
       assert.ok(opp.csatRating >= 4.5);
@@ -345,7 +425,7 @@ describe("HDmaster Founder AI — Premium Capabilities Suite", () => {
       assert.ok(res!.actionCard.data.handoffCredentials.databaseUrl.includes("postgresql"));
     });
 
-    it("should generate standard fee direct KingPay UPI invoice card", async () => {
+    it("should generate 0% fee direct KingPay UPI invoice card", async () => {
       const res = await parseFounderQuery("generate invoice for client ₹250000", "9395065587@ybl");
       assert.strictEqual(res!.intent, "invoice_pay");
       assert.ok(res!.actionCard);

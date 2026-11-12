@@ -294,7 +294,7 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
             'Online 1-on-1',
             ${tutorSessionFeePaise},
             'HELD',
-            'https://meet.orderking.in/tutor-real-test',
+            'https://orderking.in/tutor',
             'Aakash Patel',
             '+91 98765 00000',
             'Cash flow statement mastery'

@@ -2,13 +2,19 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
+  Briefcase,
   Check,
+  Coffee,
+  Coins,
   Copy,
   Download,
-  Gift,
-  PartyPopper,
+  Flame,
+  Gem,
+  Palette,
+  QrCode,
   Share2,
   ShieldCheck,
+  Smartphone,
   Sparkles,
   Volume2,
   X,
@@ -37,7 +43,6 @@ type Props = {
 const LUXURY_THEMES: Array<{
   id: LuxuryTheme;
   name: string;
-  icon: string;
   cardBg: string;
   borderClass: string;
   accentText: string;
@@ -48,7 +53,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "classic_gold",
     name: "Classic Gold",
-    icon: "🪙",
     cardBg: "bg-gradient-to-b from-[#1C1504] via-[#2A1F07] to-[#120D02]",
     borderClass: "border-2 border-amber-400/90 shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
     accentText: "text-amber-400",
@@ -59,7 +63,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "festive_red",
     name: "Festive Red",
-    icon: "🧧",
     cardBg: "bg-gradient-to-b from-[#2B080C] via-[#3D0C12] to-[#1A0407]",
     borderClass: "border-2 border-rose-400/90 shadow-[0_12px_40px_rgba(244,63,94,0.35)]",
     accentText: "text-rose-400",
@@ -70,7 +73,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "celebration",
     name: "Celebration Purple",
-    icon: "🎂",
     cardBg: "bg-gradient-to-b from-[#1E112A] via-[#2D1A3E] to-[#130B1C]",
     borderClass: "border-2 border-purple-400/90 shadow-[0_12px_40px_rgba(192,132,252,0.35)]",
     accentText: "text-purple-300",
@@ -81,7 +83,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "festive_cyan",
     name: "Festive Cyan",
-    icon: "💎",
     cardBg: "bg-gradient-to-b from-[#081C1E] via-[#0E2C2E] to-[#041112]",
     borderClass: "border-2 border-cyan-400/90 shadow-[0_12px_40px_rgba(34,211,238,0.35)]",
     accentText: "text-cyan-300",
@@ -92,7 +93,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "business_blue",
     name: "Corporate Blue",
-    icon: "💼",
     cardBg: "bg-gradient-to-b from-[#0B1528] via-[#132347] to-[#070D1B]",
     borderClass: "border-2 border-blue-400/90 shadow-[0_12px_40px_rgba(59,130,246,0.35)]",
     accentText: "text-blue-300",
@@ -103,7 +103,6 @@ const LUXURY_THEMES: Array<{
   {
     id: "cozy_cafe",
     name: "Dining & Hospitality",
-    icon: "☕",
     cardBg: "bg-gradient-to-b from-[#24140D] via-[#351E14] to-[#170D08]",
     borderClass: "border-2 border-orange-400/90 shadow-[0_12px_40px_rgba(251,146,60,0.35)]",
     accentText: "text-orange-300",
@@ -113,14 +112,31 @@ const LUXURY_THEMES: Array<{
   },
 ];
 
+function ThemeIcon({ id, className = "size-4" }: { id: LuxuryTheme; className?: string }) {
+  switch (id) {
+    case "classic_gold":
+      return <Coins className={className} />;
+    case "festive_red":
+      return <Flame className={className} />;
+    case "celebration":
+      return <Sparkles className={className} />;
+    case "festive_cyan":
+      return <Gem className={className} />;
+    case "business_blue":
+      return <Briefcase className={className} />;
+    default:
+      return <Coffee className={className} />;
+  }
+}
+
 const NOTE_PRESETS = [
-  { label: "🎁 Birthday Gift", text: "Wishing you a wonderful and joyful birthday! 🎂" },
-  { label: "💍 Wedding Gift", text: "Warmest congratulations and best wishes on your wedding! 💍" },
-  { label: "✨ Seasonal Gift", text: "Warmest seasonal greetings and best wishes to you and family! ✨" },
-  { label: "🍲 Food & Dinner Split", text: "For our delicious dinner & feast! 🍲" },
-  { label: "☕ Chai Treat", text: "Chai and snacks treat on me! ☕" },
-  { label: "🏡 Rent & Dues", text: "Monthly rental & maintenance payment 🏡" },
-  { label: "💼 Professional Fee", text: "Payment for consultation & services rendered" },
+  { label: "Birthday Gift", text: "Wishing you a wonderful birthday." },
+  { label: "Wedding Gift", text: "Warmest congratulations on your wedding." },
+  { label: "Seasonal Gift", text: "Warmest seasonal greetings and best wishes." },
+  { label: "Food & Dinner Split", text: "Dinner and meal share payment." },
+  { label: "Chai Treat", text: "Tea and snacks settlement." },
+  { label: "Rent & Dues", text: "Monthly rental and maintenance payment." },
+  { label: "Professional Fee", text: "Payment for consultation and services rendered." },
 ];
 
 const QUICK_AMOUNTS = ["100", "250", "500", "1000", "2100", "5000"];
@@ -218,7 +234,7 @@ export function ReceiveMoneyQrStudio({
         utterance.rate = 1.0;
         utterance.pitch = 1.2;
         window.speechSynthesis.speak(utterance);
-        toast.success("🔊 Soundbox Audio Chime Triggered!");
+        toast.success("Soundbox audio chime triggered.");
       } catch {
         toast.info("Soundbox audio played.");
       }
@@ -231,7 +247,7 @@ export function ReceiveMoneyQrStudio({
       {isModal && (
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2">
-            <span className="text-xl">📲</span>
+            <QrCode className="size-5 text-amber-500" />
             <div>
               <h2 className="font-display font-black text-base sm:text-lg text-fg">
                 Receive Money &amp; Custom QR
@@ -268,21 +284,21 @@ export function ReceiveMoneyQrStudio({
             {/* Top Brand & Tagline */}
             <div className="relative z-10 space-y-1 mb-4">
               <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold border backdrop-blur-md shadow-xs mx-auto">
-                <span>{activeTheme.icon}</span>
+                <ThemeIcon id={activeTheme.id} className={`size-3.5 ${activeTheme.accentText}`} />
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
-              <h3 className="font-display text-xl font-black text-fg tracking-tight">
+              <h3 className="font-display text-xl font-black text-white tracking-tight">
                 King<span className="text-amber-400">Pay</span> UPI QR
               </h3>
-              <p className="text-xs text-fg/80 font-medium">
+              <p className="text-xs text-white/80 font-medium">
                 {payeeName || "OrderKing User"}
               </p>
-              <div className="flex items-center justify-center gap-1 text-[11px] font-mono text-fg/70">
+              <div className="flex items-center justify-center gap-1 text-[11px] font-mono text-white/70">
                 <span>{upiId}</span>
                 <button
                   type="button"
                   onClick={handleCopyUpi}
-                  className="p-1 hover:text-fg transition"
+                  className="p-1 hover:text-amber-300 transition"
                   title="Copy UPI ID"
                 >
                   {copiedUpi ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
@@ -312,18 +328,18 @@ export function ReceiveMoneyQrStudio({
             {/* Amount & Custom Note Display on Card */}
             <div className="relative z-10 mt-4 space-y-1">
               {amount ? (
-                <div className="font-mono text-2xl font-black text-fg tracking-tight flex items-center justify-center gap-1">
+                <div className="font-mono text-2xl font-black text-white tracking-tight flex items-center justify-center gap-1">
                   <span className="text-amber-400 text-xl">₹</span>
                   <span>{Number(amount).toLocaleString("en-IN")}.00</span>
                 </div>
               ) : (
-                <div className="text-xs text-fg/70 italic">
+                <div className="text-xs text-white/70 italic">
                   Payer enters any amount
                 </div>
               )}
 
               {note && (
-                <p className="text-xs text-fg/90 bg-white/10 rounded-xl px-3 py-1.5 backdrop-blur-md mx-auto max-w-xs border border-white/10 font-medium">
+                <p className="text-xs text-white/90 bg-white/10 rounded-xl px-3 py-1.5 backdrop-blur-md mx-auto max-w-xs border border-white/10 font-medium">
                   "{note}"
                 </p>
               )}
@@ -331,10 +347,10 @@ export function ReceiveMoneyQrStudio({
 
             {/* Accepted Payment Apps Banner */}
             <div className="relative z-10 mt-5 pt-3 border-t border-white/15 flex flex-col items-center gap-1.5">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-fg/70">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-white/70">
                 Scan with any app
               </span>
-              <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-black text-fg/90">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-black text-white/90">
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">GPay</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">PhonePe</span>
                 <span className="bg-white/15 px-2 py-0.5 rounded-md border border-white/10">Paytm</span>
@@ -362,19 +378,19 @@ export function ReceiveMoneyQrStudio({
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "tez://upi/pay")}
                 className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
-                <span>⚡</span> GPay
+                <Zap className="size-3.5 text-amber-500" /> GPay
               </a>
               <a
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "phonepe://pay")}
                 className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
-                <span>🟣</span> PhonePe
+                <Smartphone className="size-3.5 text-purple-500" /> PhonePe
               </a>
               <a
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "paytmmp://pay")}
                 className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
-                <span>🔵</span> Paytm
+                <Smartphone className="size-3.5 text-sky-500" /> Paytm
               </a>
             </div>
 
@@ -424,8 +440,9 @@ export function ReceiveMoneyQrStudio({
         <div className="lg:col-span-6 space-y-5">
           {/* 1. Select Theme Style */}
           <div>
-            <label className="block text-xs font-black uppercase tracking-wider text-muted mb-2">
-              🎨 1. Choose Theme Style
+            <label className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted mb-2">
+              <Palette className="size-3.5 text-amber-500" />
+              <span>1. Choose Theme Style</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
               {LUXURY_THEMES.map((theme) => (
@@ -439,7 +456,7 @@ export function ReceiveMoneyQrStudio({
                       : "border-border bg-surface hover:bg-surface-2"
                   }`}
                 >
-                  <span className="text-xl">{theme.icon}</span>
+                  <ThemeIcon id={theme.id} className="size-5 text-amber-500" />
                   <div className="mt-1">
                     <span className="block text-xs font-bold text-fg leading-tight">
                       {theme.name}
@@ -454,7 +471,7 @@ export function ReceiveMoneyQrStudio({
           <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-black uppercase tracking-wider text-muted">
-                💰 2. Set Amount (Optional)
+                2. Set Amount (Optional)
               </label>
               {amount && (
                 <button
@@ -489,7 +506,7 @@ export function ReceiveMoneyQrStudio({
                   onClick={() => setAmount(amt)}
                   className={`rounded-full px-3 py-1 text-xs font-bold font-mono transition ${
                     amount === amt
-                      ? "bg-primary text-fg"
+                      ? "bg-primary text-primary-fg"
                       : "bg-surface-2 text-fg hover:bg-surface-3"
                   }`}
                 >
@@ -502,7 +519,7 @@ export function ReceiveMoneyQrStudio({
           {/* 3. Customizable Notes & Gifting Messages */}
           <div className="rounded-2xl border border-border bg-surface p-4 space-y-3">
             <label className="block text-xs font-black uppercase tracking-wider text-muted">
-              ✍️ 3. Payment Purpose / Gifting Note
+              3. Payment Purpose / Gifting Note
             </label>
             <input
               type="text"
@@ -535,7 +552,7 @@ export function ReceiveMoneyQrStudio({
           {/* 4. Display Name / Business Name */}
           <div className="rounded-2xl border border-border bg-surface p-4 space-y-2">
             <label className="block text-xs font-black uppercase tracking-wider text-muted">
-              🏷️ 4. Payee Display Name
+              4. Payee Display Name
             </label>
             <input
               type="text"

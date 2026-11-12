@@ -552,7 +552,7 @@ export async function searchTboFlights(
     return {
       success: false,
       flights: [],
-      error: "TBO credentials pending. Awaiting TBO account activation for Application #187051.",
+      error: "Live TBO B2B Air API credentials are not configured in this environment (Application #187051).",
     };
   }
 
@@ -607,7 +607,7 @@ export async function fareQuoteTbo(
   if (!creds) {
     return {
       success: false,
-      error: "TBO credentials pending. Application #187051 is under review.",
+      error: "Live TBO B2B API credentials are not configured in this environment (Application #187051).",
     };
   }
 
@@ -666,7 +666,7 @@ export async function fareRuleTbo(
 }> {
   const creds = getTboCredentials();
   if (!creds) {
-    return { success: false, error: "TBO credentials pending. Application #187051 is under review." };
+    return { success: false, error: "Live TBO B2B API credentials are not configured in this environment (Application #187051)." };
   }
 
   let authToken = token;
@@ -715,7 +715,7 @@ export async function ssrTbo(
 }> {
   const creds = getTboCredentials();
   if (!creds) {
-    return { success: false, error: "TBO credentials pending. Application #187051 is under review." };
+    return { success: false, error: "Live TBO B2B API credentials are not configured in this environment (Application #187051)." };
   }
 
   let authToken = token;
@@ -767,7 +767,7 @@ export async function ticketTboFlight(
 }> {
   const creds = getTboCredentials();
   if (!creds) {
-    return { success: false, error: "TBO credentials pending. Application #187051 is under review." };
+    return { success: false, error: "Live TBO B2B API credentials are not configured in this environment (Application #187051)." };
   }
 
   let authToken = token;
@@ -830,7 +830,7 @@ export async function bookTboFlight(
 }> {
   const creds = getTboCredentials();
   if (!creds) {
-    return { success: false, error: "TBO credentials pending. Application #187051 is under review." };
+    return { success: false, error: "Live TBO B2B API credentials are not configured in this environment (Application #187051)." };
   }
 
   let authToken = token;
@@ -892,7 +892,7 @@ export async function getTboBookingDetails(
 }> {
   const creds = getTboCredentials();
   if (!creds) {
-    return { success: false, error: "TBO credentials pending. Application #187051 is under review." };
+    return { success: false, error: "Live TBO B2B API credentials are not configured in this environment (Application #187051)." };
   }
 
   let authToken = token;
@@ -945,7 +945,7 @@ export async function searchTboRail(
     return {
       success: false,
       trains: [],
-      error: "TBO Rail API pending credentials. Application #187051 is under review.",
+      error: "Live TBO Rail API credentials are not configured in this environment (Application #187051).",
     };
   }
 

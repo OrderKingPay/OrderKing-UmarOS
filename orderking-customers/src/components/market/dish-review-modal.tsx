@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Star, Camera, ThumbsUp, ThumbsDown, X, Check, Heart, MessageSquare } from "lucide-react";
+import { Star, Camera, ThumbsUp, ThumbsDown, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 
 export interface DishReviewModalProps {
@@ -10,18 +9,15 @@ export interface DishReviewModalProps {
   orderId?: string;
   restaurantName?: string;
   items?: Array<{ id: string; name: string }>;
-  onSubmit?: (reviewData: any) => void;
+  onSubmit?: (reviewData: any) => void | Promise<void>;
 }
 
 export function DishReviewModal({
   isOpen = false,
   onClose,
-  orderId = "OK-94281",
-  restaurantName = "Royal Biryani House",
-  items = [
-    { id: "item-1", name: "Hyderabadi Chicken Dum Biryani" },
-    { id: "item-2", name: "Butter Garlic Naan" },
-  ],
+  orderId = "",
+  restaurantName = "Partner Restaurant",
+  items = [],
   onSubmit,
 }: DishReviewModalProps) {
   const [open, setOpen] = useState(isOpen);
@@ -43,7 +39,7 @@ export function DishReviewModal({
     "Spill-proof packaging",
     "Fresh portion",
     "Good quality",
-    "Fast delivery",
+    "On-time delivery",
     "Value for money",
   ];
 
@@ -64,30 +60,35 @@ export function DishReviewModal({
     reader.onload = () => {
       if (typeof reader.result === "string") {
         setPhotos((prev) => [...prev, reader.result as string]);
-        toast.success("Photo attached!");
+        toast.success("Photo attached.");
       }
     };
     reader.readAsDataURL(file);
     e.target.value = "";
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      toast.success("Review submitted! ₹25 Digital Gold reward added to your passbook.");
-      onSubmit?.({
-        orderId,
-        foodRating,
-        deliveryRating,
-        selectedTags,
-        dishOpinions,
-        reviewText,
-        photos,
-      });
+    try {
+      await Promise.resolve(
+        onSubmit?.({
+          orderId,
+          foodRating,
+          deliveryRating,
+          selectedTags,
+          dishOpinions,
+          reviewText,
+          photos,
+        })
+      );
+      toast.success("Review submitted. Thank you for your feedback.");
       setOpen(false);
       onClose?.();
-    }, 800);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not submit review.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!open && !isOpen) return null;
@@ -99,7 +100,10 @@ export function DishReviewModal({
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-5 py-4">
           <div>
             <h3 className="font-display text-base font-bold text-fg">Rate Your Food Experience</h3>
-            <p className="text-xs text-muted">Order #{orderId} · {restaurantName}</p>
+            <p className="text-xs text-muted">
+              {orderId ? `Order #${orderId} · ` : ""}
+              {restaurantName}
+            </p>
           </div>
           <button
             type="button"
@@ -137,11 +141,11 @@ export function DishReviewModal({
               ))}
             </div>
             <p className="text-[11px] font-semibold text-primary">
-              {foodRating === 5 && "⭐ Exceptional! Worth ordering again"}
-              {foodRating === 4 && "👍 Good taste and portion"}
-              {foodRating === 3 && "😐 Average food"}
-              {foodRating === 2 && "👎 Below expectations"}
-              {foodRating === 1 && "⚠️ Poor quality"}
+              {foodRating === 5 && "Exceptional quality and taste"}
+              {foodRating === 4 && "Good taste and portion"}
+              {foodRating === 3 && "Average food"}
+              {foodRating === 2 && "Below expectations"}
+              {foodRating === 1 && "Poor quality"}
             </p>
           </div>
 
@@ -235,8 +239,9 @@ export function DishReviewModal({
                   <img src={src} alt="" className="size-full object-cover" loading="lazy" decoding="async" />
                   <button
                     type="button"
+                    aria-label="Remove photo"
                     onClick={() => setPhotos((prev) => prev.filter((_, i) => i !== idx))}
-                    className="absolute top-0 right-0 bg-white/70 p-0.5 text-white"
+                    className="absolute top-0 right-0 bg-slate-900/80 p-0.5 text-white hover:bg-slate-900"
                   >
                     <X className="size-3" />
                   </button>
@@ -255,7 +260,7 @@ export function DishReviewModal({
                 </label>
               )}
             </div>
-            <p className="text-[10px] text-muted mt-1">Get verified Foodie badge by sharing photos</p>
+            <p className="text-[10px] text-muted mt-1">Photos help other customers see dish portion and presentation</p>
           </div>
 
           {/* Delivery Partner Rating */}
@@ -285,7 +290,7 @@ export function DishReviewModal({
 
         {/* Footer */}
         <div className="border-t border-border bg-surface px-5 py-3.5 flex items-center justify-between">
-          <span className="text-[11px] text-muted">Earns reward points</span>
+          <span className="text-[11px] text-muted">Helps improve restaurant and delivery quality</span>
           <Button onClick={handleSubmit} disabled={submitting}>
             {submitting ? "Posting..." : "Submit Review"}
           </Button>

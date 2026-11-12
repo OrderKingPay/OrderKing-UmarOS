@@ -355,19 +355,19 @@ export const RIDER_AFFILIATE_PARTNERS = {
   },
   restPoints: [
     {
-      name: "Koramangala Partner Hub (Empire Restaurant)",
+      name: "Koramangala Partner Hub",
       city: "Bengaluru",
-      amenities: ["Free RO Chilled Water", "65W Phone Charging Docks", "Sanitized Washroom", "Shaded Parking"],
+      amenities: ["water", "charging", "Sanitized Washroom", "Shaded Parking"],
     },
     {
-      name: "Indiranagar Cloud Kitchen Hub (Faasos / Behrouz)",
+      name: "Indiranagar Partner Hub",
       city: "Bengaluru",
-      amenities: ["Free RO Drinking Water", "Fast Phone Charging", "Restroom Access", "Air Conditioned Bay"],
+      amenities: ["water", "charging", "Restroom Access", "Shaded Waiting Area"],
     },
     {
-      name: "DLF Cyber Hub Partner Lounge (Haldiram's Express)",
+      name: "DLF Cyber Hub Partner Lounge",
       city: "Gurugram",
-      amenities: ["Free Purified Water", "Mobile Charging Stations", "Clean Restrooms", "Discounted Partner Meals"],
+      amenities: ["water", "charging", "Clean Restrooms", "Partner Break Area"],
     },
   ],
 };

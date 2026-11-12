@@ -51,7 +51,6 @@ export function DirectUpiIntentModal({
   const [copiedUpi, setCopiedUpi] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [timeRemainingSeconds, setTimeRemainingSeconds] = useState(300); // 5 minute dynamic window
-  const [isVerifying, setIsVerifying] = useState(false);
 
   const amountRupees = orderTotalPaise / 100;
   const transactionRef = `OKUPI-${orderPublicId}-${Date.now().toString().slice(-4)}`;
@@ -109,7 +108,7 @@ export function DirectUpiIntentModal({
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       void navigator.clipboard.writeText(founderVpa);
       setCopiedUpi(true);
-      toast.success("Founder VPA copied to clipboard!");
+      toast.success("UPI ID copied to clipboard!");
       setTimeout(() => setCopiedUpi(false), 2000);
     }
   };
@@ -142,15 +141,11 @@ export function DirectUpiIntentModal({
   };
 
   const handleConfirmedPaid = () => {
-    setIsVerifying(true);
-    setTimeout(() => {
-      setIsVerifying(false);
-      toast.success("Direct UPI payment registered! Bank settlement confirmed at standard fee.");
-      if (onPaymentConfirmed) {
-        onPaymentConfirmed(transactionRef);
-      }
-      onClose();
-    }, 900);
+    toast.success("UPI payment reference recorded. Bank reconciliation updates automatically upon confirmation.");
+    if (onPaymentConfirmed) {
+      onPaymentConfirmed(transactionRef);
+    }
+    onClose();
   };
 
   return (
@@ -172,7 +167,7 @@ export function DirectUpiIntentModal({
             </h2>
             <p className="text-xs text-zinc-300 flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-emerald-400" />
-              <span>100% of money settles directly into founder bank account</span>
+              <span>Direct merchant settlement via NPCI UPI</span>
             </p>
           </div>
 
@@ -297,7 +292,7 @@ export function DirectUpiIntentModal({
                 <span>Scan Dynamic BharatQR</span>
               </div>
               <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2 py-0.5 text-[9px] font-black uppercase text-emerald-400">
-                0.0% MDR Bypass
+                Direct NPCI UPI
               </span>
             </div>
 
@@ -312,7 +307,7 @@ export function DirectUpiIntentModal({
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                9395065587@ybl (Founder)
+                9395065587@ybl (Primary UPI)
               </button>
               <button
                 type="button"
@@ -423,22 +418,12 @@ export function DirectUpiIntentModal({
 
             <Button
               type="button"
-              disabled={isVerifying}
               onClick={handleConfirmedPaid}
               className="flex-2 h-12 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2"
             >
-              {isVerifying ? (
-                <span className="flex items-center gap-2">
-                  <span className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>Verifying NPCI Transfer...</span>
-                </span>
-              ) : (
-                <>
-                  <Check className="size-4 stroke-[3]" />
-                  <span>I Have Paid ₹{amountRupees.toFixed(2)}</span>
-                  <ArrowRight className="size-4" />
-                </>
-              )}
+              <Check className="size-4 stroke-[3]" />
+              <span>I Have Paid ₹{amountRupees.toFixed(2)}</span>
+              <ArrowRight className="size-4" />
             </Button>
           </div>
         </div>

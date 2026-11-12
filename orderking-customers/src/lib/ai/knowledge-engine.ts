@@ -65,7 +65,7 @@ export const INITIAL_KNOWLEDGE_DOCUMENTS: KnowledgeDocument[] = [
     title: "OrderKing Sovereign Architecture Blueprint",
     category: "SPEC",
     content:
-      "OrderKing delivers a custom commission food delivery and hyperlocal logistics architecture. It includes customer ordering, rider dispatch with geodesic clustering, restaurant kitchen display systems, and King Pay UPI escrow settlement.",
+      "OrderKing delivers a 0% commission food delivery and hyperlocal logistics architecture. It includes customer ordering, rider dispatch with geodesic clustering, restaurant kitchen display systems, and KingPay UPI escrow settlement.",
     tokens: ["orderking", "sovereign", "architecture", "commission", "food", "delivery", "logistics", "rider", "dispatch", "kds", "upi", "escrow"],
     uploadedAt: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
     author: "Founder Direct",
@@ -113,16 +113,8 @@ export const INITIAL_MEMORY_ENTRIES: MemoryEntry[] = [
     id: "MEM-003",
     layer: "BUSINESS",
     key: "commission_policy",
-    value: "Strict custom commission on food delivery. Revenue generated via King Pay gateway, POS software licenses, and priority merchant tools.",
+    value: "Strict 0% commission on food delivery. Revenue generated via KingPay services, POS software licenses, and merchant tools.",
     tags: ["business_model", "monetization"],
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "MEM-004",
-    layer: "CLIENT",
-    key: "client_royal_feast",
-    value: "Royal Feast Cloud Kitchen: 3 outlets in Karimganj, requested POS integration and automated WhatsApp order alerts.",
-    tags: ["crm", "client", "karimganj"],
     updatedAt: new Date().toISOString(),
   },
   {

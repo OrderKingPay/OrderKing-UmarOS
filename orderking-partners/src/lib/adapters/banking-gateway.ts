@@ -131,7 +131,7 @@ async function executeRazorpayXPennyDrop(
     ""
   ).trim();
 
-  if (!keyId || !keySecret) {
+  if (!keyId || !keySecret || !accountNumber) {
     return null;
   }
 
@@ -443,12 +443,12 @@ export async function executePartnerBankingPayout(params: {
     ""
   ).trim();
 
-  if (!keyId || !keySecret) {
+  if (!keyId || !keySecret || !accountNumber) {
     console.error(`[Partner Banking] Live credentials not set for payout ${params.referenceId}.`);
     return {
       success: false,
       status: "failed",
-      error: "RazorpayX banking credentials (RAZORPAYX_KEY_ID / RAZORPAY_KEY_ID) not configured in environment.",
+      error: "RazorpayX banking credentials (RAZORPAYX_KEY_ID, RAZORPAYX_KEY_SECRET, RAZORPAYX_ACCOUNT_NUMBER) not configured in environment.",
     };
   }
 
