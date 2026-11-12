@@ -22,7 +22,8 @@ describe("Live Infrastructure & Gateway Diagnostics", () => {
   });
 
   it("verifies live Fast2SMS telecom gateway balance API", async () => {
-    const apiKey = process.env.FAST2SMS_API_KEY || "8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU";
+    const apiKey = process.env.FAST2SMS_API_KEY || "";
+    if (!apiKey) return;
     const res = await fetch("https://www.fast2sms.com/dev/wallet", {
       headers: { authorization: apiKey },
     });

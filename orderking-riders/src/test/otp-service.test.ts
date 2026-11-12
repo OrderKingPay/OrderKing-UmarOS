@@ -178,7 +178,7 @@ describe('OrderKing Riders Telecom OTP Service (services/otp.ts)', () => {
 
   describe('4. sendOtp2Factor (Fallback Gateway with Key Collision Guard)', () => {
     it('gracefully skips 2Factor when TWOFACTOR_API_KEY matches FAST2SMS_API_KEY', async () => {
-      const sharedKey = '8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU';
+      const sharedKey = "test-shared-gateway-key";
       process.env.FAST2SMS_API_KEY = sharedKey;
       process.env.TWOFACTOR_API_KEY = sharedKey;
 

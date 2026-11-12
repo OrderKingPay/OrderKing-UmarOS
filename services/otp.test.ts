@@ -53,7 +53,7 @@ describe('Root Telecom OTP Service (services/otp.ts)', () => {
 
   describe('2. sendOtp2Factor (Primary 2Factor.in Official Transactional Gateway)', () => {
     it('returns false and skips dispatch when TWOFACTOR_API_KEY equals FAST2SMS_API_KEY', async () => {
-      const sharedKey = '8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU';
+      const sharedKey = "test-shared-gateway-key";
       process.env.FAST2SMS_API_KEY = sharedKey;
       process.env.TWOFACTOR_API_KEY = sharedKey;
 
