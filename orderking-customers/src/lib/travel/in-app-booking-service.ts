@@ -1,5 +1,5 @@
-import { PAISE_PER_RUPEE } from "../money";
-import { supabase } from "../db-cloud";
+import { PAISE_PER_RUPEE } from "@/lib/money";
+import { supabase } from "@/lib/db-cloud";
 import {
   isIrctcPspAuthenticated,
   assertTrainPaymentPermitted,
