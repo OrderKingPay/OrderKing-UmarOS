@@ -410,9 +410,13 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
   };
 
   // Dual Injection Router:
-  // 1. Domestic Indian routes -> Prioritize Travelpayouts (Indian settlement)
-  // 2. International routes -> Prioritize Duffel (Global GDS)
+  // 1. Domestic Indian routes -> Prioritize TBO (#187051) -> Travelpayouts -> Duffel -> Kiwi
+  // 2. International routes -> Prioritize TBO (#187051) -> Duffel -> Travelpayouts -> Kiwi
   if (isDomestic) {
+    const tboFlights = await queryTbo();
+    if (tboFlights && tboFlights.length > 0) {
+      return { success: true, data: tboFlights, source: "tbo_air_gds", count: tboFlights.length, origin, destination, departureDate };
+    }
     const tpFlights = await queryTravelpayouts();
     if (tpFlights && tpFlights.length > 0) {
       return { success: true, data: tpFlights, source: "travelpayouts", count: tpFlights.length, origin, destination, departureDate };
@@ -426,6 +430,10 @@ export async function searchLiveFlights(req: FlightSearchRequest): Promise<Fligh
       return { success: true, data: kiwiFlights, source: "kiwi_tequila", count: kiwiFlights.length, origin, destination, departureDate };
     }
   } else {
+    const tboFlights = await queryTbo();
+    if (tboFlights && tboFlights.length > 0) {
+      return { success: true, data: tboFlights, source: "tbo_air_gds", count: tboFlights.length, origin, destination, departureDate };
+    }
     const duffelFlights = await queryDuffel();
     if (duffelFlights && duffelFlights.length > 0) {
       return { success: true, data: duffelFlights, source: "duffel_v2", count: duffelFlights.length, origin, destination, departureDate };
