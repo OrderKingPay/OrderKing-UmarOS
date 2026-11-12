@@ -506,11 +506,13 @@ export async function fetchLiveFlightQuotes(
 
   if (creds) {
     try {
+      const tboCabinClass: "Economy" | "PremiumEconomy" | "Business" =
+        cabinClass === "Premium Economy" ? "PremiumEconomy" : cabinClass;
       const tboQuery: TboFlightSearchQuery = {
         origin: fromCode,
         destination: toCode,
         adultCount,
-        cabinClass,
+        cabinClass: tboCabinClass,
         journeyType: "OneWay",
         preferredDepartureTime: `${date}T00:00:00`,
       };

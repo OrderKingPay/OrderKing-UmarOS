@@ -215,7 +215,18 @@ export function CustomerShell({
         <div className="flex items-center justify-between gap-1.5 sm:gap-3">
           {/* Row 1 Left: OrderKing or KingPay Logo (context-aware) + Delivery Address Selector */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-            <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
+            {isKingPayDomain ? (
+              <Link to="/travel" className="flex items-center gap-1.5 no-underline group shrink-0">
+                <div className="relative">
+                  <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                </div>
+                <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-amber-300" : "text-amber-950")}>
+                  KingPay
+                </span>
+              </Link>
+            ) : (
+              <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
                 <div className="relative">
                   <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
                   <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
@@ -224,6 +235,7 @@ export function CustomerShell({
                   OrderKing
                 </span>
               </Link>
+            )}
 
             {/* Delivery Address Selector (Location Pin): strictly for food delivery, hidden on KingPay/Travel */}
             {!isKingPayDomain && (
@@ -323,8 +335,22 @@ export function CustomerShell({
               </span>
             </button>
 
-            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
+            {/* Gold Crown Wallet - Direct link to KingPay */}
             <Link
+              to="/kingpay"
+              className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/15 border border-amber-400/80 text-amber-300 hover:border-amber-300 shadow-2xs hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+              title="OrderKing Gold Crown Wallet &amp; KingPay"
+              aria-label="Gold Crown Wallet"
+            >
+              <Crown className="size-3.5 text-amber-300 fill-amber-400" />
+              <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
+                Wallet
+              </span>
+            </Link>
+
+            {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
+            {!isKingPayDomain && (
+              <Link
                 to="/cart"
                 className={cn(
                   "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
@@ -342,6 +368,7 @@ export function CustomerShell({
                   </span>
                 )}
               </Link>
+            )}
 
             {/* User profile avatar / standard top-right user menu with fallback avatar */}
             {isPending ? (
@@ -415,7 +442,7 @@ export function CustomerShell({
                       </Link>
 
                       <Link
-                        to="/account"
+                        to="/kingpay"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                       >
@@ -433,7 +460,7 @@ export function CustomerShell({
                       </Link>
 
                       <Link
-                        to="/dining"
+                        to="/tutor-jobs"
                         onClick={() => setUserMenuOpen(false)}
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                       >
