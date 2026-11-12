@@ -110,9 +110,9 @@ export const EMERGENCY_OFFLINE_HTML = `<!DOCTYPE html>
     <h1>Low Network Signal Detected</h1>
     <p>Cell tower connectivity dropped, but OrderKing has safely secured your session locally.</p>
     <div class="features">
-      <div class="feature-item"><span class="check">✓</span> Active cart & selections preserved</div>
-      <div class="feature-item"><span class="check">✓</span> Rider/order actions queued in offline outbox</div>
-      <div class="feature-item"><span class="check">✓</span> Auto-sync will replay once signal returns</div>
+      <div class="feature-item"><span class="check">+</span> Active cart & selections preserved</div>
+      <div class="feature-item"><span class="check">+</span> Rider/order actions queued in offline outbox</div>
+      <div class="feature-item"><span class="check">+</span> Auto-sync will replay once signal returns</div>
     </div>
     <button onclick="window.location.reload()">Retry Connection</button>
   </div>

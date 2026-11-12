@@ -187,7 +187,7 @@ function MyTripsPage() {
                       • <strong>TDR Grounds:</strong> Train delayed &gt;3 hrs, coach AC failure, route diversion.<br />
                       • <strong>Audit Authority:</strong> Railway Zonal CCM (Claims) with 30-90 days verification.<br />
                       • <strong>Settlement Timeline:</strong> <strong>T+2 to T+5 Banking Days</strong> directly to source payment gateway.<br />
-                      • <strong>OrderKing Guarantee:</strong> Strictly ₹0 platform cancellation penalty.
+                      • <strong>OrderKing Policy:</strong> Strictly ₹0 platform cancellation penalty.
                     </p>
                   </div>
                 </div>
@@ -214,11 +214,11 @@ function MyTripsPage() {
                             </span>
                             <span className="text-xs font-bold text-slate-900">{t.serviceTitle}</span>
                             <span className="text-[10px] text-emerald-600 font-extrabold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                              ✓ {t.status}
+                              {t.status}
                             </span>
                           </div>
                           <p className="text-sm font-black text-slate-800 mt-1">
-                            {t.origin.city} ➔ {t.destination.city}
+                            {t.origin.city} to {t.destination.city}
                           </p>
                           <p className="text-xs text-slate-500">
                             {t.origin.departureDate} at {t.origin.departureTime} · {t.passengers.length} Passenger{t.passengers.length > 1 ? "s" : ""} · {t.classOrTier}
@@ -328,7 +328,7 @@ function MyTripsPage() {
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium">
-                    {pnrData.originStationCode || "NDLS"} ➔ {pnrData.destinationStationCode || "DEST"} · {pnrData.journeyClass || "General"}
+                    {pnrData.originStationCode || "NDLS"} to {pnrData.destinationStationCode || "DEST"} · {pnrData.journeyClass || "General"}
                   </p>
                   {Array.isArray(pnrData?.passengers) && pnrData.passengers.length > 0 && (
                     <div className="pt-2 border-t border-emerald-200 space-y-1">
@@ -393,7 +393,7 @@ function MyTripsPage() {
                     </span>
                   </div>
                   <p className="text-slate-600 font-medium">
-                    {flightData.originIata || "DEP"} ➔ {flightData.destinationIata || "ARR"} · {flightData.terminal || "Terminal TBA"}
+                    {flightData.originIata || "DEP"} to {flightData.destinationIata || "ARR"} · {flightData.terminal || "Terminal TBA"}
                   </p>
                   <div className="pt-2 border-t border-cyan-200 grid grid-cols-2 gap-2 text-slate-800">
                     <div className="bg-white p-2 rounded-lg border border-cyan-100">

@@ -135,12 +135,13 @@ export function FlightBookingEngine({
           {isDomesticIndianRoute(originCode, destinationCode) ? (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/30 px-3 py-1 text-xs font-bold text-emerald-300">
               <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              🇮🇳 Domestic Indian Route · Travelpayouts Direct INR Settlement (Verified Airline Fares · Marker #{TP_MARKER})
+              Domestic Indian Route · Travelpayouts Direct INR Settlement (Verified Airline Fares · Marker #{TP_MARKER})
             </div>
           ) : (
             <div className="inline-flex items-center gap-1.5 rounded-full bg-sky-500/15 border border-sky-400/30 px-3 py-1 text-xs font-bold text-sky-300">
               <span className="size-2 rounded-full bg-sky-400 animate-pulse" />
-              🌐 International Route · Duffel Global GDS &amp; Multi-Currency Settlement
+              <Globe className="size-3.5 text-sky-400" />
+              International Route · Duffel Global GDS &amp; Multi-Currency Settlement
             </div>
           )}
         </div>
@@ -399,7 +400,7 @@ export function FlightBookingEngine({
                       <CheckCircle2 className="size-3.5" /> Official Carrier Fare
                     </span>
                     <span className="flex items-center gap-1 text-amber-600 font-bold">
-                      <Coins className="size-3.5" /> Earn Cashback & Discounts
+                      <Coins className="size-3.5" /> Official Airline Fare
                     </span>
                   </div>
                 </div>
@@ -427,7 +428,7 @@ export function FlightBookingEngine({
                       rel="noopener noreferrer"
                       onClick={() => {
                         toast.success(
-                          `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} ➔ ${deepLink.toCode}...`
+                          `Redirecting to official ${deepLink.carrierName} portal (${deepLink.portalName}) for ${deepLink.fromCode} to ${deepLink.toCode}...`
                         );
                       }}
                       className="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black text-xs shadow-md shadow-sky-600/20 transition-all hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto text-center"

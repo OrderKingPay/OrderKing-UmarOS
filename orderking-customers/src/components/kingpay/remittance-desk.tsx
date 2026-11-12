@@ -52,7 +52,7 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
     name: "Saudi Riyal",
     symbol: "﷼",
     country: "Saudi Arabia",
-    flagEmoji: "🇸🇦",
+    flagEmoji: "SA",
     defaultAmount: 1000,
     presets: [500, 1000, 2500, 5000],
   },
@@ -61,7 +61,7 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
     name: "UAE Dirham",
     symbol: "د.إ",
     country: "United Arab Emirates",
-    flagEmoji: "🇦🇪",
+    flagEmoji: "AE",
     defaultAmount: 1000,
     presets: [500, 1000, 2000, 5000],
   },
@@ -70,7 +70,7 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
     name: "US Dollar",
     symbol: "$",
     country: "United States / Global",
-    flagEmoji: "🇺🇸",
+    flagEmoji: "US",
     defaultAmount: 500,
     presets: [250, 500, 1000, 2500],
   },
@@ -79,7 +79,7 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
     name: "Qatari Riyal",
     symbol: "ر.ق",
     country: "Qatar",
-    flagEmoji: "🇶🇦",
+    flagEmoji: "QA",
     defaultAmount: 1000,
     presets: [500, 1000, 2000, 4000],
   },
@@ -88,7 +88,7 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
     name: "British Pound",
     symbol: "£",
     country: "United Kingdom",
-    flagEmoji: "🇬🇧",
+    flagEmoji: "GB",
     defaultAmount: 400,
     presets: [200, 400, 800, 1500],
   },
@@ -108,7 +108,7 @@ const TRADITIONAL_BANK_SPREAD_PERCENT = 3.8;
 
 // Founder's Transparent PA-CB Markup (Only 0.45%)
 export const FOUNDER_FX_MARKUP_PERCENT = 0.45;
-export const PACB_REGULATORY_FEE = 0.0; // Promotional standard fee under PA-CB
+export const PACB_REGULATORY_FEE = 0.0; // PA-CB regulatory fee
 
 export type PayoutMethodIndia = "UPI" | "BANK";
 export type PayoutMethodBangladesh = "BKASH" | "BANK";
@@ -340,7 +340,7 @@ export function RemittanceDesk() {
                         : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                     )}
                   >
-                    <span className="text-base sm:text-lg block">{cur.flagEmoji}</span>
+                    <span className="inline-flex items-center justify-center rounded-md bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-amber-300">{cur.flagEmoji}</span>
                     <span className="text-xs font-black block mt-0.5">{cur.code}</span>
                     <span className="text-[9px] text-slate-400 block truncate">{cur.name.split(" ")[0]}</span>
                   </button>
@@ -365,10 +365,10 @@ export function RemittanceDesk() {
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                 )}
               >
-                <span className="text-2xl">🇮🇳</span>
+                <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-400/30 text-xs font-black text-amber-300">IN</span>
                 <div>
                   <p className="text-xs font-black">India (INR • ₹)</p>
-                  <p className="text-[10px] text-slate-400">Instant UPI &amp; Bank IMPS</p>
+                  <p className="text-[10px] text-slate-400">UPI &amp; Bank IMPS</p>
                 </div>
               </button>
 
@@ -382,7 +382,7 @@ export function RemittanceDesk() {
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                 )}
               >
-                <span className="text-2xl">🇧🇩</span>
+                <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-400/30 text-xs font-black text-emerald-300">BD</span>
                 <div>
                   <p className="text-xs font-black">Bangladesh (BDT • ৳)</p>
                   <p className="text-[10px] text-slate-400">bKash Mobile &amp; Bank Wire</p>
@@ -459,7 +459,7 @@ export function RemittanceDesk() {
             <div className="flex justify-between text-slate-400">
               <span>PA-CB Cross-Border Regulatory Fee:</span>
               <span className="font-mono text-emerald-400 font-bold">
-                ₹0.00 (Promo Zero Surcharge)
+                ₹0.00
               </span>
             </div>
 

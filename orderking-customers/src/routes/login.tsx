@@ -263,7 +263,7 @@ function Login() {
                   </label>
                   <div className="flex rounded-2xl border-2 border-stone-200 bg-stone-50/70 focus-within:border-amber-500 focus-within:bg-white overflow-hidden">
                     <span className="flex items-center gap-1 bg-stone-100 px-3.5 text-sm font-black text-stone-800 border-r border-stone-200">
-                      🇮🇳 +91
+                      +91
                     </span>
                     <input
                       type="tel"

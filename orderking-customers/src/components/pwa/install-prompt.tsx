@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -83,7 +84,7 @@ export function PwaInstallPrompt() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-white">Install OrderKing</p>
             <p className="text-xs text-neutral-300 mt-1">
-              Tap <span className="font-bold text-orange-400">Share</span> (⎋) in Safari, then select <span className="font-bold text-orange-400">'Add to Home Screen'</span> (➕) for instant 1-tap ordering.
+              Tap <span className="font-bold text-orange-400">Share</span> in Safari, then select <span className="font-bold text-orange-400">'Add to Home Screen'</span> for instant 1-tap ordering.
             </p>
           </div>
           <button
@@ -92,7 +93,7 @@ export function PwaInstallPrompt() {
             aria-label="Close install instructions"
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white transition-colors"
           >
-            ✕
+            <X className="size-4" />
           </button>
         </div>
       </div>
@@ -131,7 +132,7 @@ export function PwaInstallPrompt() {
             aria-label="Close install prompt"
             className="flex h-7 w-7 items-center justify-center rounded-lg text-neutral-400 hover:bg-white/10 hover:text-white transition-colors"
           >
-            ✕
+            <X className="size-4" />
           </button>
         </div>
       </div>

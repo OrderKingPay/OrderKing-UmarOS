@@ -78,14 +78,14 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
   };
 
   const handleShareWhatsApp = () => {
-    const text = `🎫 *OrderKing E-Ticket*\n` +
+    const text = `*OrderKing E-Ticket*\n` +
       `*PNR:* ${ticket.pnr}\n` +
       `*Service:* ${ticket.carrierName} (${ticket.serviceNumber})\n` +
-      `*Route:* ${ticket.origin.city} ➔ ${ticket.destination.city}\n` +
+      `*Route:* ${ticket.origin.city} to ${ticket.destination.city}\n` +
       `*Departure:* ${ticket.origin.departureDate} at ${ticket.origin.departureTime}\n` +
       `*Passengers:* ${ticket.passengers.map(p => `${p.fullName} (${p.allocatedSeat})`).join(", ")}\n` +
       `*Amount Paid:* ₹${(ticket.fareBreakdown.totalCheckoutPaise / 100).toFixed(2)} (Direct Carrier Fare)\n` +
-      `*Status:* 100% Confirmed & Ready for Boarding`;
+      `*Status:* Confirmed & Ready for Boarding`;
 
     try {
       navigator.clipboard.writeText(text);
@@ -252,7 +252,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
                       {pax.allocatedSeat}
                     </span>
                     <span className="text-[10px] text-emerald-600 block font-bold mt-0.5">
-                      ✓ {pax.bookingStatus}
+                      {pax.bookingStatus}
                     </span>
                   </div>
                 </div>

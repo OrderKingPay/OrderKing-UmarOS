@@ -252,7 +252,7 @@ export function getPredictiveSuggestions(
           text: r.name,
           rawText: r.name,
           type: "restaurant",
-          badge: r.ratingAvg ? `★ ${r.ratingAvg.toFixed(1)}` : "Restaurant",
+          badge: r.ratingAvg ? `Rating ${r.ratingAvg.toFixed(1)}` : "Restaurant",
           subtitle: r.cuisineSummary,
         });
       }
@@ -305,23 +305,23 @@ export function filterDishes(
       }
     }
 
-    // Filter: Pure Veg 🌱
+    // Filter: Pure Veg
     if (filters.veg && !dish.veg) {
       return false;
     }
 
-    // Filter: Rating 4.0+ ⭐
+    // Filter: Rating 4.0+
     if (filters.rating4Plus) {
       const rating = typeof dish.ratingAvg === "number" ? dish.ratingAvg : Number(dish.ratingAvg || 0);
       if (rating < 4.0) return false;
     }
 
-    // Filter: Fast Delivery ⚡ (<25 mins)
+    // Filter: Fast Delivery (<25 mins)
     if (filters.fastDelivery && dish.etaMinutes > 25) {
       return false;
     }
 
-    // Filter: Great Offers 🏷️
+    // Filter: Great Offers
     if (filters.greatOffers && !dish.hasOffer) {
       return false;
     }
@@ -352,23 +352,23 @@ export function filterRestaurants(
       }
     }
 
-    // Filter: Pure Veg 🌱
+    // Filter: Pure Veg
     if (filters.veg && !r.vegOnly) {
       return false;
     }
 
-    // Filter: Rating 4.0+ ⭐
+    // Filter: Rating 4.0+
     if (filters.rating4Plus) {
       const rating = typeof r.ratingAvg === "number" ? r.ratingAvg : Number(r.ratingAvg || 0);
       if (rating < 4.0) return false;
     }
 
-    // Filter: Fast Delivery ⚡ (<25 mins)
+    // Filter: Fast Delivery (<25 mins)
     if (filters.fastDelivery && r.etaMinutes > 25) {
       return false;
     }
 
-    // Filter: Great Offers 🏷️
+    // Filter: Great Offers
     if (filters.greatOffers && !r.hasOffer) {
       return false;
     }

@@ -11,6 +11,8 @@ import {
   Plus,
   Minus,
   Maximize2,
+  UtensilsCrossed,
+  Bike,
 } from "lucide-react";
 import { supabase } from "@/lib/db-cloud";
 
@@ -602,7 +604,7 @@ export function ResilientLiveMap({
         >
           <div className="flex flex-col items-center">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-lg border-2 border-white ring-2 ring-amber-400/50">
-              🍳
+              <UtensilsCrossed className="size-4" />
             </div>
             <span className="mt-1 max-w-[110px] truncate rounded-md bg-stone-900/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-200 shadow-sm border border-amber-400/30">
               {effRestaurantName}
@@ -610,7 +612,7 @@ export function ResilientLiveMap({
           </div>
         </div>
 
-        {/* 🏠 Customer Delivery Marker */}
+        {/* Customer Delivery Marker */}
         <div
           className="absolute pointer-events-none transition-transform duration-75"
           style={{
@@ -621,7 +623,7 @@ export function ResilientLiveMap({
         >
           <div className="flex flex-col items-center">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-rose-600 text-white shadow-lg border-2 border-white ring-2 ring-rose-400/50 animate-bounce">
-              📍
+              <MapPin className="size-4" />
             </div>
             <span className="mt-1 max-w-[110px] truncate rounded-md bg-stone-900/90 px-1.5 py-0.5 text-[9px] font-bold text-rose-200 shadow-sm border border-rose-400/30">
               {effDeliveryAddress}
@@ -629,7 +631,7 @@ export function ResilientLiveMap({
           </div>
         </div>
 
-        {/* 🛵 60FPS Smooth Animated Rider Marker with Dynamic Bearing */}
+        {/* 60FPS Smooth Animated Rider Marker with Dynamic Bearing */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -647,7 +649,7 @@ export function ResilientLiveMap({
             className="relative flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white border-2 border-white shadow-2xl transition-transform duration-100 ease-out"
             style={{ transform: `rotate(${telemetry.bearing}deg)` }}
           >
-            <span className="text-lg">🛵</span>
+            <Bike className="size-4" />
           </div>
 
           <div className="mt-1.5 flex justify-center">
@@ -736,7 +738,7 @@ export function ResilientLiveMap({
             rel="noreferrer"
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 px-3.5 py-2 text-xs font-black text-stone-950 shadow-xl shadow-amber-500/25 transition-all active:scale-95 border border-amber-300 no-underline cursor-pointer"
           >
-            <span className="text-sm">🛵</span>
+            <Bike className="size-4" />
             <span>Open Two-Wheeler Nav (Google Maps)</span>
             <ExternalLink className="size-3 stroke-[2.5]" />
           </a>

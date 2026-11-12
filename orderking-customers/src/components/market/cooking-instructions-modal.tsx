@@ -30,13 +30,13 @@ export function CookingInstructionsModal({
   const [customText, setCustomText] = useState(initialInstructions);
 
   const QUICK_CHIPS = [
-    "🌱 Make Less Spicy",
-    "🧅 No Onion / No Garlic",
-    "💧 Less Oil / Low Butter",
-    "🥫 Extra Mint Chutney & Gravy",
-    "🍴 Don't send disposable cutlery",
-    "🧂 Low Salt (Hypertension-friendly)",
-    "📦 Double seal curry container",
+    "Make Less Spicy",
+    "No Onion / No Garlic",
+    "Less Oil / Low Butter",
+    "Extra Mint Chutney & Gravy",
+    "Don't send disposable cutlery",
+    "Low Salt (Hypertension-friendly)",
+    "Double seal curry container",
   ];
 
   const toggleChip = (chip: string) => {
@@ -63,8 +63,8 @@ export function CookingInstructionsModal({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-xl">
-              👨‍🍳
+            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/20 text-primary">
+              <ChefHat className="size-5" />
             </span>
             <div>
               <h3 className="font-display text-base font-bold text-fg">Cooking Instructions</h3>
@@ -90,10 +90,10 @@ export function CookingInstructionsModal({
           </label>
           <div className="grid grid-cols-4 gap-1.5">
             {[
-              { id: "MILD", label: "Mild", emoji: "🟢" },
-              { id: "MEDIUM", label: "Medium", emoji: "🟡" },
-              { id: "SPICY", label: "Spicy", emoji: "🌶️" },
-              { id: "FIERY", label: "Extra Hot", emoji: "🔥" },
+              { id: "MILD", label: "Mild" },
+              { id: "MEDIUM", label: "Medium" },
+              { id: "SPICY", label: "Spicy" },
+              { id: "FIERY", label: "Extra Hot" },
             ].map((lvl) => (
               <button
                 key={lvl.id}
@@ -105,8 +105,7 @@ export function CookingInstructionsModal({
                     : "border-border bg-surface-2 text-fg hover:border-primary/40"
                 }`}
               >
-                <span className="block text-sm">{lvl.emoji}</span>
-                <span className="text-[11px] mt-0.5 block">{lvl.label}</span>
+                <span className="text-[11px] block">{lvl.label}</span>
               </button>
             ))}
           </div>

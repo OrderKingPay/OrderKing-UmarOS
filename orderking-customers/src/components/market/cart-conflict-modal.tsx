@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export interface CartConflictModalProps {
@@ -26,8 +27,8 @@ export function CartConflictModal({
     >
       <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-amber-400/30 text-center space-y-4">
         {/* Warning Icon Badge */}
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 text-2xl shadow-inner">
-          ⚠️
+        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 shadow-inner">
+          <AlertTriangle className="size-7" />
         </div>
 
         <div className="space-y-2">

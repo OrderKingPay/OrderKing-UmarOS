@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   Utensils,
   Zap,
+  ExternalLink,
+  ArrowRight,
+  ArrowDown,
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
@@ -240,7 +243,7 @@ export function SupportPage() {
                         >
                           <span>{link.title}</span>
                           {link.phone && <span className="text-amber-300">({link.phone})</span>}
-                          <span>↗</span>
+                          <ExternalLink className="size-3" />
                         </a>
                       ))}
                     </div>
@@ -301,7 +304,7 @@ export function SupportPage() {
               disabled={isChatting || !user || !chatInput.trim()}
               className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-5 rounded-2xl shadow-md shadow-orange-500/25 active:scale-95 transition-all text-xs h-10"
             >
-              Send ➔
+              <span>Send</span> <ArrowRight className="size-3.5 ml-1" />
             </Button>
           </form>
         </div>
@@ -439,7 +442,12 @@ export function SupportPage() {
                 disabled={isDiagnosing}
                 className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
               >
-                {isDiagnosing ? "Diagnosing order..." : "Check Status or Record Request ➔"}
+                {isDiagnosing ? "Diagnosing order..." : (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span>Check Status or Record Request</span>
+                    <ArrowRight className="size-3.5" />
+                  </span>
+                )}
               </Button>
             </div>
           ) : (
@@ -503,9 +511,9 @@ export function SupportPage() {
                   href="https://consumerhelpline.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-stone-500 hover:text-stone-900"
+                  className="font-bold text-stone-500 hover:text-stone-900 inline-flex items-center gap-1"
                 >
-                  Portal ↗
+                  <span>Portal</span> <ExternalLink className="size-3" />
                 </a>
               </div>
             </div>
@@ -527,9 +535,9 @@ export function SupportPage() {
                   href="https://cms.rbi.org.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline"
+                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
                 >
-                  File Complaint ↗
+                  <span>File Complaint</span> <ExternalLink className="size-3" />
                 </a>
               </div>
             </div>
@@ -553,9 +561,9 @@ export function SupportPage() {
                   href="https://cybercrime.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-stone-500 hover:text-stone-900"
+                  className="font-bold text-stone-500 hover:text-stone-900 inline-flex items-center gap-1"
                 >
-                  Report Portal ↗
+                  <span>Report Portal</span> <ExternalLink className="size-3" />
                 </a>
               </div>
             </div>
@@ -577,9 +585,9 @@ export function SupportPage() {
                   href="https://foscos.fssai.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline"
+                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
                 >
-                  FSSAI Portal ↗
+                  <span>FSSAI Portal</span> <ExternalLink className="size-3" />
                 </a>
               </div>
             </div>
@@ -601,9 +609,9 @@ export function SupportPage() {
                   href="https://www.npci.org.in/what-we-do/upi/dispute-redressal-mechanism"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline"
+                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
                 >
-                  NPCI Portal ↗
+                  <span>NPCI Portal</span> <ExternalLink className="size-3" />
                 </a>
               </div>
             </div>
@@ -623,9 +631,9 @@ export function SupportPage() {
                 <span className="text-stone-400 text-[11px]">Grievance Desk</span>
                 <a
                   href="#support-request"
-                  className="font-black text-amber-800 hover:underline"
+                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
                 >
-                  Support Form ↓
+                  <span>Support Form</span> <ArrowDown className="size-3" />
                 </a>
               </div>
             </div>
@@ -679,7 +687,7 @@ export function SupportPage() {
               type="submit"
               className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black py-3 px-7 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
             >
-              {t("support.send")} ➔
+              <span>{t("support.send")}</span> <ArrowRight className="size-3.5 ml-1" />
             </Button>
           </form>
         </div>

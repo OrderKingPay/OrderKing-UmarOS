@@ -57,7 +57,7 @@ export function generateScratchCard(
     return {
       id,
       type: "DIGITAL_GOLD",
-      title: `✨ ${goldGrams}g 24K Pure Gold Added!`,
+      title: `${goldGrams}g 24K Pure Gold Added`,
       description: "24K 99.9% Pure Gold deposited into your KingPay Digital Gold Vault.",
       amountPaise,
       goldGrams,
@@ -73,8 +73,8 @@ export function generateScratchCard(
     return {
       id,
       type: "PARTNER_VOUCHER",
-      title: `🍽️ ₹75 Off at ${partner}`,
-      description: `Exclusive discount on your next order from ${partner}.`,
+      title: `₹75 Off at ${partner}`,
+      description: `Discount on your next order from ${partner}.`,
       amountPaise: 7500,
       partnerName: partner,
       voucherCode: `KING${partner.replace(/\s+/g, "").toUpperCase().slice(0, 4)}75`,
@@ -83,13 +83,13 @@ export function generateScratchCard(
     };
   }
 
-  // 59% chance: Instant Food Cashback (₹20 to ₹50)
+  // 59% chance: Food Cashback (₹20 to ₹50)
   const cashbackPaise = (20 + (seed % 31)) * 100;
   return {
     id,
     type: "CASHBACK",
-    title: `💰 ₹${cashbackPaise / 100} Instant Food Cashback!`,
-    description: "Credited instantly to your King Coins balance for your next meal.",
+    title: `₹${cashbackPaise / 100} Food Cashback`,
+    description: "Credited to your King Coins balance for your next meal.",
     amountPaise: cashbackPaise,
     unlockedAt,
     isScratched: false,

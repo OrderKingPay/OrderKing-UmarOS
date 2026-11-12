@@ -152,8 +152,9 @@ export function OrderKingPassbookReceipts({
           <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
             {formatPaise(walletBalancePaise)}
           </span>
-          <span className="text-[10px] text-amber-500 dark:text-amber-400 font-bold block mt-1">
-            ● In-App Profile Balance
+          <span className="inline-flex items-center gap-1.5 text-[10px] text-amber-500 dark:text-amber-400 font-bold mt-1">
+            <span className="inline-block size-1.5 rounded-full bg-current" />
+            <span>In-App Profile Balance</span>
           </span>
         </div>
         <div
@@ -284,7 +285,7 @@ export function OrderKingPassbookReceipts({
                     {entry.direction === "CREDIT" ? "+" : "-"}
                     {formatPaise(Number(entry.amount_paise) || 0)}
                   </span>
-                  <span className="text-[9px] text-emerald-500 font-bold">✓ NPCI SETTLED</span>
+                  <span className="text-[9px] text-emerald-500 font-bold">NPCI SETTLED</span>
                 </div>
               </div>
             ))}

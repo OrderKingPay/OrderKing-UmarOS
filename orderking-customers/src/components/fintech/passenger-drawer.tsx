@@ -239,7 +239,7 @@ export function PassengerDrawer({
               }}
               className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-black text-xs shadow-md"
             >
-              Sign In to OrderKing ➔
+              Sign In to OrderKing
             </Button>
             <Button
               type="button"
@@ -273,7 +273,7 @@ export function PassengerDrawer({
               Passenger &amp; Payment Details
             </h2>
             <p className="text-xs text-slate-300 mt-0.5">
-              {quote.title} · {quote.serviceNumber} ({quote.fromCity} ➔ {quote.toCity})
+              {quote.title} · {quote.serviceNumber} ({quote.fromCity} to {quote.toCity})
             </p>
           </div>
 

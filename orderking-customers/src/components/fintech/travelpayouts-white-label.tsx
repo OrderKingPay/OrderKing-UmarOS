@@ -116,7 +116,7 @@ export function TravelpayoutsWhiteLabel({
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-black uppercase tracking-wider text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200">
-              {isDomestic ? "🇮🇳 Domestic India" : "🌍 International Route"}
+              {isDomestic ? "Domestic India" : "International Route"}
             </span>
             <span className="text-xs text-slate-500 hidden sm:inline">
               Compare IndiGo, Air India, Akasa, SpiceJet &amp; 100+ OTAs

@@ -16,6 +16,8 @@ import {
   X,
   ChevronRight,
   Crown,
+  Calendar,
+  Package,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useT } from "@/components/providers";
@@ -391,7 +393,7 @@ export function LocationDialog({
                 <div className="rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white p-4 shadow-sm space-y-3.5 animate-in fade-in duration-200">
                   <div className="flex items-start gap-2.5">
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-900 border border-amber-300/60 font-bold">
-                      📍
+                      <MapPin className="size-4" />
                     </div>
                     <div>
                       <h4 className="text-xs font-black text-amber-950 uppercase tracking-tight">
@@ -477,7 +479,7 @@ export function LocationDialog({
                             </div>
                           </div>
                           <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-200 shrink-0">
-                            Select Zone →
+                            Select Zone
                           </span>
                         </button>
                       ));
@@ -505,7 +507,7 @@ export function LocationDialog({
                       className="flex flex-col items-start p-2.5 rounded-xl border border-amber-400/80 bg-amber-50/70 hover:bg-amber-100/80 text-left transition shadow-2xs cursor-pointer group"
                     >
                       <span className="text-[11px] font-black text-amber-950 flex items-center gap-1">
-                        <span>📅</span> Schedule Advance Order
+                        <Calendar className="size-3.5" /> Schedule Advance Order
                       </span>
                       <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
                         Schedule catering or bulk orders in advance.
@@ -531,7 +533,7 @@ export function LocationDialog({
                       className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-400/80 bg-emerald-50/70 hover:bg-emerald-100/80 text-left transition shadow-2xs cursor-pointer group"
                     >
                       <span className="text-[11px] font-black text-emerald-950 flex items-center gap-1">
-                        <span>📦</span> Packaged Food Delivery
+                        <Package className="size-3.5" /> Packaged Food Delivery
                       </span>
                       <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
                         Delivery of packaged snacks, sweets, tea and pantry essentials.

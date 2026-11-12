@@ -106,7 +106,7 @@ export function DiningOutReservationModal({
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-5 py-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xl">🥂</span>
+              <Utensils className="size-4 text-primary" />
               <h3 className="font-display text-base font-bold text-fg">Book a Table (Dining Out)</h3>
             </div>
             <p className="text-xs text-muted flex items-center gap-1 mt-0.5">
@@ -234,10 +234,10 @@ export function DiningOutReservationModal({
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: "ROOFTOP", label: "✨ Rooftop Ambience" },
-                    { id: "INDOOR", label: "❄️ AC Indoor Hall" },
-                    { id: "OUTDOOR", label: "🌿 Garden Terrace" },
-                    { id: "PRIVATE", label: "🥂 Private Dining Cabana" },
+                    { id: "ROOFTOP", label: "Rooftop Ambience" },
+                    { id: "INDOOR", label: "AC Indoor Hall" },
+                    { id: "OUTDOOR", label: "Garden Terrace" },
+                    { id: "PRIVATE", label: "Private Dining Cabana" },
                   ].map((area) => (
                     <button
                       key={area.id}
@@ -259,7 +259,7 @@ export function DiningOutReservationModal({
               <div>
                 <label className="block text-xs font-bold text-fg mb-1.5">Special Occasion (Optional)</label>
                 <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                  {["🎂 Birthday", "💍 Anniversary", "💼 Business Dinner", "🕯️ Candlelight Date"].map((tag) => (
+                  {["Birthday", "Anniversary", "Business Dinner", "Candlelight Date"].map((tag) => (
                     <button
                       key={tag}
                       type="button"

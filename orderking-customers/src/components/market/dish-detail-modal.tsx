@@ -297,7 +297,7 @@ export function DishDetailModal({
             {/* Customization Note if variants or addons exist */}
             {hasCustomizations && (
               <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-300/50 p-2.5 text-xs text-amber-900 dark:text-amber-200 font-medium flex items-center justify-between">
-                <span>✨ This dish has customizable portions &amp; gourmet add-ons.</span>
+                <span className="flex items-center gap-1.5"><Sparkles className="size-3.5 text-amber-500" /> This dish has customizable portions &amp; gourmet add-ons.</span>
                 <span className="font-extrabold text-[11px] uppercase tracking-wide text-amber-700 dark:text-amber-300">
                   Customisable
                 </span>

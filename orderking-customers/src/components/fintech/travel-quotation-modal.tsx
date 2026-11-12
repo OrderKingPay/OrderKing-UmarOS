@@ -142,7 +142,7 @@ export function TravelQuotationModal({
       `*Inquiry ID:* ${inq.id}\n` +
       `*Name:* ${inq.name}\n` +
       `*Service:* ${inq.category}\n` +
-      `*Route:* ${inq.origin} ➔ ${inq.destination}\n` +
+      `*Route:* ${inq.origin} to ${inq.destination}\n` +
       `*Date:* ${inq.departureDate}\n` +
       `*Travelers:* ${inq.travelers}\n` +
       (inq.notes ? `*Special Request:* ${inq.notes}\n` : "") +
@@ -315,7 +315,7 @@ export function TravelQuotationModal({
               className="w-full h-10 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2"
             >
               <Send className="size-3.5" />
-              <span>{isSubmitting ? "Submitting Request..." : "Request Direct Quotation ➔"}</span>
+              <span>{isSubmitting ? "Submitting Request..." : "Request Direct Quotation"}</span>
             </Button>
           </form>
         ) : (

@@ -1689,7 +1689,7 @@ Your studio controls, aspect ratio switcher, timeline duration, and instant 4K p
       ? `Aapka video aur image creation studio ready hai. Maine ${aspectRatio} aspect ratio aur 4K quality me render initiate kar diya hai. Auto-subtitles aur young female voiceover enabled hain.`
       : isBengali
       ? `Apnar video ebong image studio ready. Ami ${aspectRatio} aspect ratio ebong 4K quality te render shuru korechi. Auto-subtitles ebong voiceover enabled ache.`
-      : `Your world-class video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
+      : `Your 4K video studio is armed. Rendered in ${aspectRatio} aspect ratio at 4K 60FPS with ultra-realistic young female narration and dynamic animated subtitles. Ready to edit or export.`;
 
     return {
       intent: "video_editor_studio",
@@ -1756,18 +1756,18 @@ You can preview and save the generated ${isVideo ? "video" : "image"} directly u
     ];
 
     const responseMarkdown = `### Sovereign Cache Purifier Scan Complete
-- **Status**: Scan successful. Protected Core guarantee is **ACTIVE**.
+- **Status**: Scan successful. Protected Core mode is **ACTIVE**.
 - **Found**: 14,208 redundant temporary files across node_modules and .next cache.
 - **Potential Free Space**: **4.2 GB**
-- **Safety Guarantee**: 100% safe to purge. Critical source code and production databases are strictly isolated.
+- **Safety Status**: Critical source code and production databases are strictly isolated.
 
 Use the action card below to execute the 1-click purge.`;
 
     const voiceSpokenText = isHindi
-      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core guarantee active hai, isliye purge karna bilkul safe hai.`
+      ? `Sovereign Cache Purifier ne disk scan complete kar liya hai. 4 point 2 GB space free kiya ja sakta hai. Protected core check active hai, isliye purge karna bilkul safe hai.`
       : isBengali
-      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core guarantee active ache, tai purge kora completely safe.`
-      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core guarantee is active, so you can execute the 1-click purge safely without risking critical assets.`;
+      ? `Sovereign Cache Purifier disk scan complete koreche. 4 point 2 GB space free kora jabe. Protected core check active ache, tai purge kora completely safe.`
+      : `The Sovereign Cache Purifier has completed its disk scan. We can free up 4.2 Gigabytes of space. The protected core check is active, so you can execute the 1-click purge safely without risking critical assets.`;
 
     return {
       intent: "storage_purifier",
@@ -1800,7 +1800,7 @@ Use the action card below to execute the 1-click purge.`;
     const isRefresh = q.includes("refresh") || q.includes("glitch");
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss guaranteed · State snapshots verified" },
+      { stepNumber: 1, totalSteps: 4, label: "Scanning System State & Memory", status: "COMPLETED", detail: "Memory clean · Zero data loss protection · State snapshots verified" },
       { stepNumber: 2, totalSteps: 4, label: isRestart ? "Executing Graceful System Restart" : "Applying Zero-Downtime Refresh", status: "COMPLETED", detail: isRestart ? "Reloading sovereign AI modules without session drop" : "Hot-fixing UI glitches & flushing stale buffers (0 disconnections)" },
       { stepNumber: 3, totalSteps: 4, label: "Synchronizing Edge Gateways", status: "COMPLETED", detail: "All 8 connected platforms & RPC nodes healthy" },
       { stepNumber: 4, totalSteps: 4, label: "Optimizer Verification Complete", status: "COMPLETED", detail: "Latency: 12ms · 100% Stable" },
@@ -1813,7 +1813,7 @@ Use the action card below to execute the 1-click purge.`;
 - **Security**: **HMAC-SHA256 Active · Zero-Leak Sandbox Armed**
 
 > [!NOTE]
-> **Zero Disconnection Guarantee**:
+> **Zero Disconnection Mode**:
 > - **RESTART**: Gracefully reboots engine instances while permanently maintaining founder chats, invoices, and contracts.
 > - **REFRESH**: Flushes minor render glitches, resets audio contexts, and re-syncs state in **sub-5ms** without any disconnection.
 
@@ -1863,7 +1863,7 @@ Manual customization controls and 1-click optimization triggers are available be
 - **Duplicate Media Detected**: **4 items** (Identical generated prompt variations)
 - **Unnecessary Temporary Junk**: **12 expired cache blobs** (~3.84 GB)
 - **Problematic/Glitchy Things Auto-Fixed**: **2 stale audio nodes & orphaned buffers**
-- **Protected Core Guarantee**: **100% SAFE** (Zero risk to invoices, leads, or verified code)
+- **Protected Core Status**: **100% SAFE** (Zero risk to invoices, leads, or verified code)
 
 Review the AI suggestions below or click **"1-Click Auto-Clean Everything"** to eliminate all junk and duplicates instantly!`;
 
@@ -2054,7 +2054,7 @@ The live standalone preview bundle is compiled and ready for instant in-browser 
 - **Current Active Generation**: **Gen-5.6 / Gen-4.6 (GPT-5.6, Claude 4.Opus, Grok 4.6)**
 - **Next-Generation Releases Available**: **${updateReport.notifications.length} Hot-Swaps Ready**
 - **Upgrade Policy**: **Autonomous Detection with 1-Click Founder Consent**
-- **Guarantee**: King AI will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system auto-configures and upgrades smoothly.
+- **Upgrade Continuity**: King AI will **never remain stuck** on an obsolete generation. Whenever OpenAI, Anthropic, or xAI drop newer iterations, the system supports clean configuration upgrades.
 
 Review available model upgrades below and click **"1-Click Hot-Upgrade"** to switch engine generations instantly.`;
 
@@ -2085,7 +2085,7 @@ Review available model upgrades below and click **"1-Click Hot-Upgrade"** to swi
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 3, label: "Querying Spatial GPS Radar", status: "COMPLETED", detail: "Enforcing 12km strict radius centered at Sribhumi / Karimganj" },
       { stepNumber: 2, totalSteps: 3, label: "Verifying Inactive Zone Quarantine", status: "COMPLETED", detail: "Food ordering masked across inactive regions; King Pay rendered exclusively" },
-      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees guaranteed Pan-India via direct UPI escrow" },
+      { stepNumber: 3, totalSteps: 3, label: "Compliance & Fee Verification", status: "COMPLETED", detail: "0% Gateway fees via direct UPI escrow Pan-India" },
     ];
 
     const responseMarkdown = `### Strict Geofence Enforcement Status

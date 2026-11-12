@@ -11,9 +11,9 @@ interface VoiceSearchDialogProps {
 }
 
 const SUPPORTED_LANGUAGES = [
-  { code: "en-IN", label: "English", nativeLabel: "English", icon: "🇬🇧" },
-  { code: "hi-IN", label: "Hindi", nativeLabel: "हिन्दी", icon: "🇮🇳" },
-  { code: "bn-IN", label: "Bengali", nativeLabel: "বাংলা", icon: "🇮🇳" },
+  { code: "en-IN", label: "English", nativeLabel: "English", icon: "EN" },
+  { code: "hi-IN", label: "Hindi", nativeLabel: "हिन्दी", icon: "HI" },
+  { code: "bn-IN", label: "Bengali", nativeLabel: "বাংলা", icon: "BN" },
 ] as const;
 
 type LangCode = (typeof SUPPORTED_LANGUAGES)[number]["code"];
@@ -258,7 +258,7 @@ export function VoiceSearchDialog({
             }}
             className="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-sm shadow-md hover:from-emerald-700 hover:to-teal-700 transition"
           >
-            Search for &ldquo;{transcript}&rdquo; →
+            Search for &ldquo;{transcript}&rdquo;
           </button>
         )}
       </div>

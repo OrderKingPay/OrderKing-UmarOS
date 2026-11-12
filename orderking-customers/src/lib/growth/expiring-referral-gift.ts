@@ -53,8 +53,8 @@ export function createExpiringViralShare(referralCode: string, originUrl = "http
   const cleanCode = referralCode.trim() || "FOUNDER50";
   const deepLink = `${originUrl}/?ref=${encodeURIComponent(String(cleanCode ?? ""))}`;
   
-  const headline = `🎁 ₹${GIFT_REWARD_RUPEES} Gift for your next meal on OrderKing!`;
-  const bodyText = `${headline}\n\nTap below to claim ₹${GIFT_REWARD_RUPEES} off your order. ⚠️ Hurry, this gift expires in 7 days!\n\n👉 Order now: ${deepLink}`;
+  const headline = `₹${GIFT_REWARD_RUPEES} Gift for your next meal on OrderKing`;
+  const bodyText = `${headline}\n\nTap below to apply ₹${GIFT_REWARD_RUPEES} off your order. Note: this gift expires in 7 days.\n\nOrder link: ${deepLink}`;
   const encodedText = encodeURIComponent(String(bodyText ?? ""));
 
   return {

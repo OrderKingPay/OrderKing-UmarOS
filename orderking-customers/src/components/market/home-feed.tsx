@@ -47,70 +47,60 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Biryani",
     slug: "biryani",
-    emoji: "🍚",
     gradient: "from-orange-400 to-amber-500",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Pizza",
     slug: "pizza",
-    emoji: "🍕",
     gradient: "from-red-400 to-rose-500",
     imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Rolls",
     slug: "rolls",
-    emoji: "🌯",
     gradient: "from-teal-400 to-cyan-500",
     imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Thali",
     slug: "thali",
-    emoji: "🍽️",
     gradient: "from-amber-400 to-yellow-500",
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Burgers",
     slug: "burger",
-    emoji: "🍔",
     gradient: "from-yellow-400 to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Desserts",
     slug: "desserts",
-    emoji: "🍰",
     gradient: "from-pink-400 to-rose-500",
     imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Curry",
     slug: "north-indian",
-    emoji: "🍛",
     gradient: "from-emerald-400 to-green-500",
     imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Chinese",
     slug: "chinese",
-    emoji: "🥡",
     gradient: "from-sky-400 to-blue-500",
     imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "South Indian",
     slug: "south-indian",
-    emoji: "🫓",
     gradient: "from-purple-400 to-violet-500",
     imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Cakes",
     slug: "cake",
-    emoji: "🎂",
     gradient: "from-fuchsia-400 to-pink-500",
     imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=240&auto=format&fit=crop&q=80",
   },
@@ -259,7 +249,6 @@ export function HomeFeed({
           id: c.id || `db-cat-${i}`,
           slug: c.slug || `cat-${i}`,
           name: c.name || "Category",
-          emoji: curated.emoji,
           gradient: curated.gradient,
           imageUrl: c.imageUrl || curated.imageUrl,
         };
@@ -269,7 +258,6 @@ export function HomeFeed({
       id: `cat-${i}`,
       slug: c.slug,
       name: c.name,
-      emoji: c.emoji,
       gradient: c.gradient,
       imageUrl: c.imageUrl,
     }));
@@ -462,11 +450,6 @@ export function HomeFeed({
                     )}
                   >
                     {c.name}
-                  </span>
-
-                  {/* Emoji Label below name */}
-                  <span className="text-[11px] leading-none mt-0.5 transition-transform group-hover:scale-125" aria-hidden>
-                    {c.emoji}
                   </span>
                 </button>
               );

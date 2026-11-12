@@ -223,7 +223,7 @@ export function CustomizeDialog({
                   <div className="flex items-center justify-between pb-2 border-b border-border/50">
                     <div>
                       <legend className="text-sm font-black text-fg flex items-center gap-1.5">
-                        <span>✨</span>
+                        <Sparkles className="size-3.5 text-amber-500" />
                         <span>{g.name}</span>
                       </legend>
                       <p className="text-[11px] text-muted mt-0.5">
@@ -290,7 +290,7 @@ export function CustomizeDialog({
                               {a.nestedGroups.map((subG) => (
                                 <div key={subG.id} className="rounded-xl bg-surface/80 p-3 border border-border space-y-2">
                                   <div className="flex items-center justify-between text-xs font-bold text-fg">
-                                    <span>↳ {subG.name}</span>
+                                    <span>{subG.name}</span>
                                     <span className="text-[10px] text-muted">
                                       {subG.required ? "Required" : "Optional"}
                                     </span>

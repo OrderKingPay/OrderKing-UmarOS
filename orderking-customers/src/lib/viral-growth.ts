@@ -1351,7 +1351,7 @@ export function generateViralReelsScripts(townName: string = "Karimganj"): Viral
       durationSeconds: 18,
       visualHook: "User scratches gold scratch card on phone screen with confetti explosion and 24K pure gold coin animation.",
       audioHook: `Look at this! I just ordered dinner from Royal Biryani on OrderKing and won 1.5mg pure 24K digital gold in my KingPay wallet!`,
-      callToAction: `Order your food tonight on OrderKing and claim your guaranteed scratch card!`,
+      callToAction: `Order food on OrderKing and view available scratch card rewards.`,
     },
     {
       title: "Local Restaurant Menu Pricing on OrderKing",

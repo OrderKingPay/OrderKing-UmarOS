@@ -1,6 +1,6 @@
 import { useState, useEffect, Suspense } from "react";
 import { Link } from "@tanstack/react-router";
-import { ExternalLink, Layers, Navigation, Sparkles } from "lucide-react";
+import { ExternalLink, Layers, Navigation, Sparkles, UtensilsCrossed, Bike, MapPin } from "lucide-react";
 import { formatPaise } from "@/lib/money";
 import { lazyWithRetry } from "@/lib/lazy-retry";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -184,7 +184,7 @@ export function LiveDeliveryMap({
           {/* Restaurant Pin */}
           <div className="absolute left-6 top-1/2 -translate-y-1/2 text-center">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-white shadow-md">
-              🍳
+              <UtensilsCrossed className="size-4" />
             </div>
             <span className="mt-1 block max-w-[70px] truncate text-[10px] text-muted font-medium">
               {restaurantName}
@@ -198,7 +198,7 @@ export function LiveDeliveryMap({
               style={{ left: `calc(2rem + ${currentProgress * 75}%)` }}
             >
               <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white bg-emerald-500 text-white shadow-lg animate-bounce">
-                🛵
+                <Bike className="size-4" />
               </div>
               <span className="mt-1 block -translate-x-3 text-[10px] font-bold text-emerald-600">
                 Rider
@@ -213,7 +213,7 @@ export function LiveDeliveryMap({
                 isDelivered ? "bg-emerald-600" : "bg-stone-700"
               }`}
             >
-              📍
+              <MapPin className="size-4" />
             </div>
             <span className="mt-1 block max-w-[70px] truncate text-[10px] text-muted font-medium">
               You
@@ -225,8 +225,8 @@ export function LiveDeliveryMap({
       {/* Rider Partner Contact Card */}
       <div className="flex items-center justify-between p-4 bg-surface-2/40 border-t border-border">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-500/15 text-lg">
-            🛵
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-500/15 text-amber-600">
+            <Bike className="size-5" />
           </div>
           <div>
             <p className="font-bold text-xs text-fg">{riderName}</p>

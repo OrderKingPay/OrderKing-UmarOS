@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import type mapboxgl from "mapbox-gl";
+import { MapPin } from "lucide-react";
 import { supabase } from "@/lib/db-cloud";
 
 const mapboxToken = typeof import.meta !== "undefined" ? import.meta.env?.VITE_MAPBOX_TOKEN : undefined;
@@ -160,7 +161,7 @@ export function LiveTrackingMap({ dispatchJobId, initialLat, initialLng }: LiveT
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center text-white/90">
           <div className="mb-3 size-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl shadow-lg animate-pulse">
-            📍
+            <MapPin className="size-6" />
           </div>
           <h4 className="text-base font-bold text-white">Live GPS Tracking Active</h4>
           <p className="mt-1 text-xs text-zinc-400 max-w-sm">

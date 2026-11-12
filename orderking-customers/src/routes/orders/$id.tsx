@@ -13,6 +13,9 @@ import {
   Receipt,
   ShieldCheck,
   Star,
+  Check,
+  RotateCcw,
+  X,
 } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { QuoteLines } from "@/components/market/quote-lines";
@@ -263,7 +266,7 @@ function OrderDetailPage() {
                           : "bg-amber-100 text-amber-500 border border-amber-200"
                     }`}
                   >
-                    {isPastStep ? "✓" : isCurrent ? "●" : i + 1}
+                    {isPastStep ? <Check className="size-3" /> : isCurrent ? <span className="size-2 rounded-full bg-white" /> : i + 1}
                   </span>
                   <div className="pl-2">
                     <p className={`text-xs font-bold ${isCurrent ? "text-amber-950 font-black text-sm" : isPastStep ? "text-stone-700" : "text-stone-400"}`}>
@@ -424,11 +427,11 @@ function OrderDetailPage() {
                 <div className="flex items-center gap-2">
                   <h2 className="font-display font-black text-base text-foreground">Rate your food experience</h2>
                   <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
-                    ✓ Verified Delivery
+                    <Check className="size-3" /> Verified Delivery
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-muted leading-relaxed">
-                  If everything was wonderful, a quick 5★ rating means the world to our local chefs, delivery riders, and small team. No pressure at all—honest feedback helps us serve you better every time!
+                  Share your honest feedback to help local kitchens and delivery riders improve.
                 </p>
               </div>
               
@@ -437,10 +440,18 @@ function OrderDetailPage() {
             {reviewQuery.data?.review ? (
               <div className="mt-4 rounded-xl border border-border bg-surface/80 p-3.5 space-y-2">
                 <div className="flex items-center gap-1.5 text-warn font-bold">
-                  {"★".repeat(reviewQuery.data.review.rating)}
-                  {"☆".repeat(5 - reviewQuery.data.review.rating)}
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`size-3.5 ${s <= reviewQuery.data.review!.rating ? "fill-amber-400 text-amber-400" : "text-muted/30"}`}
+                      />
+                    ))}
+                  </div>
                   <span className="ml-2 text-xs font-semibold text-foreground">({reviewQuery.data.review.rating}/5)</span>
-                  <span className="ml-auto text-[10px] text-emerald-600 font-bold">Verified Customer Review ✓</span>
+                  <span className="ml-auto inline-flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
+                    Verified Customer Review <Check className="size-3" />
+                  </span>
                 </div>
                 {reviewQuery.data.review.body && (
                   <p className="text-xs italic text-foreground/90">"{reviewQuery.data.review.body}"</p>
@@ -474,11 +485,12 @@ function OrderDetailPage() {
                           key={star}
                           type="button"
                           onClick={() => setFoodRating(star)}
-                          className={`text-lg transition hover:scale-125 ${
+                          aria-label={`Rate food ${star} stars`}
+                          className={`transition hover:scale-125 ${
                             star <= foodRating ? "text-amber-400" : "text-muted/30"
                           }`}
                         >
-                          ★
+                          <Star className="size-4 fill-current" />
                         </button>
                       ))}
                     </div>
@@ -499,11 +511,12 @@ function OrderDetailPage() {
                           key={star}
                           type="button"
                           onClick={() => setRestaurantRating(star)}
-                          className={`text-lg transition hover:scale-125 ${
+                          aria-label={`Rate restaurant ${star} stars`}
+                          className={`transition hover:scale-125 ${
                             star <= restaurantRating ? "text-amber-400" : "text-muted/30"
                           }`}
                         >
-                          ★
+                          <Star className="size-4 fill-current" />
                         </button>
                       ))}
                     </div>
@@ -523,11 +536,12 @@ function OrderDetailPage() {
                           key={star}
                           type="button"
                           onClick={() => setRiderRating(star)}
-                          className={`text-lg transition hover:scale-125 ${
+                          aria-label={`Rate rider ${star} stars`}
+                          className={`transition hover:scale-125 ${
                             star <= riderRating ? "text-amber-400" : "text-muted/30"
                           }`}
                         >
-                          ★
+                          <Star className="size-4 fill-current" />
                         </button>
                       ))}
                     </div>
@@ -547,11 +561,12 @@ function OrderDetailPage() {
                           key={star}
                           type="button"
                           onClick={() => setAppRating(star)}
-                          className={`text-lg transition hover:scale-125 ${
+                          aria-label={`Rate app ${star} stars`}
+                          className={`transition hover:scale-125 ${
                             star <= appRating ? "text-amber-400" : "text-muted/30"
                           }`}
                         >
-                          ★
+                          <Star className="size-4 fill-current" />
                         </button>
                       ))}
                     </div>
@@ -674,7 +689,7 @@ function OrderDetailPage() {
                     href={`/support?ticket=${encodeURIComponent(String(submittedComplaint.ticketId || ""))}&orderId=${encodeURIComponent(String(id ?? ""))}`}
                     className="text-primary font-bold text-[11px] hover:underline"
                   >
-                    Chat with Support →
+                    Chat with Support
                   </a>
                 </div>
               </div>
@@ -735,9 +750,10 @@ function OrderDetailPage() {
                         <button
                           type="button"
                           onClick={() => setComplaintImage(null)}
-                          className="absolute top-0 right-0 bg-white/70 text-fg rounded-bl px-1 text-[10px]"
+                          aria-label="Remove complaint image"
+                          className="absolute top-0 right-0 bg-white/70 text-fg rounded-bl p-0.5"
                         >
-                          ✕
+                          <X className="size-3" />
                         </button>
                       </div>
                     )}
@@ -797,7 +813,7 @@ function OrderDetailPage() {
                     className="text-xs font-bold px-4"
                     onClick={handleComplaintSubmit}
                   >
-                    Submit Complaint ➔
+                    Submit Complaint
                   </Button>
                 </div>
               </div>
@@ -908,8 +924,9 @@ function OrderDetailPage() {
         </div>
 
         {order.summary.dataLabel === "REAL" ? (
-          <p className="mt-4 text-center text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl p-2.5">
-            ✓ Live status synchronized in real-time from OrderKing Command
+          <p className="mt-4 text-center text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl p-2.5 flex items-center justify-center gap-1.5">
+            <Check className="size-3.5 text-emerald-600" />
+            <span>Live status synchronized in real-time from OrderKing Command</span>
           </p>
         ) : null}
 
@@ -962,7 +979,7 @@ function OrderDetailPage() {
               }
             }}
           >
-            
+            <RotateCcw className="size-4" />
             <span>Reorder</span>
           </Button>
           <Button

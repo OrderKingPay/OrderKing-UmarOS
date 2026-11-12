@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
+  ArrowRight,
+  Check,
   Crown,
   Loader2,
   Mic,
@@ -8,6 +10,7 @@ import {
   Send,
   ShieldCheck,
   Sparkles,
+  UtensilsCrossed,
   Volume2,
   VolumeX,
   X,
@@ -211,7 +214,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "CHECKOUT_POPUP",
-        label: "🍗 Chicken Dum Biryani",
+        label: "Chicken Dum Biryani",
         dishName: "Chicken Dum Biryani",
         pricePaise: 28000,
         deliveryEta: "24-28 mins",
@@ -229,12 +232,12 @@ export function resolveSovereignResponse(
     q.includes("kothay")
   ) {
     return {
-      reply: "Your rider dispatch ping is escalated with our on-time delivery SLA guarantee.",
-      action: { type: "TRACK_DELIVERY", label: "📦 Track Live Rider GPS", url: "/orders" },
+      reply: "Your rider dispatch ping has been escalated to operations for priority delivery tracking.",
+      action: { type: "TRACK_DELIVERY", label: "Track Live Rider GPS", url: "/orders" },
     };
   }
 
-  // 4. Missing / Damaged Items & Instant Refund
+  // 4. Missing / Damaged Items & Refund Request
   if (
     q.includes("missing") ||
     q.includes("spill") ||
@@ -244,8 +247,8 @@ export function resolveSovereignResponse(
     q.includes("nosto")
   ) {
     return {
-      reply: "Under our zero-interrogation policy, instant 100% full refund is credited to your KingPay balance.",
-      action: { type: "CLAIM_REFUND", label: "🛡️ Claim 100% Instant Refund", url: "/orders" },
+      reply: "Submit your item issue on your order page for review and refund processing to your KingPay balance.",
+      action: { type: "CLAIM_REFUND", label: "Claim Refund", url: "/orders" },
     };
   }
 
@@ -307,7 +310,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🚆 Book Train Tickets & Live PNR",
+        label: "Book Train Tickets & Live PNR",
         url: "/travel?tab=trains",
       },
     };
@@ -344,7 +347,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "✈️ Search & Book Official Carrier Flights",
+        label: "Search & Book Official Carrier Flights",
         url: "/travel?tab=flights",
       },
     };
@@ -377,7 +380,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🏨 Browse & Book Verified Hotels",
+        label: "Browse & Book Verified Hotels",
         url: "/travel?tab=hotels",
       },
     };
@@ -410,7 +413,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🌴 Explore Holiday Tours & Packages",
+        label: "Explore Holiday Tours & Packages",
         url: "/travel?tab=tours",
       },
     };
@@ -488,7 +491,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🧭 Explore KingPay All Services Desk",
+        label: "Explore KingPay All Services Desk",
         url: "/kingpay",
       },
     };
@@ -521,7 +524,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🚖 1-Tap Book Verified City Cab & Auto",
+        label: "1-Tap Book Verified City Cab & Auto",
         url: "/travel?tab=cabs",
       },
     };
@@ -704,7 +707,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🍔 Browse Burgers on OrderKing Food",
+        label: "Browse Burgers on OrderKing Food",
         url: "/search?q=burger",
       },
     };
@@ -734,7 +737,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🍽️ View OrderKing Food Marketplace",
+        label: "View OrderKing Food Marketplace",
         url: "/",
       },
     };
@@ -763,7 +766,7 @@ export function resolveSovereignResponse(
         reply,
         action: {
           type: "NAVIGATE",
-          label: "🍽️ Open OrderKing Food",
+          label: "Open OrderKing Food",
           url: "/",
         },
       };
@@ -781,7 +784,7 @@ export function resolveSovereignResponse(
       reply,
       action: {
         type: "NAVIGATE",
-        label: "🍽️ Browse Local Kitchens",
+        label: "Browse Local Kitchens",
         url: "/",
       },
     };
@@ -865,7 +868,7 @@ export function resolveSovereignResponse(
     reply: defaultReply,
     action: {
       type: "CHECKOUT_POPUP",
-      label: "🍗 1-Tap Checkout: Chicken Dum Biryani",
+      label: "1-Tap Checkout: Chicken Dum Biryani",
       dishName: "Chicken Dum Biryani",
       pricePaise: 28000,
       deliveryEta: "24-28 mins",
@@ -1332,7 +1335,7 @@ export function CustomerConciergeDrawer({
                         <Crown className="size-4 text-amber-400 shrink-0" />
                         <span className="truncate">{m.action.label}</span>
                       </span>
-                      <span className="text-amber-400 text-sm font-bold shrink-0">➔</span>
+                      <ArrowRight className="size-3.5 text-amber-400 shrink-0" />
                     </button>
                   ) : m.action.type === "KINGPAY_POPUP" ? (
                     <button
@@ -1350,7 +1353,7 @@ export function CustomerConciergeDrawer({
                         <CreditCard className="size-4 text-emerald-400 shrink-0" />
                         <span className="truncate">{m.action.label}</span>
                       </span>
-                      <span className="text-emerald-400 text-sm font-bold shrink-0">➔</span>
+                      <ArrowRight className="size-3.5 text-emerald-400 shrink-0" />
                     </button>
                   ) : (
                     <button
@@ -1364,7 +1367,7 @@ export function CustomerConciergeDrawer({
                       className="flex w-full items-center justify-between rounded-xl border border-amber-400/40 bg-amber-400/10 px-3.5 py-2 text-left text-xs font-bold text-amber-200 transition-all hover:bg-amber-400/20 active:scale-[0.98] cursor-pointer"
                     >
                       <span className="truncate">{m.action.label}</span>
-                      <span className="text-amber-400 shrink-0">→</span>
+                      <ArrowRight className="size-3.5 text-amber-400 shrink-0" />
                     </button>
                   )
                 )}
@@ -1378,20 +1381,20 @@ export function CustomerConciergeDrawer({
         <div className="flex items-center gap-1.5 overflow-x-auto border-t border-slate-800/80 bg-slate-900/60 px-4 py-2 scrollbar-none">
           {(area === "kingpay"
             ? [
-                { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
-                { label: "✈️ Flight Bookings", text: "Search and book airline flight tickets." },
+                { label: "Train Tickets", text: "Book train tickets and check live PNR." },
+                { label: "Flight Bookings", text: "Search and book airline flight tickets." },
                 { label: "Pay Utility Bills", text: "Pay electricity or water bill with KingPay." },
-                { label: "🚖 City Cabs & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
-                { label: "📸 Scan BharatQR", text: "Open KingPay camera to scan BharatQR." },
-                { label: "🍔 Browse Burgers", text: "Can I order a burger?" },
+                { label: "City Cabs & Auto", text: "Book a city cab or taxi transit with direct KingPay." },
+                { label: "Scan BharatQR", text: "Open KingPay camera to scan BharatQR." },
+                { label: "Browse Burgers", text: "Can I order a burger?" },
               ]
             : [
-                { label: "🍗 Order Dum Biryani", text: "I want to order Chicken Dum Biryani." },
-                { label: "🍕 Fresh Pizza", text: "Order fresh pizza." },
-                { label: "🚆 Train Tickets", text: "Book train tickets and check live PNR." },
+                { label: "Order Dum Biryani", text: "I want to order Chicken Dum Biryani." },
+                { label: "Fresh Pizza", text: "Order fresh pizza." },
+                { label: "Train Tickets", text: "Book train tickets and check live PNR." },
                 { label: "KingPay UPI", text: "How do I pay with KingPay UPI or scan BharatQR?" },
-                { label: "📦 Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
-                { label: "🛡️ Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
+                { label: "Track Delivery & ETA", text: "Where is my delivery rider and what is the ETA?" },
+                { label: "Report Spilled/Late Food", text: "My food arrived cold and leaked. I need a refund." },
               ]
           ).map((chip) => (
             <button
@@ -1590,7 +1593,7 @@ export function CustomerConciergeDrawer({
                   <div className="p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                        <span>🍽️</span>
+                        <UtensilsCrossed className="size-3.5 text-amber-400" />
                         <span>Would you like to add anything else?</span>
                       </span>
                       {!suppressSuggestions && (
@@ -1625,7 +1628,7 @@ export function CustomerConciergeDrawer({
                                   : "bg-slate-950 text-slate-300 border-slate-800 hover:border-amber-400/50 hover:bg-slate-800"
                               )}
                             >
-                              <span>{isSelected ? "✓" : "+"}</span>
+                              <span>{isSelected ? <Check className="size-3" /> : "+"}</span>
                               <span>{addon.name}</span>
                               <span className={isSelected ? "text-slate-950 font-black" : "text-amber-400 font-mono"}>
                                 {formatPaise(addon.pricePaise)}
@@ -1678,7 +1681,7 @@ export function CustomerConciergeDrawer({
                                 className="text-slate-400 hover:text-rose-400 text-xs font-bold px-1 py-0.5 rounded transition"
                                 title="Remove item"
                               >
-                                ✕
+                                <X className="size-3.5" />
                               </button>
                             </div>
                           </div>

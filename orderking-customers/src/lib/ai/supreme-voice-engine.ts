@@ -30,21 +30,21 @@ export type SupportedLanguage = {
 };
 
 export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
-  { code: "en-IN", name: "Indian English", nativeName: "English (India)", flag: "🇮🇳", greetingText: "Hello Founder, I am ready to close deals and build applications with you." },
-  { code: "bn-IN", name: "Bengali (Kolkata/Barak/Sylheti)", nativeName: "বাংলা (ভারত / সিলেট)", flag: "🇮🇳", greetingText: "নমস্কার ফাউন্ডার, আমি আপনার সাথে ক্লায়েন্ট আনা এবং বড় অ্যাপস বানানোর জন্য তৈরি আছি।" },
-  { code: "hi-IN", name: "Hindi", nativeName: "हिन्दी", flag: "🇮🇳", greetingText: "नमस्ते फाउंडर, मैं क्लाइंट्स क्लोज़ करने और आपके लिए रियल इनकम जनरेट करने के लिए तैयार हूँ।" },
-  { code: "as-IN", name: "Assamese", nativeName: "অসমীয়া", flag: "🇮🇳", greetingText: "নমস্কাৰ ফাউণ্ডাৰ, মই ব্যৱসায়িক চুক্তি আৰু এপ্লিকেচন নিৰ্মাণৰ বাবে সাজু আছোঁ।" },
-  { code: "ur-IN", name: "Urdu", nativeName: "اردو", flag: "🇮🇳", greetingText: "آداب فاؤنڈر، میں کلائنٹس اور پروجیکٹس کو حتمی شکل دینے کے لیے مکمل تیار ہوں۔" },
-  { code: "en-US", name: "US English", nativeName: "English (US)", flag: "🇺🇸", greetingText: "Welcome Founder. Sovereign autonomous executive intelligence is online." },
-  { code: "en-GB", name: "British English", nativeName: "English (UK)", flag: "🇬🇧", greetingText: "Good day Founder. Ready to acquire high-value contracts and scaffold enterprise systems." },
-  { code: "es-ES", name: "Spanish", nativeName: "Español", flag: "🇪🇸", greetingText: "Hola Fundador. Estoy lista para conseguir clientes y construir aplicaciones de alto valor." },
-  { code: "fr-FR", name: "French", nativeName: "Français", flag: "🇫🇷", greetingText: "Bonjour Fondateur. Je suis prête à convertir des contrats et développer des architectures." },
-  { code: "ar-SA", name: "Arabic", nativeName: "العربية", flag: "🇸🇦", greetingText: "أهلاً بك يا مؤسس. أنا جاهزة للحصول على عملاء متميزين وتحقيق أرباح حقيقية." },
-  { code: "de-DE", name: "German", nativeName: "Deutsch", flag: "🇩🇪", greetingText: "Hallo Gründer. Bereit für Enterprise-Architekturen und profitable Kundenverträge." },
-  { code: "zh-CN", name: "Mandarin Chinese", nativeName: "中文 (普通话)", flag: "🇨🇳", greetingText: "创始人您好，我已准备好为您拓展高端企业客户并交付大型软件系统。" },
-  { code: "ja-JP", name: "Japanese", nativeName: "日本語", flag: "🇯🇵", greetingText: "ファウンダー、準備が整いました。クライアントの獲得と大規模アプリの構築を実行します。" },
-  { code: "ta-IN", name: "Tamil", nativeName: "தமிழ்", flag: "🇮🇳", greetingText: "வணக்கம் ஃபவுண்டர், பெரிய திட்டங்களை உருவாக்கி ஒப்பந்தங்களை முடிக்க நான் தயார்." },
-  { code: "te-IN", name: "Telugu", nativeName: "తెలుగు", flag: "🇮🇳", greetingText: "నమస్కారం ఫౌండర్, క్లయింట్లను ఆకర్షించడానికి మరియు యాప్‌లను రూపొందించడానికి నేను సిద్ధంగా ఉన్నాను." },
+  { code: "en-IN", name: "Indian English", nativeName: "English (India)", flag: "IN", greetingText: "Hello Founder, I am ready to close deals and build applications with you." },
+  { code: "bn-IN", name: "Bengali (Kolkata/Barak/Sylheti)", nativeName: "বাংলা (ভারত / সিলেট)", flag: "IN", greetingText: "নমস্কার ফাউন্ডার, আমি আপনার সাথে ক্লায়েন্ট আনা এবং বড় অ্যাপস বানানোর জন্য তৈরি আছি।" },
+  { code: "hi-IN", name: "Hindi", nativeName: "हिन्दी", flag: "IN", greetingText: "नमस्ते फाउंडर, मैं क्लाइंट्स क्लोज़ करने और आपके लिए रियल इनकम जनरेट करने के लिए तैयार हूँ।" },
+  { code: "as-IN", name: "Assamese", nativeName: "অসমীয়া", flag: "IN", greetingText: "নমস্কাৰ ফাউণ্ডাৰ, মই ব্যৱসায়িক চুক্তি আৰু এপ্লিকেচন নিৰ্মাণৰ বাবে সাজু আছোঁ।" },
+  { code: "ur-IN", name: "Urdu", nativeName: "اردو", flag: "IN", greetingText: "آداب فاؤنڈر، میں کلائنٹس اور پروجیکٹس کو حتمی شکل دینے کے لیے مکمل تیار ہوں۔" },
+  { code: "en-US", name: "US English", nativeName: "English (US)", flag: "US", greetingText: "Welcome Founder. Sovereign autonomous executive intelligence is online." },
+  { code: "en-GB", name: "British English", nativeName: "English (UK)", flag: "GB", greetingText: "Good day Founder. Ready to acquire high-value contracts and scaffold enterprise systems." },
+  { code: "es-ES", name: "Spanish", nativeName: "Español", flag: "ES", greetingText: "Hola Fundador. Estoy lista para conseguir clientes y construir aplicaciones de alto valor." },
+  { code: "fr-FR", name: "French", nativeName: "Français", flag: "FR", greetingText: "Bonjour Fondateur. Je suis prête à convertir des contrats et développer des architectures." },
+  { code: "ar-SA", name: "Arabic", nativeName: "العربية", flag: "SA", greetingText: "أهلاً بك يا مؤسس. أنا جاهزة للحصول على عملاء متميزين وتحقيق أرباح حقيقية." },
+  { code: "de-DE", name: "German", nativeName: "Deutsch", flag: "DE", greetingText: "Hallo Gründer. Bereit für Enterprise-Architekturen und profitable Kundenverträge." },
+  { code: "zh-CN", name: "Mandarin Chinese", nativeName: "中文 (普通话)", flag: "CN", greetingText: "创始人您好，我已准备好为您拓展高端企业客户并交付大型软件系统。" },
+  { code: "ja-JP", name: "Japanese", nativeName: "日本語", flag: "JP", greetingText: "ファウンダー、準備が整いました。クライアントの獲得と大規模アプリの構築を実行します。" },
+  { code: "ta-IN", name: "Tamil", nativeName: "தமிழ்", flag: "IN", greetingText: "வணக்கம் ஃபவுண்டர், பெரிய திட்டங்களை உருவாக்கி ஒப்பந்தங்களை முடிக்க நான் தயார்." },
+  { code: "te-IN", name: "Telugu", nativeName: "తెలుగు", flag: "IN", greetingText: "నమస్కారం ఫౌండర్, క్లయింట్లను ఆకర్షించడానికి మరియు యాప్‌లను రూపొందించడానికి నేను సిద్ధంగా ఉన్నాను." },
 ];
 
 export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {

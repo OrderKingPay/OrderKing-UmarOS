@@ -305,7 +305,7 @@ export function BusBookingEngine({
                   <div className="flex flex-wrap gap-1.5 text-[10px]">
                     {q.amenities.slice(0, 3).map((a, i) => (
                       <span key={i} className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium">
-                        ✓ {a}
+                        {a}
                       </span>
                     ))}
                   </div>
@@ -316,7 +316,7 @@ export function BusBookingEngine({
                     rel="noopener noreferrer"
                     onClick={(e) => {
                       e.stopPropagation();
-                      toast.success(`Redirecting to official redBus portal for ${q.fromCity} ➔ ${q.toCity}...`);
+                      toast.success(`Redirecting to official redBus portal for ${q.fromCity} to ${q.toCity}...`);
                     }}
                     className="h-9 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs inline-flex items-center gap-1.5 no-underline transition"
                   >
@@ -376,7 +376,7 @@ export function BusBookingEngine({
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
               <div className="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider px-1">
                 <span>Driver End (Front)</span>
-                <span>Steering ✇</span>
+                <span>Steering</span>
               </div>
 
               <div className="grid grid-cols-3 gap-2.5">
@@ -451,7 +451,8 @@ export function BusBookingEngine({
                 onClick={() => toast.success(`Redirecting to redBus to finalize ${selectedSeatIds.join(", ")} berths...`)}
                 className="w-full h-11 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md shadow-rose-600/25 inline-flex items-center justify-center gap-1.5 no-underline transition"
               >
-                <span>Book Selected Berths on redBus ➔</span>
+                <span>Book Selected Berths on redBus</span>
+                <ArrowRight className="size-3.5" />
               </a>
             </div>
           </div>

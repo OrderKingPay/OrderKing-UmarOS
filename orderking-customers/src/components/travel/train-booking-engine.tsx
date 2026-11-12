@@ -170,7 +170,7 @@ export function TrainBookingEngine({
   const handleCopyPassengerRoster = () => {
     const rosterLines = [
       `=== IRCTC TRAVEL ROSTER PREPARED VIA ORDERKING ===`,
-      `Route: ${fromCode} ➔ ${toCode}`,
+      `Route: ${fromCode} to ${toCode}`,
       `Date: ${journeyDate} | Quota: ${quota} | Class: ${trainClass}`,
       irctcUserId ? `IRCTC User ID: ${irctcUserId}` : `IRCTC User ID: (Not provided)`,
       `Travelers (${passengers.length}):`,
@@ -190,7 +190,7 @@ export function TrainBookingEngine({
       return;
     }
     const irctcUrl = `${IRCTC_OFFICIAL_SEARCH_URL}?from=${encodeURIComponent(String(fromCode ?? ""))}&to=${encodeURIComponent(String(toCode ?? ""))}&date=${encodeURIComponent(String(journeyDate ?? ""))}`;
-    toast.success(`Redirecting to official IRCTC e-Ticketing System (NGeT) for ${fromCode} ➔ ${toCode}...`);
+    toast.success(`Redirecting to official IRCTC e-Ticketing System (NGeT) for ${fromCode} to ${toCode}...`);
     window.open(irctcUrl, "_blank", "noopener,noreferrer");
   };
 
@@ -274,8 +274,8 @@ export function TrainBookingEngine({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">1. IRCTC PSP / B2C Agreement</span>
-                <span className="text-slate-400">Formal agreement executed with IRCTC (Indian Railway Catering and Tourism Corp.) under Principal Service Provider B2C scheme.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: In Progress</span>
+                <span className="text-slate-400">Formal agreement required with IRCTC (Indian Railway Catering and Tourism Corp.) under Principal Service Provider B2C scheme.</span>
+                <span className="text-[10px] text-amber-400 font-bold block">Status: Pending IRCTC PSP Authorization</span>
               </div>
               <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
                 <span className="font-extrabold text-amber-300 block">2. CRIS Security Architecture Audit</span>
@@ -355,7 +355,7 @@ export function TrainBookingEngine({
               href={irctcDirectSearchUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => toast.success(`Redirecting to official IRCTC portal for ${fromCode} ➔ ${toCode}...`)}
+              onClick={() => toast.success(`Redirecting to official IRCTC portal for ${fromCode} to ${toCode}...`)}
               className="h-8 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs inline-flex items-center gap-1.5 transition no-underline shadow-sm"
             >
               <span>Search on IRCTC</span>
@@ -567,7 +567,7 @@ export function TrainBookingEngine({
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
               <Train className="size-6 text-indigo-400" />
-              <span>Real-Time PRS Reservation ({fromCode} ➔ {toCode})</span>
+              <span>Real-Time PRS Reservation ({fromCode} to {toCode})</span>
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
               Real-time seat inventory, dynamic Tatkal quotas, waitlist status, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing provides zero-friction direct handoff with ₹0 platform markup.
@@ -579,7 +579,7 @@ export function TrainBookingEngine({
               href={irctcDirectSearchUrl}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => toast.success(`Redirecting to official IRCTC NGeT portal for ${fromCode} ➔ ${toCode}...`)}
+              onClick={() => toast.success(`Redirecting to official IRCTC NGeT portal for ${fromCode} to ${toCode}...`)}
               className="h-13 px-6 rounded-2xl bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-black text-sm shadow-lg shadow-indigo-600/30 inline-flex items-center justify-center gap-2 transition no-underline"
             >
               <span>Search &amp; Book on Official IRCTC</span>

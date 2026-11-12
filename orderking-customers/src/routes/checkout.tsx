@@ -583,7 +583,7 @@ function CheckoutPage() {
                       </span>
                     </h3>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      OrderKing connects with {restaurantName || "kitchen"} via active dispatch network. Real-time integer-paise quote guaranteed.
+                      OrderKing connects with {restaurantName || "kitchen"} via active dispatch network. Real-time integer-paise quote from database.
                     </p>
                   </div>
                 </div>

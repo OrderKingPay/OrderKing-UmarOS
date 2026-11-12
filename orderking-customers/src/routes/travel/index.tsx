@@ -691,7 +691,7 @@ export function TravelPage() {
   };
 
   const handleLaunchFlightSearch = () => {
-    toast.success(`Showing airline schedules & official portals for ${flightFrom} ➔ ${flightTo}`);
+    toast.success(`Showing airline schedules & official portals for ${flightFrom} to ${flightTo}`);
   };
 
   const handleSaveTripReference = (e: React.FormEvent) => {
@@ -1141,10 +1141,10 @@ export function TravelPage() {
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { label: "Delhi (DEL) ⇄ Mumbai (BOM)", from: "New Delhi (DEL)", to: "Mumbai (BOM)" },
-                    { label: "Bengaluru (BLR) ⇄ Delhi (DEL)", from: "Bengaluru (BLR)", to: "New Delhi (DEL)" },
-                    { label: "Mumbai (BOM) ⇄ Goa (GOI)", from: "Mumbai (BOM)", to: "Goa (GOI)" },
-                    { label: "Kolkata (CCU) ⇄ Bengaluru (BLR)", from: "Kolkata (CCU)", to: "Bengaluru (BLR)" },
+                    { label: "Delhi (DEL) to Mumbai (BOM)", from: "New Delhi (DEL)", to: "Mumbai (BOM)" },
+                    { label: "Bengaluru (BLR) to Delhi (DEL)", from: "Bengaluru (BLR)", to: "New Delhi (DEL)" },
+                    { label: "Mumbai (BOM) to Goa (GOI)", from: "Mumbai (BOM)", to: "Goa (GOI)" },
+                    { label: "Kolkata (CCU) to Bengaluru (BLR)", from: "Kolkata (CCU)", to: "Bengaluru (BLR)" },
                   ].map((corridor) => (
                     <button
                       key={corridor.label}
@@ -1157,7 +1157,7 @@ export function TravelPage() {
                       className="rounded-xl border border-slate-200 bg-slate-50 hover:bg-sky-50 hover:border-sky-300 p-2.5 text-left transition"
                     >
                       <span className="text-xs font-black text-slate-900 block truncate">{corridor.label}</span>
-                      <span className="text-[10px] font-bold text-sky-600">Load Route ➔</span>
+                      <span className="text-[10px] font-bold text-sky-600">Load Route</span>
                     </button>
                   ))}
                 </div>
@@ -1381,7 +1381,7 @@ export function TravelPage() {
                       }}
                       className="w-full h-10 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs"
                     >
-                      Launch Web Check-In ➔
+                      Launch Web Check-In
                     </Button>
                   </div>
                 </div>
@@ -1515,7 +1515,7 @@ export function TravelPage() {
               <div className="flex justify-end pt-1">
                 <Button
                   type="button"
-                  onClick={() => toast.success(`Railway schedules loaded for ${trainFrom} ➔ ${trainTo}`)}
+                  onClick={() => toast.success(`Railway schedules loaded for ${trainFrom} to ${trainTo}`)}
                   className="w-full sm:w-auto h-11 px-6 rounded-xl bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs shadow-md shadow-indigo-700/20 flex items-center justify-center gap-2"
                 >
                   <Search className="size-4" />
@@ -1616,7 +1616,7 @@ export function TravelPage() {
                                 ₹{cls.fareInr.toLocaleString("en-IN")}
                               </span>
                               <span className="text-[10px] font-bold text-indigo-600">
-                                Check on IRCTC ➔
+                                Check on IRCTC
                               </span>
                             </div>
                           </button>
@@ -1696,7 +1696,7 @@ export function TravelPage() {
                           {pnrLiveResult.trainNumber} — {pnrLiveResult.trainName}
                         </h4>
                         <p className="text-xs text-slate-500">
-                          {pnrLiveResult.originStationCode} ➔ {pnrLiveResult.destinationStationCode}
+                          {pnrLiveResult.originStationCode} to {pnrLiveResult.destinationStationCode}
                         </p>
                       </div>
                       <span className={`px-2.5 py-1 rounded-full text-xs font-black uppercase border self-start ${pnrLiveResult.chartStatus === "CHART PREPARED"
@@ -1732,7 +1732,7 @@ export function TravelPage() {
                           providerName: `${pnrLiveResult.trainNumber} ${pnrLiveResult.trainName}`,
                           bookingRef: pnrLiveResult.pnr,
                           travelDate: pnrLiveResult.boardingDate || trainDate,
-                          routeOrLocation: `${pnrLiveResult.originStationCode} ➔ ${pnrLiveResult.destinationStationCode}`,
+                          routeOrLocation: `${pnrLiveResult.originStationCode} to ${pnrLiveResult.destinationStationCode}`,
                           notes: `Coach: ${pnrLiveResult.passengers?.[0]?.coach || "B2"} · Status: ${pnrLiveResult.chartStatus}`,
                           createdAt: new Date().toISOString(),
                         };
@@ -1741,7 +1741,7 @@ export function TravelPage() {
                       }}
                       className="w-full sm:w-auto h-9 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
                     >
-                      Save Verified PNR to My Trips ➔
+                      Save Verified PNR to My Trips
                     </Button>
                   </div>
                 )}
@@ -2087,13 +2087,13 @@ export function TravelPage() {
                     const cleanSource = busFrom.replace(/\(.*\)/, "").trim().toLowerCase();
                     const cleanDest = busTo.replace(/\(.*\)/, "").trim().toLowerCase();
                     const redBusUrl = `https://www.redbus.in/bus-tickets/${encodeURIComponent(String(cleanSource ?? ""))}-to-${encodeURIComponent(String(cleanDest ?? ""))}?onward=${busDate}`;
-                    toast.success(`Opening redBus tickets for ${busFrom} ➔ ${busTo}...`);
+                    toast.success(`Opening redBus tickets for ${busFrom} to ${busTo}...`);
                     window.open(redBusUrl, "_blank", "noopener,noreferrer");
                   }}
                   className="flex-1 h-12 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-black text-sm shadow-md shadow-orange-600/20 flex items-center justify-center gap-2"
                 >
                   <Bus className="size-4" />
-                  <span>Search on redBus ↗</span>
+                  <span>Search on redBus</span>
                   <ExternalLink className="size-3.5 opacity-80" />
                 </Button>
                 <Button
@@ -2106,7 +2106,7 @@ export function TravelPage() {
                       providerName: `${busOperator !== "All Operators" ? busOperator : "Intercity Bus"} (${busClass})`,
                       bookingRef: "PLANNED-BUS-JOURNEY",
                       travelDate: busDate,
-                      routeOrLocation: `${busFrom} ➔ ${busTo}`,
+                      routeOrLocation: `${busFrom} to ${busTo}`,
                       notes: `${busPassengers} Passengers · Class: ${busClass}`,
                       createdAt: new Date().toISOString(),
                     };
@@ -2230,13 +2230,13 @@ export function TravelPage() {
                   type="button"
                   onClick={() => {
                     const uberUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&dropoff[formatted_address]=${encodeURIComponent(String(cabDrop ?? ""))}`;
-                    toast.success(`Opening provider checkout for ${cabPickup} ➔ ${cabDrop}...`);
+                    toast.success(`Opening provider checkout for ${cabPickup} to ${cabDrop}...`);
                     window.open(uberUrl, "_blank", "noopener,noreferrer");
                   }}
                   className="flex-1 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
                 >
                   <Car className="size-4" />
-                  <span>Check Fare &amp; Book with Provider ↗</span>
+                  <span>Check Fare &amp; Book with Provider</span>
                   <ExternalLink className="size-3.5 opacity-80" />
                 </Button>
                 <Button
@@ -2249,7 +2249,7 @@ export function TravelPage() {
                       providerName: `Chauffeur (${cabVehicleClass.toUpperCase()})`,
                       bookingRef: "PLANNED-CAB",
                       travelDate: new Date().toISOString().split("T")[0],
-                      routeOrLocation: `${cabPickup} ➔ ${cabDrop}`,
+                      routeOrLocation: `${cabPickup} to ${cabDrop}`,
                       notes: `${cabDistanceKm} km · Mode: ${cabPackageHours}`,
                       createdAt: new Date().toISOString(),
                     };
@@ -2502,7 +2502,7 @@ export function TravelPage() {
                         inclusions: [
                           "Private Jeep Safari in Central & Western Ranges",
                           "Heritage Tea Planter's Bungalow Stay",
-                          "Guaranteed One-Horned Rhino & Wildlife Views",
+                          "One-Horned Rhino & Wildlife Views",
                           "Chauffeur Transfers from Guwahati / Jorhat",
                         ],
                         publishedMrp: 2500000,
@@ -2572,7 +2572,7 @@ export function TravelPage() {
                             }}
                             className="w-full h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition active:scale-98"
                           >
-                            Request Package Quote ➔
+                            Request Package Quote
                           </Button>
                         </div>
                       </div>
@@ -2687,7 +2687,7 @@ export function TravelPage() {
                           badgeColor: "bg-emerald-700",
                           image: "https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=600&auto=format&fit=crop&q=80",
                           inclusions: [
-                            "Return Flights: Direct CCU / GAU / DEL ➔ JED",
+                            "Return Flights: Direct CCU / GAU / DEL to JED",
                             "7 Nights in Makkah (Walking Distance to Haram)",
                             "7 Nights in Madinah (Near Masjid an-Nabawi)",
                             "Umrah Visa & Comprehensive Medical Insurance",
@@ -2707,7 +2707,7 @@ export function TravelPage() {
                           badgeColor: "bg-emerald-600",
                           image: "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=600&auto=format&fit=crop&q=80",
                           inclusions: [
-                            "Direct Flights: CCU / GAU / DEL ➔ JED / MED",
+                            "Direct Flights: CCU / GAU / DEL to JED / MED",
                             "5 Nights in Makkah (5-Star Clock Tower Haram Facing)",
                             "5 Nights in Madinah (Near Prophet's Mosque)",
                             "Rawdah Permit & E-Visa VIP Processing",
@@ -3001,7 +3001,7 @@ export function TravelPage() {
                       type="text"
                       value={tripRoute}
                       onChange={(e) => setTripRoute(e.target.value)}
-                      placeholder="e.g. DEL ➔ BOM"
+                      placeholder="e.g. DEL to BOM"
                       className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none"
                     />
                   </div>
@@ -3023,7 +3023,7 @@ export function TravelPage() {
                   type="submit"
                   className="h-10 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs"
                 >
-                  Save Reference to My Trips ➔
+                  Save Reference to My Trips
                 </Button>
               </form>
 
@@ -3075,7 +3075,7 @@ export function TravelPage() {
                             onClick={() => handleOpenTripLiveStatus(trip)}
                             className="h-9 px-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold"
                           >
-                            Live Status ➔
+                            Live Status
                           </Button>
                           <Button
                             type="button"
@@ -3129,7 +3129,7 @@ export function TravelPage() {
                   </div>
 
                   <h3 className="text-sm font-black text-slate-900 group-hover:text-sky-700 transition-colors">
-                    {route.fromCity} ({route.fromCode}) ➔ {route.toCity} ({route.toCode})
+                    {route.fromCity} ({route.fromCode}) to {route.toCity} ({route.toCode})
                   </h3>
                   <p className="text-[11px] text-slate-500 mt-0.5">
                     Direct official portal
@@ -3145,7 +3145,7 @@ export function TravelPage() {
                         passengers: flightPassengers,
                         cabinClass: flightClass,
                       });
-                      toast.success(`Connecting to official ${handoff.portalName} for ${route.fromCity} ➔ ${route.toCity}...`);
+                      toast.success(`Connecting to official ${handoff.portalName} for ${route.fromCity} to ${route.toCity}...`);
                       window.open(handoff.url, "_blank", "noopener,noreferrer");
                     }}
                     className="flex-1 h-8 px-2 rounded-xl bg-slate-900 hover:bg-sky-600 text-white font-bold text-xs transition flex items-center justify-center gap-1 shadow-xs"
@@ -3161,17 +3161,17 @@ export function TravelPage() {
                         setActiveTab("flights");
                         setFlightFrom(`${route.fromCity} (${route.fromCode})`);
                         setFlightTo(`${route.toCity} (${route.toCode})`);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} sector.`);
+                        toast.success(`Loaded ${route.fromCity} to ${route.toCity} sector.`);
                       } else if (route.type === "train") {
                         setActiveTab("trains");
                         setTrainFrom(`${route.fromCity} (${route.fromCode})`);
                         setTrainTo(`${route.toCity} (${route.toCode})`);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} rail.`);
+                        toast.success(`Loaded ${route.fromCity} to ${route.toCity} rail.`);
                       } else {
                         setActiveTab("buses");
                         setBusFrom(route.fromCity);
                         setBusTo(route.toCity);
-                        toast.success(`Loaded ${route.fromCity} ➔ ${route.toCity} bus.`);
+                        toast.success(`Loaded ${route.fromCity} to ${route.toCity} bus.`);
                       }
                     }}
                     className="h-8 px-2.5 rounded-xl border-slate-200 text-slate-700 hover:text-sky-700 hover:border-sky-300 font-bold text-xs"

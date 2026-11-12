@@ -1,3 +1,4 @@
+import { Plane } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -18,7 +19,7 @@ export function TravelSkeleton({ className }: { className?: string }) {
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-sky-900/10 bg-white/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="size-9 rounded-2xl bg-gradient-to-tr from-sky-500/20 to-blue-600/30 flex items-center justify-center">
-            <span className="text-base">✈️</span>
+            <Plane className="size-4 text-sky-600" />
           </div>
           <div className="space-y-1">
             <div className="h-4 w-32 rounded-md bg-sky-200/60" />

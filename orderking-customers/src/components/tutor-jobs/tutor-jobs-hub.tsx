@@ -16,6 +16,7 @@ import {
   X,
   RotateCcw,
   ChevronDown,
+  Star,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -1119,7 +1120,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                                 <CheckCircle2 className="size-3.5 text-emerald-400" />
                               </div>
                               <p className="text-[11px] text-slate-400">{tutor.qualifications}</p>
-                              <p className="text-[10px] text-slate-500">📍 {tutor.city}</p>
+                              <p className="text-[10px] text-slate-500 flex items-center gap-1"><MapPin className="size-3 inline" /> {tutor.city}</p>
                             </div>
                           </div>
 
@@ -1138,8 +1139,8 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                         </p>
 
                         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                          <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-slate-700">
-                            ★ {tutor.rating} ({tutor.reviewsCount} sessions)
+                          <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-slate-700 inline-flex items-center gap-1">
+                            <Star className="size-3 fill-amber-400 text-amber-400" /> {tutor.rating} ({tutor.reviewsCount} sessions)
                           </span>
                           <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-700">
                             {tutor.experienceYears}+ yrs experience
@@ -1236,7 +1237,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 </span>
                 <span className="block text-[10px] text-slate-400">
                   {walletBalance >= bookingTutor.hourlyRateInr
-                    ? "✓ Sufficient balance for escrow"
+                    ? "Sufficient balance for escrow"
                     : "Top-up required"}
                 </span>
               </div>
@@ -1344,7 +1345,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
             </div>
 
             <p className="text-[10px] text-slate-400 bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 leading-relaxed">
-              🔒 <strong>KingPay Escrow Guarantee:</strong> ₹{bookingTutor.hourlyRateInr} is held safely in escrow. Funds are strictly released to the educator only after the 1-on-1 session is successfully conducted.
+              <strong>KingPay Escrow Policy:</strong> ₹{bookingTutor.hourlyRateInr} is held safely in escrow. Funds are released to the educator only after the 1-on-1 session is conducted.
             </p>
 
             <div className="flex items-center gap-2 pt-1">

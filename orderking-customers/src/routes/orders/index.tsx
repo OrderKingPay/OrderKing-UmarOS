@@ -3,6 +3,17 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  ArrowRight,
+  ClipboardList,
+  Clock,
+  RotateCcw,
+  Search,
+  ShoppingBag,
+  Tag,
+  UtensilsCrossed,
+  X,
+} from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
@@ -121,20 +132,20 @@ function OrdersPage() {
 
         <nav aria-label="OrderKing food and cart shortcuts" className="mt-4 grid grid-cols-3 gap-2">
           <Link to="/cart" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true"></span><span className="text-[11px] font-extrabold">My cart</span>
+            <ShoppingBag className="size-5 text-amber-600" aria-hidden="true" /><span className="text-[11px] font-extrabold">My cart</span>
           </Link>
           <Link to="/" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true"></span><span className="text-[11px] font-extrabold">Explore food</span>
+            <UtensilsCrossed className="size-5 text-amber-600" aria-hidden="true" /><span className="text-[11px] font-extrabold">Explore food</span>
           </Link>
           <Link to="/offers" className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-xl border border-amber-200 bg-white p-2 text-center text-stone-800 no-underline shadow-sm hover:bg-amber-50">
-            <span className="text-xl" aria-hidden="true"></span><span className="text-[11px] font-extrabold">Food offers</span>
+            <Tag className="size-5 text-amber-600" aria-hidden="true" /><span className="text-[11px] font-extrabold">Food offers</span>
           </Link>
         </nav>
 
         {/* Search Input Bar */}
         <div className="mt-4">
           <div className="relative flex items-center rounded-2xl border border-amber-300/80 bg-white/95 p-1.5 shadow-sm">
-            <span className="pl-3 text-amber-600 text-sm"></span>
+            <span className="pl-3 text-amber-600"><Search className="size-4" /></span>
             <input
               id="order-history-search"
               type="search"
@@ -149,9 +160,10 @@ function OrdersPage() {
               <button
                 type="button"
                 onClick={() => setOrderQuery("")}
+                aria-label="Clear search"
                 className="pr-2 text-xs font-bold text-stone-400 hover:text-stone-600"
               >
-                ✕
+                <X className="size-3.5" />
               </button>
             )}
           </div>
@@ -162,16 +174,16 @@ function OrdersPage() {
             <p className="text-sm font-bold text-rose-700">Failed to load orders.</p>
             <button
               type="button"
-              className="mt-2 text-xs font-black text-rose-800 underline uppercase tracking-wider"
+              className="mt-2 inline-flex items-center gap-1 text-xs font-black text-rose-800 underline uppercase tracking-wider"
               onClick={() => void orders.refetch()}
             >
-              {t("common.retry")} ↻
+              <span>{t("common.retry")}</span> <RotateCcw className="size-3" />
             </button>
           </div>
         ) : !list.length ? (
           <div className="mt-8 rounded-3xl border border-amber-300/50 bg-white/95 backdrop-blur-md p-8 text-center shadow-[0_12px_40px_rgba(245,158,11,0.08)]">
             <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-800 shadow-inner">
-              <span className="text-3xl"></span>
+              <ClipboardList className="size-7" />
             </div>
             <h2 className="mt-4 font-display text-2xl font-black text-stone-900">{t("orders.empty")}</h2>
             <p className="mt-1 text-sm text-stone-600 max-w-xs mx-auto leading-relaxed">{t("orders.emptyHint")}</p>
@@ -218,7 +230,7 @@ function OrdersPage() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
                             <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 to-orange-400 text-white shadow-md shadow-amber-400/30 text-xl group-hover:scale-105 transition-transform">
-                              
+                              <Clock className="size-5" />
                             </div>
                             <div>
                               <p className="font-extrabold text-base text-stone-900 leading-snug">
@@ -263,7 +275,7 @@ function OrdersPage() {
                             Tap to view live tracking &amp; OTP
                           </span>
                           <span className="text-xs font-black text-amber-800 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                            Live Tracking ➔
+                            Live Tracking <ArrowRight className="size-3.5" />
                           </span>
                         </div>
                       </Link>
@@ -277,7 +289,7 @@ function OrdersPage() {
             {past.length ? (
               <section className="mt-7">
                 <div className="flex items-center gap-2 mb-3">
-                  
+                  <Clock className="size-4 text-stone-500" />
                   <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600">
                     {t("orders.past")} ({past.length})
                   </h2>
@@ -298,7 +310,7 @@ function OrdersPage() {
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-start gap-3">
                               <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 text-amber-800 border border-amber-200 text-lg">
-                                
+                                <UtensilsCrossed className="size-4" />
                               </div>
                               <div>
                                 <p className="font-extrabold text-sm text-stone-900 group-hover:text-amber-800 transition-colors">
@@ -337,13 +349,13 @@ function OrdersPage() {
                                   }}
                                   className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs px-2.5 py-1 shadow-xs transition active:scale-95 cursor-pointer"
                                 >
-                                  
+                                  <RotateCcw className="size-3" />
                                   <span>Reorder</span>
                                 </button>
                               )}
                             </div>
-                            <span className="text-xs font-bold text-amber-800 group-hover:underline">
-                              View Receipt ➔
+                            <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 group-hover:underline">
+                              View Receipt <ArrowRight className="size-3" />
                             </span>
                           </div>
                         </Link>

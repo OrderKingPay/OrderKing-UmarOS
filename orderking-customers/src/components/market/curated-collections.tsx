@@ -28,7 +28,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "Midnight food cravings delivered till 3 AM",
     placesCount: 18,
     coverImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80",
-    badge: "🌙 Open Late",
+    badge: "Open Late",
     searchFilter: { openNow: true },
   },
   {
@@ -37,7 +37,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "100% vegetarian restaurants & sweets",
     placesCount: 16,
     coverImage: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=500&q=80",
-    badge: "🌱 100% Veg",
+    badge: "100% Veg",
     searchFilter: { veg: true },
   },
   {
@@ -46,7 +46,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "Hearty combos and satisfying meals under ₹199",
     placesCount: 32,
     coverImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80",
-    badge: "💰 Under ₹199",
+    badge: "Under ₹199",
     searchFilter: { category: "Rolls" },
   },
   {
@@ -55,7 +55,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "Rooftop ambiance and candlelight tables for two",
     placesCount: 12,
     coverImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80",
-    badge: "✨ Romantic",
+    badge: "Romantic",
     searchFilter: { category: "Cafe" },
   },
   {
@@ -64,7 +64,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     tagline: "Kolkata, Dum & Awadhi style biryani",
     placesCount: 20,
     coverImage: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80",
-    badge: "🍗 Authentic",
+    badge: "Authentic",
     searchFilter: { category: "Biryani" },
   },
 ];
@@ -83,7 +83,7 @@ export function CuratedCollections({
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1.5">
-            <span className="text-base">✨</span>
+            <Sparkles className="size-4 text-primary" />
             <h2 className="font-display text-base font-bold text-fg">Collections</h2>
           </div>
           <p className="text-xs text-muted">Curated dining and delivery lists based on local trends</p>

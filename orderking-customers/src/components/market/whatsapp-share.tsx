@@ -38,11 +38,10 @@ export function WhatsAppShare({
     }
 
     if (variant === "checkout") {
-      const totalRupees = orderTotalPaise ? (orderTotalPaise / 100).toFixed(0) : "250";
       const checkoutUrl = `${origin}/earn?ref=${referralCode}`;
       const message = `Order on OrderKing using my invite link:\n${checkoutUrl}`;
       return {
-        title: "OrderKing 50% OFF Welcome Offer",
+        title: "OrderKing Invite",
         text: message,
         url: checkoutUrl,
       };
@@ -50,7 +49,7 @@ export function WhatsAppShare({
 
     // Default compact
     const defaultUrl = `${origin}?ref=${referralCode}`;
-    const defaultMsg = `Order fresh food on OrderKing! Get 50% OFF (up to ₹100) on your first order: ${defaultUrl}`;
+    const defaultMsg = `Order on OrderKing using my invite link: ${defaultUrl}`;
     return {
       title: "OrderKing Invite",
       text: defaultMsg,
@@ -65,7 +64,7 @@ export function WhatsAppShare({
     
     // Try opening WhatsApp deep link
     window.open(waUrl, "_blank", "noopener,noreferrer");
-    toast.success("WhatsApp opened! Send to your friends or group to unlock ₹500.");
+    toast.success("WhatsApp opened with your OrderKing invite link.");
   };
 
   const handleCopyLink = () => {
@@ -108,7 +107,7 @@ export function WhatsAppShare({
                 WhatsApp Group Order
               </span>
               <span className="text-[11px] font-medium text-muted">
-                • Refer &amp; Get ₹500
+                • Share with Group
               </span>
             </div>
             <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-1.5">
@@ -116,7 +115,7 @@ export function WhatsAppShare({
               <Sparkles className="size-3.5 text-amber-400" />
             </h3>
             <p className="text-xs text-muted max-w-md">
-              Send this menu to your WhatsApp group. Friends get <strong className="text-foreground">₹500 OFF</strong> on their first feast, and you earn <strong className="text-emerald-400">₹500 KingPay Cash</strong>!
+              Send this menu to your WhatsApp group so friends can browse and order together.
             </p>
           </div>
 
@@ -155,11 +154,11 @@ export function WhatsAppShare({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 text-sm">
-                🎁
+                <Share2 className="size-4" />
               </span>
               <div>
                 <h3 className="font-display font-bold text-sm text-foreground">
-                  Viral Reward: Unlock ₹500 on this Order
+                  Share OrderKing on WhatsApp
                 </h3>
                 <p className="text-[11px] text-muted">
                   Share OrderKing with a friend on WhatsApp before placing order
@@ -167,15 +166,15 @@ export function WhatsAppShare({
               </div>
             </div>
             <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-              Active Multiplier
+              Group Invite
             </span>
           </div>
 
           <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="text-xl">🛵</span>
+              <Gift className="size-4 shrink-0 text-emerald-400" />
               <p className="text-xs text-zinc-300">
-                Your friend gets <strong className="text-emerald-400">₹500 welcome credit</strong>. You earn <strong className="text-amber-400">₹500 instant KingPay cash</strong> on their first meal!
+                Invite friends to OrderKing using your personal referral link.
               </p>
             </div>
           </div>
