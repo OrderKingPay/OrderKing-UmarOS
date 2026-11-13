@@ -67,8 +67,11 @@ export const Route = createFileRoute("/api/search")({
         const url = new URL(request.url);
         const rawQ = url.searchParams.get("q") || "";
         const q = rawQ.trim().slice(0, 80);
-        const lat = parseFloat(url.searchParams.get("lat") || "0");
-        const lng = parseFloat(url.searchParams.get("lng") || "0");
+        const rawLat = parseFloat(url.searchParams.get("lat") || "0");
+        const rawLng = parseFloat(url.searchParams.get("lng") || "0");
+        // Fallback to default metropolitan flagship coordinates (Connaught Place, New Delhi) if coordinates not provided
+        const lat = (!Number.isFinite(rawLat) || rawLat === 0) ? 28.6315 : rawLat;
+        const lng = (!Number.isFinite(rawLng) || rawLng === 0) ? 77.2167 : rawLng;
         const veg = url.searchParams.get("veg") === "true";
         const openNow = url.searchParams.get("openNow") === "true";
         const category = (url.searchParams.get("category") || "").slice(0, 50);
@@ -80,8 +83,7 @@ export const Route = createFileRoute("/api/search")({
         try {
           const sql = await getSql();
 
-          if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat === 0 || lng === 0 ||
-              lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+          if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
             return unavailable("Choose your delivery location to check availability.");
           }
 
