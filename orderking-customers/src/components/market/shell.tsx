@@ -315,29 +315,6 @@ export function CustomerShell({
                 <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
-              {/* GOLD ₹1 Oval Badge (1:1 with Zomato live screenshot) */}
-              <Link
-                to="/kingpay"
-                aria-label="OrderKing Gold"
-                className="flex flex-col items-center justify-center px-2 sm:px-2.5 py-0.5 rounded-full border border-amber-500/70 bg-gradient-to-b from-[#FFFDF0] to-[#FDF4D8] text-amber-950 shadow-2xs hover:scale-105 active:scale-95 transition-all no-underline shrink-0"
-                title="OrderKing Gold"
-              >
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-900 leading-none">GOLD</span>
-                <span className="text-[9px] font-black text-amber-700 leading-tight">₹1</span>
-              </Link>
-
-              {/* Gold Crown Wallet - Direct link to KingPay */}
-              <Link
-                to="/kingpay"
-                className="relative flex items-center justify-center size-8 sm:size-9 rounded-full bg-white/90 hover:bg-amber-50/80 border border-amber-300/80 text-amber-950 shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
-                title="OrderKing Gold Crown Wallet &amp; KingPay"
-                aria-label="Gold Crown Wallet"
-              >
-                <Wallet className="size-4 text-amber-900" />
-                <Crown className="size-2 text-amber-500 fill-amber-400 absolute -top-0.5 -right-0.5" />
-                <span className="sr-only">Wallet Crown</span>
-              </Link>
-
               {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
               {!isKingPayDomain && (
                 <Link
@@ -362,27 +339,8 @@ export function CustomerShell({
               )}
             </nav>
 
-            {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
+            {/* Row 1 Right: Gold Crown Wallet + Cart Icon with Counter + User Profile / Sign In */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
-              <button
-                type="button"
-                onClick={() => setLangOpen(true)}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer border",
-                  isDark
-                    ? "bg-white/10 hover:bg-white/20 border-white/15 text-slate-200"
-                    : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-300"
-                )}
-                title="Change Language (English, हिन्दी, বাংলা, etc.)"
-                aria-label="Select language"
-              >
-                <Languages className={cn("size-3.5", isDark ? "text-amber-400" : "text-amber-700")} />
-                <span className={cn("text-[11px] font-black uppercase", isDark ? "text-amber-300" : "text-amber-950")}>
-                  {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
-                </span>
-              </button>
-
               {/* Gold Crown Wallet - Direct link to KingPay */}
               <Link
                 to="/kingpay"
@@ -515,6 +473,18 @@ export function CustomerShell({
                           <Briefcase className="size-4 text-amber-600" />
                           <span>King Job &amp; Careers</span>
                         </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            setLangOpen(true);
+                          }}
+                          className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition text-left cursor-pointer text-gray-700"
+                        >
+                          <Languages className="size-4 text-amber-600" />
+                          <span>Language ({lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "English"})</span>
+                        </button>
 
                         <Link
                           to="/settings"

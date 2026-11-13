@@ -212,7 +212,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
       )}
     >
       <div className="flex items-center gap-2 sm:gap-2.5 w-full max-w-lg md:max-w-[560px] justify-center">
-        {/* Left Floating Authentic Copper Metallic AI Concierge FAB */}
+        {/* Left Floating Copper & Orange Metallic AI Concierge FAB */}
         <button
           type="button"
           onClick={() => {
@@ -224,9 +224,9 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
           }}
           aria-label="Ask OrderKing AI"
           title="Ask OrderKing AI"
-          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#7c3a1d] via-[#b86536] to-[#da8254] text-[#fff2eb] shadow-[0_8px_25px_rgba(184,101,54,0.5)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-[#e49b73]/60 ring-1 ring-[#f5c7ad]/40 transform-gpu will-change-transform"
+          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#9A3412] via-[#B85D19] to-[#E85D04] text-white shadow-[0_6px_24px_rgba(184,93,25,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-amber-300/40 transform-gpu will-change-transform"
         >
-          <Sparkles className="size-5 sm:size-6 text-[#fff2eb] drop-shadow-xs" />
+          <Sparkles className="size-5.5 sm:size-6 text-amber-100 drop-shadow-xs" />
         </button>
 
         {/* Dynamic Navigation Dock Container */}
@@ -275,7 +275,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
             /* Zomato 1:1 Live Parity: Center Luxury Blue/Black Capsule (Delivery + History) + Right Luxury Blue Capsule (Dining) */
             <>
               {/* Center Luxury Blue/Black Capsule: Delivery & History */}
-              <div className="flex-1 flex items-center justify-around rounded-[28px] border border-[#1e2a44] bg-gradient-to-b from-[#0b1122] via-[#070c18] to-[#040711] p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px] gap-1.5">
+              <div className="flex-1 flex items-center justify-around rounded-[28px] border border-[#1e2a44]/80 bg-[#090d1a] p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.45)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px] gap-1">
                 {/* 1. Delivery Tab */}
                 <Link
                   to="/"
@@ -285,7 +285,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   className={cn(
                     "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
                     inFood
-                      ? "bg-gradient-to-r from-[#991b1b] via-[#dc2626] to-[#ef4444] text-white shadow-[0_2px_14px_rgba(220,38,38,0.5)] ring-1 ring-rose-400/50"
+                      ? "bg-gradient-to-r from-[#D90429] via-[#EF233C] to-[#E85D04] text-white shadow-[0_2px_12px_rgba(217,4,41,0.45)] ring-1 ring-red-400/50"
                       : "text-stone-300 hover:text-white hover:bg-white/5"
                   )}
                 >
@@ -310,14 +310,14 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   className={cn(
                     "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
                     inActivity && !isSuperApp
-                      ? "bg-gradient-to-r from-[#b45309] via-[#d97706] to-[#f59e0b] text-slate-950 shadow-[0_2px_14px_rgba(217,119,6,0.45)] ring-1 ring-amber-300/70 font-black"
-                      : "text-amber-200/90 hover:text-amber-100 hover:bg-amber-400/10"
+                      ? "bg-gradient-to-r from-amber-500/25 via-amber-600/30 to-amber-700/25 text-amber-200 shadow-sm ring-1 ring-amber-400/60"
+                      : "text-amber-200/80 hover:text-amber-100 hover:bg-white/5"
                   )}
                 >
                   <ClipboardList
                     className={cn(
                       "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
-                      inActivity && !isSuperApp ? "text-slate-950 scale-105" : "text-amber-400"
+                      inActivity && !isSuperApp ? "text-amber-300 scale-105" : "text-amber-400"
                     )}
                     aria-hidden="true"
                   />
@@ -328,29 +328,24 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 </Link>
               </div>
 
-              {/* Right Separate Capsule: Dining (Luxury Royal Blue with Radiant Gold) */}
-              <div className="flex items-center rounded-[28px] border border-amber-400/60 bg-gradient-to-b from-[#0d1f47] via-[#091533] to-[#050b1d] p-1.5 shadow-[0_16px_40px_rgba(5,11,29,0.6),0_0_16px_rgba(245,158,11,0.22)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px]">
-                <Link
-                  to="/dining"
-                  preload="intent"
-                  aria-label="Dining"
-                  aria-current={inDining ? "page" : undefined}
-                  className={cn(
-                    "flex min-w-[76px] sm:min-w-[88px] min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-3 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs",
-                    inDining
-                      ? "bg-gradient-to-r from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb] text-amber-200 shadow-md ring-1 ring-amber-400/80"
-                      : "text-amber-300 hover:text-amber-100 hover:bg-white/5"
-                  )}
-                >
-                  <Utensils
-                    className="size-4.5 sm:size-5 shrink-0 text-amber-400 fill-amber-400/20"
-                    aria-hidden="true"
-                  />
-                  <span className="block w-full truncate text-center leading-tight text-amber-300 font-black">
-                    Dining
-                  </span>
-                </Link>
-              </div>
+              {/* Right Separate Satellite: Dining (Luxury Royal Blue with Radiant Gold, exact same size as Left AI FAB) */}
+              <Link
+                to="/dining"
+                preload="intent"
+                aria-label="Dining"
+                title="Dining"
+                aria-current={inDining ? "page" : undefined}
+                className={cn(
+                  "pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#0a1428] via-[#0c1a3a] to-[#122b5e] text-white shadow-[0_6px_24px_rgba(12,26,58,0.5),0_0_12px_rgba(245,158,11,0.25)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-amber-400/60 transform-gpu will-change-transform no-underline",
+                  inDining && "ring-2 ring-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.5)]"
+                )}
+              >
+                <Utensils
+                  className="size-5.5 sm:size-6 text-amber-400 fill-amber-400/20 drop-shadow-xs"
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Dining</span>
+              </Link>
             </>
           )}
         </div>
