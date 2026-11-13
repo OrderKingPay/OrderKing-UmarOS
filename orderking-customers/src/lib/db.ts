@@ -214,6 +214,27 @@ function createNeonSql(): Promise<Sql> {
               sqlPromise = null;
               if (attempt < 2) {
                 await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+                try {
+                  const pgMod = await import("pg");
+                  const Client = pgMod.default?.Client ?? pgMod.Client;
+                  const fallbackClient = new Client({
+                    connectionString: cleanUrl.includes(":6543") ? cleanUrl.replace(":6543", ":5432") : cleanUrl,
+                    ssl: { rejectUnauthorized: false },
+                    connectionTimeoutMillis: 12000,
+                  });
+                  await fallbackClient.connect();
+                  try {
+                    await fallbackClient.query("BEGIN ISOLATION LEVEL READ COMMITTED");
+                    const res = await fn(makeClientSql(fallbackClient));
+                    await fallbackClient.query("COMMIT");
+                    return res;
+                  } catch (txErr) {
+                    try { await fallbackClient.query("ROLLBACK"); } catch (_) {}
+                    throw txErr;
+                  } finally {
+                    await fallbackClient.end().catch(() => {});
+                  }
+                } catch (_) {}
                 continue;
               }
             }
