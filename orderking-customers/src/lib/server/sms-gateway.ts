@@ -495,7 +495,7 @@ export async function sendViaWhatsAppCloudApi(
         to: `91${cleanPhone}`,
         type: "text",
         text: {
-          body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Zero-lockout enabled. Do not share this code.`,
+          body: `Your ${appName} verification code is ${otp}. Valid for 10 minutes. Do not share this code with anyone.`,
         },
       };
 

@@ -315,12 +315,11 @@ export function CustomerShell({
                 <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
-              {/* Super-App Link (Flights, Trains, AI Tutor) - contextually active in Super-App domain, zero clutter in pure Food Delivery */}
-              {isKingPayDomain && (
-                <Link
-                  to="/travel"
-                  title="KingPay Super-App (Flights, Trains, AI Tutor)"
-                  aria-label="Flights, Trains, AI Tutor"
+              {/* Super-App Link (Flights, Trains, AI Tutor) - Instant direct access to connected sovereign travel & academic services */}
+              <Link
+                to="/travel"
+                title="KingPay Super-App (Flights, Trains, AI Tutor)"
+                aria-label="Flights, Trains, AI Tutor"
                   className={cn(
                     "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
                     isKingPayDomain || path.startsWith("/tutor")
@@ -336,7 +335,6 @@ export function CustomerShell({
                   <Train className="size-3 text-sky-600" />
                   <GraduationCap className="size-3 text-sky-600" />
                 </Link>
-              )}
             </nav>
 
             {/* Row 1 Right: Gold Crown Wallet + Cart Icon with Counter + User Profile / Sign In */}

@@ -164,15 +164,14 @@ export function VoiceSearchDialog({
         {/* Header */}
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-950 text-xs font-black">
-            <Sparkles className="size-3 text-orange-600" />
-            <span>OrderKing Voice AI</span>
+            <Mic className="size-3 text-orange-600" />
+            <span>Voice Search</span>
           </div>
           <h3 className="text-xl font-black text-gray-900 tracking-tight">
-            {isListening ? "Listening to your craving..." : "Tap to Speak"}
+            {isListening ? "Listening..." : "Tap to Speak"}
           </h3>
           <p className="text-xs text-gray-500 font-medium">
-            Try saying <span className="font-bold text-orange-700">&quot;Chicken Biryani&quot;</span> or{" "}
-            <span className="font-bold text-orange-700">&quot;Cold Coffee&quot;</span>
+            Speak dish or restaurant name
           </p>
         </div>
 

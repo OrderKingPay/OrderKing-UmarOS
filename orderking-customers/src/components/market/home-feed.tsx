@@ -44,67 +44,67 @@ const CURATED_FOOD_CATEGORIES = [
     name: "Pizza",
     slug: "pizza",
     gradient: "from-red-500 via-rose-500 to-orange-500",
-    imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Biryani",
     slug: "biryani",
     gradient: "from-orange-500 via-[#E85D04] to-[#B85D19]",
-    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Momo",
     slug: "momo",
     gradient: "from-[#B85D19] via-amber-600 to-orange-500",
-    imageUrl: "https://images.unsplash.com/photo-1625398407797-00c2cb621124?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Rolls",
     slug: "rolls",
     gradient: "from-amber-500 via-orange-600 to-red-500",
-    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Thali",
     slug: "thali",
     gradient: "from-[#B85D19] via-[#C2410C] to-[#E85D04]",
-    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Burgers",
     slug: "burger",
     gradient: "from-orange-500 via-[#C2410C] to-red-600",
-    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Desserts",
     slug: "desserts",
     gradient: "from-pink-500 via-rose-500 to-amber-500",
-    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Curry",
     slug: "north-indian",
     gradient: "from-emerald-500 via-teal-600 to-amber-600",
-    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Chinese",
     slug: "chinese",
     gradient: "from-sky-500 via-blue-600 to-indigo-600",
-    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "South Indian",
     slug: "south-indian",
     gradient: "from-amber-500 via-orange-500 to-amber-600",
-    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
   {
     name: "Cakes",
     slug: "cake",
     gradient: "from-fuchsia-500 via-rose-500 to-amber-500",
-    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=400&auto=format&fit=crop&crop=center&q=95",
   },
 ];
 
@@ -432,6 +432,30 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
+            {/* Meals under ₹199 card with Rich Metallic Copper & Burnt Orange aesthetic */}
+            <button
+              type="button"
+              onClick={() => setFilterBudget(!filterBudget)}
+              className={cn(
+                "group flex flex-col justify-between shrink-0 w-24 sm:w-28 h-20 sm:h-24 p-2 sm:p-2.5 rounded-2xl border text-left transition-all active:scale-95 shadow-2xs select-none cursor-pointer",
+                filterBudget
+                  ? "bg-gradient-to-br from-[#9A3412] via-[#B85D19] to-[#E85D04] text-white border-orange-500 shadow-md ring-2 ring-orange-400"
+                  : "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200/80 text-orange-950 hover:border-orange-500"
+              )}
+            >
+              <div>
+                <span className="block text-[9px] font-black uppercase tracking-wider text-[#C2410C] dark:text-orange-400 leading-tight">
+                  MEALS UNDER
+                </span>
+                <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
+                  ₹199
+                </span>
+              </div>
+              <span className="inline-flex items-center text-[10px] font-extrabold text-[#C2410C] dark:text-orange-300">
+                Explore <ChevronRight className="size-3 ml-0.5" />
+              </span>
+            </button>
+
             {/* "All" Category Pill (1:1 with Zomato live screenshot) */}
             <button
               type="button"
