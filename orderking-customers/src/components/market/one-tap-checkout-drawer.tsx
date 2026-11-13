@@ -219,9 +219,8 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               {quoteQuery.isLoading ? (
                 <span className="text-[11px] font-medium text-stone-500">Calculating...</span>
               ) : quote && deliveryFeePaise === 0 ? (
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-black text-emerald-800 bg-emerald-100 border border-emerald-300 px-1.5 py-0.2 rounded shadow-2xs">
-                  <Sparkles className="size-2 text-emerald-600" />
-                  FREE
+                <span className="font-mono font-bold text-emerald-800">
+                  ₹0
                 </span>
               ) : (
                 <span className="font-mono font-bold text-gray-950">
@@ -239,7 +238,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </span>
             <span className="font-mono font-bold text-gray-950">
               {packagingPaise === 0 ? (
-                <span className="text-emerald-700 font-bold">₹0 Free</span>
+                <span className="text-gray-950 font-bold">₹0</span>
               ) : (
                 formatPaise(packagingPaise, { locale })
               )}

@@ -315,8 +315,8 @@ export function CustomerShell({
                 <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
-              {/* Cart icon with badge counter (redirecting to /cart or opening drawer) - strictly for food delivery, hidden on KingPay/Travel */}
-              {!isKingPayDomain && (
+              {/* Super-App Link (Flights, Trains, AI Tutor) - contextually active in Super-App domain, zero clutter in pure Food Delivery */}
+              {isKingPayDomain && (
                 <Link
                   to="/travel"
                   title="KingPay Super-App (Flights, Trains, AI Tutor)"

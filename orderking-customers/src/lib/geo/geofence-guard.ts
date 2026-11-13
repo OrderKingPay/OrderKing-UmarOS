@@ -124,7 +124,7 @@ export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lo
  * presenting ONLY the King Pay FinTech ecosystem.
  */
 export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: string): boolean {
-  if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+  if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng) && (lat !== 0 || lng !== 0)) {
     for (const zone of ACTIVE_DELIVERY_ZONES) {
       if (zone.status !== "ACTIVE") continue;
       const distanceKm = calculateDistanceKm(lat, lng, zone.centerLat, zone.centerLng);
@@ -152,6 +152,12 @@ export function isDeliveryActiveInLocation(lat?: number, lng?: number, cityId?: 
           (normalized.includes("ccu") && z.cityId === "kolkata"))
     );
     if (matched) return true;
+    return false;
+  }
+
+  // If coordinates and cityId are completely unset or zero, gracefully fall back to default flagship zone
+  if ((!lat && !lng) || (lat === 0 && lng === 0)) {
+    return true;
   }
 
   return false;

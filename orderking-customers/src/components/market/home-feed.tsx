@@ -350,9 +350,9 @@ export function HomeFeed({
     : true;
 
   const isZeroDeliveryInRadius =
-    !isDeliveryActive ||
-    (list.data && list.data.restaurants.length === 0) ||
-    (list.data && list.data.deliveryAvailable === false);
+    list.data
+      ? (list.data.restaurants.length === 0 || list.data.deliveryAvailable === false)
+      : !isDeliveryActive;
 
   // Filtered and sorted restaurants based on active controls
   const filteredRestaurants = useMemo(() => {
@@ -432,30 +432,6 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
-            {/* Meals under ₹199 card with Rich Copper & Burnt Orange aesthetic */}
-            <button
-              type="button"
-              onClick={() => setFilterBudget(!filterBudget)}
-              className={cn(
-                "group flex flex-col justify-between shrink-0 w-24 sm:w-28 h-20 sm:h-24 p-2 sm:p-2.5 rounded-2xl border text-left transition-all active:scale-95 shadow-2xs select-none cursor-pointer",
-                filterBudget
-                  ? "bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#9A3412] text-white border-orange-500 shadow-md ring-2 ring-orange-400"
-                  : "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200/80 text-orange-950 hover:border-orange-500"
-              )}
-            >
-              <div>
-                <span className="block text-[9px] font-black uppercase tracking-wider text-[#C2410C] dark:text-orange-400 leading-tight">
-                  MEALS UNDER
-                </span>
-                <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
-                  ₹199
-                </span>
-              </div>
-              <span className="inline-flex items-center text-[10px] font-extrabold text-[#C2410C] dark:text-orange-300">
-                Explore <ChevronRight className="size-3 ml-0.5" />
-              </span>
-            </button>
-
             {/* "All" Category Pill (1:1 with Zomato live screenshot) */}
             <button
               type="button"
@@ -565,20 +541,6 @@ export function HomeFeed({
           >
             <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-emerald-600 fill-emerald-600/30")} />
             <span>⚡ Near &amp; Fast</span>
-          </button>
-
-          {/* No packaging charges */}
-          <button
-            type="button"
-            onClick={() => setFilterOffers(!filterOffers)}
-            className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
-              filterOffers
-                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600 shadow-[0_2px_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500"
-                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
-            )}
-          >
-            <span>No packaging charges</span>
           </button>
 
           {/* Pure Veg Filter: Zomato standard green dot & badge */}
