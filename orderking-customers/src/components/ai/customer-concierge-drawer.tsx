@@ -1719,7 +1719,7 @@ export function CustomerConciergeDrawer({
                     )}
                     <div className="flex justify-between text-slate-400">
                       <span>Delivery Fee:</span>
-                      <span className="text-emerald-400 font-bold">₹0.00 (Free Delivery)</span>
+                      <span className="text-emerald-400 font-bold">₹0.00</span>
                     </div>
                     <div className="pt-2 border-t border-slate-800 flex justify-between items-center text-sm font-black text-white">
                       <span>Total Payable:</span>

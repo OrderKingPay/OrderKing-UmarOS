@@ -246,9 +246,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
 
           <div className="shrink-0 font-semibold">
             {Number(restaurant.deliveryFeePaise || 0) === 0 ? (
-              <span className="inline-flex items-center gap-1 text-emerald-800 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/70 px-2 py-0.5 rounded-md text-[10.5px] font-black border border-emerald-300/80 shadow-[0_1px_4px_rgba(16,185,129,0.15)]">
-                <Sparkles className="size-2.5 text-emerald-600 fill-emerald-500" />
-                Free delivery
+              <span className="inline-flex items-center gap-1 text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md text-[10.5px] font-black border border-emerald-300/80">
+                ₹0 delivery
               </span>
             ) : (
               <span className="text-gray-600">

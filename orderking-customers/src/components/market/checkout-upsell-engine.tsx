@@ -121,13 +121,13 @@ export function CheckoutUpsellEngine({
           </div>
         </div>
 
-        {/* Free delivery progress */}
+        {/* Delivery waiver progress */}
         {showFreeDeliveryGamification && (
           <div className="flex flex-col gap-1 rounded-xl bg-orange-500/15 border border-orange-400/40 px-3 py-1.5 text-xs">
             <div className="flex items-center gap-1.5 font-bold text-orange-950 dark:text-orange-200">
               <Zap className="size-3.5 text-orange-600 fill-orange-500" />
               <span>
-                Add <strong className="text-orange-950 dark:text-orange-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for free delivery!
+                Add <strong className="text-orange-950 dark:text-orange-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for delivery fee waiver
               </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-orange-200/60 dark:bg-zinc-700 overflow-hidden">
@@ -142,7 +142,7 @@ export function CheckoutUpsellEngine({
         {freeDeliveryUnlocked && (
           <div className="flex items-center gap-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/40 px-3 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
             <Sparkles className="size-3.5 text-emerald-600" />
-            <span>Free delivery unlocked</span>
+            <span>Delivery fee waived (₹0)</span>
           </div>
         )}
       </div>
