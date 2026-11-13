@@ -21,10 +21,10 @@ function DiningPage() {
 
   return (
     <CustomerShell>
-      <div className="min-h-screen bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-28 px-3 sm:px-6 py-6">
+      <div className="min-h-screen bg-gradient-to-b from-orange-500/10 via-white to-orange-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-28 px-3 sm:px-6 py-6">
         <div className="max-w-5xl mx-auto space-y-6">
           {/* Hero Banner */}
-          <div className="relative rounded-3xl overflow-hidden border border-amber-400/30 bg-zinc-950 text-white shadow-xl p-6 sm:p-10">
+          <div className="relative rounded-3xl overflow-hidden border border-orange-400/30 bg-zinc-950 text-white shadow-xl p-6 sm:p-10">
             <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent z-10" />
             <img
               src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80"
@@ -35,8 +35,8 @@ function DiningPage() {
             />
             <div className="relative z-20 max-w-xl space-y-3">
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 text-xs font-black text-amber-300">
-                  <Utensils className="size-3.5 text-amber-400" />
+                <span className="flex items-center gap-1.5 rounded-full bg-orange-400/20 border border-orange-400/40 px-3 py-1 text-xs font-black text-orange-300">
+                  <Utensils className="size-3.5 text-orange-400" />
                   OrderKing Dining Out
                 </span>
                 <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 text-xs font-bold text-emerald-300">
@@ -53,7 +53,7 @@ function DiningPage() {
               <div className="pt-2 flex flex-wrap items-center gap-3">
                 <Link
                   to="/"
-                  className="rounded-xl bg-gradient-to-r from-amber-400 to-yellow-400 text-zinc-950 font-black shadow-md hover:scale-105 transition px-4 py-2 text-xs inline-flex items-center"
+                  className="rounded-xl bg-gradient-to-r from-orange-400 to-orange-400 text-zinc-950 font-black shadow-md hover:scale-105 transition px-4 py-2 text-xs inline-flex items-center"
                 >
                   <Calendar className="size-4 mr-1.5" />
                   Select Restaurant to Reserve Table
@@ -76,7 +76,7 @@ function DiningPage() {
                   <h2 className="font-display text-lg sm:text-xl font-black text-zinc-900 dark:text-zinc-50">
                     Restaurant Partner Onboarding Active
                   </h2>
-                  <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold border-amber-400/30">
+                  <Badge className="bg-orange-500/15 text-orange-700 dark:text-orange-300 font-bold border-orange-400/30">
                     Phase 1 Network
                   </Badge>
                 </div>
@@ -92,7 +92,7 @@ function DiningPage() {
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl border border-border/80 bg-surface-2/50 p-5 space-y-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-400/20 text-amber-700 dark:text-amber-300 font-bold">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-orange-400/20 text-orange-700 dark:text-orange-300 font-bold">
                   <Store className="size-5" />
                 </div>
                 <h3 className="text-sm font-bold text-fg">For Restaurant Partners</h3>
@@ -103,7 +103,7 @@ function DiningPage() {
                   href="https://partner.orderking.app"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline pt-1"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 dark:text-orange-400 hover:underline pt-1"
                 >
                   <span>Partner Onboarding Portal</span>
                   <ChevronRight className="size-3" />
@@ -151,7 +151,7 @@ function DiningPage() {
                 <span>Transparent reservations reconciled with genuine restaurant seating</span>
               </div>
               <div className="flex items-center gap-2">
-                <Clock className="size-4 text-amber-500 shrink-0" />
+                <Clock className="size-4 text-orange-500 shrink-0" />
                 <span>Support desk assistance available for confirmed inquiries</span>
               </div>
             </div>

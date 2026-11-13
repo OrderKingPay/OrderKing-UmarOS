@@ -67,7 +67,7 @@ export function SlowNetworkFallbackCard({
     <div
       role="alert"
       className={cn(
-        "mx-auto my-6 flex w-full max-w-md flex-col items-center justify-center rounded-3xl border border-amber-200/90 bg-white p-6 sm:p-8 text-center shadow-[0_15px_35px_rgba(245,158,11,0.1)] select-none",
+        "mx-auto my-6 flex w-full max-w-md flex-col items-center justify-center rounded-3xl border border-orange-200/90 bg-white p-6 sm:p-8 text-center shadow-[0_15px_35px_rgba(245,158,11,0.1)] select-none",
         className
       )}
     >
@@ -76,14 +76,14 @@ export function SlowNetworkFallbackCard({
         <div
           className={cn(
             "absolute inset-0 rounded-3xl blur-md transition-opacity duration-300",
-            isOnline ? "bg-amber-400/20 animate-pulse" : "bg-rose-400/20"
+            isOnline ? "bg-orange-400/20 animate-pulse" : "bg-rose-400/20"
           )}
         />
         <div
           className={cn(
             "relative flex size-16 items-center justify-center rounded-2xl text-white shadow-md transition-colors",
             isOnline
-              ? "bg-gradient-to-br from-amber-500 to-yellow-600"
+              ? "bg-gradient-to-br from-orange-500 to-orange-600"
               : "bg-gradient-to-br from-rose-500 to-red-600"
           )}
         >
@@ -96,11 +96,11 @@ export function SlowNetworkFallbackCard({
       </div>
 
       {/* Network Status Badge */}
-      <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-50/80 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
+      <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-orange-300/60 bg-orange-50/80 px-2.5 py-0.5 text-[11px] font-bold text-orange-950">
         <span
           className={cn(
             "size-2 rounded-full",
-            isOnline ? "bg-amber-500 animate-ping" : "bg-rose-500"
+            isOnline ? "bg-orange-500 animate-ping" : "bg-rose-500"
           )}
         />
         <span>{isOnline ? "Slow 2G/3G Signal" : "Device Offline"}</span>
@@ -120,7 +120,7 @@ export function SlowNetworkFallbackCard({
           type="button"
           onClick={handleAction}
           disabled={retrying}
-          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/20 transition-all hover:brightness-105 active:scale-98 cursor-pointer disabled:opacity-70"
+          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:brightness-105 active:scale-98 cursor-pointer disabled:opacity-70"
         >
           <RotateCcw className={cn("size-4 stroke-[2.2]", retrying && "animate-spin")} />
           <span>{retrying ? "Retrying Connection..." : "Retry Now"}</span>
@@ -138,8 +138,8 @@ export function SlowNetworkFallbackCard({
       </div>
 
       {/* Offline Storage Assurance */}
-      <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-amber-800/80">
-        <Sparkles className="size-3 text-amber-600" />
+      <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-orange-900/80">
+        <Sparkles className="size-3 text-orange-600" />
         <span>IndexedDB Cache & Offline Order Queue Active</span>
       </div>
     </div>

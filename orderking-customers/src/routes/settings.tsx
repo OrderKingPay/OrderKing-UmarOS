@@ -51,7 +51,7 @@ function SettingsPage() {
           <div className="flex items-center gap-3">
             <Link
               to="/account"
-              className="flex size-10 items-center justify-center rounded-2xl border border-amber-300/80 bg-white shadow-2xs text-amber-950 hover:bg-amber-50 active:scale-95 transition-all"
+              className="flex size-10 items-center justify-center rounded-2xl border border-orange-300/80 bg-white shadow-2xs text-orange-950 hover:bg-orange-50 active:scale-95 transition-all"
               aria-label="Back to Account"
             >
               <ArrowLeft className="size-4" />
@@ -67,9 +67,9 @@ function SettingsPage() {
           </div>
 
           {/* Language Selector */}
-          <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <section className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-xs">
                 <Globe className="size-4" />
               </div>
               <div>
@@ -88,20 +88,20 @@ function SettingsPage() {
                     onClick={() => handleSelectLang(item.id, item.native)}
                     className={`relative flex flex-col items-start p-3.5 rounded-2xl border text-left transition-all active:scale-[0.98] ${
                       isActive
-                        ? "border-amber-500 bg-gradient-to-br from-amber-500/15 via-yellow-400/25 to-amber-500/10 text-amber-950 shadow-md shadow-amber-500/15 ring-2 ring-amber-400/60 font-black"
-                        : "border-amber-200/80 bg-white text-stone-900 hover:bg-amber-50/70 hover:border-amber-300 shadow-2xs font-bold"
+                        ? "border-orange-500 bg-gradient-to-br from-orange-500/15 via-orange-400/25 to-orange-500/10 text-orange-950 shadow-md shadow-orange-500/15 ring-2 ring-orange-400/60 font-black"
+                        : "border-orange-200/80 bg-white text-stone-900 hover:bg-orange-50/70 hover:border-orange-300 shadow-2xs font-bold"
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
                       <span className="font-display text-base font-black">{item.native}</span>
                       {isActive && (
-                        <span className="flex size-5 items-center justify-center rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-xs">
+                        <span className="flex size-5 items-center justify-center rounded-full bg-gradient-to-tr from-orange-500 to-orange-500 text-white shadow-xs">
                           <Check className="size-3 stroke-[3]" />
                         </span>
                       )}
                     </div>
                     <span className="text-xs text-stone-600 mt-1">{item.name}</span>
-                    <span className="text-[10px] font-mono uppercase text-amber-800/80 mt-1 font-bold">
+                    <span className="text-[10px] font-mono uppercase text-orange-900/80 mt-1 font-bold">
                       {item.id}
                     </span>
                   </button>
@@ -111,7 +111,7 @@ function SettingsPage() {
           </section>
 
           {/* Location & GPS Status */}
-          <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <section className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
               <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xs">
                 <Smartphone className="size-4" />
@@ -125,7 +125,7 @@ function SettingsPage() {
             <div className="rounded-2xl border border-emerald-500/30 bg-emerald-50/50 p-4 flex items-center justify-between">
               <div>
                 <span className="text-xs font-black text-stone-900 block">Current Coordinates</span>
-                <p className="font-mono text-xs font-bold text-amber-900 mt-0.5">
+                <p className="font-mono text-xs font-bold text-orange-950 mt-0.5">
                   {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
                 </p>
                 <p className="text-[11px] text-emerald-700 font-extrabold mt-1 flex items-center gap-1">
@@ -135,7 +135,7 @@ function SettingsPage() {
               </div>
               <Link
                 to="/"
-                className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black px-4 py-2 text-xs shadow-md shadow-orange-500/20 hover:from-amber-600 hover:to-orange-600 transition"
+                className="rounded-xl bg-gradient-to-r from-orange-500 to-orange-500 text-white font-black px-4 py-2 text-xs shadow-md shadow-orange-500/20 hover:from-orange-600 hover:to-orange-600 transition"
               >
                 Update Location
               </Link>
@@ -143,9 +143,9 @@ function SettingsPage() {
           </section>
 
           {/* Preferences */}
-          <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <section className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-3 mb-3.5">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-400 text-white shadow-xs">
                 <Sparkles className="size-4" />
               </div>
               <div>
@@ -156,7 +156,7 @@ function SettingsPage() {
 
             <div className="space-y-3">
               {/* Toggle 1: Haptics */}
-              <div className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-amber-50/30 p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-orange-950/10 bg-orange-50/30 p-3.5">
                 <div>
                   <span className="text-xs font-black text-stone-900 block">Haptic Vibrations</span>
                   <span className="text-[11px] text-stone-500">Physical micro-vibration feedback on touch</span>
@@ -181,7 +181,7 @@ function SettingsPage() {
               </div>
 
               {/* Toggle 2: Voice AI */}
-              <div className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-amber-50/30 p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-orange-950/10 bg-orange-50/30 p-3.5">
                 <div>
                   <span className="text-xs font-black text-stone-900 block">Voice Assistant Audio</span>
                   <span className="text-[11px] text-stone-500">Spoken responses for voice search and help</span>
@@ -206,7 +206,7 @@ function SettingsPage() {
               </div>
 
               {/* Toggle 3: Sound Effects */}
-              <div className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-amber-50/30 p-3.5">
+              <div className="flex items-center justify-between rounded-2xl border border-orange-950/10 bg-orange-50/30 p-3.5">
                 <div>
                   <span className="text-xs font-black text-stone-900 block">Order Sound Chimes</span>
                   <span className="text-[11px] text-stone-500">Audio alerts on dispatch and delivery updates</span>
@@ -233,9 +233,9 @@ function SettingsPage() {
           </section>
 
           {/* Legal & Privacy Shield */}
-          <section className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <section className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
             <div className="flex items-center gap-2.5 mb-2">
-              <ShieldCheck className="size-5 text-amber-600" />
+              <ShieldCheck className="size-5 text-orange-600" />
               <h2 className="text-xs font-black text-stone-900 uppercase tracking-wider">Privacy &amp; Terms</h2>
             </div>
             <p className="text-xs text-stone-600 leading-relaxed font-medium">

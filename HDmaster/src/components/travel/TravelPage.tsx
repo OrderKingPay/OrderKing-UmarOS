@@ -133,7 +133,7 @@ export function TravelPage() {
                       <p className="text-xs">Customer Price</p>
                       <p className="font-mono font-semibold">${r.bestOffer.customerPrice.toFixed(2)}</p>
                     </div>
-                    <div className="p-2 rounded bg-yellow-500/10 border border-yellow-500/20 text-yellow-500">
+                    <div className="p-2 rounded bg-orange-500/10 border border-orange-500/20 text-orange-500">
                       <p className="text-xs">Affiliate Commission</p>
                       <p className="font-mono font-semibold">${r.bestOffer.affiliateCommission.toFixed(2)}</p>
                     </div>

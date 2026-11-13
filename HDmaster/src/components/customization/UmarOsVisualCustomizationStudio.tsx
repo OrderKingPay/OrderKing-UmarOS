@@ -990,7 +990,7 @@ export function UmarOsVisualCustomizationStudio({
       {/* Studio Header Bar */}
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-slate-900 px-6 py-4 text-white">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-rose-600 via-amber-500 to-emerald-500 shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-rose-600 via-orange-500 to-emerald-500 shadow-md">
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -1058,7 +1058,7 @@ export function UmarOsVisualCustomizationStudio({
             onClick={() => setActiveTab("ai_compiler")}
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition",
-              activeTab === "ai_compiler" ? "bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow" : "text-slate-300 hover:text-white"
+              activeTab === "ai_compiler" ? "bg-gradient-to-r from-orange-500 to-rose-600 text-white shadow" : "text-slate-300 hover:text-white"
             )}
           >
             <Sparkles className="h-3.5 w-3.5" /> Umar AI Compiler
@@ -1214,7 +1214,7 @@ export function UmarOsVisualCustomizationStudio({
                   {a11yScores.accentOnBg.passesAA ? (
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
                   ) : (
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+                    <AlertTriangle className="h-3.5 w-3.5 text-orange-500" />
                   )}
                   Non-text UI icons: {a11yScores.accentOnBg.contrastRatio >= 3.0 ? "Passed (3:1)" : "Caution"}
                 </div>
@@ -1596,7 +1596,7 @@ export function UmarOsVisualCustomizationStudio({
                 <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                      <Sparkles className="h-3.5 w-3.5 text-amber-500" /> Word-by-Word Linguistic Alignment Inspector
+                      <Sparkles className="h-3.5 w-3.5 text-orange-500" /> Word-by-Word Linguistic Alignment Inspector
                     </h4>
                     <span className="text-[10px] text-slate-500">Granular word chips</span>
                   </div>
@@ -1859,7 +1859,7 @@ export function UmarOsVisualCustomizationStudio({
                               <h5 className="text-xs font-bold mt-1">Flat 50% Off Top Restaurants</h5>
                               <p className="text-[10px] text-white/80">Use Code: UMAROS50</p>
                             </div>
-                            <Sparkles className="h-6 w-6 text-amber-300" />
+                            <Sparkles className="h-6 w-6 text-orange-300" />
                           </div>
                         )}
 
@@ -1899,7 +1899,7 @@ export function UmarOsVisualCustomizationStudio({
                         )}
 
                         {section.type === "deal_strip" && (
-                          <div className="flex items-center justify-between text-xs bg-amber-50/70 p-2 rounded-lg border border-amber-200 text-amber-900">
+                          <div className="flex items-center justify-between text-xs bg-orange-50/70 p-2 rounded-lg border border-orange-200 text-orange-950">
                             <span className="font-bold flex items-center gap-1">
                               Lightning Flash Deals
                             </span>
@@ -1953,7 +1953,7 @@ export function UmarOsVisualCustomizationStudio({
             {/* Top Command Bar: Dual-Mode Control & Fleet SSE Sync Action */}
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-amber-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-orange-400">
                   <Sliders className="h-5 w-5" />
                 </div>
                 <div>
@@ -2216,7 +2216,7 @@ export function UmarOsVisualCustomizationStudio({
                   <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-900">Wait Pay Rate</span>
-                      <span className="font-mono text-xs font-black text-amber-700">₹{kitchenWaitRatePerMinRupees}/min</span>
+                      <span className="font-mono text-xs font-black text-orange-700">₹{kitchenWaitRatePerMinRupees}/min</span>
                     </div>
                     <input
                       type="range"
@@ -2569,7 +2569,7 @@ export function UmarOsVisualCustomizationStudio({
                   <div className="p-3 rounded-lg border border-slate-200 bg-slate-50/50 space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-900">Packaging Fee Cap</span>
-                      <span className="font-mono text-xs font-black text-amber-700">₹{packagingFeeCapRupees}</span>
+                      <span className="font-mono text-xs font-black text-orange-700">₹{packagingFeeCapRupees}</span>
                     </div>
                     <input
                       type="range"
@@ -2606,7 +2606,7 @@ export function UmarOsVisualCustomizationStudio({
               <div className="space-y-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div className="flex items-center gap-2">
-                    <Radio className="h-4 w-4 text-amber-600" />
+                    <Radio className="h-4 w-4 text-orange-600" />
                     <h3 className="text-sm font-bold text-slate-900">
                       4. Fleet &amp; Cash Controls (COD, Dispatch, Voice Alerts)
                     </h3>
@@ -2626,7 +2626,7 @@ export function UmarOsVisualCustomizationStudio({
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-base font-black text-amber-600 font-mono">
+                      <span className="text-base font-black text-orange-600 font-mono">
                         ₹{codLimitRupees.toLocaleString("en-IN")}
                       </span>
                       <span className="text-[10px] text-slate-400 block font-mono">
@@ -2655,7 +2655,7 @@ export function UmarOsVisualCustomizationStudio({
                           onClick={() => setCodLimitRupees(lim)}
                           className={cn(
                             "px-2 py-0.5 rounded text-[10px] font-bold border",
-                            codLimitRupees === lim ? "bg-amber-600 text-white border-amber-600" : "bg-white text-slate-700 border-slate-200"
+                            codLimitRupees === lim ? "bg-orange-600 text-white border-orange-600" : "bg-white text-slate-700 border-slate-200"
                           )}
                         >
                           ₹{lim}
@@ -2783,11 +2783,11 @@ export function UmarOsVisualCustomizationStudio({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">1% TCS (Sec 52):</span>
-                    <span className="text-amber-400">-₹{marketplaceSimulation.tcsSec52.toFixed(2)}</span>
+                    <span className="text-orange-400">-₹{marketplaceSimulation.tcsSec52.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">1% TDS (Sec 194-O):</span>
-                    <span className="text-amber-400">-₹{marketplaceSimulation.tdsSec194O.toFixed(2)}</span>
+                    <span className="text-orange-400">-₹{marketplaceSimulation.tdsSec194O.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Packaging (Capped):</span>
@@ -2875,7 +2875,7 @@ export function UmarOsVisualCustomizationStudio({
                     <span className="text-slate-400">Sec 9(5) 5% (Platform):</span>
                     <span>₹{marketplaceSimulation.sec95TaxPayableByPlatform.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between pt-1 font-bold text-amber-300">
+                  <div className="flex justify-between pt-1 font-bold text-orange-300">
                     <span>Platform Net Margin:</span>
                     <span>₹{marketplaceSimulation.platformNetMargin.toFixed(2)}</span>
                   </div>
@@ -2903,7 +2903,7 @@ export function UmarOsVisualCustomizationStudio({
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-amber-500" />
+                  <Sparkles className="h-5 w-5 text-orange-500" />
                   Umar AI 10-Stage Autonomous Customization Compiler
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -2911,7 +2911,7 @@ export function UmarOsVisualCustomizationStudio({
                 </p>
               </div>
 
-              <Badge tone="warning" className="text-[10px] bg-amber-50 text-amber-800 border-amber-200">
+              <Badge tone="warning" className="text-[10px] bg-orange-50 text-orange-900 border-orange-200">
                 Stage Gate Enforced
               </Badge>
             </div>
@@ -2933,7 +2933,7 @@ export function UmarOsVisualCustomizationStudio({
                 />
                 <Button
                   onClick={() => handleStageAiPrompt()}
-                  className="bg-gradient-to-r from-amber-500 to-rose-600 hover:opacity-90 text-white text-xs font-bold gap-1.5 h-9 px-4"
+                  className="bg-gradient-to-r from-orange-500 to-rose-600 hover:opacity-90 text-white text-xs font-bold gap-1.5 h-9 px-4"
                 >
                   <Sparkles className="h-3.5 w-3.5" /> Stage &amp; Compile Change
                 </Button>
@@ -2973,13 +2973,13 @@ export function UmarOsVisualCustomizationStudio({
 
             {/* Staged Preview Diff Card (10-Stage Execution Pipeline) */}
             {stagedPreview && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50/40 p-5 shadow-sm space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-amber-200/60">
+              <div className="rounded-xl border border-orange-200 bg-orange-50/40 p-5 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-orange-200/60">
                   <div className="flex items-center gap-2">
-                    <Badge tone="warning" className="bg-amber-100 text-amber-900 border-amber-300 font-mono text-[10px]">
+                    <Badge tone="warning" className="bg-orange-100 text-orange-950 border-orange-300 font-mono text-[10px]">
                       {stagedPreview.previewId}
                     </Badge>
-                    <span className="text-xs font-bold text-amber-950">
+                    <span className="text-xs font-bold text-orange-950">
                       Stage 5: Before / After Staged Preview Diff
                     </span>
                   </div>
@@ -2993,7 +2993,7 @@ export function UmarOsVisualCustomizationStudio({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="rounded-lg bg-white p-3 border border-amber-200/80 space-y-1">
+                  <div className="rounded-lg bg-white p-3 border border-orange-200/80 space-y-1">
                     <span className="text-[10px] uppercase font-bold text-slate-400">Previous State</span>
                     <div className="font-mono text-slate-700">
                       {JSON.stringify(stagedPreview.previousValue, null, 2)}
@@ -3009,7 +3009,7 @@ export function UmarOsVisualCustomizationStudio({
                 </div>
 
                 {/* Dependency Analysis */}
-                <div className="rounded-lg bg-white p-3 border border-amber-200/60 text-xs space-y-2">
+                <div className="rounded-lg bg-white p-3 border border-orange-200/60 text-xs space-y-2">
                   <span className="font-bold text-slate-800 block">
                     Stage 3 &amp; 4: Dependency &amp; Accessibility Analysis
                   </span>

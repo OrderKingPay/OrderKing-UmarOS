@@ -108,7 +108,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
           status === "ONLINE"
             ? "border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800"
             : status === "PAUSED_30" || status === "PAUSED_60"
-            ? "border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 ring-1 ring-amber-300/50"
+            ? "border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-900 ring-1 ring-orange-300/50"
             : "border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 ring-1 ring-rose-300/50"
         }`}
         title="Outlet Operational Status (Click to change)"
@@ -126,8 +126,8 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
         ) : status === "PAUSED_30" || status === "PAUSED_60" ? (
           <>
             <span className="relative flex size-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-              <span className="relative inline-flex rounded-full size-2.5 bg-amber-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
+              <span className="relative inline-flex rounded-full size-2.5 bg-orange-500" />
             </span>
             <span className="hidden sm:inline">
               Paused ({status === "PAUSED_30" ? "30m" : "60m"})
@@ -190,7 +190,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                       ? preset.dotColor === "green"
                         ? "border-emerald-500 bg-emerald-50 text-emerald-900 ring-1 ring-emerald-500"
                         : preset.dotColor === "yellow"
-                        ? "border-amber-500 bg-amber-50 text-amber-900 ring-1 ring-amber-500"
+                        ? "border-orange-500 bg-orange-50 text-orange-950 ring-1 ring-orange-500"
                         : "border-rose-500 bg-rose-50 text-rose-900 ring-1 ring-rose-500"
                       : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
                   }`}
@@ -201,7 +201,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                         preset.dotColor === "green"
                           ? "bg-emerald-500"
                           : preset.dotColor === "yellow"
-                          ? "bg-amber-500"
+                          ? "bg-orange-500"
                           : "bg-rose-500"
                       }`}
                     />
@@ -219,7 +219,7 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
                             preset.dotColor === "green"
                               ? "text-emerald-700 font-bold"
                               : preset.dotColor === "yellow"
-                              ? "text-amber-700 font-bold"
+                              ? "text-orange-700 font-bold"
                               : "text-rose-700 font-bold"
                           }
                         >
@@ -244,15 +244,15 @@ export function OutletStatusPill({ restaurantId, restaurantName: _restaurantName
           </div>
 
           {(status === "PAUSED_30" || status === "PAUSED_60") && (
-            <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 flex items-center justify-between text-xs text-amber-800">
+            <div className="mt-2 rounded-xl border border-orange-200 bg-orange-50 p-2.5 flex items-center justify-between text-xs text-orange-900">
               <div className="flex items-center gap-2">
-                <Clock className="size-4 text-amber-600 animate-spin" />
+                <Clock className="size-4 text-orange-600 animate-spin" />
                 <span>Timer: <strong>{remainingText}</strong></span>
               </div>
               <button
                 type="button"
                 onClick={() => handleSelectStatus("ONLINE")}
-                className="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold text-[11px] hover:bg-amber-700 cursor-pointer"
+                className="px-2.5 py-1 rounded-lg bg-orange-600 text-white font-bold text-[11px] hover:bg-orange-700 cursor-pointer"
               >
                 Resume Now
               </button>

@@ -257,13 +257,13 @@ export function AirportAutoSuggest({
           className={
             inputClassName ||
             (isDark
-              ? "w-full h-10 px-3 pr-8 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none transition placeholder:text-slate-500"
+              ? "w-full h-10 px-3 pr-8 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-orange-400 outline-none transition placeholder:text-slate-500"
               : "w-full h-10 px-3 pr-8 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs font-bold focus:border-sky-500 outline-none transition placeholder:text-slate-400")
           }
         />
         <Plane
           className={`size-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${
-            isDark ? "text-amber-400/70" : "text-sky-600/70"
+            isDark ? "text-orange-400/70" : "text-sky-600/70"
           }`}
         />
       </div>
@@ -300,7 +300,7 @@ export function AirportAutoSuggest({
                 className={`w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2.5 transition text-xs cursor-pointer ${
                   isHighlighted
                     ? isDark
-                      ? "bg-amber-400/15 text-amber-200"
+                      ? "bg-orange-400/15 text-orange-200"
                       : "bg-sky-50 text-sky-900"
                     : isDark
                     ? "hover:bg-slate-800/60 text-slate-200"
@@ -311,7 +311,7 @@ export function AirportAutoSuggest({
                   <span
                     className={`font-mono font-black text-[11px] px-2 py-0.5 rounded-md border shrink-0 ${
                       isDark
-                        ? "bg-amber-400/20 text-amber-300 border-amber-400/30"
+                        ? "bg-orange-400/20 text-orange-300 border-orange-400/30"
                         : "bg-sky-100 text-sky-800 border-sky-200"
                     }`}
                   >
@@ -331,7 +331,7 @@ export function AirportAutoSuggest({
                 {isSelected && (
                   <Check
                     className={`size-3.5 shrink-0 ${
-                      isDark ? "text-amber-400" : "text-sky-600"
+                      isDark ? "text-orange-400" : "text-sky-600"
                     }`}
                   />
                 )}
@@ -451,13 +451,13 @@ export function StationAutoSuggest({
           className={
             inputClassName ||
             (isDark
-              ? "w-full h-10 px-3 pr-8 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-amber-400 outline-none transition placeholder:text-slate-500"
+              ? "w-full h-10 px-3 pr-8 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold focus:border-orange-400 outline-none transition placeholder:text-slate-500"
               : "w-full h-10 px-3 pr-8 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-xs font-bold focus:border-indigo-500 outline-none transition placeholder:text-slate-400")
           }
         />
         <TrainFront
           className={`size-3.5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${
-            isDark ? "text-amber-400/70" : "text-indigo-600/70"
+            isDark ? "text-orange-400/70" : "text-indigo-600/70"
           }`}
         />
       </div>
@@ -494,7 +494,7 @@ export function StationAutoSuggest({
                 className={`w-full text-left px-2.5 py-2 rounded-xl flex items-center justify-between gap-2.5 transition text-xs cursor-pointer ${
                   isHighlighted
                     ? isDark
-                      ? "bg-amber-400/15 text-amber-200"
+                      ? "bg-orange-400/15 text-orange-200"
                       : "bg-indigo-50 text-indigo-900"
                     : isDark
                     ? "hover:bg-slate-800/60 text-slate-200"
@@ -505,7 +505,7 @@ export function StationAutoSuggest({
                   <span
                     className={`font-mono font-black text-[11px] px-2 py-0.5 rounded-md border shrink-0 ${
                       isDark
-                        ? "bg-amber-400/20 text-amber-300 border-amber-400/30"
+                        ? "bg-orange-400/20 text-orange-300 border-orange-400/30"
                         : "bg-indigo-100 text-indigo-800 border-indigo-200"
                     }`}
                   >
@@ -522,7 +522,7 @@ export function StationAutoSuggest({
                 {isSelected && (
                   <Check
                     className={`size-3.5 shrink-0 ${
-                      isDark ? "text-amber-400" : "text-indigo-600"
+                      isDark ? "text-orange-400" : "text-indigo-600"
                     }`}
                   />
                 )}

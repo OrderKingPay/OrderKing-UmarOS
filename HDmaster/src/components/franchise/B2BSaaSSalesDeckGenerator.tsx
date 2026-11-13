@@ -387,7 +387,7 @@ export function B2BSaaSSalesDeckGenerator() {
                           className={`text-[10px] ${
                             outlet.status === "ACTIVE"
                               ? "bg-emerald-950/60 text-emerald-300 border-emerald-500/40"
-                              : "bg-amber-950/60 text-amber-300 border-amber-500/40"
+                              : "bg-orange-950/60 text-orange-300 border-orange-500/40"
                           }`}
                         >
                           {outlet.status}
@@ -567,7 +567,7 @@ export function B2BSaaSSalesDeckGenerator() {
             </div>
             <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-3.5">
               <span className="text-[10px] text-slate-400 uppercase">Verified Leads</span>
-              <p className="text-base font-black text-amber-400 mt-1">
+              <p className="text-base font-black text-orange-400 mt-1">
                 {revenueBreakdown.verifiedLeadsCount}
               </p>
             </div>

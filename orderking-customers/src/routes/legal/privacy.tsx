@@ -21,7 +21,7 @@ function PrivacyPage() {
             <Badge className="bg-zinc-900 border-zinc-700 text-zinc-400 font-mono text-[10px]">
               Last Updated: October 2026
             </Badge>
-            <Badge className="bg-amber-950/60 border-amber-500/40 text-amber-300 font-mono text-[10px]">
+            <Badge className="bg-orange-950/60 border-orange-500/40 text-orange-300 font-mono text-[10px]">
               GSTIN: 18AFXPH9838M1Z9
             </Badge>
           </div>

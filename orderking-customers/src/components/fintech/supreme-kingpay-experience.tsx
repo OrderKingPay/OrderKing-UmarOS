@@ -210,9 +210,9 @@ function CatalogHitIcon({ icon }: { icon: string }) {
     case "tour":
       return <Landmark className="size-4 text-emerald-400 shrink-0" aria-hidden="true" />;
     case "sacred":
-      return <Building2 className="size-4 text-amber-400 shrink-0" aria-hidden="true" />;
+      return <Building2 className="size-4 text-orange-400 shrink-0" aria-hidden="true" />;
     case "bill-electric":
-      return <Zap className="size-4 text-yellow-400 shrink-0" aria-hidden="true" />;
+      return <Zap className="size-4 text-orange-400 shrink-0" aria-hidden="true" />;
     case "bill-mobile":
       return <Smartphone className="size-4 text-cyan-400 shrink-0" aria-hidden="true" />;
     case "bill-tv":
@@ -390,7 +390,7 @@ export function SupremeKingPayExperience() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 text-slate-100 font-sans selection:bg-amber-400 selection:text-slate-950">
+    <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 text-slate-100 font-sans selection:bg-orange-400 selection:text-slate-950">
       {/* ─── 1. TOP SPLIT BAR: SMART SEARCH (LEFT) + COMPACT QUICK BAR (RIGHT) ─── */}
       <section aria-label="KingPay Search and Quick Bar" className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3">
         {/* Left Half: AI Concierge Button + Universal Deep Search Box */}
@@ -398,7 +398,7 @@ export function SupremeKingPayExperience() {
           <button
             type="button"
             onClick={() => setConciergeOpen(true)}
-            className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl border border-amber-400/80 bg-stone-950 text-amber-300 shadow-md hover:bg-stone-900 hover:border-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 transition-all cursor-pointer"
+            className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl border border-orange-400/80 bg-stone-950 text-orange-300 shadow-md hover:bg-stone-900 hover:border-orange-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-500 transition-all cursor-pointer"
             aria-label="Open KingPay AI Concierge"
             title="KingPay AI Concierge"
           >
@@ -406,7 +406,7 @@ export function SupremeKingPayExperience() {
           </button>
 
           <div className="relative flex-1 w-full">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-amber-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-orange-400">
               <Search className="size-4" />
             </div>
             <input
@@ -414,7 +414,7 @@ export function SupremeKingPayExperience() {
               value={universalSearch}
               onChange={(e) => setUniversalSearch(e.target.value)}
               placeholder="Search flights, trains, hotels, tours, bills, insurance, jobs..."
-              className="w-full h-11 sm:h-12 pl-10 pr-9 rounded-2xl border border-slate-800 bg-[#0d111a]/95 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-400/80 shadow-md backdrop-blur-md transition-all"
+              className="w-full h-11 sm:h-12 pl-10 pr-9 rounded-2xl border border-slate-800 bg-[#0d111a]/95 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-400/80 shadow-md backdrop-blur-md transition-all"
             />
             {universalSearch.trim().length > 0 && (
               <button
@@ -428,7 +428,7 @@ export function SupremeKingPayExperience() {
 
             {/* Deep Universal Search Results Floating Dropdown */}
             {universalSearch.trim().length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-amber-500/40 bg-[#0d111a]/98 backdrop-blur-2xl shadow-2xl p-2 z-50 max-h-96 overflow-y-auto space-y-1">
+              <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-orange-500/40 bg-[#0d111a]/98 backdrop-blur-2xl shadow-2xl p-2 z-50 max-h-96 overflow-y-auto space-y-1">
                 {ALL_OMNIPRESENT_CATALOG.filter((item) => {
                   const q = universalSearch.toLowerCase().trim();
                   return (
@@ -470,7 +470,7 @@ export function SupremeKingPayExperience() {
                         </span>
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-black text-white group-hover:text-amber-300 transition truncate">
+                            <span className="text-xs font-black text-white group-hover:text-orange-300 transition truncate">
                               {hit.title}
                             </span>
                             <span className="text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-800 text-slate-300 shrink-0">
@@ -482,7 +482,7 @@ export function SupremeKingPayExperience() {
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="size-4 text-slate-600 group-hover:text-amber-400 shrink-0 ml-2" />
+                      <ChevronRight className="size-4 text-slate-600 group-hover:text-orange-400 shrink-0 ml-2" />
                     </button>
                   ))
                 )}
@@ -492,20 +492,20 @@ export function SupremeKingPayExperience() {
         </div>
 
         {/* Right Half: Compact Quick Bar (Wallet Balance + Scan QR + Passbook) */}
-        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0 bg-[#0d111a]/95 border border-amber-500/30 rounded-2xl p-1 px-2.5 sm:px-3 shadow-md backdrop-blur-md">
+        <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto shrink-0 bg-[#0d111a]/95 border border-orange-500/30 rounded-2xl p-1 px-2.5 sm:px-3 shadow-md backdrop-blur-md">
           <div className="flex items-center gap-2 pr-2 border-r border-slate-800">
-            <div className="size-7 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 font-black shadow-xs">
+            <div className="size-7 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-slate-950 font-black shadow-xs">
               <Wallet className="size-3.5" />
             </div>
             <div>
               <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block leading-none">UPI Ready</span>
-              <span className="text-xs font-black font-mono text-amber-300 leading-none">{formatPaise(walletBalancePaise)}</span>
+              <span className="text-xs font-black font-mono text-orange-300 leading-none">{formatPaise(walletBalancePaise)}</span>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setIsScannerOpen(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-110 text-slate-950 text-xs font-black transition active:scale-95 shadow-sm cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:brightness-110 text-slate-950 text-xs font-black transition active:scale-95 shadow-sm cursor-pointer"
           >
             <QrCode className="size-3.5" />
             <span>Scan QR</span>
@@ -513,17 +513,17 @@ export function SupremeKingPayExperience() {
           <button
             type="button"
             onClick={() => setActiveDesk((curr) => (curr === "pay" ? null : "pay"))}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-500/40 bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 text-xs font-bold transition active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-orange-500/40 bg-orange-950/40 hover:bg-orange-950/60 text-orange-300 text-xs font-bold transition active:scale-95 cursor-pointer"
           >
-            <Send className="size-3.5 text-amber-400" />
+            <Send className="size-3.5 text-orange-400" />
             <span className="hidden xs:inline">Pay UPI</span>
           </button>
           <button
             type="button"
             onClick={() => setActiveDesk((curr) => (curr === "passbook" ? null : "passbook"))}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-700/80 hover:border-amber-400/50 text-slate-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-700/80 hover:border-orange-400/50 text-slate-300 hover:text-white text-xs font-bold transition active:scale-95 cursor-pointer"
           >
-            <Receipt className="size-3.5 text-amber-400" />
+            <Receipt className="size-3.5 text-orange-400" />
             <span className="hidden xs:inline">Passbook</span>
           </button>
         </div>
@@ -578,16 +578,16 @@ export function SupremeKingPayExperience() {
             {/* Tile 3: Hotels */}
             <Link
               to={"/travel?tab=hotels" as any}
-              className="group rounded-2xl border border-amber-500/30 bg-gradient-to-br from-[#1a140d]/95 via-[#120e09]/95 to-[#0a0805]/95 hover:border-amber-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(245,158,11,0.22)] transform-gpu will-change-transform no-underline"
+              className="group rounded-2xl border border-orange-500/30 bg-gradient-to-br from-[#1a140d]/95 via-[#120e09]/95 to-[#0a0805]/95 hover:border-orange-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(245,158,11,0.22)] transform-gpu will-change-transform no-underline"
             >
               <div className="flex items-center justify-between">
-                <div className="size-8 sm:size-9 rounded-xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.2)]">
+                <div className="size-8 sm:size-9 rounded-xl bg-orange-400/15 border border-orange-400/30 flex items-center justify-center text-orange-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(245,158,11,0.2)]">
                   <Building2 className="size-4 sm:size-4.5" />
                 </div>
-                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-amber-400 transition" />
+                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-orange-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-amber-300 transition truncate">
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-orange-300 transition truncate">
                   Hotels
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -685,16 +685,16 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk("bills")}
-              className="group rounded-2xl border border-yellow-500/30 bg-gradient-to-br from-[#1a170a]/95 via-[#131106]/95 to-[#0a0903]/95 hover:border-yellow-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(234,179,8,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
+              className="group rounded-2xl border border-orange-500/30 bg-gradient-to-br from-[#1a170a]/95 via-[#131106]/95 to-[#0a0903]/95 hover:border-orange-400/80 p-3 sm:p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[108px] shadow-[0_4px_20px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.08)] hover:shadow-[0_8px_25px_rgba(234,179,8,0.22)] transform-gpu will-change-transform text-left cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <div className="size-8 sm:size-9 rounded-xl bg-yellow-400/15 border border-yellow-400/30 flex items-center justify-center text-yellow-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(234,179,8,0.2)]">
+                <div className="size-8 sm:size-9 rounded-xl bg-orange-400/15 border border-orange-400/30 flex items-center justify-center text-orange-400 group-hover:scale-105 transition shrink-0 shadow-[0_2px_8px_rgba(234,179,8,0.2)]">
                   <Lightbulb className="size-4 sm:size-4.5" />
                 </div>
-                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-yellow-400 transition" />
+                <ChevronRight className="size-3.5 text-slate-600 group-hover:text-orange-400 transition" />
               </div>
               <div className="min-w-0 mt-2">
-                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-yellow-300 transition truncate">
+                <h2 className="text-xs sm:text-sm font-black text-white group-hover:text-orange-300 transition truncate">
                   Daily Bills
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -734,7 +734,7 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to KingPay</span>
@@ -781,17 +781,17 @@ export function SupremeKingPayExperience() {
             {garageVehicles.some((v) => checkVehicleExpiryAlert(v).hasAlert) && (
               <div
                 role="alert"
-                className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/40 text-amber-200 flex items-start gap-3 shadow-lg animate-in fade-in duration-200"
+                className="p-3.5 rounded-2xl bg-orange-500/10 border border-orange-500/40 text-orange-200 flex items-start gap-3 shadow-lg animate-in fade-in duration-200"
               >
-                <div className="size-8 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
-                  <AlertTriangle className="size-4 text-amber-400 animate-pulse" />
+                <div className="size-8 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 shrink-0 mt-0.5">
+                  <AlertTriangle className="size-4 text-orange-400 animate-pulse" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+                    <span className="text-xs font-black uppercase tracking-wider text-orange-400">
                       Automated 15-Day Expiry Alert Active
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 font-bold border border-orange-500/30">
                       MoRTH &amp; RTO Expiry Radar
                     </span>
                   </div>
@@ -901,7 +901,7 @@ export function SupremeKingPayExperience() {
                           <span className="font-bold text-slate-200 flex items-center gap-1">
                             <span>{veh.pucValidUntil}</span>
                             {expiryStatus.isPucExpiringSoon && (
-                              <span className="inline-flex items-center gap-0.5 text-[9.5px] font-black text-amber-400 bg-amber-400/10 px-1 rounded border border-amber-400/30">
+                              <span className="inline-flex items-center gap-0.5 text-[9.5px] font-black text-orange-400 bg-orange-400/10 px-1 rounded border border-orange-400/30">
                                 <AlertTriangle className="size-2.5 shrink-0" aria-hidden="true" />
                                 <span>{veh.pucExpiryDays}d left</span>
                               </span>
@@ -924,7 +924,7 @@ export function SupremeKingPayExperience() {
                             onClick={() => {
                               toast.success(`Opening PolicyBazaar 1-Click Renewal for ${veh.regNo} with partner affiliate tracking.`);
                             }}
-                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 hover:brightness-110 text-white font-black text-[11px] transition active:scale-95 shadow-sm inline-flex items-center gap-1 no-underline"
+                            className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 to-orange-500 hover:brightness-110 text-white font-black text-[11px] transition active:scale-95 shadow-sm inline-flex items-center gap-1 no-underline"
                           >
                             <span>PolicyBazaar (1-Click)</span>
                             <ExternalLink className="size-3" />
@@ -959,12 +959,12 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to KingPay</span>
             </button>
-            <span className="text-xs font-black uppercase tracking-wider text-yellow-400">
+            <span className="text-xs font-black uppercase tracking-wider text-orange-400">
               BBPS APDCL Assam, Mobile &amp; FASTag Desk
             </span>
           </div>
@@ -972,17 +972,17 @@ export function SupremeKingPayExperience() {
           <section
             id="bills-desk"
             aria-label="Daily Bills and Recharge Desk"
-            className="rounded-[28px] border border-yellow-500/30 bg-gradient-to-br from-[#141209]/95 via-[#0e0c06]/95 to-[#070603]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
+            className="rounded-[28px] border border-orange-500/30 bg-gradient-to-br from-[#141209]/95 via-[#0e0c06]/95 to-[#070603]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-yellow-950/60 pb-3.5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-orange-950/60 pb-3.5">
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-yellow-400/15 border border-yellow-400/30 flex items-center justify-center text-yellow-400 shrink-0">
+                <div className="size-10 rounded-xl bg-orange-400/15 border border-orange-400/30 flex items-center justify-center text-orange-400 shrink-0">
                   <Lightbulb className="size-5" />
                 </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
                     <span>Daily Utility Bills &amp; Instant Recharge</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-yellow-400/20 text-yellow-300 border border-yellow-400/30 font-bold uppercase">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-400/20 text-orange-300 border border-orange-400/30 font-bold uppercase">
                       Bharat BillPay (BBPS)
                     </span>
                   </h3>
@@ -994,7 +994,7 @@ export function SupremeKingPayExperience() {
 
               <Link
                 to="/kingpay-bbps"
-                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-slate-950 text-xs font-black transition active:scale-95 no-underline shadow-sm"
+                className="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-400 hover:bg-orange-300 text-slate-950 text-xs font-black transition active:scale-95 no-underline shadow-sm"
               >
                 <span>Open All 250+ Billers</span>
                 <ChevronRight className="size-3.5" />
@@ -1011,14 +1011,14 @@ export function SupremeKingPayExperience() {
                 <Link
                   key={idx}
                   to={item.to as any}
-                  className="p-3 rounded-2xl border border-slate-800 bg-[#0d1017]/80 hover:border-yellow-400/50 transition-all flex flex-col justify-between min-h-[82px] no-underline group"
+                  className="p-3 rounded-2xl border border-slate-800 bg-[#0d1017]/80 hover:border-orange-400/50 transition-all flex flex-col justify-between min-h-[82px] no-underline group"
                 >
                   <div className="flex items-center justify-between">
-                    <item.icon className="size-4 text-yellow-400 group-hover:scale-110 transition shrink-0" />
-                    <ArrowRight className="size-3 text-slate-600 group-hover:text-yellow-400 transition" />
+                    <item.icon className="size-4 text-orange-400 group-hover:scale-110 transition shrink-0" />
+                    <ArrowRight className="size-3 text-slate-600 group-hover:text-orange-400 transition" />
                   </div>
                   <div>
-                    <span className="text-xs font-black text-white group-hover:text-yellow-300 transition block truncate">
+                    <span className="text-xs font-black text-white group-hover:text-orange-300 transition block truncate">
                       {item.name}
                     </span>
                     <span className="text-[10px] text-slate-400 block truncate">{item.sub}</span>
@@ -1037,7 +1037,7 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to KingPay</span>
@@ -1104,7 +1104,7 @@ export function SupremeKingPayExperience() {
               <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-white">Fixed Deposits (FD)</span>
-                  <span className="text-[10px] font-bold text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
+                  <span className="text-[10px] font-bold text-orange-400 bg-orange-950/60 px-2 py-0.5 rounded-full border border-orange-500/30">
                     Shriram &amp; Bajaj
                   </span>
                 </div>
@@ -1121,7 +1121,7 @@ export function SupremeKingPayExperience() {
                         window.open("https://www.shriramfinance.in/fixed-deposit", "_blank", "noopener,noreferrer");
                       }
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
+                    className="px-3 py-1.5 rounded-xl bg-orange-400 hover:bg-orange-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
                   >
                     Explore FDs
                   </button>
@@ -1140,12 +1140,12 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to KingPay</span>
             </button>
-            <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+            <span className="text-xs font-black uppercase tracking-wider text-orange-400">
               Direct UPI &amp; Dynamic BharatQR Desk
             </span>
           </div>
@@ -1153,11 +1153,11 @@ export function SupremeKingPayExperience() {
           <section
             id="upi-transfer-card"
             aria-label="Direct UPI Transfer Desk"
-            className="rounded-[32px] border border-amber-500/30 bg-[#0d111a]/95 backdrop-blur-2xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.7)] space-y-5"
+            className="rounded-[32px] border border-orange-500/30 bg-[#0d111a]/95 backdrop-blur-2xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.7)] space-y-5"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
               <div className="flex items-center gap-3">
-                <div className="size-11 rounded-2xl bg-amber-400/15 border border-amber-400/40 flex items-center justify-center text-amber-400">
+                <div className="size-11 rounded-2xl bg-orange-400/15 border border-orange-400/40 flex items-center justify-center text-orange-400">
                   <QrCode className="size-5" />
                 </div>
                 <div>
@@ -1192,7 +1192,7 @@ export function SupremeKingPayExperience() {
                       onChange={(e) =>
                         setUpiAmountInr(Math.max(1, Number(e.target.value) || 0))
                       }
-                      className="flex-1 h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-base font-bold focus:border-amber-400 outline-none"
+                      className="flex-1 h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-base font-bold focus:border-orange-400 outline-none"
                     />
                     {[100, 250, 500, 1000].map((amt) => (
                       <button
@@ -1202,7 +1202,7 @@ export function SupremeKingPayExperience() {
                         className={cn(
                           "h-11 px-3 rounded-xl border text-xs font-mono font-bold transition cursor-pointer",
                           upiAmountInr === amt
-                            ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                            ? "bg-orange-400/20 border-orange-400 text-orange-300"
                             : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
                         )}
                       >
@@ -1221,7 +1221,7 @@ export function SupremeKingPayExperience() {
                     value={upiNote}
                     onChange={(e) => setUpiNote(e.target.value)}
                     placeholder="e.g. OrderKing Payment"
-                    className="w-full h-10 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs focus:border-amber-400 outline-none"
+                    className="w-full h-10 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs focus:border-orange-400 outline-none"
                   />
                 </div>
 
@@ -1230,7 +1230,7 @@ export function SupremeKingPayExperience() {
                   <button
                     type="button"
                     onClick={() => setUseCustomVpa(!useCustomVpa)}
-                    className="text-xs text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs text-orange-400 hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <span>{useCustomVpa ? "Use OrderKing UPI" : "Pay a Custom UPI ID"}</span>
                   </button>
@@ -1240,7 +1240,7 @@ export function SupremeKingPayExperience() {
                       value={customPayeeVpa}
                       onChange={(e) => setCustomPayeeVpa(e.target.value)}
                       placeholder="e.g. merchant@upi or friend@oksbi"
-                      className="w-full h-10 mt-2 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-mono focus:border-amber-400 outline-none"
+                      className="w-full h-10 mt-2 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-mono focus:border-orange-400 outline-none"
                     />
                   )}
                 </div>
@@ -1252,7 +1252,7 @@ export function SupremeKingPayExperience() {
                     onClick={handleCopyUpiLink}
                     className="flex items-center justify-center gap-2 h-11 px-4 rounded-xl border border-slate-700 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition cursor-pointer"
                   >
-                    <Copy className="size-4 text-amber-400" />
+                    <Copy className="size-4 text-orange-400" />
                     <span>Copy Link</span>
                   </button>
                   <button
@@ -1267,7 +1267,7 @@ export function SupremeKingPayExperience() {
 
                 <a
                   href={upiUri}
-                  className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm shadow-md transition no-underline"
+                  className="w-full flex items-center justify-center gap-2 h-12 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm shadow-md transition no-underline"
                 >
                   <Send className="size-4" />
                   <span>Pay ₹{(parsedAmountPaise / 100).toFixed(2)} via UPI App</span>
@@ -1303,12 +1303,12 @@ export function SupremeKingPayExperience() {
             <div className="mt-6 pt-6 border-t border-slate-800 space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="size-4 text-amber-400" />
+                  <Users className="size-4 text-orange-400" />
                   <h3 className="text-xs sm:text-sm font-bold text-white">
                     Equal Bill Splitter
                   </h3>
                 </div>
-                <span className="text-[11px] text-amber-400 font-mono font-bold">
+                <span className="text-[11px] text-orange-400 font-mono font-bold">
                   {formatPaise(perPersonPaise)} / person
                 </span>
               </div>
@@ -1325,7 +1325,7 @@ export function SupremeKingPayExperience() {
                     onChange={(e) =>
                       setSplitBillAmount(Math.max(1, Number(e.target.value) || 0))
                     }
-                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-mono focus:border-amber-400 outline-none"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-mono focus:border-orange-400 outline-none"
                   />
                 </div>
 
@@ -1378,7 +1378,7 @@ export function SupremeKingPayExperience() {
             <button
               type="button"
               onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to KingPay</span>
@@ -1419,10 +1419,10 @@ export function SupremeKingPayExperience() {
       {/* ─── 7. DIGILOCKER KYC INFORMATION MODAL ─── */}
       {isKycModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl border border-amber-500/40 bg-[#0d111a] p-6 shadow-2xl text-white space-y-5">
+          <div className="relative w-full max-w-md rounded-3xl border border-orange-500/40 bg-[#0d111a] p-6 shadow-2xl text-white space-y-5">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-300">
+                <div className="size-9 rounded-xl bg-orange-400/20 border border-orange-400/30 flex items-center justify-center text-orange-300">
                   <ShieldCheck className="size-5" />
                 </div>
                 <div>
@@ -1440,8 +1440,8 @@ export function SupremeKingPayExperience() {
             </div>
 
             <div className="space-y-4">
-              <div className="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-1">
-                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+              <div className="p-3.5 rounded-2xl bg-orange-950/30 border border-orange-500/30 space-y-1">
+                <span className="text-xs font-bold text-orange-300 flex items-center gap-1.5">
                   <ShieldCheck className="size-3.5" /> Official DigiLocker Portal
                 </span>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
@@ -1452,7 +1452,7 @@ export function SupremeKingPayExperience() {
                 href="https://www.digilocker.gov.in/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 hover:brightness-110 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 no-underline"
+                className="w-full h-11 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 hover:brightness-110 text-slate-950 font-black text-xs transition flex items-center justify-center gap-2 no-underline"
               >
                 <span>Open Official DigiLocker Portal</span>
                 <ExternalLink className="size-3.5" />

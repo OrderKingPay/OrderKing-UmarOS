@@ -90,13 +90,13 @@ export function OrderKingPassbookReceipts({
     <div
       className={`rounded-3xl border p-5 sm:p-6 shadow-2xl ${
         isDark
-          ? "border-amber-400/40 bg-gradient-to-br from-slate-950 via-[#14120e] to-slate-950 text-white"
+          ? "border-orange-400/40 bg-gradient-to-br from-slate-950 via-[#14120e] to-slate-950 text-white"
           : "border-stone-200 bg-white text-stone-900"
       } ${className}`}
     >
       <div
         className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b ${
-          isDark ? "border-amber-400/20" : "border-stone-200"
+          isDark ? "border-orange-400/20" : "border-stone-200"
         }`}
       >
         <div>
@@ -104,8 +104,8 @@ export function OrderKingPassbookReceipts({
             <span
               className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-black ${
                 isDark
-                  ? "bg-amber-400/20 border border-amber-400/50 text-amber-300"
-                  : "bg-amber-100 border border-amber-300 text-amber-900"
+                  ? "bg-orange-400/20 border border-orange-400/50 text-orange-300"
+                  : "bg-orange-100 border border-orange-300 text-orange-950"
               }`}
             >
               <Receipt className="size-3.5" />
@@ -129,8 +129,8 @@ export function OrderKingPassbookReceipts({
             onClick={handleDownloadStatement}
             className={`h-9 rounded-xl text-xs font-bold gap-1.5 ${
               isDark
-                ? "border border-amber-400/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25"
-                : "border border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                ? "border border-orange-400/50 bg-orange-500/15 text-orange-300 hover:bg-orange-500/25"
+                : "border border-orange-300 bg-orange-50 text-orange-950 hover:bg-orange-100"
             }`}
           >
             <Download className="size-3.5" />
@@ -143,16 +143,16 @@ export function OrderKingPassbookReceipts({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-5">
         <div
           className={`rounded-2xl border p-4 ${
-            isDark ? "border-amber-400/30 bg-black/40" : "border-stone-200 bg-stone-50"
+            isDark ? "border-orange-400/30 bg-black/40" : "border-stone-200 bg-stone-50"
           }`}
         >
-          <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+          <span className="text-[10px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400 block">
             Prepaid App Balance
           </span>
           <span className={`text-2xl font-black font-mono block mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
             {formatPaise(walletBalancePaise)}
           </span>
-          <span className="inline-flex items-center gap-1.5 text-[10px] text-amber-500 dark:text-amber-400 font-bold mt-1">
+          <span className="inline-flex items-center gap-1.5 text-[10px] text-orange-500 dark:text-orange-400 font-bold mt-1">
             <span className="inline-block size-1.5 rounded-full bg-current" />
             <span>In-App Profile Balance</span>
           </span>
@@ -206,8 +206,8 @@ export function OrderKingPassbookReceipts({
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`w-full h-10 pl-10 pr-4 rounded-xl border text-xs outline-none transition ${
               isDark
-                ? "border-slate-700 bg-slate-950 text-white focus:border-amber-400"
-                : "border-stone-300 bg-stone-50 text-stone-900 focus:border-amber-500"
+                ? "border-slate-700 bg-slate-950 text-white focus:border-orange-400"
+                : "border-stone-300 bg-stone-50 text-stone-900 focus:border-orange-500"
             }`}
           />
         </div>
@@ -233,7 +233,7 @@ export function OrderKingPassbookReceipts({
                 key={entry.entry_id || idx}
                 className={`rounded-2xl border p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${
                   isDark
-                    ? "border-slate-800 bg-slate-950/70 hover:border-amber-400/40"
+                    ? "border-slate-800 bg-slate-950/70 hover:border-orange-400/40"
                     : "border-stone-200 bg-stone-50 hover:border-stone-300"
                 }`}
               >
@@ -294,11 +294,11 @@ export function OrderKingPassbookReceipts({
           <div
             className={`rounded-2xl border border-dashed p-8 text-center space-y-3 ${
               isDark
-                ? "border-amber-400/20 bg-slate-950/40"
+                ? "border-orange-400/20 bg-slate-950/40"
                 : "border-stone-300 bg-stone-50"
             }`}
           >
-            <div className="size-12 rounded-2xl bg-amber-500/10 border border-amber-400/30 flex items-center justify-center mx-auto text-amber-500">
+            <div className="size-12 rounded-2xl bg-orange-500/10 border border-orange-400/30 flex items-center justify-center mx-auto text-orange-500">
               <ShieldCheck className="size-6 stroke-[2.2]" />
             </div>
             <div>

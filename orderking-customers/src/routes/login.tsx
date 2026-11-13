@@ -178,8 +178,8 @@ function Login() {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] flex flex-col justify-center px-4 py-8 selection:bg-amber-500 selection:text-white">
-      <main className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border-2 border-amber-400/70 bg-white p-6 sm:p-8 shadow-2xl shadow-amber-950/10">
+    <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] flex flex-col justify-center px-4 py-8 selection:bg-orange-500 selection:text-white">
+      <main className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border-2 border-orange-400/70 bg-white p-6 sm:p-8 shadow-2xl shadow-orange-950/10">
         <div className="flex items-center justify-center">
           <Wordmark />
         </div>
@@ -193,7 +193,7 @@ function Login() {
             }}
             className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition-all ${
               accountMode === "signin"
-                ? "bg-stone-950 text-amber-300 shadow-md"
+                ? "bg-stone-950 text-orange-300 shadow-md"
                 : "text-stone-600 hover:text-stone-950"
             }`}
           >
@@ -208,7 +208,7 @@ function Login() {
             }}
             className={`flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition-all ${
               accountMode === "signup"
-                ? "bg-amber-500 text-stone-950 shadow-md"
+                ? "bg-orange-500 text-stone-950 shadow-md"
                 : "text-stone-600 hover:text-stone-950"
             }`}
           >
@@ -253,7 +253,7 @@ function Login() {
                       value={phoneName}
                       onChange={(e) => setPhoneName(e.target.value)}
                       placeholder="e.g. Hasan Habibullah"
-                      className="w-full rounded-2xl border-2 border-stone-200 bg-stone-50/70 px-4 py-3 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:bg-white focus:outline-none"
+                      className="w-full rounded-2xl border-2 border-stone-200 bg-stone-50/70 px-4 py-3 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:border-orange-500 focus:bg-white focus:outline-none"
                     />
                   </div>
                 )}
@@ -261,7 +261,7 @@ function Login() {
                   <label className="block text-[11px] font-black uppercase tracking-wider text-stone-700 mb-1.5">
                     10-Digit Mobile Number *
                   </label>
-                  <div className="flex rounded-2xl border-2 border-stone-200 bg-stone-50/70 focus-within:border-amber-500 focus-within:bg-white overflow-hidden">
+                  <div className="flex rounded-2xl border-2 border-stone-200 bg-stone-50/70 focus-within:border-orange-500 focus-within:bg-white overflow-hidden">
                     <span className="flex items-center gap-1 bg-stone-100 px-3.5 text-sm font-black text-stone-800 border-r border-stone-200">
                       +91
                     </span>
@@ -292,7 +292,7 @@ function Login() {
                       value={phoneName}
                       onChange={(e) => setPhoneName(e.target.value)}
                       placeholder="Your Name (optional)"
-                      className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2 text-xs font-semibold text-stone-800 placeholder:text-stone-400 focus:border-amber-500 focus:bg-white focus:outline-none"
+                      className="w-full rounded-xl border border-stone-200 bg-stone-50/50 px-3.5 py-2 text-xs font-semibold text-stone-800 placeholder:text-stone-400 focus:border-orange-500 focus:bg-white focus:outline-none"
                     />
                   </div>
                 )}
@@ -300,7 +300,7 @@ function Login() {
                   type="button"
                   disabled={busy}
                   onClick={() => void handleSendOtp()}
-                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 py-3.5 px-5 text-sm font-black uppercase tracking-wider text-stone-950 shadow-lg shadow-amber-500/25 hover:brightness-105 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 py-3.5 px-5 text-sm font-black uppercase tracking-wider text-stone-950 shadow-lg shadow-orange-500/25 hover:brightness-105 active:scale-[0.99] disabled:opacity-50 cursor-pointer"
                 >
                   <span>{busy ? "Sending OTP..." : accountMode === "signup" ? "Create Account & Get OTP" : "Continue with Mobile OTP"}</span>
                   <ArrowRight className="size-4" />
@@ -308,7 +308,7 @@ function Login() {
               </>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center justify-between rounded-2xl bg-amber-50/80 border border-amber-200 px-3.5 py-2.5">
+                <div className="flex items-center justify-between rounded-2xl bg-orange-50/80 border border-orange-200 px-3.5 py-2.5">
                   <div>
                     <span className="text-[11px] font-bold text-stone-500 block">Verifying Mobile</span>
                     <span className="text-sm font-black text-stone-900">+91 {cleanIndianNumber(phone)}</span>
@@ -320,7 +320,7 @@ function Login() {
                       setOtp("");
                       setError(null);
                     }}
-                    className="text-xs font-black text-amber-700 hover:underline cursor-pointer"
+                    className="text-xs font-black text-orange-700 hover:underline cursor-pointer"
                   >
                     Change Number
                   </button>
@@ -342,7 +342,7 @@ function Login() {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="• • • • • •"
-                    className="w-full rounded-2xl border-2 border-amber-400 bg-white py-3.5 text-center font-mono text-2xl font-black tracking-[0.5em] text-stone-950 focus:border-stone-950 focus:outline-none"
+                    className="w-full rounded-2xl border-2 border-orange-400 bg-white py-3.5 text-center font-mono text-2xl font-black tracking-[0.5em] text-stone-950 focus:border-stone-950 focus:outline-none"
                   />
                 </div>
                 <button
@@ -412,7 +412,7 @@ function Login() {
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-2xl bg-stone-950 py-3 text-xs font-black uppercase tracking-wider text-amber-300"
+              className="w-full rounded-2xl bg-stone-950 py-3 text-xs font-black uppercase tracking-wider text-orange-300"
             >
               {busy ? "Please wait..." : accountMode === "signup" ? "Create Account" : "Sign In"}
             </button>
@@ -426,7 +426,7 @@ function Login() {
           >
             {authMethod === "phone" ? "Use Email & Password instead" : "Use Mobile OTP instead"}
           </button>
-          <a href="/" className="font-bold text-amber-700 hover:underline">
+          <a href="/" className="font-bold text-orange-700 hover:underline">
             Back to Home
           </a>
         </div>

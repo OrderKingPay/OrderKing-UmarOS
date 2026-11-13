@@ -322,15 +322,15 @@ export function B2BFranchiseOnboardingEngine() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
-            <div className="flex items-center justify-between text-xs font-semibold text-amber-800 uppercase tracking-wider mb-1">
+          <div className="rounded-xl border border-orange-200 bg-orange-50/60 p-4">
+            <div className="flex items-center justify-between text-xs font-semibold text-orange-900 uppercase tracking-wider mb-1">
               <span>Invoiced Pipeline Inflow</span>
-              <Clock className="h-4 w-4 text-amber-600" />
+              <Clock className="h-4 w-4 text-orange-600" />
             </div>
-            <div className="text-2xl font-black text-amber-950">
+            <div className="text-2xl font-black text-orange-950">
               ₹{metrics.pendingCapitalPipelineInr.toLocaleString("en-IN")}
             </div>
-            <div className="text-xs text-amber-700 mt-1 font-medium">
+            <div className="text-xs text-orange-700 mt-1 font-medium">
               Issued invoices awaiting bank settlement
             </div>
           </div>
@@ -423,11 +423,11 @@ export function B2BFranchiseOnboardingEngine() {
 
           <a
             href="#b2b-sales-deck-generator"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all text-orange-900 bg-orange-50 hover:bg-orange-100 border border-orange-300"
           >
-            <Crown className="h-4 w-4 text-amber-600" />
+            <Crown className="h-4 w-4 text-orange-600" />
             <span>B2B SaaS Sales Deck Generator</span>
-            <span className="rounded-full bg-amber-200 text-amber-900 text-[9px] px-1.5 py-0.2 uppercase font-semibold">
+            <span className="rounded-full bg-orange-200 text-orange-950 text-[9px] px-1.5 py-0.2 uppercase font-semibold">
               Pitch
             </span>
           </a>
@@ -596,7 +596,7 @@ export function B2BFranchiseOnboardingEngine() {
                                 </div>
                               ) : (
                                 <div className="space-y-1.5">
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-300">
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-900 border border-orange-300">
                                     <Clock className="h-3 w-3" /> PENDING
                                   </span>
                                   <button
@@ -1108,7 +1108,7 @@ export function B2BFranchiseOnboardingEngine() {
                     </span>
                     The In-Person Pitch Script to Restaurant Owners
                   </h4>
-                  <div className="rounded-xl bg-amber-50/60 border border-amber-200 p-4 text-amber-950 space-y-2 italic font-sans text-xs">
+                  <div className="rounded-xl bg-orange-50/60 border border-orange-200 p-4 text-orange-950 space-y-2 italic font-sans text-xs">
                     <p>
                       "Third-party aggregators charge 28% to 32% commission per order alongside peak-hour surge fees."
                     </p>
@@ -1290,7 +1290,7 @@ export function B2BFranchiseOnboardingEngine() {
                       </div>
                     </div>
                   ) : (
-                    <div className="font-mono text-[9px] text-amber-700 bg-amber-50 p-2 rounded border border-amber-200">
+                    <div className="font-mono text-[9px] text-orange-700 bg-orange-50 p-2 rounded border border-orange-200">
                       STATUS: PENDING MERCHANT COUNTERSIGNATURE
                     </div>
                   )}

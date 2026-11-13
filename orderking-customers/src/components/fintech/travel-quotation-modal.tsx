@@ -165,7 +165,7 @@ export function TravelQuotationModal({
         {!submittedInquiry ? (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-[11px] font-black uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-400/20 text-orange-300 text-[11px] font-black uppercase tracking-wider">
                 <Compass className="size-3.5" /> Direct Travel &amp; Umrah Desk
               </span>
               <h3 className="text-xl font-black text-white tracking-tight">
@@ -196,7 +196,7 @@ export function TravelQuotationModal({
                     className={cn(
                       "p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between text-xs font-bold",
                       category === item.id
-                        ? "bg-amber-400 text-slate-950 border-amber-300 shadow-sm"
+                        ? "bg-orange-400 text-slate-950 border-orange-300 shadow-sm"
                         : "bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-800"
                     )}
                   >
@@ -219,7 +219,7 @@ export function TravelQuotationModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Mohammed Hasan"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -233,7 +233,7 @@ export function TravelQuotationModal({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                   placeholder="10-digit Indian Mobile"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -249,7 +249,7 @@ export function TravelQuotationModal({
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
                   placeholder="e.g. Guwahati / Kolkata / Delhi"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -262,7 +262,7 @@ export function TravelQuotationModal({
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   placeholder="e.g. Makkah / Madinah, Goa, Kashmir"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -277,7 +277,7 @@ export function TravelQuotationModal({
                   type="date"
                   value={departureDate}
                   onChange={(e) => setDepartureDate(e.target.value)}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
               <div>
@@ -290,7 +290,7 @@ export function TravelQuotationModal({
                   max={50}
                   value={travelers}
                   onChange={(e) => setTravelers(Number(e.target.value))}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-hidden"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white focus:border-orange-400 focus:outline-hidden"
                 />
               </div>
             </div>
@@ -305,14 +305,14 @@ export function TravelQuotationModal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Need 4-bed family room near Haram; or 2AC confirmed tatkal; or 5-star hotel"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-hidden resize-none"
+                className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden resize-none"
               />
             </div>
 
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-10 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2"
+              className="w-full h-10 rounded-xl bg-orange-400 hover:bg-orange-300 text-slate-950 font-black text-xs transition cursor-pointer flex items-center justify-center gap-2"
             >
               <Send className="size-3.5" />
               <span>{isSubmitting ? "Submitting Request..." : "Request Direct Quotation"}</span>
@@ -325,7 +325,7 @@ export function TravelQuotationModal({
             </div>
 
             <div className="space-y-1">
-              <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+              <span className="text-[11px] font-bold text-orange-400 uppercase tracking-wider">
                 Inquiry Registered
               </span>
               <h3 className="text-xl font-black text-white">
@@ -352,7 +352,7 @@ export function TravelQuotationModal({
                 href={`tel:+91${TRAVEL_CONCIERGE_DESK_PHONE}`}
                 className="w-full h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition flex items-center justify-center gap-2 border border-slate-700 cursor-pointer"
               >
-                <Phone className="size-3.5 text-amber-400" />
+                <Phone className="size-3.5 text-orange-400" />
                 <span>Direct Call Desk: +91 {TRAVEL_CONCIERGE_DESK_PHONE}</span>
               </a>
             </div>

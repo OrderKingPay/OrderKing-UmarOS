@@ -133,7 +133,7 @@ export function DishReviewModal({
                   <Star
                     className={`size-8 ${
                       star <= foodRating
-                        ? "fill-amber-400 text-amber-400 filter drop-shadow-sm"
+                        ? "fill-orange-400 text-orange-400 filter drop-shadow-sm"
                         : "text-muted/40"
                     }`}
                   />
@@ -279,7 +279,7 @@ export function DishReviewModal({
                 >
                   <Star
                     className={`size-4 ${
-                      s <= deliveryRating ? "fill-amber-400 text-amber-400" : "text-muted/40"
+                      s <= deliveryRating ? "fill-orange-400 text-orange-400" : "text-muted/40"
                     }`}
                   />
                 </button>

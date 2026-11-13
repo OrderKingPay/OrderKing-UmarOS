@@ -22,20 +22,20 @@ export function WorldSkeleton({ world = "general", className }: WorldSkeletonPro
       {/* ─── World Top Navigation & Executive Header Skeleton ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/80 pb-4">
         <div className="flex items-center gap-3">
-          <div className="size-11 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-500 shadow-sm">
+          <div className="size-11 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-500 shadow-sm">
             <span className="text-xs font-black tracking-wider">OS</span>
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
               <div className="h-5 w-40 rounded-lg bg-surface border border-border" />
-              <div className="h-4 w-16 rounded-full bg-amber-500/20 border border-amber-500/30" />
+              <div className="h-4 w-16 rounded-full bg-orange-500/20 border border-orange-500/30" />
             </div>
             <div className="h-3 w-64 rounded bg-surface/70" />
           </div>
         </div>
         <div className="flex items-center gap-2.5">
           <div className="h-9 w-28 rounded-xl bg-surface border border-border" />
-          <div className="h-9 w-32 rounded-xl bg-amber-500/30 border border-amber-500/40" />
+          <div className="h-9 w-32 rounded-xl bg-orange-500/30 border border-orange-500/40" />
         </div>
       </div>
 
@@ -47,11 +47,11 @@ export function WorldSkeleton({ world = "general", className }: WorldSkeletonPro
             className={cn(
               "h-8 shrink-0 rounded-xl px-3 flex items-center gap-2 border",
               i === 1
-                ? "bg-amber-500/15 border-amber-500/40 w-32"
+                ? "bg-orange-500/15 border-orange-500/40 w-32"
                 : "bg-surface/80 border-border w-24"
             )}
           >
-            <div className="size-2 rounded-full bg-amber-400/60" />
+            <div className="size-2 rounded-full bg-orange-400/60" />
             <div className="h-2.5 flex-1 rounded bg-muted" />
           </div>
         ))}

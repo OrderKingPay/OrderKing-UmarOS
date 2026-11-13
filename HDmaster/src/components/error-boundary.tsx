@@ -121,8 +121,8 @@ export class AdminErrorBoundary extends Component<AdminErrorBoundaryProps, State
           <div className="w-full max-w-md rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 text-center shadow-2xl space-y-5">
             {/* Ambient luxury shield icon */}
             <div className="relative mx-auto flex size-16 items-center justify-center">
-              <div className="absolute inset-0 rounded-2xl bg-amber-500/20 blur-md animate-pulse" />
-              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-md">
+              <div className="absolute inset-0 rounded-2xl bg-orange-500/20 blur-md animate-pulse" />
+              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-md">
                 <AlertTriangle className="size-8 stroke-[2.2]" />
               </div>
             </div>
@@ -143,7 +143,7 @@ export class AdminErrorBoundary extends Component<AdminErrorBoundaryProps, State
               <button
                 type="button"
                 onClick={this.resetError}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-600 hover:bg-amber-700 px-5 py-3 text-sm font-bold text-white shadow-md transition cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-600 hover:bg-orange-700 px-5 py-3 text-sm font-bold text-white shadow-md transition cursor-pointer"
               >
                 <RotateCcw className="size-4 stroke-[2.2]" />
                 Try Again Instantly

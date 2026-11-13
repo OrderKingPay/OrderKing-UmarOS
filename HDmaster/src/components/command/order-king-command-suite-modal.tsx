@@ -90,7 +90,7 @@ export function OrderKingCommandSuiteModal({
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-zinc-800 bg-gradient-to-r from-emerald-950/80 via-zinc-900 to-zinc-950 px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 to-emerald-500 text-zinc-950 shadow-md">
+            <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-tr from-orange-400 to-emerald-500 text-zinc-950 shadow-md">
               <Crown className="size-6 text-zinc-950" />
             </div>
             <div>
@@ -201,7 +201,7 @@ export function OrderKingCommandSuiteModal({
                     </div>
                     <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
                       <span className="text-xs text-zinc-400 block">Net Contribution</span>
-                      <span className="text-2xl font-black text-amber-400 block mt-1">
+                      <span className="text-2xl font-black text-orange-400 block mt-1">
                         {today?.contribution ? formatInrExact(today.contribution.value) : "Restricted"}
                       </span>
                       <span className="text-[10px] text-zinc-400">
@@ -279,7 +279,7 @@ export function OrderKingCommandSuiteModal({
             <div className="space-y-4">
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-black uppercase tracking-wider text-amber-400">
+                  <h3 className="text-xs font-black uppercase tracking-wider text-orange-400">
                     Live Settlement &amp; Financial Ledger
                   </h3>
                   <Badge className="bg-emerald-500/20 text-emerald-300">PostgreSQL Verified</Badge>
@@ -294,7 +294,7 @@ export function OrderKingCommandSuiteModal({
                     </div>
                     <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800">
                       <span className="text-zinc-400 block text-[10px]">Net Contribution</span>
-                      <span className="text-lg font-black text-amber-400 mt-0.5 block">
+                      <span className="text-lg font-black text-orange-400 mt-0.5 block">
                         {formatInrExact(finance.summary.contribution.total)}
                       </span>
                     </div>
@@ -372,12 +372,12 @@ export function OrderKingCommandSuiteModal({
                   {weakRestaurants.map((rest) => (
                     <div
                       key={rest.id}
-                      className="flex items-center justify-between p-3.5 rounded-2xl border border-amber-500/30 bg-amber-950/10"
+                      className="flex items-center justify-between p-3.5 rounded-2xl border border-orange-500/30 bg-orange-950/10"
                     >
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-white">{rest.name}</span>
-                          <Badge className="bg-amber-500/20 text-amber-400">
+                          <Badge className="bg-orange-500/20 text-orange-400">
                             Rating: {rest.rating.toFixed(1)}
                           </Badge>
                         </div>
@@ -389,7 +389,7 @@ export function OrderKingCommandSuiteModal({
                         size="sm"
                         variant="outline"
                         onClick={() => notifyCallUnavailable(`${rest.name} (${rest.id})`)}
-                        className="border-zinc-700 text-amber-400 hover:bg-amber-950/40 text-xs"
+                        className="border-zinc-700 text-orange-400 hover:bg-orange-950/40 text-xs"
                       >
                         <PhoneCall className="size-3.5 mr-1" />
                         Contact Owner

@@ -1284,7 +1284,7 @@ export function EcosystemCMS() {
                         isSelectedForPreview
                           ? "border-emerald-500 ring-2 ring-emerald-500/15"
                           : isModified
-                          ? "border-amber-400 bg-amber-50/20"
+                          ? "border-orange-400 bg-orange-50/20"
                           : "border-slate-200"
                       }`}
                     >
@@ -1292,7 +1292,7 @@ export function EcosystemCMS() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <label className="text-sm font-bold text-slate-900">{field.label}</label>
                           {isModified ? (
-                            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                            <span className="rounded-md bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-900">
                               Unsaved Edit
                             </span>
                           ) : !isDefault ? (
@@ -1403,7 +1403,7 @@ export function EcosystemCMS() {
                   {/* Brand Header */}
                   <div className="rounded-xl bg-slate-900 border border-slate-800 p-2.5 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-amber-400">
+                      <span className="text-[11px] font-bold text-orange-400">
                         {formData.brandTagline || "Fast Delivery · Honest Prices"}
                       </span>
                       <span className="text-[9px] text-slate-400">Sribhumi</span>

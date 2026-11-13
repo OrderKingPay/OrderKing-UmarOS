@@ -216,11 +216,11 @@ export function TrainBookingEngine({
   return (
     <div className="space-y-6 text-slate-900">
       {/* PSP Authorization & Compliance Header */}
-      <div className="rounded-3xl border border-amber-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
+      <div className="rounded-3xl border border-orange-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 sm:p-7 text-white shadow-xl relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-amber-400/20 text-amber-300 border border-amber-400/40">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-orange-400/20 text-orange-300 border border-orange-400/40">
                 <Lock className="size-3.5" />
                 IRCTC PSP Status: Discovery &amp; Preparation Mode
               </span>
@@ -243,9 +243,9 @@ export function TrainBookingEngine({
               variant="outline"
               size="sm"
               onClick={() => setShowApprovalsAudit(!showApprovalsAudit)}
-              className="rounded-xl border-amber-300/30 bg-white/10 hover:bg-white/20 text-amber-200 text-xs font-bold"
+              className="rounded-xl border-orange-300/30 bg-white/10 hover:bg-white/20 text-orange-200 text-xs font-bold"
             >
-              <Info className="size-3.5 mr-1 text-amber-300" />
+              <Info className="size-3.5 mr-1 text-orange-300" />
               {showApprovalsAudit ? "Hide Approvals Audit" : "Provider Compliance Audit"}
             </Button>
             <Button
@@ -264,7 +264,7 @@ export function TrainBookingEngine({
         {/* Missing Approvals Audit Drawer */}
         {showApprovalsAudit && (
           <div className="mt-5 pt-4 border-t border-white/15 rounded-2xl bg-slate-900/90 p-4.5 space-y-3 text-xs text-slate-200">
-            <div className="flex items-center gap-2 text-amber-300 font-black">
+            <div className="flex items-center gap-2 text-orange-300 font-black">
               <ShieldAlert className="size-4" />
               <span>IRCTC / CRIS Authorization Audit Checklist (Mandatory for In-App Direct PRS Issuance)</span>
             </div>
@@ -272,29 +272,29 @@ export function TrainBookingEngine({
               Under Indian Railways e-Ticketing Policy and CRIS (Centre for Railway Information Systems) Guidelines, no third-party platform may issue live Indian Railways tickets without the following five regulatory authorizations:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
-                <span className="font-extrabold text-amber-300 block">1. IRCTC PSP / B2C Agreement</span>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-orange-500/30 space-y-1">
+                <span className="font-extrabold text-orange-300 block">1. IRCTC PSP / B2C Agreement</span>
                 <span className="text-slate-400">Formal agreement required with IRCTC (Indian Railway Catering and Tourism Corp.) under Principal Service Provider B2C scheme.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Pending IRCTC PSP Authorization</span>
+                <span className="text-[10px] text-orange-400 font-bold block">Status: Pending IRCTC PSP Authorization</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
-                <span className="font-extrabold text-amber-300 block">2. CRIS Security Architecture Audit</span>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-orange-500/30 space-y-1">
+                <span className="font-extrabold text-orange-300 block">2. CRIS Security Architecture Audit</span>
                 <span className="text-slate-400">CRIS cybersecurity audit clearance for API handoffs, bot prevention, and anti-scraping CAPTCHA integration.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Under Review</span>
+                <span className="text-[10px] text-orange-400 font-bold block">Status: Under Review</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
-                <span className="font-extrabold text-amber-300 block">3. STQC Application Certification</span>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-orange-500/30 space-y-1">
+                <span className="font-extrabold text-orange-300 block">3. STQC Application Certification</span>
                 <span className="text-slate-400">Directorate of Standardisation Testing and Quality Certification (MeitY) certifying application security, load, and reservation logic.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Application Staged</span>
+                <span className="text-[10px] text-orange-400 font-bold block">Status: Application Staged</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 space-y-1">
-                <span className="font-extrabold text-amber-300 block">4. Dedicated MPLS VPN &amp; DSC Signing</span>
+              <div className="p-2.5 rounded-xl bg-slate-950/80 border border-orange-500/30 space-y-1">
+                <span className="font-extrabold text-orange-300 block">4. Dedicated MPLS VPN &amp; DSC Signing</span>
                 <span className="text-slate-400">Dedicated leased line peering directly with CRIS PRS servers with Class 3 Digital Signature Certificate (DSC) request signing.</span>
-                <span className="text-[10px] text-amber-400 font-bold block">Status: Provisioning</span>
+                <span className="text-[10px] text-orange-400 font-bold block">Status: Provisioning</span>
               </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 text-[11px] text-slate-300">
-              <span className="font-extrabold text-amber-300 block mb-0.5">5. Rolling Bank Guarantee with IRCTC</span>
+            <div className="p-2.5 rounded-xl bg-slate-950/80 border border-orange-500/30 text-[11px] text-slate-300">
+              <span className="font-extrabold text-orange-300 block mb-0.5">5. Rolling Bank Guarantee with IRCTC</span>
               <span>Maintenance of cash rolling deposit or irrevocable bank guarantee with IRCTC for continuous real-time inventory debit.</span>
             </div>
           </div>
@@ -543,8 +543,8 @@ export function TrainBookingEngine({
           </div>
 
           {quota === "TATKAL (TQ)" && (
-            <div className="flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-lg">
-              <Clock className="size-3.5 text-amber-600" />
+            <div className="flex items-center gap-1 text-[11px] font-bold text-orange-900 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-lg">
+              <Clock className="size-3.5 text-orange-600" />
               <span>Tatkal Timings: 10:00 AM IST (AC) / 11:00 AM IST (Non-AC) on day prior</span>
             </div>
           )}
@@ -615,7 +615,7 @@ export function TrainBookingEngine({
             <span className="font-mono text-slate-400 text-[11px]">
               Direct Search Parameters:
             </span>
-            <span className="font-bold text-amber-300 text-[11px]">
+            <span className="font-bold text-orange-300 text-[11px]">
               Class: {trainClass} · Quota: {quota} · Date: {journeyDate}
             </span>
           </div>
@@ -631,11 +631,11 @@ export function TrainBookingEngine({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px] text-slate-300 pt-1">
             <div className="flex items-center gap-2">
-              <Clock className="size-3.5 text-amber-400 shrink-0" />
+              <Clock className="size-3.5 text-orange-400 shrink-0" />
               <span><strong>Tatkal AC:</strong> 10:00 AM IST Journey Eve</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="size-3.5 text-amber-400 shrink-0" />
+              <Clock className="size-3.5 text-orange-400 shrink-0" />
               <span><strong>Tatkal Non-AC:</strong> 11:00 AM IST Journey Eve</span>
             </div>
             <div className="flex items-center gap-2">

@@ -461,13 +461,13 @@ export function RiderEmergencySafetySheet({
 
                   <a
                     href="tel:108"
-                    className="flex flex-col items-center justify-center gap-1 rounded-xl border border-amber-500/70 bg-gradient-to-b from-amber-600 to-yellow-700 p-3 text-center text-white shadow-md hover:from-amber-500 hover:to-yellow-600 active:scale-95 transition"
+                    className="flex flex-col items-center justify-center gap-1 rounded-xl border border-orange-500/70 bg-gradient-to-b from-orange-600 to-orange-700 p-3 text-center text-white shadow-md hover:from-orange-500 hover:to-orange-600 active:scale-95 transition"
                   >
                     <div className="flex items-center gap-1.5 font-black text-sm">
                       <PhoneCall className="size-4" />
                       <span>Call 108</span>
                     </div>
-                    <span className="text-[10px] text-amber-100 font-medium">
+                    <span className="text-[10px] text-orange-100 font-medium">
                       Ambulance &amp; Medical
                     </span>
                   </a>

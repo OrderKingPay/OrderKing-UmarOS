@@ -524,7 +524,7 @@ export function ResilientLiveMap({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-3xl border border-amber-400/50 bg-stone-950 shadow-xl select-none ${className}`}
+      className={`relative w-full overflow-hidden rounded-3xl border border-orange-400/50 bg-stone-950 shadow-xl select-none ${className}`}
       style={{ height: "380px" }}
     >
       {/* Interactive Tile Canvas / Viewport */}
@@ -600,10 +600,10 @@ export function ResilientLiveMap({
           }}
         >
           <div className="flex flex-col items-center">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-lg border-2 border-white ring-2 ring-amber-400/50">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg border-2 border-white ring-2 ring-orange-400/50">
               <UtensilsCrossed className="size-4" />
             </div>
-            <span className="mt-1 max-w-[110px] truncate rounded-md bg-stone-900/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-200 shadow-sm border border-amber-400/30">
+            <span className="mt-1 max-w-[110px] truncate rounded-md bg-stone-900/90 px-1.5 py-0.5 text-[9px] font-bold text-orange-200 shadow-sm border border-orange-400/30">
               {effRestaurantName}
             </span>
           </div>
@@ -666,7 +666,7 @@ export function ResilientLiveMap({
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
             </span>
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
+            <span className="text-[11px] font-black uppercase tracking-wider text-orange-400 flex items-center gap-1">
               <span>Live Telemetry</span>
               <span className="text-[9px] font-normal text-stone-400">(Zero API Keys)</span>
             </span>
@@ -682,7 +682,7 @@ export function ResilientLiveMap({
             </div>
             <div>
               <span className="text-[10px] text-stone-400 block font-sans">ESTIMATED ARRIVAL</span>
-              <span className="text-amber-300 font-bold text-sm">
+              <span className="text-orange-300 font-bold text-sm">
                 {status === "DELIVERED" ? "Delivered" : `~${telemetry.etaMinutes} mins`}
               </span>
               <span className="text-[9px] text-stone-500 block">2-Wheeler Speed</span>
@@ -706,7 +706,7 @@ export function ResilientLiveMap({
             <button
               type="button"
               onClick={() => setTileProvider("carto_voyager")}
-              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "carto_voyager" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
+              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "carto_voyager" ? "bg-orange-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
                 }`}
             >
               Carto
@@ -714,7 +714,7 @@ export function ResilientLiveMap({
             <button
               type="button"
               onClick={() => setTileProvider("osm")}
-              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "osm" ? "bg-amber-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
+              className={`px-2 py-0.5 rounded-lg transition ${tileProvider === "osm" ? "bg-orange-500 text-stone-950 font-black shadow-xs" : "hover:text-white"
                 }`}
             >
               OSM
@@ -731,7 +731,7 @@ export function ResilientLiveMap({
             href={getGoogleMapsTwoWheelerDeepLink(effDeliveryLat, effDeliveryLng)}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 px-3.5 py-2 text-xs font-black text-stone-950 shadow-xl shadow-amber-500/25 transition-all active:scale-95 border border-amber-300 no-underline cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 hover:from-orange-600 hover:to-orange-600 px-3.5 py-2 text-xs font-black text-stone-950 shadow-xl shadow-orange-500/25 transition-all active:scale-95 border border-orange-300 no-underline cursor-pointer"
           >
             <Bike className="size-4" />
             <span>Open Two-Wheeler Nav (Google Maps)</span>

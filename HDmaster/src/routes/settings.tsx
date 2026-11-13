@@ -1744,13 +1744,13 @@ function SettingsPage() {
                     </div>
 
                     {/* Tier 3: 25% Standard Standalone */}
-                    <div className="rounded-xl border border-amber-200 bg-white p-3.5 shadow-sm space-y-2">
+                    <div className="rounded-xl border border-orange-200 bg-white p-3.5 shadow-sm space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-amber-700 font-mono">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-orange-700 font-mono">
                           <Percent className="w-3 h-3" />
                           25% Standard Partner
                         </span>
-                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-orange-100 text-orange-900">
                           Wed Payout
                         </span>
                       </div>
@@ -1760,7 +1760,7 @@ function SettingsPage() {
                       <div className="pt-1">
                         <div className="flex justify-between text-xs font-bold text-slate-800 font-mono mb-1">
                           <span>Commission</span>
-                          <span className="text-amber-600">{masterControlsState.standard_commission_pct}%</span>
+                          <span className="text-orange-600">{masterControlsState.standard_commission_pct}%</span>
                         </div>
                         <input
                           type="range"
@@ -1929,7 +1929,7 @@ function SettingsPage() {
                         Autonomous demand-supply equilibrium curve with 100% fair pass-through to delivery partners.
                       </p>
                     </div>
-                    <span className="text-xs font-extrabold font-mono text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                    <span className="text-xs font-extrabold font-mono text-orange-700 bg-orange-50 px-2.5 py-1 rounded-full border border-orange-200">
                       Cap: {masterControlsState.rush_hour_surge_multiplier.toFixed(1)}x Surge
                     </span>
                   </div>
@@ -3013,7 +3013,7 @@ function SettingsPage() {
                               className={`text-[10px] font-mono font-extrabold px-2 py-0.5 rounded ${key === "EMERGENCY" || key === "DANGER"
                                   ? "bg-red-100 text-red-800 border border-red-300"
                                   : key === "CRITICAL" || key === "HIGH"
-                                    ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                    ? "bg-orange-100 text-orange-900 border border-orange-300"
                                     : "bg-emerald-100 text-emerald-800 border border-emerald-300"
                                 }`}
                             >
@@ -3349,7 +3349,7 @@ function SettingsPage() {
                           : "bg-white text-slate-700 border-slate-300 hover:bg-slate-100"
                         }`}
                     >
-                      <Rocket className="h-3.5 w-3.5 text-amber-500" /> 5-Day Launch Playbook
+                      <Rocket className="h-3.5 w-3.5 text-orange-500" /> 5-Day Launch Playbook
                     </button>
                   </div>
                 </div>

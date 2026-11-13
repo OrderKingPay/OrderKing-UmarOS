@@ -2638,7 +2638,7 @@ function UmarOSDashboard() {
               onClick={() => selectWorld("orderking", "dashboard")}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                 ["orderking", "home", "design", "b2b"].includes(activeWorldId)
-                  ? "bg-amber-500 text-slate-950 font-black shadow-xs"
+                  ? "bg-orange-500 text-slate-950 font-black shadow-xs"
                   : "text-slate-400 hover:text-white"
               }`}
             >
@@ -3123,7 +3123,7 @@ function UmarOSDashboard() {
             <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-orange-900 bg-orange-50 px-2.5 py-0.5 rounded-md border border-orange-200">
                     Actions Needed
                   </span>
                   <h2 className="text-base font-black text-slate-900 mt-1.5">
@@ -3663,13 +3663,13 @@ function UmarOSDashboard() {
         {activeWorldId === "orderking" && currentTabId === "restaurants" && (
           <div className="space-y-5">
             {loaderData.pendingRestaurants.length > 0 && (
-              <section className="bg-amber-50 rounded-2xl border border-amber-200 p-4 shadow-xs">
+              <section className="bg-orange-50 rounded-2xl border border-orange-200 p-4 shadow-xs">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <h3 className="text-sm font-black text-amber-900">
+                    <h3 className="text-sm font-black text-orange-950">
                        {loaderData.pendingRestaurants.length} Restaurant Application(s) Awaiting Fast-Track Approval
                     </h3>
-                    <p className="text-xs text-amber-700 mt-0.5">
+                    <p className="text-xs text-orange-700 mt-0.5">
                       Review and activate new kitchens directly with 1-click PostgreSQL verification.
                     </p>
                   </div>
@@ -3680,7 +3680,7 @@ function UmarOSDashboard() {
                     return (
                       <div
                         key={rest.id}
-                        className="p-3 rounded-xl border border-amber-200 bg-white flex flex-wrap items-center justify-between gap-2"
+                        className="p-3 rounded-xl border border-orange-200 bg-white flex flex-wrap items-center justify-between gap-2"
                       >
                         <div>
                           <p className="text-xs font-black text-slate-900">{rest.name}</p>
@@ -4914,7 +4914,7 @@ function UmarOSDashboard() {
                             alert.tier === "CRITICAL"
                               ? "bg-rose-100 text-rose-800 border border-rose-200"
                               : alert.tier === "HIGH"
-                              ? "bg-amber-100 text-amber-800 border border-amber-200"
+                              ? "bg-orange-100 text-orange-900 border border-orange-200"
                               : "bg-blue-100 text-blue-800 border border-blue-200"
                           }`}
                         >
@@ -5201,7 +5201,7 @@ function UmarOSDashboard() {
       >
         <div className="max-w-7xl mx-auto px-2 py-1">
           <div className="hidden sm:flex items-center justify-between text-[10px] font-extrabold px-2 pb-1 border-b border-slate-800/80 mb-1">
-            <span className="text-amber-400">OrderKing Food Delivery (Home, Food, Design, B2B)</span>
+            <span className="text-orange-400">OrderKing Food Delivery (Home, Food, Design, B2B)</span>
             <span className="text-emerald-400">KingPay Fintech & Travel (Payouts, Ledger, Travel)</span>
             <span className="text-slate-400">System (Umar AI, Connectors, Alerts, Settings)</span>
           </div>
@@ -5279,7 +5279,7 @@ function ActionCard({
     <div
       className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
         urgent
-          ? "bg-amber-50/70 border-amber-300"
+          ? "bg-orange-50/70 border-orange-300"
           : "bg-slate-50/70 border-slate-200"
       }`}
     >
@@ -5287,7 +5287,7 @@ function ActionCard({
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-sm font-black text-slate-900">{title}</h3>
           {urgent && (
-            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-amber-200 text-amber-900">
+            <span className="text-[10px] font-black px-2 py-0.5 rounded bg-orange-200 text-orange-950">
               Action Needed
             </span>
           )}

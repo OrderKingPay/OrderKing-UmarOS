@@ -110,7 +110,7 @@ function DiningPage() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <div className="flex size-10 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+                <div className="flex size-10 items-center justify-center rounded-2xl bg-orange-500/15 border border-orange-500/30 text-orange-400">
                   <UtensilsCrossed className="size-5" />
                 </div>
                 <div>
@@ -119,7 +119,7 @@ function DiningPage() {
                     <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
                       {dineInCommissionDisplay} MERCHANT COMMISSION
                     </span>
-                    <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-bold text-amber-300">
+                    <span className="rounded-full bg-orange-500/20 border border-orange-500/40 px-2.5 py-0.5 text-[10px] font-bold text-orange-300">
                       5% GUEST CONVENIENCE FEE
                     </span>
                   </h1>
@@ -184,7 +184,7 @@ function DiningPage() {
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-3.5 space-y-1">
               <div className="flex items-center justify-between text-gray-500 text-xs font-semibold">
                 <span>Active Reservations</span>
-                <CalendarDays className="size-4 text-amber-400" />
+                <CalendarDays className="size-4 text-orange-400" />
               </div>
               <div className="font-display text-2xl font-black text-gray-900 flex items-baseline gap-1.5">
                 {activeBookingsCount}
@@ -214,15 +214,15 @@ function DiningPage() {
             </div>
 
             {/* 3. Live Platform Revenue Ledger (5% Platform Fee) */}
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3.5 space-y-1">
-              <div className="flex items-center justify-between text-amber-400 text-xs font-semibold">
+            <div className="rounded-2xl border border-orange-500/30 bg-orange-950/20 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-orange-400 text-xs font-semibold">
                 <span>5% Guest Platform Fee</span>
-                <Sparkles className="size-4 text-amber-400" />
+                <Sparkles className="size-4 text-orange-400" />
               </div>
-              <div className="font-display text-2xl font-black text-amber-400">
+              <div className="font-display text-2xl font-black text-orange-400">
                 ₹{totalPlatformFee.toLocaleString("en-IN")}
               </div>
-              <div className="text-[11px] text-amber-300/80">
+              <div className="text-[11px] text-orange-300/80">
                 Guest booking concierge (0% restaurant fee)
               </div>
             </div>
@@ -256,7 +256,7 @@ function DiningPage() {
                 {dineInCommissionDisplay} Dine-In Commission
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="size-1.5 rounded-full bg-amber-400" />
+                <span className="size-1.5 rounded-full bg-orange-400" />
                 5% Guest Platform Fee
               </span>
             </div>
@@ -424,7 +424,7 @@ function DiningPage() {
             <div className="w-full max-w-md rounded-2xl border border-gray-300 bg-white p-6 space-y-4 shadow-2xl">
               <div className="flex items-center justify-between border-b border-gray-200 pb-3">
                 <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
-                  <SlidersHorizontal className="size-4 text-amber-400" />
+                  <SlidersHorizontal className="size-4 text-orange-400" />
                   Floor Plan &amp; Table Settings
                 </h3>
                 <button
@@ -455,9 +455,9 @@ function DiningPage() {
                   />
                 </div>
 
-                <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
-                  <div className="font-bold flex items-center gap-1.5 text-amber-200">
-                    <ShieldCheck className="size-3.5 text-amber-400" /> Order King Table Reservation Management
+                <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-3.5 text-[11px] text-orange-300 space-y-1.5">
+                  <div className="font-bold flex items-center gap-1.5 text-orange-200">
+                    <ShieldCheck className="size-3.5 text-orange-400" /> Order King Table Reservation Management
                   </div>
                   <p className="text-gray-700 leading-relaxed">
                     Order King manages table reservations directly with verified guests. Guests pay a nominal platform fee for instant table confirmation and automated concierge SMS. Net cover deposits are credited straight into guest dining settlements.
@@ -469,7 +469,7 @@ function DiningPage() {
                 <Button
                   size="sm"
                   onClick={() => setFloorSettingsModalOpen(false)}
-                  className="bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs"
+                  className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs"
                 >
                   Close &amp; Save
                 </Button>

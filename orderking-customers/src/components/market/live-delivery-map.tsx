@@ -74,9 +74,9 @@ export function LiveDeliveryMap({
   const etaMinutes = isDelivered ? 0 : (etaOverride ?? Math.max(2, Math.round((1 - currentProgress) * 22)));
 
   return (
-    <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-amber-400/50 bg-surface shadow-md">
+    <div className="mt-6 overflow-hidden rounded-[var(--radius-xl)] border border-orange-400/50 bg-surface shadow-md">
       {/* Live Map Header with 3D/2D Mode Toggle and Fullscreen Link */}
-      <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-amber-500/10 via-surface to-emerald-500/10 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-border bg-gradient-to-r from-orange-500/10 via-surface to-emerald-500/10 px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="relative flex h-3 w-3">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
@@ -99,7 +99,7 @@ export function LiveDeliveryMap({
             <button
               type="button"
               onClick={() => setViewMode("3d_vector")}
-              className={`px-2 py-0.5 rounded-md transition ${viewMode === "3d_vector" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
+              className={`px-2 py-0.5 rounded-md transition ${viewMode === "3d_vector" ? "bg-orange-500 text-white shadow-2xs" : "text-muted hover:text-fg"
                 }`}
             >
               3D Map
@@ -107,14 +107,14 @@ export function LiveDeliveryMap({
             <button
               type="button"
               onClick={() => setViewMode("2d_route")}
-              className={`px-2 py-0.5 rounded-md transition ${viewMode === "2d_route" ? "bg-amber-500 text-white shadow-2xs" : "text-muted hover:text-fg"
+              className={`px-2 py-0.5 rounded-md transition ${viewMode === "2d_route" ? "bg-orange-500 text-white shadow-2xs" : "text-muted hover:text-fg"
                 }`}
             >
               Route
             </button>
           </div>
 
-          <span className="text-xs font-black text-amber-900 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-black text-orange-950 bg-orange-100 border border-orange-300 px-2.5 py-1 rounded-lg">
             {isDelivered ? "Delivered" : `ETA: ~${etaMinutes} mins`}
           </span>
         </div>
@@ -147,7 +147,7 @@ export function LiveDeliveryMap({
                 <Link
                   to="/tracking/$dispatchJobId"
                   params={{ dispatchJobId: effectiveJobId }}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1.5 text-xs font-black text-white shadow-lg shadow-orange-500/30 hover:brightness-110 active:scale-95 transition-all no-underline"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-500 px-3 py-1.5 text-xs font-black text-white shadow-lg shadow-orange-500/30 hover:brightness-110 active:scale-95 transition-all no-underline"
                 >
                   <Navigation className="size-3.5 stroke-[2.5]" />
                   <span>Open Fullscreen 3D Map</span>
@@ -175,14 +175,14 @@ export function LiveDeliveryMap({
           {/* Road Track Line */}
           <div className="absolute left-8 right-8 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-stone-300 dark:bg-stone-800">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-1000 ease-out"
+              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-1000 ease-out"
               style={{ width: `${isDelivered ? 100 : currentProgress * 100}%` }}
             />
           </div>
 
           {/* Restaurant Pin */}
           <div className="absolute left-6 top-1/2 -translate-y-1/2 text-center">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-500 text-white shadow-md">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-white shadow-md">
               <UtensilsCrossed className="size-4" />
             </div>
             <span className="mt-1 block max-w-[70px] truncate text-[10px] text-muted font-medium">
@@ -223,7 +223,7 @@ export function LiveDeliveryMap({
       {/* Rider Partner Contact Card */}
       <div className="flex items-center justify-between p-4 bg-surface-2/40 border-t border-border">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-500/15 text-amber-600">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-orange-500/15 text-orange-600">
             <Bike className="size-5" />
           </div>
           <div>

@@ -450,7 +450,7 @@ function MerchantHeaderRushToggle() {
         aria-label="Toggle Kitchen Rush Mode"
       >
         <Flame
-          className={`size-4 ${rush.isActive ? "text-rose-600 animate-bounce" : "text-amber-500"}`}
+          className={`size-4 ${rush.isActive ? "text-rose-600 animate-bounce" : "text-orange-500"}`}
         />
         <span className="hidden sm:inline">
           {rush.isActive ? `Rush (+${rush.bufferMinutes}m)` : "Rush Mode"}
@@ -476,14 +476,14 @@ function MerchantHeaderRushToggle() {
               setOpen(false);
             }}
             className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer ${rush.isActive && rush.bufferMinutes === 10
-                ? "bg-amber-50 text-amber-900 border border-amber-300 font-bold"
+                ? "bg-orange-50 text-orange-950 border border-orange-300 font-bold"
                 : "hover:bg-gray-50 text-gray-700"
               }`}
           >
             <span>+10 Mins Prep Buffer</span>
             {rush.isActive && rush.bufferMinutes === 10 && (
-              <span className="inline-flex items-center gap-1 text-[10px] text-amber-600 font-bold">
-                <span className="size-1.5 rounded-full bg-amber-600 inline-block" /> Active
+              <span className="inline-flex items-center gap-1 text-[10px] text-orange-600 font-bold">
+                <span className="size-1.5 rounded-full bg-orange-600 inline-block" /> Active
               </span>
             )}
           </button>

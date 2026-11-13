@@ -384,13 +384,13 @@ export function PorterParcelEngine({
           </div>
 
           {/* Secure Handover OTP Badge */}
-          <div className="my-6 rounded-2xl border border-amber-500/30 bg-[#16120D] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="my-6 rounded-2xl border border-orange-500/30 bg-[#16120D] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="size-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <div className="size-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
                 <ShieldCheck className="size-5" />
               </div>
               <div>
-                <span className="text-xs font-bold text-amber-300 block">
+                <span className="text-xs font-bold text-orange-300 block">
                   Delivery Handover PIN
                 </span>
                 <span className="text-[11px] text-slate-400">
@@ -398,7 +398,7 @@ export function PorterParcelEngine({
                 </span>
               </div>
             </div>
-            <div className="text-3xl font-mono font-black tracking-widest text-amber-400 bg-black/40 px-5 py-2.5 rounded-xl border border-amber-500/40 shadow-inner">
+            <div className="text-3xl font-mono font-black tracking-widest text-orange-400 bg-black/40 px-5 py-2.5 rounded-xl border border-orange-500/40 shadow-inner">
               {confirmedOrder.deliveryOtp}
             </div>
           </div>
@@ -407,14 +407,14 @@ export function PorterParcelEngine({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="p-4 rounded-2xl border border-slate-800 bg-[#12151E] space-y-2">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                <MapPin className="size-3.5 text-amber-400" />
+                <MapPin className="size-3.5 text-orange-400" />
                 Pickup Location
               </span>
               <p className="font-semibold text-slate-200">{pickupAddress}</p>
               <p className="text-slate-400">
                 Sender: {senderName || "Sender"} ({pickupPhone})
               </p>
-              <div className="pt-2 text-[11px] text-amber-300 flex items-center gap-1">
+              <div className="pt-2 text-[11px] text-orange-300 flex items-center gap-1">
                 <Clock className="size-3" />
                 Estimated Rider Arrival: ~{confirmedOrder.estimatedPickupMinutes} mins
               </div>
@@ -457,7 +457,7 @@ export function PorterParcelEngine({
             <Link
               to="/orders/$id"
               params={{ id: confirmedOrder.orderId }}
-              className="flex-1 text-center py-3.5 px-5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm transition-all shadow-lg shadow-amber-500/20 no-underline"
+              className="flex-1 text-center py-3.5 px-5 rounded-2xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-black text-sm transition-all shadow-lg shadow-orange-500/20 no-underline"
             >
               Track Live Delivery
             </Link>
@@ -481,7 +481,7 @@ export function PorterParcelEngine({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-amber-400/20 text-amber-400 border border-amber-400/30">
+            <div className="flex size-7 items-center justify-center rounded-lg bg-orange-400/20 text-orange-400 border border-orange-400/30">
               <Truck className="size-4" />
             </div>
             <h1 className="text-lg sm:text-xl font-black tracking-tight text-white">
@@ -522,7 +522,7 @@ export function PorterParcelEngine({
                 onClick={() => setPackageType(typeKey)}
                 className={`flex flex-col text-left p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative overflow-hidden group ${
                   isSelected
-                    ? "border-amber-400 bg-gradient-to-b from-amber-950/30 via-[#131722] to-[#0D1017] ring-1 ring-amber-400/50 shadow-lg shadow-amber-500/10"
+                    ? "border-orange-400 bg-gradient-to-b from-orange-950/30 via-[#131722] to-[#0D1017] ring-1 ring-orange-400/50 shadow-lg shadow-orange-500/10"
                     : "border-slate-800/90 bg-[#0E1119] hover:border-slate-700 hover:bg-[#121622]"
                 }`}
               >
@@ -530,7 +530,7 @@ export function PorterParcelEngine({
                   <div
                     className={`size-9 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${
                       isSelected
-                        ? "bg-amber-400 text-slate-950 font-black shadow-md"
+                        ? "bg-orange-400 text-slate-950 font-black shadow-md"
                         : "bg-slate-800/80 text-slate-300"
                     }`}
                   >
@@ -541,7 +541,7 @@ export function PorterParcelEngine({
                   </div>
 
                   {config.handlingFeePaise > 0 ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-400/20 text-orange-300 border border-orange-400/30">
                       +₹{config.handlingFeePaise / 100}
                     </span>
                   ) : (
@@ -561,7 +561,7 @@ export function PorterParcelEngine({
                 <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
                   <span>Up to {config.maxWeightKg} kg</span>
                   {isSelected && (
-                    <span className="font-bold text-amber-400 flex items-center gap-0.5">
+                    <span className="font-bold text-orange-400 flex items-center gap-0.5">
                       Selected <ChevronRight className="size-3" />
                     </span>
                   )}
@@ -577,14 +577,14 @@ export function PorterParcelEngine({
         {/* PICKUP ADDRESS CARD */}
         <div className="rounded-3xl border border-slate-800/90 bg-[#0E1119] p-4 sm:p-5 space-y-3.5 shadow-md">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+            <span className="text-xs font-black uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
               <MapPin className="size-4" />
               Pickup Details
             </span>
             <button
               type="button"
               onClick={handleUseCurrentLocation}
-              className="text-[11px] font-bold text-slate-300 hover:text-amber-400 flex items-center gap-1 cursor-pointer transition"
+              className="text-[11px] font-bold text-slate-300 hover:text-orange-400 flex items-center gap-1 cursor-pointer transition"
             >
               <Navigation className="size-3" />
               Current Location
@@ -600,14 +600,14 @@ export function PorterParcelEngine({
               value={pickupAddress}
               onChange={(e) => setPickupAddress(e.target.value)}
               placeholder="House/Flat, Street, Landmark, City, Pincode"
-              className="w-full rounded-xl border border-slate-800 bg-[#07090E] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
+              className="w-full rounded-xl border border-slate-800 bg-[#07090E] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             <div className="space-y-1.5">
               <label className="text-[11px] font-bold text-slate-400">Sender Phone</label>
-              <div className="flex items-center rounded-xl border border-slate-800 bg-[#07090E] px-3 py-2 text-xs text-white focus-within:border-amber-400">
+              <div className="flex items-center rounded-xl border border-slate-800 bg-[#07090E] px-3 py-2 text-xs text-white focus-within:border-orange-400">
                 <span className="text-slate-500 font-mono mr-1.5">+91</span>
                 <input
                   type="tel"
@@ -627,7 +627,7 @@ export function PorterParcelEngine({
                 value={senderName}
                 onChange={(e) => setSenderName(e.target.value)}
                 placeholder="Name"
-                className="w-full rounded-xl border border-slate-800 bg-[#07090E] px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-amber-400 focus:outline-none"
+                className="w-full rounded-xl border border-slate-800 bg-[#07090E] px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-orange-400 focus:outline-none"
               />
             </div>
           </div>
@@ -647,7 +647,7 @@ export function PorterParcelEngine({
                     setPickupCoords({ lat: loc.lat, lng: loc.lng });
                     toast.info(`Pickup set to ${loc.name}`);
                   }}
-                  className="text-[10px] px-2.5 py-1 rounded-lg border border-slate-800 bg-[#141824] hover:border-amber-400/40 text-slate-300 transition cursor-pointer"
+                  className="text-[10px] px-2.5 py-1 rounded-lg border border-slate-800 bg-[#141824] hover:border-orange-400/40 text-slate-300 transition cursor-pointer"
                 >
                   {loc.name.split(",")[0]}
                 </button>
@@ -765,7 +765,7 @@ export function PorterParcelEngine({
       <div className="rounded-3xl border border-slate-800 bg-gradient-to-br from-[#101420] via-[#0D1018] to-[#0A0D14] p-5 sm:p-6 text-white shadow-xl space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+            <span className="text-xs font-black uppercase tracking-wider text-orange-400">
               Automated Fare &amp; Route Telemetry
             </span>
           </div>
@@ -780,7 +780,7 @@ export function PorterParcelEngine({
               <button
                 type="button"
                 onClick={() => setCustomDistanceKm(null)}
-                className="text-[10px] text-amber-400 underline cursor-pointer"
+                className="text-[10px] text-orange-400 underline cursor-pointer"
               >
                 Reset to Map
               </button>
@@ -801,7 +801,7 @@ export function PorterParcelEngine({
           <div className="p-3 rounded-xl bg-[#090B10] border border-slate-800 space-y-1">
             <div className="flex justify-between text-[11px] text-slate-400">
               <span>Manual Distance Override</span>
-              <span className="font-mono font-bold text-amber-400">{customDistanceKm} km</span>
+              <span className="font-mono font-bold text-orange-400">{customDistanceKm} km</span>
             </div>
             <input
               type="range"
@@ -861,7 +861,7 @@ export function PorterParcelEngine({
           </div>
 
           {fareResult.handlingFeePaise > 0 && (
-            <div className="flex justify-between text-amber-300">
+            <div className="flex justify-between text-orange-300">
               <span>Heavy Cargo Handling Surcharge</span>
               <span className="font-mono">
                 +₹{(fareResult.handlingFeePaise / 100).toFixed(2)}
@@ -880,7 +880,7 @@ export function PorterParcelEngine({
 
           <div className="pt-3 border-t border-slate-800 flex items-center justify-between text-sm sm:text-base font-black">
             <span className="text-white">Total Delivery Fare</span>
-            <span className="text-xl sm:text-2xl font-black text-amber-400 font-mono">
+            <span className="text-xl sm:text-2xl font-black text-orange-400 font-mono">
               ₹{fareResult.totalInr.toFixed(2)}
             </span>
           </div>
@@ -889,7 +889,7 @@ export function PorterParcelEngine({
         {/* ETA strip */}
         <div className="rounded-xl border border-slate-800/80 bg-black/30 p-3 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400">
           <div className="flex items-center gap-1.5">
-            <Clock className="size-3.5 text-amber-400" />
+            <Clock className="size-3.5 text-orange-400" />
             <span>Pickup arrival: ~{transitTimes.pickupMinutes} mins</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -912,14 +912,14 @@ export function PorterParcelEngine({
             onClick={() => setPaymentMethod("RAZORPAY_ONLINE")}
             className={`flex items-start gap-3 p-4 rounded-2xl border text-left transition cursor-pointer ${
               paymentMethod === "RAZORPAY_ONLINE"
-                ? "border-amber-400 bg-amber-950/20 ring-1 ring-amber-400/40"
+                ? "border-orange-400 bg-orange-950/20 ring-1 ring-orange-400/40"
                 : "border-slate-800 bg-[#0E1119] hover:border-slate-700"
             }`}
           >
             <div
               className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
                 paymentMethod === "RAZORPAY_ONLINE"
-                  ? "bg-amber-400 text-slate-950 font-bold"
+                  ? "bg-orange-400 text-slate-950 font-bold"
                   : "bg-slate-800 text-slate-400"
               }`}
             >
@@ -944,14 +944,14 @@ export function PorterParcelEngine({
             onClick={() => setPaymentMethod("COD")}
             className={`flex items-start gap-3 p-4 rounded-2xl border text-left transition cursor-pointer ${
               paymentMethod === "COD"
-                ? "border-amber-400 bg-amber-950/20 ring-1 ring-amber-400/40"
+                ? "border-orange-400 bg-orange-950/20 ring-1 ring-orange-400/40"
                 : "border-slate-800 bg-[#0E1119] hover:border-slate-700"
             }`}
           >
             <div
               className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
                 paymentMethod === "COD"
-                  ? "bg-amber-400 text-slate-950 font-bold"
+                  ? "bg-orange-400 text-slate-950 font-bold"
                   : "bg-slate-800 text-slate-400"
               }`}
             >
@@ -977,7 +977,7 @@ export function PorterParcelEngine({
         type="button"
         disabled={isSubmitting}
         onClick={handleDispatchOrder}
-        className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 disabled:opacity-50 text-slate-950 font-black text-sm sm:text-base tracking-wide transition shadow-xl shadow-amber-500/20 cursor-pointer flex items-center justify-center gap-2"
+        className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 hover:from-orange-400 hover:to-orange-300 disabled:opacity-50 text-slate-950 font-black text-sm sm:text-base tracking-wide transition shadow-xl shadow-orange-500/20 cursor-pointer flex items-center justify-center gap-2"
       >
         {isSubmitting ? (
           <>

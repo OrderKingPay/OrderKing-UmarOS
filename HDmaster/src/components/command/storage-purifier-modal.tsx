@@ -123,7 +123,7 @@ export function StoragePurifierView({ onPurgeCompleted }: { onPurgeCompleted?: (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
           <span className="text-[10px] text-slate-500 block uppercase font-bold">Total Cache Footprint</span>
-          <span className="text-2xl font-black text-amber-600 font-mono">
+          <span className="text-2xl font-black text-orange-600 font-mono">
             {inspection.formattedTotalSize}
           </span>
           <span className="text-[10px] text-slate-500 block mt-0.5">{inspection.itemCount} active cached files</span>

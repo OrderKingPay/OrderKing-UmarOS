@@ -156,15 +156,15 @@ export function AddMoneyModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-3xl shadow-2xl border border-amber-400/50 overflow-hidden my-auto">
+      <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 to-slate-950 text-white rounded-3xl shadow-2xl border border-orange-400/50 overflow-hidden my-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-[#2A1D07] p-5 sm:p-6 border-b border-amber-400/30 flex items-start justify-between">
+        <div className="bg-gradient-to-r from-orange-950 via-slate-900 to-[#2A1D07] p-5 sm:p-6 border-b border-orange-400/30 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-orange-400/20 text-orange-300 border border-orange-400/40">
                 <Wallet className="size-4" />
               </span>
-              <span className="text-[11px] font-black uppercase tracking-wider text-amber-400">
+              <span className="text-[11px] font-black uppercase tracking-wider text-orange-400">
                 KingPay Wallet
               </span>
             </div>
@@ -189,9 +189,9 @@ export function AddMoneyModal({
         {/* Modal Body */}
         <div className="p-5 sm:p-6 space-y-5">
           {/* Current Balance Bar */}
-          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-amber-500/10 border border-amber-400/30">
-            <span className="text-xs text-amber-200 font-medium">Available Balance:</span>
-            <span className="text-base font-black text-amber-300 font-mono">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-orange-500/10 border border-orange-400/30">
+            <span className="text-xs text-orange-200 font-medium">Available Balance:</span>
+            <span className="text-base font-black text-orange-300 font-mono">
               {formatPaise(currentBalancePaise)}
             </span>
           </div>
@@ -201,8 +201,8 @@ export function AddMoneyModal({
             <label className="block text-xs font-bold text-slate-300 mb-2">
               Enter Amount to Add (₹)
             </label>
-            <div className="relative flex items-center rounded-2xl border border-amber-400/60 bg-slate-950 p-2 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/30">
-              <span className="pl-3 text-2xl font-black text-amber-400">₹</span>
+            <div className="relative flex items-center rounded-2xl border border-orange-400/60 bg-slate-950 p-2 focus-within:border-orange-400 focus-within:ring-2 focus-within:ring-orange-400/30">
+              <span className="pl-3 text-2xl font-black text-orange-400">₹</span>
               <input
                 type="text"
                 inputMode="numeric"
@@ -227,8 +227,8 @@ export function AddMoneyModal({
                     onClick={() => handlePresetClick(amt)}
                     className={`py-2 rounded-xl text-xs font-black transition border ${
                       isSelected
-                        ? "bg-amber-400/20 border-amber-400 text-amber-300 shadow-md shadow-amber-500/20"
-                        : "bg-slate-800/80 border-slate-700 text-slate-300 hover:border-amber-400/50"
+                        ? "bg-orange-400/20 border-orange-400 text-orange-300 shadow-md shadow-orange-500/20"
+                        : "bg-slate-800/80 border-slate-700 text-slate-300 hover:border-orange-400/50"
                     }`}
                   >
                     +₹{amt.toLocaleString("en-IN")}
@@ -249,11 +249,11 @@ export function AddMoneyModal({
                 onClick={() => setSelectedSource("upi")}
                 className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 text-center transition ${
                   selectedSource === "upi"
-                    ? "bg-amber-400/15 border-amber-400 text-amber-300 ring-1 ring-amber-400/40"
+                    ? "bg-orange-400/15 border-orange-400 text-orange-300 ring-1 ring-orange-400/40"
                     : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700"
                 }`}
               >
-                <Smartphone className="size-5 text-amber-400" />
+                <Smartphone className="size-5 text-orange-400" />
                 <span className="text-xs font-bold leading-tight">UPI Apps</span>
                 <span className="text-[9px] text-emerald-400 font-extrabold">Instant</span>
               </button>
@@ -263,11 +263,11 @@ export function AddMoneyModal({
                 onClick={() => setSelectedSource("netbanking")}
                 className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 text-center transition ${
                   selectedSource === "netbanking"
-                    ? "bg-amber-400/15 border-amber-400 text-amber-300 ring-1 ring-amber-400/40"
+                    ? "bg-orange-400/15 border-orange-400 text-orange-300 ring-1 ring-orange-400/40"
                     : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700"
                 }`}
               >
-                <Building2 className="size-5 text-amber-400" />
+                <Building2 className="size-5 text-orange-400" />
                 <span className="text-xs font-bold leading-tight">Net Banking</span>
                 <span className="text-[9px] text-slate-400">All Banks</span>
               </button>
@@ -277,11 +277,11 @@ export function AddMoneyModal({
                 onClick={() => setSelectedSource("card")}
                 className={`p-3 rounded-2xl border flex flex-col items-center gap-1.5 text-center transition ${
                   selectedSource === "card"
-                    ? "bg-amber-400/15 border-amber-400 text-amber-300 ring-1 ring-amber-400/40"
+                    ? "bg-orange-400/15 border-orange-400 text-orange-300 ring-1 ring-orange-400/40"
                     : "bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700"
                 }`}
               >
-                <CreditCard className="size-5 text-amber-400" />
+                <CreditCard className="size-5 text-orange-400" />
                 <span className="text-xs font-bold leading-tight">RuPay / Cards</span>
                 <span className="text-[9px] text-emerald-400 font-extrabold">₹0 Surcharge</span>
               </button>
@@ -302,7 +302,7 @@ export function AddMoneyModal({
             type="button"
             disabled={isProcessing || amountRupees < 10}
             onClick={handleAddMoney}
-            className="w-full h-13 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-black text-base shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2 transition"
+            className="w-full h-13 rounded-2xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-black text-base shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 transition"
           >
             {isProcessing ? (
               <span className="flex items-center gap-2">

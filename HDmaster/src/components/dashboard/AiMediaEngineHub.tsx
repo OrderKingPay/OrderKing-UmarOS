@@ -483,7 +483,7 @@ export function AiMediaEngineHub({
                     className={`rounded-full px-2.5 py-0.5 text-xs font-semibold border ${
                       form.enabled
                         ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                        : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                        : "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/30"
                     }`}
                   >
                     {form.enabled ? "Active & Render-Ready" : "Standby Mode"}
@@ -514,7 +514,7 @@ export function AiMediaEngineHub({
                 Meta DM Geo-Blast Hook
               </span>
               <span className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-0.5 font-medium text-secondary-foreground border border-border/50">
-                <DollarSign className="h-3 w-3 text-amber-500" />
+                <DollarSign className="h-3 w-3 text-orange-500" />
                 ₹{form.bountyCashRewardInr} Referral Drop
               </span>
             </div>
@@ -726,7 +726,7 @@ export function AiMediaEngineHub({
             <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
                 <div className="flex items-center gap-2">
-                  <Flame className="h-4 w-4 text-amber-500" />
+                  <Flame className="h-4 w-4 text-orange-500" />
                   <h4 className="text-sm font-semibold text-foreground">
                     2. Script Templates &amp; Studio
                   </h4>
@@ -1096,7 +1096,7 @@ export function AiMediaEngineHub({
                   </div>
                   <div className="flex items-center justify-between py-1.5 border-b border-border/50">
                     <span className="text-muted-foreground">Referral Offer</span>
-                    <span className="font-bold text-amber-500">
+                    <span className="font-bold text-orange-500">
                       ₹{activeRenderedVideo.bountyOfferInr} Instant Cash
                     </span>
                   </div>
@@ -1325,7 +1325,7 @@ export function AiMediaEngineHub({
                 </div>
                 <div className="flex items-center justify-between py-1.5">
                   <span className="text-muted-foreground">Consumer Bill Savings</span>
-                  <span className="font-bold text-amber-500">
+                  <span className="font-bold text-orange-500">
                     ₹{blastCalculus.estimatedConsumerSavingsInr.toLocaleString()} saved
                   </span>
                 </div>

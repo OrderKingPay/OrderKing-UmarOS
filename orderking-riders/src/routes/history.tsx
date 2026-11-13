@@ -665,7 +665,7 @@ export function Page() {
                             </span>
                             {waitMins > 0 ? (
                               <span className="inline-flex items-center gap-1 font-mono">
-                                <MapPin className="size-3.5 text-amber-600" />
+                                <MapPin className="size-3.5 text-orange-600" />
                                 {waitMins}m kitchen wait
                               </span>
                             ) : null}

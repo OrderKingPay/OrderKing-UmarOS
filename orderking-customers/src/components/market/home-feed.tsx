@@ -55,13 +55,13 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Biryani",
     slug: "biryani",
-    gradient: "from-orange-400 to-amber-500",
+    gradient: "from-orange-400 to-[#E85D04]",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Momo",
     slug: "momo",
-    gradient: "from-amber-400 to-orange-500",
+    gradient: "from-[#B85D19] to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1625398407797-00c2cb621124?w=240&auto=format&fit=crop&q=80",
   },
   {
@@ -73,13 +73,13 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Thali",
     slug: "thali",
-    gradient: "from-amber-400 to-yellow-500",
+    gradient: "from-[#B85D19] to-[#E85D04]",
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Burgers",
     slug: "burger",
-    gradient: "from-yellow-400 to-orange-500",
+    gradient: "from-orange-400 to-[#C2410C]",
     imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
   },
   {
@@ -131,7 +131,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     lat: 28.6315,
     lng: 77.2167,
     highlight: "Central Delhi Delivery Zone",
-    gradient: "from-amber-500 to-orange-500",
+    gradient: "from-[#B85D19] to-orange-500",
   },
   {
     id: "sribhumi-core",
@@ -418,19 +418,19 @@ export function HomeFeed({
         <section aria-label="Featured Offers" className="pt-0.5">
           <div className="relative overflow-hidden rounded-3xl transition-all duration-500">
             {activeBanner === 0 ? (
-              /* Banner 1: Gold Free Delivery (Screenshot 1) */
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#FFF5DA] via-[#FDF0C8] to-[#FBE8B3] border border-amber-300/80 p-5 sm:p-7 shadow-2xs flex flex-col items-center justify-center text-center">
-                <span className="text-xl sm:text-3xl font-black tracking-tight text-amber-950 uppercase drop-shadow-2xs">
+              /* Banner 1: Copper Free Delivery Pass */
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#FFF3EC] via-[#FFE5D4] to-[#FCD5BE] border border-orange-400/50 p-5 sm:p-7 shadow-[0_4px_24px_rgba(232,93,4,0.12)] flex flex-col items-center justify-center text-center">
+                <span className="text-xl sm:text-3xl font-black tracking-tight text-orange-950 uppercase drop-shadow-2xs">
                   FREE DELIVERY
                 </span>
-                <span className="text-xs sm:text-sm font-extrabold text-amber-900/80 mt-0.5 mb-3">
+                <span className="text-xs sm:text-sm font-extrabold text-orange-900/80 mt-0.5 mb-3">
                   above ₹99
                 </span>
                 <Link
                   to="/rewards"
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-slate-950 hover:bg-slate-900 text-amber-300 text-xs sm:text-sm font-black shadow-md transition active:scale-95 no-underline cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white text-xs sm:text-sm font-black shadow-md transition active:scale-95 no-underline cursor-pointer"
                 >
-                  <span>Renew GOLD for 3 months at ₹1</span>
+                  <span>Renew PASS for 3 months at ₹1</span>
                   <ChevronRight className="size-3.5" />
                 </Link>
               </div>
@@ -456,7 +456,7 @@ export function HomeFeed({
               <button
                 type="button"
                 onClick={() => setActiveBanner(0)}
-                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 0 ? "w-5 bg-amber-600" : "bg-stone-300")}
+                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 0 ? "w-5 bg-[#E85D04]" : "bg-stone-300")}
                 aria-label="Banner 1"
               />
               <button
@@ -487,26 +487,26 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
-            {/* Meals under ₹250 card (1:1 with Zomato live screenshot) */}
+            {/* Meals under ₹250 card with Rich Copper & Burnt Orange aesthetic */}
             <button
               type="button"
               onClick={() => setFilterBudget(!filterBudget)}
               className={cn(
                 "group flex flex-col justify-between shrink-0 w-24 sm:w-28 h-20 sm:h-24 p-2 sm:p-2.5 rounded-2xl border text-left transition-all active:scale-95 shadow-2xs select-none cursor-pointer",
                 filterBudget
-                  ? "bg-gradient-to-br from-red-600 via-rose-600 to-red-700 text-white border-red-500 shadow-md ring-2 ring-red-400"
-                  : "bg-gradient-to-br from-rose-50 via-white to-red-50/50 border-rose-200/80 text-rose-950 hover:border-rose-400"
+                  ? "bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#9A3412] text-white border-orange-500 shadow-md ring-2 ring-orange-400"
+                  : "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200/80 text-orange-950 hover:border-orange-500"
               )}
             >
               <div>
-                <span className="block text-[9px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 leading-tight">
+                <span className="block text-[9px] font-black uppercase tracking-wider text-[#C2410C] dark:text-orange-400 leading-tight">
                   MEALS UNDER
                 </span>
                 <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
                   ₹250
                 </span>
               </div>
-              <span className="inline-flex items-center text-[10px] font-extrabold text-rose-600 dark:text-rose-300">
+              <span className="inline-flex items-center text-[10px] font-extrabold text-[#C2410C] dark:text-orange-300">
                 Explore <ChevronRight className="size-3 ml-0.5" />
               </span>
             </button>
@@ -519,7 +519,7 @@ export function HomeFeed({
             >
               <div
                 className={cn(
-                  "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr from-amber-400 to-rose-400 transition-all duration-300 shadow-sm relative",
+                  "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr from-[#B85D19] via-[#E85D04] to-rose-500 transition-all duration-300 shadow-sm relative",
                   !selectedCategory
                     ? "scale-105 ring-3 ring-rose-500 shadow-[0_4px_16px_rgba(244,63,94,0.35)]"
                     : "group-hover:scale-105 group-hover:shadow-md"
@@ -557,7 +557,7 @@ export function HomeFeed({
                       "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
                       c.gradient,
                       isSelected
-                        ? "scale-105 ring-3 ring-amber-400 shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
+                        ? "scale-105 ring-3 ring-orange-500 shadow-[0_4px_16px_rgba(232,93,4,0.35)]"
                         : "group-hover:scale-105 group-hover:shadow-md"
                     )}
                   >
@@ -678,7 +678,7 @@ export function HomeFeed({
         </div>
 
         {/* Place Count */}
-        <span className="text-[11px] font-bold text-amber-950 bg-amber-100/70 border border-amber-200/60 px-2.5 py-1 rounded-full shrink-0">
+        <span className="text-[11px] font-bold text-orange-950 bg-orange-100/80 border border-orange-200/80 px-2.5 py-1 rounded-full shrink-0">
           {`${filteredRestaurants.length} restaurants found`}
         </span>
       </div>}
@@ -726,7 +726,7 @@ export function HomeFeed({
                   key={r.id}
                   to="/r/$slug"
                   params={{ slug: r.slug || r.id }}
-                  className="group flex flex-col shrink-0 w-44 sm:w-52 rounded-2xl bg-white border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-amber-400 transition-all no-underline text-left cursor-pointer active:scale-95"
+                  className="group flex flex-col shrink-0 w-44 sm:w-52 rounded-2xl bg-white border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-orange-500 transition-all no-underline text-left cursor-pointer active:scale-95"
                 >
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
                     <img
@@ -784,11 +784,11 @@ export function HomeFeed({
               onClick={() => setFilterRating(!filterRating)}
               className={cn(
                 "flex flex-col items-center justify-center p-3 rounded-2xl bg-white border shadow-2xs hover:shadow-xs transition-all group text-center active:scale-95 cursor-pointer",
-                filterRating ? "border-amber-400 ring-1 ring-amber-400" : "border-stone-200/80 hover:border-amber-400"
+                filterRating ? "border-orange-500 ring-1 ring-orange-500" : "border-stone-200/80 hover:border-orange-500"
               )}
             >
-              <div className="size-11 sm:size-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 mb-1.5 group-hover:scale-105 transition-transform">
-                <Star className="size-5 sm:size-6 text-amber-500 fill-amber-400" />
+              <div className="size-11 sm:size-12 rounded-2xl bg-orange-50 flex items-center justify-center text-[#E85D04] mb-1.5 group-hover:scale-105 transition-transform">
+                <Star className="size-5 sm:size-6 text-[#E85D04] fill-[#E85D04]/40" />
               </div>
               <span className="text-xs font-black text-stone-900 leading-tight">Top 10</span>
             </button>
@@ -807,7 +807,7 @@ export function HomeFeed({
             <Link
               to="/search"
               search={{ q: "collections" }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-orange-500 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
             >
               <div className="size-11 sm:size-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 mb-1.5 group-hover:scale-105 transition-transform">
                 <Utensils className="size-5 sm:size-6 text-orange-600" />
@@ -832,26 +832,26 @@ export function HomeFeed({
         )}
 
         {list.isPending && !list.data ? (
-          /* Warm Ivory/Amber Gradient Shimmer Skeletons */
+          /* Warm Copper / Sunset Orange Gradient Shimmer Skeletons */
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2" aria-busy="true" aria-label="Loading restaurants">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-900/10 bg-white shadow-sm flex flex-col relative"
+                className="overflow-hidden rounded-2xl sm:rounded-3xl border border-orange-950/10 bg-white shadow-sm flex flex-col relative"
               >
-                <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gradient-to-r from-amber-100/70 via-amber-50 to-amber-100/70 animate-pulse">
-                  <div className="absolute top-3 left-3 h-5 w-24 rounded-full bg-amber-200/60" />
-                  <div className="absolute bottom-3 right-3 h-6 w-16 rounded-xl bg-amber-200/70" />
+                <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gradient-to-r from-orange-100/50 via-stone-50 to-orange-100/50 animate-pulse">
+                  <div className="absolute top-3 left-3 h-5 w-24 rounded-full bg-orange-200/40" />
+                  <div className="absolute bottom-3 right-3 h-6 w-16 rounded-xl bg-orange-200/50" />
                 </div>
-                <div className="p-4 space-y-3 bg-gradient-to-b from-white to-amber-50/30">
+                <div className="p-4 space-y-3 bg-gradient-to-b from-white to-orange-50/20">
                   <div className="flex items-center justify-between">
-                    <div className="h-5 w-3/5 rounded-lg bg-gradient-to-r from-amber-200/80 to-amber-100 animate-pulse" />
-                    <div className="h-5 w-12 rounded-md bg-amber-200/60 animate-pulse" />
+                    <div className="h-5 w-3/5 rounded-lg bg-gradient-to-r from-orange-200/60 to-orange-100/40 animate-pulse" />
+                    <div className="h-5 w-12 rounded-md bg-orange-200/40 animate-pulse" />
                   </div>
-                  <div className="h-3.5 w-2/5 rounded-md bg-amber-100/80 animate-pulse" />
-                  <div className="pt-2 flex items-center justify-between border-t border-amber-900/5">
-                    <div className="h-3 w-28 rounded-md bg-amber-100/70 animate-pulse" />
-                    <div className="h-4 w-16 rounded-full bg-amber-200/50 animate-pulse" />
+                  <div className="h-3.5 w-2/5 rounded-md bg-orange-100/50 animate-pulse" />
+                  <div className="pt-2 flex items-center justify-between border-t border-orange-950/5">
+                    <div className="h-3 w-28 rounded-md bg-orange-100/40 animate-pulse" />
+                    <div className="h-4 w-16 rounded-full bg-orange-200/30 animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -888,10 +888,10 @@ export function HomeFeed({
                 <div
                   role="status"
                   data-testid="food-availability-note"
-                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-950"
+                  className="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-orange-500/10 border border-orange-500/25 text-orange-950"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500 text-white shrink-0 shadow-xs">
+                    <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shrink-0 shadow-xs">
                       <MapPin className="size-4" />
                     </div>
                     <div className="text-left min-w-0">
@@ -910,7 +910,7 @@ export function HomeFeed({
                   <Button
                     type="button"
                     onClick={() => setLocDialogOpen(true)}
-                    className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
+                    className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-105 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer border-0"
                   >
                     <MapPin className="size-3" />
                     <span>Update Location</span>
@@ -932,18 +932,18 @@ export function HomeFeed({
                     {/* 1. KingPay Wallet */}
                     <Link
                       to="/kingpay"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(232,93,4,0.18)] hover:border-orange-500 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs group-hover:scale-105 transition-transform">
                           <CreditCard className="size-4.5" />
                         </span>
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-full">
                           UPI
                         </span>
                       </div>
                       <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#E85D04] block leading-snug transition-colors">
                           KingPay Wallet
                         </span>
                         <span className="text-[10px] text-gray-500 block mt-0.5">
@@ -980,18 +980,18 @@ export function HomeFeed({
                     <Link
                       to="/travel"
                       search={{ tab: "hotels" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(232,93,4,0.18)] hover:border-orange-500 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shadow-[0_2px_8px_rgba(232,93,4,0.3)] group-hover:scale-105 transition-transform">
                           <Building2 className="size-4.5" />
                         </span>
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-full">
                           Hotels
                         </span>
                       </div>
                       <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#E85D04] block leading-snug transition-colors">
                           Hotels &amp; Stays
                         </span>
                         <span className="text-[10px] text-gray-500 block mt-0.5">
@@ -1078,8 +1078,8 @@ export function HomeFeed({
                   className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
                 >
                   <div className="flex items-center justify-center gap-2 text-stone-600">
-                    <Eye className="size-4 text-amber-600" />
-                    <span className="text-xs font-black uppercase tracking-wider text-amber-800">
+                    <Eye className="size-4 text-[#E85D04]" />
+                    <span className="text-xs font-black uppercase tracking-wider text-orange-900">
                       Explore Hubs
                     </span>
                   </div>
@@ -1108,9 +1108,9 @@ export function HomeFeed({
                             zoneName: hub.zoneName,
                           });
                         }}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-amber-400 bg-stone-50 hover:bg-amber-50/60 text-xs font-bold text-gray-800 hover:text-amber-950 transition active:scale-95 cursor-pointer shadow-2xs"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-stone-200 hover:border-orange-500 bg-stone-50 hover:bg-orange-50/60 text-xs font-bold text-gray-800 hover:text-orange-950 transition active:scale-95 cursor-pointer shadow-2xs"
                       >
-                        <MapPin className="size-3 text-amber-600" />
+                        <MapPin className="size-3 text-[#E85D04]" />
                         <span>{hub.cityName} ({hub.zoneName})</span>
                       </button>
                     ))}

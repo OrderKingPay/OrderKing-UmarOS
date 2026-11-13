@@ -9,12 +9,12 @@ export function LanguageSelector() {
   
   return (
     <Select value={locale} onValueChange={(val: any) => setLocale(val as LocaleCode)}>
-      <SelectTrigger className="w-[140px] border-amber-500/20 bg-amber-500/5 text-amber-500 focus:ring-amber-500/20">
+      <SelectTrigger className="w-[140px] border-orange-500/20 bg-orange-500/5 text-orange-500 focus:ring-orange-500/20">
         <SelectValue placeholder="Language" />
       </SelectTrigger>
-      <SelectContent className="bg-slate-900 border-amber-500/20 text-slate-200">
+      <SelectContent className="bg-slate-900 border-orange-500/20 text-slate-200">
         {(Object.keys(LOCALE_LABELS) as LocaleCode[]).map((code) => (
-          <SelectItem key={code} value={code} className="hover:bg-amber-500/10 focus:bg-amber-500/10 cursor-pointer">
+          <SelectItem key={code} value={code} className="hover:bg-orange-500/10 focus:bg-orange-500/10 cursor-pointer">
             {LOCALE_LABELS[code]}
           </SelectItem>
         ))}

@@ -309,7 +309,7 @@ export function MasterCustomizationHub({
             enabled: announcementEnabled,
             text: announcementText,
             linkUrl: announcementLink,
-            bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+            bgGradient: "from-orange-600 via-orange-600 to-orange-700",
             badgeText: announcementBadge,
           },
           featuredCityHubs: featuredHubs,
@@ -361,7 +361,7 @@ export function MasterCustomizationHub({
                 enabled: announcementEnabled,
                 text: announcementText,
                 linkUrl: announcementLink,
-                bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+                bgGradient: "from-orange-600 via-orange-600 to-orange-700",
                 badgeText: announcementBadge,
               },
               featuredCityHubs: featuredHubs,
@@ -482,7 +482,7 @@ export function MasterCustomizationHub({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-300 font-semibold">Dining Convenience Fee:</span>
-              <span className="font-mono text-amber-400 font-extrabold text-sm">
+              <span className="font-mono text-orange-400 font-extrabold text-sm">
                 ₹{diningConvenienceFeeInr}
               </span>
             </div>
@@ -776,14 +776,14 @@ export function MasterCustomizationHub({
           <div className="space-y-2 pt-2 border-t border-slate-800/60">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Timer className="size-4 text-amber-400" />
+                <Timer className="size-4 text-orange-400" />
                 <span className="text-xs font-semibold text-slate-300">Kitchen SLA Prep Timer Pacing</span>
               </div>
               <button
                 type="button"
                 onClick={() => setKitchenSlaPacingEnabled((v) => !v)}
                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors ${
-                  kitchenSlaPacingEnabled ? "bg-amber-600" : "bg-slate-700"
+                  kitchenSlaPacingEnabled ? "bg-orange-600" : "bg-slate-700"
                 }`}
               >
                 <span
@@ -795,7 +795,7 @@ export function MasterCustomizationHub({
             </div>
             {kitchenSlaPacingEnabled && (
               <div className="space-y-1.5 pl-6">
-                <div className="flex justify-between text-xs font-mono text-amber-300">
+                <div className="flex justify-between text-xs font-mono text-orange-300">
                   <span>Base Kitchen Prep Buffer:</span>
                   <span className="font-bold">{kitchenSlaPrepBufferMins} Minutes</span>
                 </div>
@@ -860,12 +860,12 @@ export function MasterCustomizationHub({
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5 space-y-5">
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div className="flex items-center gap-2">
-              <Zap className="size-4.5 text-amber-400" />
+              <Zap className="size-4.5 text-orange-400" />
               <h3 className="text-sm font-black text-slate-100 uppercase tracking-wide">
                 d) Multi-Platform Feature Flags
               </h3>
             </div>
-            <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/20 font-bold">
+            <span className="text-[10px] font-mono text-orange-300 bg-orange-950/60 px-2 py-0.5 rounded border border-orange-500/20 font-bold">
               Instant 1-Tap Toggle
             </span>
           </div>
@@ -983,25 +983,25 @@ export function MasterCustomizationHub({
          ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
         {/* PANEL E: Unified Module Toggles */}
-        <div className="rounded-2xl border border-amber-500/30 bg-slate-950/80 p-5 space-y-4 shadow-lg shadow-amber-950/20">
+        <div className="rounded-2xl border border-orange-500/30 bg-slate-950/80 p-5 space-y-4 shadow-lg shadow-orange-950/20">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              <Layers className="size-4.5 text-amber-400" />
+              <Layers className="size-4.5 text-orange-400" />
               <h3 className="text-sm font-black text-slate-100 uppercase tracking-wide">
                 1. Platform Module Toggles
               </h3>
             </div>
-            <span className="text-[10px] font-mono text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-500/30 font-bold">
+            <span className="text-[10px] font-mono text-orange-300 bg-orange-950/60 px-2 py-0.5 rounded border border-orange-500/30 font-bold">
               6 Modules
             </span>
           </div>
 
           <div className="space-y-3">
             {[
-              { id: "food", label: "Food Delivery", state: moduleFoodDelivery, set: setModuleFoodDelivery, desc: "Dominant restaurant food aggregator", icon: UtensilsCrossed, color: "text-amber-400" },
+              { id: "food", label: "Food Delivery", state: moduleFoodDelivery, set: setModuleFoodDelivery, desc: "Dominant restaurant food aggregator", icon: UtensilsCrossed, color: "text-orange-400" },
               { id: "courier", label: "Courier & Parcel", state: moduleCourier, set: setModuleCourier, desc: "Hyperlocal direct parcel pick & drop", icon: Truck, color: "text-emerald-400" },
               { id: "travel", label: "Travel & Transit", state: moduleTravel, set: setModuleTravel, desc: "IRCTC trains, flights, bus & cabs", icon: Plane, color: "text-sky-400" },
-              { id: "utilities", label: "Utilities & BBPS", state: moduleUtilities, set: setModuleUtilities, desc: "Electricity, DTH, water & FASTag", icon: Zap, color: "text-yellow-400" },
+              { id: "utilities", label: "Utilities & BBPS", state: moduleUtilities, set: setModuleUtilities, desc: "Electricity, DTH, water & FASTag", icon: Zap, color: "text-orange-400" },
               { id: "tutor", label: "AI Voice Tutor", state: moduleAiTutor, set: setModuleAiTutor, desc: "Multilingual CBSE/SEBA syllabus AI", icon: GraduationCap, color: "text-purple-400" },
               { id: "jobs", label: "Jobs Marketplace", state: moduleJobs, set: setModuleJobs, desc: "Local gig, delivery & tutoring hiring", icon: Briefcase, color: "text-blue-400" },
             ].map((m) => (
@@ -1017,7 +1017,7 @@ export function MasterCustomizationHub({
                   type="button"
                   onClick={() => m.set((v: boolean) => !v)}
                   className={`relative inline-flex h-5 w-10 shrink-0 items-center rounded-full transition-colors ${
-                    m.state ? "bg-amber-500" : "bg-slate-700"
+                    m.state ? "bg-orange-500" : "bg-slate-700"
                   }`}
                 >
                   <span className={`inline-block size-3.5 transform rounded-full bg-white transition-transform ${
@@ -1189,7 +1189,7 @@ export function MasterCustomizationHub({
             <div className="pt-2 border-t border-slate-800 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Megaphone className="size-4 text-amber-400" />
+                  <Megaphone className="size-4 text-orange-400" />
                   <span className="text-slate-200 font-bold">Founder Promo Banner</span>
                 </div>
                 <button
@@ -1241,7 +1241,7 @@ export function MasterCustomizationHub({
                 {featuredHubs.map((hub, idx) => (
                   <div key={hub.id} className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px]">
                     <div className="flex items-center gap-1.5 truncate">
-                      <MapPin className="size-3 text-amber-500 shrink-0" />
+                      <MapPin className="size-3 text-orange-500 shrink-0" />
                       <span className="truncate text-slate-300 font-medium">{hub.name}</span>
                     </div>
                     <button

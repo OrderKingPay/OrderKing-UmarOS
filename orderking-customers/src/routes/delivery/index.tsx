@@ -120,7 +120,7 @@ function DeliveryDirectoryPage() {
               <ShieldCheck className="size-4 text-emerald-500" /> 100% FSSAI-Licensed Kitchens
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <Sparkles className="size-4 text-amber-500" /> ₹0 Hidden Packaging Surcharges
+              <Sparkles className="size-4 text-orange-500" /> ₹0 Hidden Packaging Surcharges
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
               <Utensils className="size-4 text-primary" /> 100% Direct Kitchen Pricing

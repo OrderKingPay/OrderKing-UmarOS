@@ -261,17 +261,17 @@ function PredictiveSearchPage() {
     <CustomerShell onSearch={() => undefined}>
       <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] pb-28 text-gray-900">
         {/* TOP SEARCH HEADER WITH PREDICTIVE BAR */}
-        <div className="sticky top-0 z-40 border-b border-amber-900/10 bg-[#FFFDF9]/95 backdrop-blur-md px-3 pt-3.5 pb-2.5 sm:px-6 shadow-xs">
+        <div className="sticky top-0 z-40 border-b border-orange-950/10 bg-[#FFFDF9]/95 backdrop-blur-md px-3 pt-3.5 pb-2.5 sm:px-6 shadow-xs">
           <div className="mx-auto max-w-4xl" ref={containerRef}>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 executeSearch(draft);
               }}
-              className="relative flex items-center rounded-2xl border-2 border-amber-300/90 bg-white p-1.5 shadow-[0_6px_24px_rgba(245,158,11,0.12)] transition-all focus-within:border-amber-500 focus-within:shadow-[0_8px_30px_rgba(245,158,11,0.2)]"
+              className="relative flex items-center rounded-2xl border-2 border-orange-300/90 bg-white p-1.5 shadow-[0_6px_24px_rgba(245,158,11,0.12)] transition-all focus-within:border-orange-500 focus-within:shadow-[0_8px_30px_rgba(245,158,11,0.2)]"
             >
               {/* Search Icon */}
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-white shadow-xs ml-0.5">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 via-orange-500 to-orange-600 text-white shadow-xs ml-0.5">
                 <Search className="size-4" />
               </div>
 
@@ -297,7 +297,7 @@ function PredictiveSearchPage() {
                     setDraft("");
                     executeSearch("");
                   }}
-                  className="mr-1.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-900 hover:bg-amber-200 transition active:scale-90"
+                  className="mr-1.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-950 hover:bg-orange-200 transition active:scale-90"
                   aria-label="Clear query"
                 >
                   <X className="size-3.5" />
@@ -308,7 +308,7 @@ function PredictiveSearchPage() {
               <button
                 type="button"
                 onClick={() => setIsVoiceOpen(true)}
-                className="relative mr-1 flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-100 to-orange-100 text-amber-900 hover:from-amber-200 hover:to-orange-200 border border-amber-300/80 shadow-2xs transition active:scale-95 group"
+                className="relative mr-1 flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-100 to-orange-100 text-orange-950 hover:from-orange-200 hover:to-orange-200 border border-orange-300/80 shadow-2xs transition active:scale-95 group"
                 aria-label="Search with voice"
                 title="Search with voice (English / Hindi / Bengali)"
               >
@@ -316,14 +316,14 @@ function PredictiveSearchPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                   <span className="relative inline-flex rounded-full size-2.5 bg-red-500" />
                 </span>
-                <Mic className="size-4 text-amber-800 group-hover:scale-110 transition-transform" />
+                <Mic className="size-4 text-orange-900 group-hover:scale-110 transition-transform" />
               </button>
             </form>
 
             {/* ZERO-TYPING MULTILINGUAL QUICK CHIPS BAR */}
             <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-0.5 scrollbar-none select-none">
-              <span className="text-[9.5px] font-black uppercase tracking-wider text-amber-900/70 shrink-0 flex items-center gap-0.5 pr-0.5">
-                <Sparkles className="size-2.5 text-amber-600" />
+              <span className="text-[9.5px] font-black uppercase tracking-wider text-orange-950/70 shrink-0 flex items-center gap-0.5 pr-0.5">
+                <Sparkles className="size-2.5 text-orange-600" />
                 <span>Zero-Typing:</span>
               </span>
               {[
@@ -345,8 +345,8 @@ function PredictiveSearchPage() {
                   className={cn(
                     "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-black shadow-2xs shrink-0 transition-all active:scale-95 cursor-pointer border",
                     draft.toLowerCase() === chip.query.toLowerCase()
-                      ? "bg-gradient-to-r from-amber-500 to-amber-600 text-white border-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
-                      : "bg-white hover:bg-amber-50/90 text-gray-800 border-amber-200/80 hover:border-amber-400"
+                      ? "bg-gradient-to-r from-orange-500 to-orange-600 text-white border-orange-400 shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
+                      : "bg-white hover:bg-orange-50/90 text-gray-800 border-orange-200/80 hover:border-orange-400"
                   )}
                   title={`Zero-Typing Quick Search: ${chip.name} (${chip.regional})`}
                 >
@@ -358,10 +358,10 @@ function PredictiveSearchPage() {
 
             {/* PREDICTIVE AUTO-SUGGEST DROPDOWN WITH SUBSTRING HIGHLIGHTING */}
             {isFocused && draft.trim().length > 0 && suggestions.length > 0 && (
-              <div className="absolute left-3 right-3 sm:left-auto sm:w-[calc(100%-48px)] max-w-4xl mt-2 rounded-2xl border border-amber-200 bg-white/98 backdrop-blur-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                <div className="p-2 border-b border-amber-100 flex items-center justify-between text-[11px] font-black uppercase text-amber-900/70 bg-amber-50/60 px-3 py-1.5">
+              <div className="absolute left-3 right-3 sm:left-auto sm:w-[calc(100%-48px)] max-w-4xl mt-2 rounded-2xl border border-orange-200 bg-white/98 backdrop-blur-xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="p-2 border-b border-orange-100 flex items-center justify-between text-[11px] font-black uppercase text-orange-950/70 bg-orange-50/60 px-3 py-1.5">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles className="size-3 text-amber-600" />
+                    <Sparkles className="size-3 text-orange-600" />
                     <span>Instant Suggestions</span>
                   </span>
                   <span>150ms Debounced</span>
@@ -374,10 +374,10 @@ function PredictiveSearchPage() {
                         key={sug.id}
                         type="button"
                         onClick={() => executeSearch(sug.rawText)}
-                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-left hover:bg-amber-50/80 transition group"
+                        className="w-full flex items-center justify-between px-3.5 py-2.5 text-left hover:bg-orange-50/80 transition group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                          <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-700">
                             {sug.type === "dish" ? (
                               <Utensils className="size-3.5" />
                             ) : sug.type === "restaurant" ? (
@@ -394,7 +394,7 @@ function PredictiveSearchPage() {
                                 p.match ? (
                                   <span
                                     key={idx}
-                                    className="font-black text-amber-800 bg-amber-100/90 px-0.5 rounded"
+                                    className="font-black text-orange-900 bg-orange-100/90 px-0.5 rounded"
                                   >
                                     {p.text}
                                   </span>
@@ -412,7 +412,7 @@ function PredictiveSearchPage() {
                         </div>
 
                         {sug.badge && (
-                          <span className="ml-2 shrink-0 text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200 group-hover:bg-amber-200 group-hover:text-amber-950 transition">
+                          <span className="ml-2 shrink-0 text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 border border-gray-200 group-hover:bg-orange-200 group-hover:text-orange-950 transition">
                             {sug.badge}
                           </span>
                         )}
@@ -448,11 +448,11 @@ function PredictiveSearchPage() {
                   className={cn(
                     "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
                     filterRating4Plus
-                      ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-500 shadow-[0_2px_10px_rgba(245,158,11,0.3)] ring-1 ring-amber-400 scale-105"
-                      : "bg-white hover:bg-amber-50 text-gray-700 border-gray-200 hover:border-amber-300",
+                      ? "bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white border-orange-500 shadow-[0_2px_10px_rgba(245,158,11,0.3)] ring-1 ring-orange-400 scale-105"
+                      : "bg-white hover:bg-orange-50 text-gray-700 border-gray-200 hover:border-orange-300",
                   )}
                 >
-                  <Star className={cn("size-3.5", filterRating4Plus ? "fill-white text-white" : "text-amber-500")} />
+                  <Star className={cn("size-3.5", filterRating4Plus ? "fill-white text-white" : "text-orange-500")} />
                   <span>Rating 4.0+</span>
                 </button>
 
@@ -488,7 +488,7 @@ function PredictiveSearchPage() {
               </div>
 
               {/* Live Count Indicator */}
-              <span className="text-[11px] font-black text-amber-950 bg-amber-100/80 border border-amber-300/80 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
+              <span className="text-[11px] font-black text-orange-950 bg-orange-100/80 border border-orange-300/80 px-2.5 py-1 rounded-full shrink-0 shadow-2xs">
                 {activeTab === "dishes" ? `${filteredDishes.length} dishes` : `${filteredRestaurants.length} kitchens`}
               </span>
             </div>
@@ -499,16 +499,16 @@ function PredictiveSearchPage() {
         <div className="mx-auto max-w-4xl px-3 sm:px-6 pt-3 space-y-4">
           {/* 1. RECENT SEARCHES (Stores last 5 searches in localStorage with 1-tap rerun and 'Clear History') */}
           {!draft.trim() && recentSearches.length > 0 && (
-            <section aria-label="Recent Searches" className="rounded-2xl border border-amber-200/80 bg-white/90 p-4 shadow-sm space-y-2.5">
+            <section aria-label="Recent Searches" className="rounded-2xl border border-orange-200/80 bg-white/90 p-4 shadow-sm space-y-2.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="size-4 text-amber-600" />
+                  <Clock className="size-4 text-orange-600" />
                   <h3 className="text-sm font-black text-gray-900 tracking-tight">Recent Searches</h3>
                 </div>
                 <button
                   type="button"
                   onClick={handleClearHistory}
-                  className="flex items-center gap-1 text-xs font-bold text-amber-800 hover:text-red-600 hover:underline transition"
+                  className="flex items-center gap-1 text-xs font-bold text-orange-900 hover:text-red-600 hover:underline transition"
                 >
                   <Trash2 className="size-3" />
                   <span>Clear History</span>
@@ -521,9 +521,9 @@ function PredictiveSearchPage() {
                     key={item}
                     type="button"
                     onClick={() => executeSearch(item)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50/70 hover:bg-amber-100 hover:border-amber-400 px-3.5 py-1.5 text-xs font-extrabold text-amber-950 transition active:scale-95 shadow-2xs"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50/70 hover:bg-orange-100 hover:border-orange-400 px-3.5 py-1.5 text-xs font-extrabold text-orange-950 transition active:scale-95 shadow-2xs"
                   >
-                    <RotateCcw className="size-3 text-amber-600 shrink-0" />
+                    <RotateCcw className="size-3 text-orange-600 shrink-0" />
                     <span>{item}</span>
                   </button>
                 ))}
@@ -533,7 +533,7 @@ function PredictiveSearchPage() {
 
           {/* 2. TRENDING / POPULAR SEARCHES PILL DECK */}
           {!draft.trim() && (
-            <section aria-label="Trending Searches" className="rounded-2xl border border-orange-200/80 bg-gradient-to-r from-orange-50/50 via-amber-50/40 to-yellow-50/50 p-4 shadow-sm space-y-2.5">
+            <section aria-label="Trending Searches" className="rounded-2xl border border-orange-200/80 bg-gradient-to-r from-orange-50/50 via-orange-50/40 to-orange-50/50 p-4 shadow-sm space-y-2.5">
               <div className="flex items-center gap-2">
                 <Flame className="size-4 text-orange-600 animate-pulse" />
                 <h3 className="text-sm font-black text-gray-900 tracking-tight">
@@ -561,7 +561,7 @@ function PredictiveSearchPage() {
           )}
 
           {/* 3. DUAL-TAB SELECTOR (Dishes Tab & Restaurants Tab) */}
-          <div className="flex items-center rounded-2xl bg-amber-100/80 p-1 border border-amber-200/90 shadow-inner">
+          <div className="flex items-center rounded-2xl bg-orange-100/80 p-1 border border-orange-200/90 shadow-inner">
             <button
               type="button"
               onClick={() => setActiveTab("dishes")}
@@ -569,12 +569,12 @@ function PredictiveSearchPage() {
                 "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-sm transition-all duration-200 select-none",
                 activeTab === "dishes"
                   ? "bg-white text-gray-950 shadow-md scale-[1.01]"
-                  : "text-amber-900/80 hover:text-amber-950",
+                  : "text-orange-950/80 hover:text-orange-950",
               )}
             >
               <Utensils className="size-4 text-orange-600" />
               <span>Dishes</span>
-              <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-black text-amber-900">
+              <span className="ml-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-black text-orange-950">
                 {filteredDishes.length}
               </span>
             </button>
@@ -586,12 +586,12 @@ function PredictiveSearchPage() {
                 "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-sm transition-all duration-200 select-none",
                 activeTab === "restaurants"
                   ? "bg-white text-gray-950 shadow-md scale-[1.01]"
-                  : "text-amber-900/80 hover:text-amber-950",
+                  : "text-orange-950/80 hover:text-orange-950",
               )}
             >
               <Store className="size-4 text-orange-600" />
               <span>Restaurants</span>
-              <span className="ml-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-black text-amber-900">
+              <span className="ml-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-black text-orange-950">
                 {filteredRestaurants.length}
               </span>
             </button>
@@ -609,7 +609,7 @@ function PredictiveSearchPage() {
                   return (
                     <div
                       key={dish.id}
-                      className="group flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-gray-100 bg-white p-3.5 sm:p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:border-amber-300/60 transition-all duration-200"
+                      className="group flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-gray-100 bg-white p-3.5 sm:p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:border-orange-300/60 transition-all duration-200"
                     >
                       <div className="flex gap-3.5">
                         {/* Dish Details */}
@@ -618,7 +618,7 @@ function PredictiveSearchPage() {
                           <div className="flex items-center gap-1.5">
                             {dish.isJain ? (
                               <span
-                                className="inline-flex items-center gap-0.5 rounded-[4px] border border-amber-400/80 bg-amber-50 px-1.5 py-0.5 text-[9px] font-black text-amber-900 shadow-2xs"
+                                className="inline-flex items-center gap-0.5 rounded-[4px] border border-orange-400/80 bg-orange-50 px-1.5 py-0.5 text-[9px] font-black text-orange-950 shadow-2xs"
                                 title="Sattvic Jain (No onion, no garlic)"
                               >
                                 <span>Jain</span>
@@ -639,14 +639,14 @@ function PredictiveSearchPage() {
                               </span>
                             )}
                             {dish.bestseller && (
-                              <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-amber-900">
+                              <span className="rounded bg-orange-100 px-1.5 py-0.5 text-[9px] font-black uppercase text-orange-950">
                                 Bestseller
                               </span>
                             )}
                           </div>
 
                           {/* Dish Name */}
-                          <h4 className="font-extrabold text-base text-gray-950 leading-snug line-clamp-1 group-hover:text-amber-800 transition-colors">
+                          <h4 className="font-extrabold text-base text-gray-950 leading-snug line-clamp-1 group-hover:text-orange-900 transition-colors">
                             {dish.name}
                           </h4>
 
@@ -654,7 +654,7 @@ function PredictiveSearchPage() {
                           <Link
                             to="/r/$slug"
                             params={{ slug: dish.restaurantSlug }}
-                            className="inline-flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-amber-800 hover:underline truncate"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-gray-600 hover:text-orange-900 hover:underline truncate"
                           >
                             <Store className="size-3 text-gray-400 shrink-0" />
                             <span className="truncate">{dish.restaurantName}</span>
@@ -693,8 +693,8 @@ function PredictiveSearchPage() {
                                 loading="lazy"
                               />
                             ) : (
-                              <div className="flex size-full items-center justify-center bg-amber-50">
-                                <Utensils className="size-6 text-amber-500" />
+                              <div className="flex size-full items-center justify-center bg-orange-50">
+                                <Utensils className="size-6 text-orange-500" />
                               </div>
                             )}
                           </div>
@@ -843,8 +843,8 @@ function EmptyState({
   onSelectCuisine: (cuisine: string) => void;
 }) {
   return (
-    <div className="rounded-3xl border border-amber-200/80 bg-white/95 p-6 sm:p-8 text-center space-y-5 shadow-[0_4px_24px_rgba(245,158,11,0.06)]">
-      <div className="mx-auto flex size-18 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-400 to-amber-500 shadow-md text-white">
+    <div className="rounded-3xl border border-orange-200/80 bg-white/95 p-6 sm:p-8 text-center space-y-5 shadow-[0_4px_24px_rgba(245,158,11,0.06)]">
+      <div className="mx-auto flex size-18 items-center justify-center rounded-2xl bg-gradient-to-tr from-orange-400 via-orange-400 to-orange-500 shadow-md text-white">
         <Search className="size-7 text-white" />
       </div>
 
@@ -859,8 +859,8 @@ function EmptyState({
 
       {/* 1-Tap Browse Top Cuisines */}
       <div className="space-y-2 pt-2">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-amber-900/80 bg-amber-100/70 px-3 py-1 rounded-full border border-amber-200/80">
-          <Utensils className="size-3 text-amber-700" />
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-orange-950/80 bg-orange-100/70 px-3 py-1 rounded-full border border-orange-200/80">
+          <Utensils className="size-3 text-orange-700" />
           <span>Browse Top Cuisines</span>
         </span>
         <div className="flex flex-wrap items-center justify-center gap-2 pt-1 max-w-lg mx-auto">
@@ -869,9 +869,9 @@ function EmptyState({
               key={c.name}
               type="button"
               onClick={() => onSelectCuisine(c.query)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/90 bg-white hover:border-amber-500 hover:bg-amber-50/80 px-3.5 py-1.5 text-xs font-black text-gray-900 transition active:scale-95 shadow-2xs"
+              className="inline-flex items-center gap-1.5 rounded-full border border-orange-200/90 bg-white hover:border-orange-500 hover:bg-orange-50/80 px-3.5 py-1.5 text-xs font-black text-gray-900 transition active:scale-95 shadow-2xs"
             >
-              <Utensils className="size-3 text-amber-600" />
+              <Utensils className="size-3 text-orange-600" />
               <span>{c.name}</span>
             </button>
           ))}
@@ -879,19 +879,19 @@ function EmptyState({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-center gap-3 pt-3 border-t border-amber-900/10">
+      <div className="flex items-center justify-center gap-3 pt-3 border-t border-orange-950/10">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={onReset}
-          className="rounded-xl border-amber-300 font-black text-xs hover:bg-amber-50"
+          className="rounded-xl border-orange-300 font-black text-xs hover:bg-orange-50"
         >
           Reset All Filters
         </Button>
         <Link
           to="/"
-          className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-black text-xs px-4 py-2 shadow-md hover:from-amber-600 hover:to-orange-600 transition"
+          className="inline-flex items-center gap-1 rounded-xl bg-gradient-to-r from-orange-500 to-orange-500 text-white font-black text-xs px-4 py-2 shadow-md hover:from-orange-600 hover:to-orange-600 transition"
         >
           <span>Explore Home</span>
           <ChevronRight className="size-3.5" />

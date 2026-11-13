@@ -47,7 +47,7 @@ export function ResilientModalFallback({
       aria-labelledby="degraded-network-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in"
     >
-      <div className="relative max-w-sm w-full rounded-3xl bg-white border border-amber-200/90 p-6 text-center shadow-[0_20px_50px_rgba(245,158,11,0.15)] space-y-4">
+      <div className="relative max-w-sm w-full rounded-3xl bg-white border border-orange-200/90 p-6 text-center shadow-[0_20px_50px_rgba(245,158,11,0.15)] space-y-4">
         <button
           type="button"
           onClick={dismiss}
@@ -57,7 +57,7 @@ export function ResilientModalFallback({
           <X className="size-4" />
         </button>
 
-        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 shadow-xs">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-orange-50 border border-orange-200 text-orange-700 shadow-xs">
           <AlertCircle className="size-6 stroke-[2.2]" />
         </div>
 
@@ -88,7 +88,7 @@ export function ResilientModalFallback({
                   window.location.reload();
                 }
               }}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-xs font-black text-white shadow-sm transition"
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-xs font-black text-white shadow-sm transition"
             >
               <RotateCcw className="size-3.5" />
               <span>Retry</span>
@@ -97,7 +97,7 @@ export function ResilientModalFallback({
           <button
             type="button"
             onClick={handleClearCacheAndReload}
-            className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200 text-amber-900 text-xs font-bold transition"
+            className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-orange-50 hover:bg-orange-100/80 border border-orange-200 text-orange-950 text-xs font-bold transition"
           >
             <RefreshCw className="size-3" />
             <span>Clear Cache & Reload App</span>

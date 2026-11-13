@@ -253,11 +253,11 @@ export function SystemMasterSettingsModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn" role="dialog" aria-modal="true" aria-labelledby="settings-title">
-      <div className="relative w-full max-w-4xl rounded-2xl border-2 border-amber-500/40 bg-[#070e0b] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl rounded-2xl border-2 border-orange-500/40 bg-[#070e0b] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-amber-500/30 bg-black/60 px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-orange-500/30 bg-black/60 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 to-orange-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               <Sliders className="size-5" />
             </div>
             <div>
@@ -265,7 +265,7 @@ export function SystemMasterSettingsModal({
                 <h3 id="settings-title" className="font-display font-black text-base text-white">
                   System Master Settings &amp; Optimizations
                 </h3>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-400/40 text-[9px] font-mono font-bold">
+                <Badge className="bg-orange-500/20 text-orange-300 border-orange-400/40 text-[9px] font-mono font-bold">
                   FOUNDER EXECUTIVE CONTROLS
                 </Badge>
               </div>
@@ -304,7 +304,7 @@ export function SystemMasterSettingsModal({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-3.5 py-2.5 text-xs font-bold border-b-2 transition ${
                   active
-                    ? "border-amber-400 text-amber-300 bg-amber-500/10"
+                    ? "border-orange-400 text-orange-300 bg-orange-500/10"
                     : "border-transparent text-slate-400 hover:text-white"
                 }`}
               >
@@ -349,13 +349,13 @@ export function SystemMasterSettingsModal({
                 </div>
 
                 {/* 2. SYSTEM RESTERT */}
-                <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-950/20 space-y-3">
+                <div className="p-4 rounded-xl border border-orange-500/30 bg-orange-950/20 space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                    <div className="flex items-center gap-2 text-orange-400 font-bold text-sm">
                       <Power className="size-4" />
                       <span>RESTERT (Runtime Reboot)</span>
                     </div>
-                    <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">CLEAN STATE</Badge>
+                    <Badge className="bg-orange-500/20 text-orange-300 text-[9px] font-mono">CLEAN STATE</Badge>
                   </div>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     Performs a clean system restart: flushes background workers, resets connections, and clears active cache.
@@ -363,13 +363,13 @@ export function SystemMasterSettingsModal({
                   <Button
                     onClick={handleRestart}
                     disabled={isRestarting}
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs h-9"
+                    className="w-full bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs h-9"
                   >
                     <Power className={`size-3.5 mr-1.5 ${isRestarting ? "animate-spin" : ""}`} />
                     {isRestarting ? "Rebooting Runtime..." : "Execute System RESTERT Now"}
                   </Button>
                   {restartResult && (
-                    <div className="text-[11px] font-mono text-amber-300 bg-black/40 p-2 rounded-lg border border-amber-500/30">
+                    <div className="text-[11px] font-mono text-orange-300 bg-black/40 p-2 rounded-lg border border-orange-500/30">
                       {restartResult.message} ({restartResult.bootDurationMs}ms)
                     </div>
                   )}
@@ -393,7 +393,7 @@ export function SystemMasterSettingsModal({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 rounded-xl bg-black/40 border border-white/10">
                   <div className="text-xs text-slate-400">Duplicate Items Found</div>
-                  <div className="text-xl font-bold text-amber-400 font-mono mt-1">
+                  <div className="text-xl font-bold text-orange-400 font-mono mt-1">
                     {scanReport.duplicateItemsCount} Items
                   </div>
                 </div>
@@ -415,7 +415,7 @@ export function SystemMasterSettingsModal({
               <div className="p-3.5 rounded-xl border border-white/10 bg-black/40 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-amber-400" />
+                    <Sparkles className="size-3.5 text-orange-400" />
                     <span>AI Auto-Clean Problematic Items &amp; Mistakes</span>
                   </div>
                   <p className="text-[11px] text-slate-400 mt-0.5">
@@ -442,7 +442,7 @@ export function SystemMasterSettingsModal({
                 <div className="text-xs font-bold text-slate-300">Clean Suggestions:</div>
                 {scanReport.suggestions.map((s, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-xs text-slate-300 bg-white/5 p-2 rounded-lg">
-                    <CheckCircle2 className="size-3.5 text-amber-400 shrink-0" />
+                    <CheckCircle2 className="size-3.5 text-orange-400 shrink-0" />
                     <span>{s}</span>
                   </div>
                 ))}
@@ -482,12 +482,12 @@ export function SystemMasterSettingsModal({
                       }}
                       className={`text-left p-3 rounded-xl border text-xs font-medium transition flex items-center justify-between ${
                         selectedPersona === persona
-                          ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
+                          ? "bg-orange-500/20 border-orange-500/50 text-orange-300"
                           : "bg-black/40 border-white/10 text-slate-400 hover:text-white"
                       }`}
                     >
                       <span>{persona}</span>
-                      {selectedPersona === persona && <Check className="size-4 text-amber-400" />}
+                      {selectedPersona === persona && <Check className="size-4 text-orange-400" />}
                     </button>
                   ))}
                 </div>
@@ -496,7 +496,7 @@ export function SystemMasterSettingsModal({
               <div>
                 <div className="flex justify-between items-center text-xs text-slate-300 mb-1">
                   <span>Speech Cadence / Speed:</span>
-                  <span className="font-mono text-amber-400 font-bold">{speechRate.toFixed(2)}x</span>
+                  <span className="font-mono text-orange-400 font-bold">{speechRate.toFixed(2)}x</span>
                 </div>
                 <input
                   type="range"
@@ -533,7 +533,7 @@ export function SystemMasterSettingsModal({
                               className={`text-[9px] font-bold uppercase ${
                                 isConnected
                                   ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                                  : "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                  : "bg-orange-500/20 text-orange-300 border-orange-500/40"
                               }`}
                             >
                               {m.connectionStatus}
@@ -542,7 +542,7 @@ export function SystemMasterSettingsModal({
                           <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
                             <span>Provider: {m.provider}</span>
                             <span>|</span>
-                            <span className="text-amber-400">API ID: {m.realApiId}</span>
+                            <span className="text-orange-400">API ID: {m.realApiId}</span>
                             <span>|</span>
                             <span>Ctx: {m.contextWindow}</span>
                           </div>
@@ -563,7 +563,7 @@ export function SystemMasterSettingsModal({
                             {isTesting ? (
                               <RefreshCw className="size-3 animate-spin mr-1" />
                             ) : (
-                              <Zap className="size-3 text-amber-400 mr-1" />
+                              <Zap className="size-3 text-orange-400 mr-1" />
                             )}
                             <span>{isTesting ? "Pinging..." : "Test Connection"}</span>
                           </Button>
@@ -578,7 +578,7 @@ export function SystemMasterSettingsModal({
               <div className="border-t border-white/10 pt-3 space-y-3">
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <ShieldCheck className="size-3.5 text-amber-400" />
+                    <ShieldCheck className="size-3.5 text-orange-400" />
                     <span>Configure Provider API Keys (Saved Securely):</span>
                   </h4>
                   <span className="text-[10px] text-slate-400">Keys stored in local session storage</span>
@@ -597,12 +597,12 @@ export function SystemMasterSettingsModal({
                         placeholder="AIzaSy..."
                         value={geminiKeyInput}
                         onChange={(e) => setGeminiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
+                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-400"
                       />
                       <Button
                         size="sm"
                         onClick={() => handleSaveApiKey("gemini", geminiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
+                        className="h-7 px-2 text-[10px] font-bold bg-orange-500 hover:bg-orange-400 text-black"
                       >
                         Save
                       </Button>
@@ -621,12 +621,12 @@ export function SystemMasterSettingsModal({
                         placeholder="sk-ant-..."
                         value={anthropicKeyInput}
                         onChange={(e) => setAnthropicKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
+                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-400"
                       />
                       <Button
                         size="sm"
                         onClick={() => handleSaveApiKey("anthropic", anthropicKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
+                        className="h-7 px-2 text-[10px] font-bold bg-orange-500 hover:bg-orange-400 text-black"
                       >
                         Save
                       </Button>
@@ -645,12 +645,12 @@ export function SystemMasterSettingsModal({
                         placeholder="sk-..."
                         value={openaiKeyInput}
                         onChange={(e) => setOpenaiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
+                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-400"
                       />
                       <Button
                         size="sm"
                         onClick={() => handleSaveApiKey("openai", openaiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
+                        className="h-7 px-2 text-[10px] font-bold bg-orange-500 hover:bg-orange-400 text-black"
                       >
                         Save
                       </Button>
@@ -669,12 +669,12 @@ export function SystemMasterSettingsModal({
                         placeholder="xai-..."
                         value={xaiKeyInput}
                         onChange={(e) => setXaiKeyInput(e.target.value)}
-                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400"
+                        className="flex-1 bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-400"
                       />
                       <Button
                         size="sm"
                         onClick={() => handleSaveApiKey("xai", xaiKeyInput)}
-                        className="h-7 px-2 text-[10px] font-bold bg-amber-500 hover:bg-amber-400 text-black"
+                        className="h-7 px-2 text-[10px] font-bold bg-orange-500 hover:bg-orange-400 text-black"
                       >
                         Save
                       </Button>
@@ -710,7 +710,7 @@ export function SystemMasterSettingsModal({
                       }}
                       className={`flex-1 p-2.5 rounded-lg border text-xs text-left transition ${
                         chatMode === mode.value
-                          ? "border-amber-400 bg-amber-500/10 text-amber-300"
+                          ? "border-orange-400 bg-orange-500/10 text-orange-300"
                           : "border-white/10 text-slate-400 hover:border-white/30"
                       }`}
                     >
@@ -805,7 +805,7 @@ export function SystemMasterSettingsModal({
                       saveChatSetting("umar_os_language", e.target.value);
                       toast.success(`Language: ${e.target.value}`);
                     }}
-                    className="w-full bg-black/60 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400"
+                    className="w-full bg-black/60 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-orange-400"
                   >
                     <option value="en-US">English (US)</option>
                     <option value="en-IN">English (India)</option>
@@ -834,7 +834,7 @@ export function SystemMasterSettingsModal({
                 <Button
                   onClick={handleCheckModelUpdates}
                   disabled={isCheckingUpdates}
-                  className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs h-8 px-3"
+                  className="bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs h-8 px-3"
                 >
                   <RefreshCw className={`size-3.5 mr-1.5 ${isCheckingUpdates ? "animate-spin" : ""}`} />
                   {isCheckingUpdates ? "Checking..." : "Check Now"}

@@ -73,10 +73,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
         return (
           <div
             role="alert"
-            className="w-full my-2 p-4 rounded-2xl border border-amber-200/90 bg-amber-50/70 text-slate-900 shadow-xs"
+            className="w-full my-2 p-4 rounded-2xl border border-orange-200/90 bg-orange-50/70 text-slate-900 shadow-xs"
           >
             <div className="flex items-start gap-3">
-              <div className="size-9 rounded-xl bg-amber-500/15 border border-amber-300 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+              <div className="size-9 rounded-xl bg-orange-500/15 border border-orange-300 text-orange-700 flex items-center justify-center shrink-0 mt-0.5">
                 <AlertCircle className="size-5 stroke-[2.2]" />
               </div>
               <div className="flex-1 min-w-0">
@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
                   <button
                     type="button"
                     onClick={this.resetError}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold transition shadow-xs cursor-pointer"
                   >
                     <RotateCcw className="size-3.5" />
                     Retry Section
@@ -118,11 +118,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
           role="alert"
           className="min-h-screen w-full bg-[#FAF7F2] text-gray-900 flex flex-col items-center justify-center p-6 select-none"
         >
-          <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200/90 p-8 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-orange-200/90 p-8 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
             {/* Ambient luxury icon */}
             <div className="relative mx-auto flex size-16 items-center justify-center">
-              <div className="absolute inset-0 rounded-2xl bg-amber-400/25 blur-md animate-pulse" />
-              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-amber-600/20 border border-amber-300 text-amber-700 shadow-sm">
+              <div className="absolute inset-0 rounded-2xl bg-orange-400/25 blur-md animate-pulse" />
+              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500/20 via-orange-500/15 to-orange-600/20 border border-orange-300 text-orange-700 shadow-sm">
                 <AlertCircle className="size-8 stroke-[2.2]" />
               </div>
             </div>
@@ -143,7 +143,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
               <button
                 type="button"
                 onClick={this.resetError}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
               >
                 <RotateCcw className="size-4 stroke-[2.2]" />
                 Try Again Instantly
@@ -152,7 +152,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
               <button
                 type="button"
                 onClick={this.handleClearCacheAndReload}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200/70 px-5 py-3 text-sm font-bold text-amber-900 transition-all active:scale-98 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-50 hover:bg-orange-100/80 border border-orange-200/70 px-5 py-3 text-sm font-bold text-orange-950 transition-all active:scale-98 cursor-pointer"
               >
                 <RefreshCw className="size-4 stroke-[2]" />
                 Clear Cache & Refresh

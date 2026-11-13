@@ -124,10 +124,10 @@ class ResilientOutletBoundary extends Component<
       // If max retries reached or non-recoverable error, show luxury zero-white-screen recovery card
       return (
         <div className="relative min-h-[70vh] w-full flex items-center justify-center p-6 bg-[#FCFAF7] select-none">
-          <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200/90 p-7 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
+          <div className="w-full max-w-md rounded-3xl bg-white border border-orange-200/90 p-7 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
             <div className="relative mx-auto flex size-16 items-center justify-center">
-              <div className="absolute inset-0 rounded-2xl bg-amber-400/25 blur-md animate-pulse" />
-              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-sm">
+              <div className="absolute inset-0 rounded-2xl bg-orange-400/25 blur-md animate-pulse" />
+              <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 text-white shadow-sm">
                 <AlertCircle className="size-8 stroke-[2.2]" />
               </div>
             </div>
@@ -147,7 +147,7 @@ class ResilientOutletBoundary extends Component<
               <button
                 type="button"
                 onClick={this.handleManualRetry}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
               >
                 <RotateCcw className="size-4 stroke-[2.2]" />
                 Resume View
@@ -156,7 +156,7 @@ class ResilientOutletBoundary extends Component<
               <button
                 type="button"
                 onClick={this.handleHardRefresh}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-5 py-3 text-sm font-bold text-amber-900 transition-all active:scale-98 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-50 hover:bg-orange-100 border border-orange-200/80 px-5 py-3 text-sm font-bold text-orange-950 transition-all active:scale-98 cursor-pointer"
               >
                 <RefreshCw className="size-4 stroke-[2]" />
                 Purge & Reload

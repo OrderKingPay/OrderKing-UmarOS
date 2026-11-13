@@ -450,7 +450,7 @@ function Page() {
           </div>
 
           {instantPayoutNotice ? (
-            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-900 dark:text-amber-200">
+            <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 px-3 py-2.5 text-xs text-orange-950 dark:text-orange-200">
               {instantPayoutNotice}
             </div>
           ) : null}
@@ -544,7 +544,7 @@ function Page() {
                     </span>
                     <span
                       className={`rounded px-1.5 py-0.5 text-[10px] font-mono ${l.kind === "REFERRAL_COMMISSION"
-                          ? "border border-amber-500/40 bg-amber-500/15 font-semibold text-amber-500"
+                          ? "border border-orange-500/40 bg-orange-500/15 font-semibold text-orange-500"
                           : "bg-muted text-muted-foreground"
                         }`}
                     >

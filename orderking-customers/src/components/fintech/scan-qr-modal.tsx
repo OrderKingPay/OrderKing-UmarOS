@@ -187,15 +187,15 @@ export function ScanQrModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-950 to-black text-white rounded-3xl shadow-2xl border border-amber-400/50 overflow-hidden my-auto">
+      <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-950 to-black text-white rounded-3xl shadow-2xl border border-orange-400/50 overflow-hidden my-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-amber-950 via-slate-900 to-[#2A1D07] p-5 sm:p-6 border-b border-amber-400/30 flex items-start justify-between">
+        <div className="bg-gradient-to-r from-orange-950 via-slate-900 to-[#2A1D07] p-5 sm:p-6 border-b border-orange-400/30 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-orange-400/20 text-orange-300 border border-orange-400/40">
                 <QrCode className="size-4" />
               </span>
-              <span className="text-[11px] font-black uppercase tracking-wider text-amber-400">
+              <span className="text-[11px] font-black uppercase tracking-wider text-orange-400">
                 KingPay UPI
               </span>
             </div>
@@ -224,7 +224,7 @@ export function ScanQrModal({
             onClick={() => setActiveTab("scan")}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border ${
               activeTab === "scan"
-                ? "bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-sm"
+                ? "bg-orange-400/20 text-orange-300 border-orange-400/50 shadow-sm"
                 : "bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white"
             }`}
           >
@@ -236,7 +236,7 @@ export function ScanQrModal({
             onClick={() => setActiveTab("merchant_qr")}
             className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border ${
               activeTab === "merchant_qr"
-                ? "bg-amber-400/20 text-amber-300 border-amber-400/50 shadow-sm"
+                ? "bg-orange-400/20 text-orange-300 border-orange-400/50 shadow-sm"
                 : "bg-slate-950/80 text-slate-400 border-slate-800 hover:text-white"
             }`}
           >
@@ -248,7 +248,7 @@ export function ScanQrModal({
         {activeTab === "merchant_qr" ? (
           /* Merchant BharatQR Generator View */
           <div className="p-5 sm:p-6 space-y-4">
-            <div className="rounded-2xl border border-amber-400/40 bg-black/60 p-5 text-center flex flex-col items-center">
+            <div className="rounded-2xl border border-orange-400/40 bg-black/60 p-5 text-center flex flex-col items-center">
               <div className="flex items-center justify-center gap-2 mb-3">
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
                   NPCI VPA COMPLIANT
@@ -267,7 +267,7 @@ export function ScanQrModal({
                     onClick={() => setSelectedMerchantVpa(vpaOpt)}
                     className={`flex-1 py-1.5 px-2 rounded-lg text-[11px] font-mono font-bold transition border ${
                       selectedMerchantVpa === vpaOpt
-                        ? "bg-amber-400/25 border-amber-400 text-amber-300"
+                        ? "bg-orange-400/25 border-orange-400 text-orange-300"
                         : "bg-slate-900 border-slate-700 text-slate-400 hover:text-white"
                     }`}
                   >
@@ -277,7 +277,7 @@ export function ScanQrModal({
               </div>
 
               {/* QR Image */}
-              <div className="bg-white p-3.5 rounded-2xl shadow-2xl ring-4 ring-amber-400/20 mb-3">
+              <div className="bg-white p-3.5 rounded-2xl shadow-2xl ring-4 ring-orange-400/20 mb-3">
                 <img
                   src={merchantQrImageUrl}
                   alt="Scan to Pay OrderKing UPI"
@@ -292,7 +292,7 @@ export function ScanQrModal({
               <p className="text-2xl font-black font-mono text-white mt-1">
                 ₹{dynamicOrderRupees.toFixed(2)}
               </p>
-              <p className="text-xs font-bold text-amber-300">{merchantName}</p>
+              <p className="text-xs font-bold text-orange-300">{merchantName}</p>
               <p className="text-[11px] font-mono text-slate-400">{selectedMerchantVpa}</p>
 
               <div className="mt-4 flex gap-2 w-full max-w-xs">
@@ -305,13 +305,13 @@ export function ScanQrModal({
                       toast.success("Merchant UPI Intent URI copied!");
                     }
                   }}
-                  className="flex-1 h-9 rounded-xl border-amber-400/40 text-amber-300 bg-slate-950 text-xs font-bold"
+                  className="flex-1 h-9 rounded-xl border-orange-400/40 text-orange-300 bg-slate-950 text-xs font-bold"
                 >
                   Copy Intent
                 </Button>
                 <a
                   href={merchantUpiIntentUri}
-                  className="flex-1 h-9 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 text-black text-xs font-black inline-flex items-center justify-center no-underline shadow-sm"
+                  className="flex-1 h-9 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 text-black text-xs font-black inline-flex items-center justify-center no-underline shadow-sm"
                 >
                   Open UPI App
                 </a>
@@ -333,25 +333,25 @@ export function ScanQrModal({
                 {formatPaise(paymentSuccess.amountPaise)}
               </h3>
               <p className="text-sm text-slate-300 mt-1">
-                Paid to <strong className="text-amber-300">{paymentSuccess.payee}</strong>
+                Paid to <strong className="text-orange-300">{paymentSuccess.payee}</strong>
               </p>
               <p className="text-xs text-slate-400 font-mono mt-0.5">
                 {paymentSuccess.upiId}
               </p>
             </div>
 
-            <div className="bg-slate-900/90 rounded-2xl p-4 border border-amber-400/30 text-left space-y-2 text-xs">
+            <div className="bg-slate-900/90 rounded-2xl p-4 border border-orange-400/30 text-left space-y-2 text-xs">
               <div className="flex justify-between text-slate-400">
                 <span>Transaction Reference:</span>
                 <span className="font-mono text-white font-bold">{paymentSuccess.txnId}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Bank Settlement UTR:</span>
-                <span className="font-medium text-amber-300">Internal Ledger Clearance (Direct Vault)</span>
+                <span className="font-medium text-orange-300">Internal Ledger Clearance (Direct Vault)</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Payment Mode:</span>
-                <span className="text-amber-400 font-bold">KingPay Wallet</span>
+                <span className="text-orange-400 font-bold">KingPay Wallet</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Convenience Fee:</span>
@@ -362,7 +362,7 @@ export function ScanQrModal({
             <Button
               type="button"
               onClick={handleReset}
-              className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-black text-sm shadow-lg shadow-amber-500/20"
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-black text-sm shadow-lg shadow-orange-500/20"
             >
               Done
             </Button>
@@ -376,7 +376,7 @@ export function ScanQrModal({
                 onClick={() => setMode("camera")}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
                   mode === "camera"
-                    ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                    ? "bg-orange-400/20 text-orange-300 border border-orange-400/40"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -388,7 +388,7 @@ export function ScanQrModal({
                 onClick={() => setMode("manual")}
                 className={`flex-1 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
                   mode === "manual"
-                    ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                    ? "bg-orange-400/20 text-orange-300 border border-orange-400/40"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -400,17 +400,17 @@ export function ScanQrModal({
             {mode === "camera" ? (
               /* BharatQR Optical Viewfinder */
               <div className="space-y-4">
-                <div className="relative aspect-square max-h-64 mx-auto w-full rounded-2xl overflow-hidden bg-black border-2 border-dashed border-amber-400/60 flex flex-col items-center justify-center p-4">
+                <div className="relative aspect-square max-h-64 mx-auto w-full rounded-2xl overflow-hidden bg-black border-2 border-dashed border-orange-400/60 flex flex-col items-center justify-center p-4">
                   {/* Scanner Laser Animation */}
-                  <div className="absolute inset-x-4 top-4 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.9)] animate-pulse" />
+                  <div className="absolute inset-x-4 top-4 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.9)] animate-pulse" />
 
                   {/* Corner Reticles */}
-                  <div className="absolute top-3 left-3 size-6 border-t-2 border-l-2 border-amber-400 rounded-tl-lg" />
-                  <div className="absolute top-3 right-3 size-6 border-t-2 border-r-2 border-amber-400 rounded-tr-lg" />
-                  <div className="absolute bottom-3 left-3 size-6 border-b-2 border-l-2 border-amber-400 rounded-bl-lg" />
-                  <div className="absolute bottom-3 right-3 size-6 border-b-2 border-r-2 border-amber-400 rounded-br-lg" />
+                  <div className="absolute top-3 left-3 size-6 border-t-2 border-l-2 border-orange-400 rounded-tl-lg" />
+                  <div className="absolute top-3 right-3 size-6 border-t-2 border-r-2 border-orange-400 rounded-tr-lg" />
+                  <div className="absolute bottom-3 left-3 size-6 border-b-2 border-l-2 border-orange-400 rounded-bl-lg" />
+                  <div className="absolute bottom-3 right-3 size-6 border-b-2 border-r-2 border-orange-400 rounded-br-lg" />
 
-                  <QrCode className="size-16 text-amber-400/40 mb-2 animate-pulse" />
+                  <QrCode className="size-16 text-orange-400/40 mb-2 animate-pulse" />
                   <p className="text-xs font-bold text-slate-300 text-center">
                     Align any BharatQR / UPI QR within frame
                   </p>
@@ -421,7 +421,7 @@ export function ScanQrModal({
                   <button
                     type="button"
                     onClick={() => setMode("manual")}
-                    className="mt-3 text-xs bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1.5 rounded-full hover:bg-amber-400/30 font-semibold flex items-center gap-1.5 transition"
+                    className="mt-3 text-xs bg-orange-400/20 text-orange-300 border border-orange-400/30 px-3 py-1.5 rounded-full hover:bg-orange-400/30 font-semibold flex items-center gap-1.5 transition"
                   >
                     <AtSign className="size-3" />
                     <span>Enter UPI ID / VPA Manually</span>
@@ -440,9 +440,9 @@ export function ScanQrModal({
                   type="button"
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full h-11 rounded-xl border-amber-400/40 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white flex items-center justify-center gap-2 text-xs font-bold"
+                  className="w-full h-11 rounded-xl border-orange-400/40 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white flex items-center justify-center gap-2 text-xs font-bold"
                 >
-                  <Upload className="size-4 text-amber-400" />
+                  <Upload className="size-4 text-orange-400" />
                   <span>Upload QR Code Image from Gallery</span>
                 </Button>
               </div>
@@ -458,7 +458,7 @@ export function ScanQrModal({
                     value={payeeUpi}
                     onChange={(e) => setPayeeUpi(e.target.value)}
                     placeholder="e.g. merchant@upi, store@okhdfcbank"
-                    className="w-full rounded-xl border border-amber-400/50 bg-slate-950 px-3 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400"
+                    className="w-full rounded-xl border border-orange-400/50 bg-slate-950 px-3 py-2.5 text-sm text-white focus:outline-none focus:border-orange-400"
                   />
                   {cleanUpi && !isValidVPA(cleanUpi) && (
                     <p className="text-xs text-rose-400 mt-1 font-semibold">
@@ -466,7 +466,7 @@ export function ScanQrModal({
                     </p>
                   )}
                   {payeeName && isValidVPA(cleanUpi) && (
-                    <p className="text-xs text-amber-300 mt-1 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-orange-300 mt-1 font-semibold flex items-center gap-1">
                       <ShieldCheck className="size-3.5 text-emerald-400" />
                       <span>Verified: {payeeName}</span>
                     </p>
@@ -477,8 +477,8 @@ export function ScanQrModal({
                   <label className="block text-xs font-bold text-slate-300 mb-1.5">
                     Amount to Pay (₹)
                   </label>
-                  <div className="relative flex items-center rounded-xl border border-amber-400/60 bg-slate-950 p-2">
-                    <span className="pl-2 text-xl font-black text-amber-400">₹</span>
+                  <div className="relative flex items-center rounded-xl border border-orange-400/60 bg-slate-950 p-2">
+                    <span className="pl-2 text-xl font-black text-orange-400">₹</span>
                     <input
                       type="number"
                       min={1}
@@ -502,14 +502,14 @@ export function ScanQrModal({
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
                     placeholder="e.g. Lunch, Coffee, Groceries"
-                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-400"
                   />
                 </div>
 
                 {/* Available Balance Indicator */}
-                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-500/10 border border-amber-400/30 text-xs">
-                  <span className="text-amber-200">Paying from KingPay Wallet:</span>
-                  <span className="font-mono font-bold text-amber-300">
+                <div className="flex items-center justify-between p-3 rounded-xl bg-orange-500/10 border border-orange-400/30 text-xs">
+                  <span className="text-orange-200">Paying from KingPay Wallet:</span>
+                  <span className="font-mono font-bold text-orange-300">
                     {formatPaise(walletBalancePaise)}
                   </span>
                 </div>
@@ -517,7 +517,7 @@ export function ScanQrModal({
                 {validUpiIntentUri && (
                   <a
                     href={validUpiIntentUri}
-                    className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-400/50 text-amber-300 font-bold text-xs flex items-center justify-center gap-2 transition no-underline shadow-sm"
+                    className="w-full h-11 rounded-xl bg-slate-900 hover:bg-slate-800 border border-orange-400/50 text-orange-300 font-bold text-xs flex items-center justify-center gap-2 transition no-underline shadow-sm"
                   >
                     <ExternalLink className="size-4" />
                     <span>Launch UPI App Intent (upi://pay)</span>
@@ -528,7 +528,7 @@ export function ScanQrModal({
                   type="button"
                   disabled={isProcessing || !isValidVPA(cleanUpi) || !amountRupees}
                   onClick={handlePay}
-                  className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-black font-black text-sm shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2"
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-black font-black text-sm shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2"
                 >
                   {isProcessing ? (
                     <span className="flex items-center gap-2">

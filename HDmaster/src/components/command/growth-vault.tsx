@@ -45,11 +45,11 @@ export function GrowthVaultView() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="rounded-[24px] border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-purple-950/30 to-background p-6 space-y-3 shadow-lg">
+      <div className="rounded-[24px] border border-orange-500/40 bg-gradient-to-r from-orange-950/40 via-purple-950/30 to-background p-6 space-y-3 shadow-lg">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <div>
-              <h2 className="text-xl font-bold font-display text-amber-300">
+              <h2 className="text-xl font-bold font-display text-orange-300">
                 Platform Growth, Institutional Dossiers &amp; Marketing Toolkits
               </h2>
               <p className="text-xs text-muted">
@@ -74,7 +74,7 @@ export function GrowthVaultView() {
             onClick={() => setSubTab("revenue")}
             className={cn(
               "rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              subTab === "revenue" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
+              subTab === "revenue" ? "bg-orange-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
             Revenue & Cashflow Optimizer
@@ -84,7 +84,7 @@ export function GrowthVaultView() {
             onClick={() => setSubTab("grants")}
             className={cn(
               "rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              subTab === "grants" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
+              subTab === "grants" ? "bg-orange-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
             Government Grants (₹1.88 Cr Cash)
@@ -94,7 +94,7 @@ export function GrowthVaultView() {
             onClick={() => setSubTab("keynotes")}
             className={cn(
               "rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              subTab === "keynotes" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
+              subTab === "keynotes" ? "bg-orange-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
             Academic Keynotes (IIT/NIT/Assam Univ)
@@ -104,7 +104,7 @@ export function GrowthVaultView() {
             onClick={() => setSubTab("ads")}
             className={cn(
               "rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              subTab === "ads" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
+              subTab === "ads" ? "bg-orange-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
             Meta &amp; Google Ad Kits
@@ -114,7 +114,7 @@ export function GrowthVaultView() {
             onClick={() => setSubTab("domain")}
             className={cn(
               "rounded-lg px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              subTab === "domain" ? "bg-amber-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
+              subTab === "domain" ? "bg-orange-500 text-black font-semibold" : "bg-surface-raised text-muted hover:text-foreground"
             )}
           >
             Website orderking.in Go-Live
@@ -129,9 +129,9 @@ export function GrowthVaultView() {
         <div className="space-y-6">
           {/* Top Run-Rate Cards */}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 space-y-1">
+            <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-4 space-y-1">
               <span className="text-muted font-medium">Monthly Collectible Inflow</span>
-              <p className="text-xl font-bold font-mono text-amber-300">
+              <p className="text-xl font-bold font-mono text-orange-300">
                 ₹{(harvestData.totalMonthlyCollectibleYieldPaise / 100).toLocaleString("en-IN")}
               </p>
               <p className="text-[11px] text-muted">8 Real Revenue Streams</p>
@@ -160,7 +160,7 @@ export function GrowthVaultView() {
           </div>
 
           {/* 1-Click Execution Switchboard */}
-          <div className="rounded-2xl border border-amber-500/50 bg-surface p-5 space-y-4 shadow-md">
+          <div className="rounded-2xl border border-orange-500/50 bg-surface p-5 space-y-4 shadow-md">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
@@ -172,7 +172,7 @@ export function GrowthVaultView() {
               </div>
 
               {/* Owner Consent Toggle */}
-              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-1.5 text-amber-300">
+              <label className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-orange-500/10 border border-orange-500/30 rounded-lg px-3 py-1.5 text-orange-300">
                 <input
                   type="checkbox"
                   checked={ownerConsent}
@@ -186,7 +186,7 @@ export function GrowthVaultView() {
             <div className="flex flex-wrap gap-3 pt-2 border-t border-border text-xs font-medium">
               <Button
                 variant="primary"
-                className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs flex items-center gap-2 shadow-md"
+                className="bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs flex items-center gap-2 shadow-md"
                 onClick={() => {
                   toast.error("Autonomous revenue harvest endpoint is not connected in this view.");
                 }}
@@ -246,14 +246,14 @@ export function GrowthVaultView() {
                   {harvestData.streams.map((s) => (
                     <div
                       key={s.streamId}
-                      className="rounded-xl border border-border bg-surface p-3.5 space-y-2 hover:border-amber-500/40 transition-colors"
+                      className="rounded-xl border border-border bg-surface p-3.5 space-y-2 hover:border-orange-500/40 transition-colors"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-foreground text-sm">{s.name}</span>
                           <Badge variant="secondary" className="text-[10px]">{s.category}</Badge>
                         </div>
-                        <span className="font-mono font-bold text-amber-400 text-sm">
+                        <span className="font-mono font-bold text-orange-400 text-sm">
                           ₹{(s.monthlyProjectedInflowPaise / 100).toLocaleString("en-IN")}/mo
                         </span>
                       </div>
@@ -294,13 +294,13 @@ export function GrowthVaultView() {
                         className={cn(
                           "w-full text-left rounded-lg p-2.5 border transition-all text-xs space-y-0.5",
                           selectedCorpId === c.id
-                            ? "border-amber-500/60 bg-amber-500/10 font-medium"
+                            ? "border-orange-500/60 bg-orange-500/10 font-medium"
                             : "border-border bg-surface hover:bg-surface-raised"
                         )}
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-foreground line-clamp-1">{c.institutionName}</span>
-                          <span className="font-mono text-amber-400 text-[11px]">
+                          <span className="font-mono text-orange-400 text-[11px]">
                             ₹{(c.monthlyPlatformProfitPaise / 100).toLocaleString("en-IN")}/mo
                           </span>
                         </div>
@@ -355,7 +355,7 @@ export function GrowthVaultView() {
                     </div>
                     <div className="flex justify-between border-t border-border pt-1">
                       <span className="text-muted">Claim Amount:</span>
-                      <span className="text-amber-400 font-bold">₹{(harvestData.meityClaim.totalClaimAmountPaise / 100).toLocaleString("en-IN")}</span>
+                      <span className="text-orange-400 font-bold">₹{(harvestData.meityClaim.totalClaimAmountPaise / 100).toLocaleString("en-IN")}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted">Nodal Bank:</span>
@@ -392,7 +392,7 @@ export function GrowthVaultView() {
                 className={cn(
                   "w-full text-left rounded-xl p-3 border transition-all text-xs space-y-1",
                   selectedGrantId === g.id
-                    ? "border-amber-500/60 bg-amber-500/10 shadow-sm"
+                    ? "border-orange-500/60 bg-orange-500/10 shadow-sm"
                     : "border-border bg-surface hover:bg-surface-raised"
                 )}
               >
@@ -502,7 +502,7 @@ export function GrowthVaultView() {
                 className={cn(
                   "w-full text-left rounded-xl p-3 border transition-all text-xs space-y-1",
                   selectedKeynoteId === k.id
-                    ? "border-amber-500/60 bg-amber-500/10 shadow-sm"
+                    ? "border-orange-500/60 bg-orange-500/10 shadow-sm"
                     : "border-border bg-surface hover:bg-surface-raised"
                 )}
               >
@@ -643,7 +643,7 @@ export function GrowthVaultView() {
                     <h4 className="font-semibold text-foreground text-xs">{reel.title}</h4>
                     <Badge variant="warning" className="text-[10px]">{reel.durationSeconds}s</Badge>
                   </div>
-                  <div className="p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] font-medium">
+                  <div className="p-2 rounded bg-orange-500/10 border border-orange-500/20 text-orange-300 text-[11px] font-medium">
                     Hook: {reel.hook}
                   </div>
                   <div className="space-y-1.5 pt-1">
@@ -712,7 +712,7 @@ export function GrowthVaultView() {
                   <tbody className="divide-y divide-border font-mono text-[11px]">
                     {DOMAIN_GOLIVE_CONFIG.dnsRecords.map((r, i) => (
                       <tr key={i} className="hover:bg-surface-raised/50">
-                        <td className="p-2.5 font-bold text-amber-400">{r.type}</td>
+                        <td className="p-2.5 font-bold text-orange-400">{r.type}</td>
                         <td className="p-2.5 text-foreground">{r.host}</td>
                         <td className="p-2.5 text-emerald-400 select-all">{r.value}</td>
                         <td className="p-2.5 text-muted">{r.ttl}</td>

@@ -51,7 +51,7 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Biryani",
     slug: "biryani",
-    gradient: "from-orange-400 to-amber-500",
+    gradient: "from-orange-400 to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
   },
   {
@@ -63,13 +63,13 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Thali",
     slug: "thali",
-    gradient: "from-amber-400 to-yellow-500",
+    gradient: "from-orange-400 to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Burgers",
     slug: "burger",
-    gradient: "from-yellow-400 to-orange-500",
+    gradient: "from-orange-400 to-orange-500",
     imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
   },
   {
@@ -124,24 +124,24 @@ export function LocationPickerSection({ section }: { section: LayoutSection }) {
       aria-label={section.title || "Delivery Location"}
       className="w-full"
     >
-      <div className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/10 to-yellow-500/10 border border-amber-200/80 p-3 shadow-2xs">
+      <div className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-orange-500/10 via-orange-400/10 to-orange-500/10 border border-orange-200/80 p-3 shadow-2xs">
         <button
           type="button"
           onClick={() => setDialogOpen(true)}
           className="flex items-center gap-2.5 text-left min-w-0 flex-1 group cursor-pointer"
         >
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-400/20 border border-amber-300 text-amber-900 group-hover:scale-105 transition-transform shadow-2xs">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-orange-400/20 border border-orange-300 text-orange-950 group-hover:scale-105 transition-transform shadow-2xs">
             <MapPin className="size-4.5 text-[#E23744]" />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-900/80 leading-none">
+            <span className="text-[10px] font-black uppercase tracking-wider text-orange-950/80 leading-none">
               {section.title || "Deliver To"}
             </span>
             <div className="flex items-center gap-1 mt-0.5">
               <span className="text-xs sm:text-sm font-black text-gray-950 truncate">
                 {location?.label || location?.cityName || "Select your location"}
               </span>
-              <ChevronDown className="size-3.5 text-gray-500 shrink-0 group-hover:text-amber-800 transition-colors" />
+              <ChevronDown className="size-3.5 text-gray-500 shrink-0 group-hover:text-orange-900 transition-colors" />
             </div>
           </div>
         </button>
@@ -185,13 +185,13 @@ export function SearchBarSection({
       <button
         type="button"
         onClick={() => void navigate({ to: "/search" })}
-        className="flex h-11 w-full items-center gap-2.5 rounded-2xl border border-amber-300/70 bg-white/90 backdrop-blur-md px-3.5 text-left text-gray-400 shadow-[0_2px_12px_rgba(245,158,11,0.06)] hover:border-amber-400 hover:bg-white transition-all cursor-pointer group active:scale-[0.99]"
+        className="flex h-11 w-full items-center gap-2.5 rounded-2xl border border-orange-300/70 bg-white/90 backdrop-blur-md px-3.5 text-left text-gray-400 shadow-[0_2px_12px_rgba(245,158,11,0.06)] hover:border-orange-400 hover:bg-white transition-all cursor-pointer group active:scale-[0.99]"
       >
-        <Search className="size-4 shrink-0 text-amber-600 group-hover:scale-110 transition-transform" />
+        <Search className="size-4 shrink-0 text-orange-600 group-hover:scale-110 transition-transform" />
         <span className="text-xs sm:text-sm font-medium text-gray-600 flex-1 truncate">
           {resolvedPlaceholder}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-black text-amber-800 bg-amber-100/70 border border-amber-200/70 px-2 py-0.5 rounded-full">
+        <span className="inline-flex items-center gap-1 text-[10px] font-black text-orange-900 bg-orange-100/70 border border-orange-200/70 px-2 py-0.5 rounded-full">
           Search
         </span>
       </button>
@@ -223,9 +223,9 @@ export function BannerCarouselSection({
       tag: "Verified Kitchens",
       cta: "Explore Kitchens",
       link: "/search",
-      gradient: "from-amber-500 via-yellow-400 to-amber-600",
-      bgClass: "from-amber-950 via-stone-900 to-amber-950",
-      accent: "text-amber-300",
+      gradient: "from-orange-500 via-orange-400 to-orange-600",
+      bgClass: "from-orange-950 via-stone-900 to-orange-950",
+      accent: "text-orange-300",
     },
     {
       id: "gold_crown_rewards",
@@ -234,9 +234,9 @@ export function BannerCarouselSection({
       tag: "Reward information",
       cta: "View Rewards",
       link: "/earn",
-      gradient: "from-yellow-400 via-amber-300 to-yellow-500",
-      bgClass: "from-slate-950 via-amber-950 to-slate-900",
-      accent: "text-amber-200",
+      gradient: "from-orange-400 via-orange-300 to-orange-500",
+      bgClass: "from-slate-950 via-orange-950 to-slate-900",
+      accent: "text-orange-200",
     },
       ];
 
@@ -260,14 +260,14 @@ export function BannerCarouselSection({
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-[26px] sm:rounded-3xl p-4 sm:p-5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.18)] border border-amber-300/40 transition-all duration-500 bg-gradient-to-br",
+          "relative overflow-hidden rounded-[26px] sm:rounded-3xl p-4 sm:p-5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.18)] border border-orange-300/40 transition-all duration-500 bg-gradient-to-br",
           active.bgClass
         )}
       >
         {/* Specular golden sheen refraction */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-300/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-orange-300/80 to-transparent" />
         {/* Glow ambient background decoration */}
-        <div className="pointer-events-none absolute -right-10 -bottom-10 size-44 rounded-full bg-gradient-to-br from-amber-400/25 to-yellow-500/10 blur-2xl" />
+        <div className="pointer-events-none absolute -right-10 -bottom-10 size-44 rounded-full bg-gradient-to-br from-orange-400/25 to-orange-500/10 blur-2xl" />
 
         <div className="relative z-10 flex flex-col justify-between h-full space-y-3.5">
           <div className="flex items-center justify-between gap-2">
@@ -283,7 +283,7 @@ export function BannerCarouselSection({
                   className={cn(
                     "size-2 rounded-full transition-all cursor-pointer",
                     currentIndex === idx
-                      ? "w-6 bg-gradient-to-r from-amber-400 to-yellow-300 shadow-[0_0_8px_rgba(245,158,11,1)]"
+                      ? "w-6 bg-gradient-to-r from-orange-400 to-orange-300 shadow-[0_0_8px_rgba(245,158,11,1)]"
                       : "bg-white/40 hover:bg-white/60"
                   )}
                   aria-label={`Slide ${idx + 1}`}
@@ -304,7 +304,7 @@ export function BannerCarouselSection({
           <div className="pt-0.5">
             <Link
               to={active.link}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 px-4 py-2 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all no-underline"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-400 via-orange-300 to-orange-400 px-4 py-2 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all no-underline"
             >
               <span>{active.cta}</span>
               <ArrowRight className="size-3.5 stroke-[2.5]" />
@@ -396,7 +396,7 @@ export function CategoryGridSection({ section }: { section: LayoutSection }) {
                   "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
                   c.gradient,
                   isSelected
-                    ? "scale-105 ring-3 ring-amber-400 shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
+                    ? "scale-105 ring-3 ring-orange-400 shadow-[0_4px_16px_rgba(245,158,11,0.35)]"
                     : "group-hover:scale-105 group-hover:shadow-md"
                 )}
               >
@@ -579,11 +579,11 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             className={cn(
               "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterFast
-                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-400 shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
-                : "bg-white hover:bg-amber-50/70 text-stone-700 border-amber-200/80 hover:border-amber-400"
+                ? "bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white border-orange-400 shadow-[0_4px_12px_rgba(245,158,11,0.35)]"
+                : "bg-white hover:bg-orange-50/70 text-stone-700 border-orange-200/80 hover:border-orange-400"
             )}
           >
-            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-amber-500")} />
+            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-orange-500")} />
             <span>Fast Delivery</span>
           </button>
 
@@ -594,7 +594,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
               "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterRating
                 ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-400 shadow-[0_4px_12px_rgba(5,150,105,0.35)]"
-                : "bg-white hover:bg-emerald-50/70 text-stone-700 border-amber-200/80 hover:border-emerald-400"
+                : "bg-white hover:bg-emerald-50/70 text-stone-700 border-orange-200/80 hover:border-emerald-400"
             )}
           >
             <Star className={cn("size-3.5", filterRating ? "fill-white text-white" : "text-emerald-600")} />
@@ -608,7 +608,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
               "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterOffers
                 ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-400 shadow-[0_4px_12px_rgba(225,29,72,0.35)]"
-                : "bg-white hover:bg-rose-50/70 text-stone-700 border-amber-200/80 hover:border-rose-400"
+                : "bg-white hover:bg-rose-50/70 text-stone-700 border-orange-200/80 hover:border-rose-400"
             )}
           >
             <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
@@ -622,7 +622,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
               "flex items-center gap-1.5 shrink-0 rounded-full px-3.5 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterBudget
                 ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-400 shadow-[0_4px_12px_rgba(99,102,241,0.35)]"
-                : "bg-white hover:bg-purple-50/70 text-stone-700 border-amber-200/80 hover:border-purple-400"
+                : "bg-white hover:bg-purple-50/70 text-stone-700 border-orange-200/80 hover:border-purple-400"
             )}
           >
             <Coins className={cn("size-3.5", filterBudget ? "text-white" : "text-indigo-600")} />
@@ -630,7 +630,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           </button>
         </div>
 
-        <span className="text-[11px] font-black text-amber-950 bg-amber-100/80 border border-amber-300/70 px-3 py-1 rounded-full shrink-0 shadow-2xs">
+        <span className="text-[11px] font-black text-orange-950 bg-orange-100/80 border border-orange-300/70 px-3 py-1 rounded-full shrink-0 shadow-2xs">
           {filteredRestaurants.length} active kitchens
         </span>
       </div>
@@ -676,8 +676,8 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             Check available menus and delivery options
           </p>
         </div>
-        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-700 bg-white border border-amber-200/80 px-3 py-1.5 rounded-xl shadow-2xs">
-          <Clock className="size-3.5 text-amber-600" />
+        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-700 bg-white border border-orange-200/80 px-3 py-1.5 rounded-xl shadow-2xs">
+          <Clock className="size-3.5 text-orange-600" />
           <span>Avg ETA: 25 min</span>
         </div>
       </div>
@@ -688,11 +688,11 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="overflow-hidden rounded-2xl border border-amber-900/10 bg-white p-4 space-y-3 animate-pulse"
+              className="overflow-hidden rounded-2xl border border-orange-950/10 bg-white p-4 space-y-3 animate-pulse"
             >
-              <div className="aspect-[16/10] w-full rounded-xl bg-amber-100/70" />
-              <div className="h-5 w-3/5 rounded-md bg-amber-200/60" />
-              <div className="h-4 w-2/5 rounded-md bg-amber-100/80" />
+              <div className="aspect-[16/10] w-full rounded-xl bg-orange-100/70" />
+              <div className="h-5 w-3/5 rounded-md bg-orange-200/60" />
+              <div className="h-4 w-2/5 rounded-md bg-orange-100/80" />
             </div>
           ))}
         </div>
@@ -700,9 +700,9 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         isZeroDeliveryInRadius ? (
           <SmartZeroDeliveryFallbackCard cityName={location?.cityName} />
         ) : (
-          <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-amber-200/80 bg-white/95 text-center space-y-3 shadow-xs">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-800 shadow-inner">
-              <Utensils className="size-7 text-amber-700" />
+          <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-orange-200/80 bg-white/95 text-center space-y-3 shadow-xs">
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-orange-100 text-orange-900 shadow-inner">
+              <Utensils className="size-7 text-orange-700" />
             </div>
             <div className="space-y-1">
               <h3 className="text-base font-extrabold text-gray-950">No kitchens match active filters</h3>
@@ -713,7 +713,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             <button
               type="button"
               onClick={resetFilters}
-              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 px-4 py-2 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-amber-300"
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-500 px-4 py-2 text-xs font-black text-slate-950 shadow-sm hover:brightness-105 active:scale-95 transition-all cursor-pointer border border-orange-300"
             >
               <RotateCcw className="size-3.5" />
               <span>Reset All Filters</span>
@@ -730,7 +730,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
 
       {/* Reorder Past Orders */}
       {pastOrders.data?.orders && pastOrders.data.orders.length > 0 && (
-        <div className="pt-4 mt-2 border-t border-amber-900/10">
+        <div className="pt-4 mt-2 border-t border-orange-950/10">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="flex size-6 items-center justify-center rounded-lg bg-stone-100 text-stone-700 text-xs font-bold">
@@ -740,7 +740,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
                 Quick Reorder · Your Favorites
               </h3>
             </div>
-            <Link to="/orders" className="text-xs font-black text-amber-700 hover:text-amber-900 flex items-center gap-0.5 no-underline">
+            <Link to="/orders" className="text-xs font-black text-orange-700 hover:text-orange-950 flex items-center gap-0.5 no-underline">
               <span>View all</span>
               <ChevronRight className="size-3.5" />
             </Link>
@@ -749,7 +749,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
             {pastOrders.data.orders.slice(0, 3).map((o) => (
               <div
                 key={o.id}
-                className="flex w-72 shrink-0 flex-col justify-between rounded-2xl border border-amber-500/30 bg-gradient-to-br from-white via-amber-50/20 to-white p-4 shadow-[0_8px_20px_rgba(40,25,10,0.06)] hover:border-amber-400 transition"
+                className="flex w-72 shrink-0 flex-col justify-between rounded-2xl border border-orange-500/30 bg-gradient-to-br from-white via-orange-50/20 to-white p-4 shadow-[0_8px_20px_rgba(40,25,10,0.06)] hover:border-orange-400 transition"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
@@ -764,14 +764,14 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
                     {o.itemPreview || "Previous delicious order"}
                   </p>
                 </div>
-                <div className="mt-3.5 flex items-center justify-between border-t border-amber-100 pt-3">
+                <div className="mt-3.5 flex items-center justify-between border-t border-orange-100 pt-3">
                   <span className="text-xs font-black text-gray-900 font-mono">
                     {formatPaise(o.totalPaise, { locale: "en-IN" })}
                   </span>
                   <button
                     type="button"
                     onClick={() => void handleReorder(o.id)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3.5 py-1.5 text-xs font-black shadow-sm transition active:scale-95 cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-3.5 py-1.5 text-xs font-black shadow-sm transition active:scale-95 cursor-pointer"
                   >
                     <RotateCcw className="size-3" />
                     <span>Reorder</span>
@@ -840,7 +840,7 @@ export function HomeSectionFallback({ section }: { section: LayoutSection }) {
   return (
     <div
       data-sdui-section={section.type}
-      className="rounded-2xl border border-dashed border-amber-200 p-4 text-center text-xs text-gray-500"
+      className="rounded-2xl border border-dashed border-orange-200 p-4 text-center text-xs text-gray-500"
     >
       <span>{section.title || `Section: ${section.type}`}</span>
     </div>

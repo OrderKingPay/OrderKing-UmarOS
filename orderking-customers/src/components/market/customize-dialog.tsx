@@ -105,7 +105,7 @@ export function CustomizeDialog({
     >
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity" />
-        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-3xl bg-surface border-t border-amber-400/30 shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-3xl bg-surface border-t border-orange-400/30 shadow-2xl pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           {/* Header */}
           <div className="border-b border-border p-5 pb-3 shrink-0">
             <div className="flex items-center justify-between">
@@ -117,7 +117,7 @@ export function CustomizeDialog({
               </div>
               <div className="text-right">
                 <span className="text-xs font-mono font-bold text-muted uppercase">Base Price</span>
-                <p className="font-display text-lg font-black text-amber-600 dark:text-amber-400 tabular-nums">
+                <p className="font-display text-lg font-black text-orange-600 dark:text-orange-400 tabular-nums">
                   {formatPaise(item.basePricePaise, { locale })}
                 </p>
               </div>
@@ -127,7 +127,7 @@ export function CustomizeDialog({
             <div className="mt-3 flex items-center gap-1.5 overflow-x-auto text-[11px] font-bold text-muted pb-1">
               {item.variants.length > 0 && (
                 <>
-                  <span className={`px-2 py-0.5 rounded-md ${variantId ? "bg-amber-100 text-amber-900 font-extrabold" : "bg-muted/20"}`}>
+                  <span className={`px-2 py-0.5 rounded-md ${variantId ? "bg-orange-100 text-orange-950 font-extrabold" : "bg-muted/20"}`}>
                     1. Size
                   </span>
                   <ChevronRight className="size-3 text-muted shrink-0" />
@@ -144,7 +144,7 @@ export function CustomizeDialog({
                         isComplete
                           ? "bg-emerald-100 text-emerald-900 font-extrabold"
                           : g.required
-                            ? "bg-amber-100 text-amber-900 font-extrabold"
+                            ? "bg-orange-100 text-orange-950 font-extrabold"
                             : "bg-muted/20 text-muted"
                       }`}
                     >
@@ -161,12 +161,12 @@ export function CustomizeDialog({
           <div className="flex-1 overflow-y-auto p-5 space-y-6">
             {/* Level 1: Choice of Size (Variants) */}
             {item.variants.length ? (
-              <fieldset className="rounded-2xl border border-amber-300/40 bg-bg/50 p-4 shadow-2xs">
+              <fieldset className="rounded-2xl border border-orange-300/40 bg-bg/50 p-4 shadow-2xs">
                 <div className="flex items-center justify-between pb-2 mb-3 border-b border-border/50">
                   <legend className="text-sm font-black text-fg flex items-center gap-1.5">
                     <span>{t("customize.size")}</span>
                   </legend>
-                  <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-800">
+                  <span className="rounded-full bg-orange-500/15 border border-orange-500/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-orange-900">
                     Required · Choose 1
                   </span>
                 </div>
@@ -178,7 +178,7 @@ export function CustomizeDialog({
                         key={v.id}
                         className={`flex min-h-12 items-center justify-between rounded-xl px-3.5 py-2 transition-all cursor-pointer border ${
                           isSelected
-                            ? "border-amber-500 bg-amber-500/10 shadow-xs"
+                            ? "border-orange-500 bg-orange-500/10 shadow-xs"
                             : "border-border/80 bg-surface hover:bg-bg"
                         }`}
                       >
@@ -217,13 +217,13 @@ export function CustomizeDialog({
               return (
                 <fieldset
                   key={g.id}
-                  className="rounded-2xl border border-amber-300/40 bg-bg/50 p-4 shadow-2xs space-y-3"
+                  className="rounded-2xl border border-orange-300/40 bg-bg/50 p-4 shadow-2xs space-y-3"
                   data-testid={`modifier-group-${g.id}`}
                 >
                   <div className="flex items-center justify-between pb-2 border-b border-border/50">
                     <div>
                       <legend className="text-sm font-black text-fg flex items-center gap-1.5">
-                        <Sparkles className="size-3.5 text-amber-500" />
+                        <Sparkles className="size-3.5 text-orange-500" />
                         <span>{g.name}</span>
                       </legend>
                       <p className="text-[11px] text-muted mt-0.5">
@@ -238,7 +238,7 @@ export function CustomizeDialog({
                         className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${
                           selectedCount >= (g.required ? Math.max(1, g.minSelect) : 0)
                             ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                            : "bg-amber-100 text-amber-900 border border-amber-300"
+                            : "bg-orange-100 text-orange-950 border border-orange-300"
                         }`}
                       >
                         {selectedCount} / {isSingleChoice ? 1 : g.maxSelect}
@@ -259,7 +259,7 @@ export function CustomizeDialog({
                           <label
                             className={`flex min-h-12 items-center justify-between rounded-xl px-3.5 py-2 transition-all cursor-pointer border ${
                               isChecked
-                                ? "border-amber-500 bg-amber-500/10 shadow-xs"
+                                ? "border-orange-500 bg-orange-500/10 shadow-xs"
                                 : "border-border/80 bg-surface hover:bg-bg"
                             }`}
                           >
@@ -286,7 +286,7 @@ export function CustomizeDialog({
 
                           {/* Nested Sub-Groups inside an Addon Option (e.g. Cheese Burst -> Choice of Cheese Blend) */}
                           {isChecked && a.nestedGroups && a.nestedGroups.length > 0 && (
-                            <div className="ml-6 pl-3 border-l-2 border-amber-400 space-y-3 py-1">
+                            <div className="ml-6 pl-3 border-l-2 border-orange-400 space-y-3 py-1">
                               {a.nestedGroups.map((subG) => (
                                 <div key={subG.id} className="rounded-xl bg-surface/80 p-3 border border-border space-y-2">
                                   <div className="flex items-center justify-between text-xs font-bold text-fg">
@@ -303,7 +303,7 @@ export function CustomizeDialog({
                                           key={subA.id}
                                           className={`flex min-h-10 items-center justify-between rounded-lg px-2.5 py-1.5 text-xs border cursor-pointer ${
                                             isSubChecked
-                                              ? "border-amber-500 bg-amber-500/15 font-bold"
+                                              ? "border-orange-500 bg-orange-500/15 font-bold"
                                               : "border-border bg-bg"
                                           }`}
                                         >
@@ -353,7 +353,7 @@ export function CustomizeDialog({
                 <button
                   type="button"
                   onClick={() => setShowChefModal(true)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-amber-600 hover:text-amber-700 dark:text-amber-400 cursor-pointer"
+                  className="flex items-center gap-1.5 text-xs font-bold text-orange-600 hover:text-orange-700 dark:text-orange-400 cursor-pointer"
                 >
                   <ChefHat className="size-3.5" />
                   <span>Special Chef Request</span>
@@ -363,7 +363,7 @@ export function CustomizeDialog({
                 value={note}
                 onChange={(e) => setNote(e.target.value.slice(0, 180))}
                 placeholder={t("customize.instructionsPlaceholder")}
-                className="min-h-18 w-full rounded-xl border border-border bg-surface p-3 text-sm focus:border-amber-500 focus:outline-none"
+                className="min-h-18 w-full rounded-xl border border-border bg-surface p-3 text-sm focus:border-orange-500 focus:outline-none"
               />
             </div>
           </div>
@@ -373,7 +373,7 @@ export function CustomizeDialog({
             {/* Visual Indication of Added Extras */}
             {pricing.addedExtras.length > 0 && (
               <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs" data-testid="added-extras-container">
-                <span className="shrink-0 rounded-full bg-amber-500/20 border border-amber-500/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-950 dark:text-amber-300">
+                <span className="shrink-0 rounded-full bg-orange-500/20 border border-orange-500/40 px-2.5 py-0.5 text-[10px] font-black uppercase text-orange-950 dark:text-orange-300">
                   +₹{(pricing.extrasPricePaise / 100).toFixed(0)} Extras
                 </span>
                 <div className="flex items-center gap-1.5 shrink-0 overflow-x-auto">
@@ -383,7 +383,7 @@ export function CustomizeDialog({
                       className="inline-flex items-center gap-1 rounded-lg bg-bg border border-border px-2 py-0.5 text-[11px] font-bold text-fg tabular-nums"
                     >
                       <span>{extra.name}</span>
-                      <span className="text-amber-600 dark:text-amber-400">
+                      <span className="text-orange-600 dark:text-orange-400">
                         (+₹{(extra.pricePaise / 100).toFixed(0)})
                       </span>
                     </span>
@@ -394,8 +394,8 @@ export function CustomizeDialog({
 
             {/* Validation Banner if missing required options */}
             {!validation.isValid && validation.missingRequiredGroups.length > 0 && (
-              <div className="flex items-center gap-2 rounded-xl bg-amber-500/15 border border-amber-500/30 p-2 text-xs font-bold text-amber-950 dark:text-amber-200">
-                <AlertCircle className="size-3.5 shrink-0 text-amber-600" />
+              <div className="flex items-center gap-2 rounded-xl bg-orange-500/15 border border-orange-500/30 p-2 text-xs font-bold text-orange-950 dark:text-orange-200">
+                <AlertCircle className="size-3.5 shrink-0 text-orange-600" />
                 <span>Choose: {validation.missingRequiredGroups.join(", ")}</span>
               </div>
             )}
@@ -455,7 +455,7 @@ export function CustomizeDialog({
                   }}
                   className={`rounded-2xl px-6 py-3 font-black text-stone-950 shadow-md transition-all active:scale-95 cursor-pointer ${
                     validation.isValid
-                      ? "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 shadow-amber-500/25 border border-amber-300 hover:from-amber-600 hover:to-yellow-500"
+                      ? "bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 shadow-orange-500/25 border border-orange-300 hover:from-orange-600 hover:to-orange-500"
                       : "bg-muted text-muted-foreground opacity-60 cursor-not-allowed"
                   }`}
                 >

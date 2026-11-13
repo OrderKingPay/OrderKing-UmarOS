@@ -24,8 +24,8 @@ function KingAssistPage() {
       }}
     >
       <div className="mx-auto w-full max-w-4xl space-y-5 px-4 py-5">
-        <header className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-emerald-950 to-slate-950 p-5">
-          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-amber-200">
+        <header className="rounded-3xl border border-orange-400/30 bg-gradient-to-br from-emerald-950 to-slate-950 p-5">
+          <h1 className="flex items-center gap-2 text-2xl font-extrabold text-orange-200">
             <Crown className="size-7" /> King Assist
           </h1>
           <p className="mt-2 text-sm text-slate-200">
@@ -41,12 +41,12 @@ function KingAssistPage() {
           <button
             onClick={() => setOpen(true)}
             type="button"
-            className="rounded-xl bg-amber-400 px-4 py-3 font-semibold text-slate-950"
+            className="rounded-xl bg-orange-400 px-4 py-3 font-semibold text-slate-950"
           >
             <Sparkles className="mr-2 inline size-4" /> Open King Assist
           </button>
         )}
-        <Link to="/support" className="inline-block text-sm text-amber-200 underline">
+        <Link to="/support" className="inline-block text-sm text-orange-200 underline">
           Visit account support
         </Link>
       </div>

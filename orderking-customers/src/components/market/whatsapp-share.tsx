@@ -112,7 +112,7 @@ export function WhatsAppShare({
             </div>
             <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-1.5">
               <span>Share {restaurantName ? `"${restaurantName}"` : "this menu"} on WhatsApp</span>
-              <Sparkles className="size-3.5 text-amber-400" />
+              <Sparkles className="size-3.5 text-orange-400" />
             </h3>
             <p className="text-xs text-muted max-w-md">
               Send this menu to your WhatsApp group so friends can browse and order together.

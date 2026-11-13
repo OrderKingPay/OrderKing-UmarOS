@@ -188,7 +188,7 @@ export function AcademicSolutionCard({
                 </>
               ) : (
                 <>
-                  <span className="inline-block size-1.5 rounded-full bg-amber-400" />
+                  <span className="inline-block size-1.5 rounded-full bg-orange-400" />
                   <span className="text-zinc-300">
                     {billingStatus.note || "Complimentary Session"}
                   </span>

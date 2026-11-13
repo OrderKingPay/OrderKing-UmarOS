@@ -262,8 +262,8 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
 
           {/* Cab Driver Profile Card if Cab */}
           {ticket.cabDriver && (
-            <div className="rounded-2xl border border-amber-300 bg-amber-50/60 p-4 space-y-2">
-              <span className="text-[10px] font-black uppercase tracking-wider text-amber-800 flex items-center gap-1">
+            <div className="rounded-2xl border border-orange-300 bg-orange-50/60 p-4 space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-900 flex items-center gap-1">
                 <Car className="size-3.5" /> Chauffeur Dispatch Details
               </span>
               <div className="flex items-center justify-between text-xs">
@@ -272,10 +272,10 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
                   <p className="text-slate-600">{ticket.cabDriver.vehicleModel} · {ticket.cabDriver.vehiclePlate}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-mono font-black px-2.5 py-1 bg-amber-200 text-amber-900 rounded-lg">
+                  <span className="text-xs font-mono font-black px-2.5 py-1 bg-orange-200 text-orange-950 rounded-lg">
                     OTP: {ticket.cabDriver.otp}
                   </span>
-                  <p className="text-[10px] text-amber-800 font-bold mt-1">Arriving in {ticket.cabDriver.etaMinutes} mins</p>
+                  <p className="text-[10px] text-orange-900 font-bold mt-1">Arriving in {ticket.cabDriver.etaMinutes} mins</p>
                 </div>
               </div>
             </div>

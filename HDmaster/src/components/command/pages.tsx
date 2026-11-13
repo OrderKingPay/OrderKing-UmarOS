@@ -224,8 +224,8 @@ export function DashboardPage() {
               </p>
             </div>
 
-            <div className="rounded-[20px] border border-amber-500/30 bg-amber-500/5 p-4 space-y-2">
-              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-500">
+            <div className="rounded-[20px] border border-orange-500/30 bg-orange-500/5 p-4 space-y-2">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-orange-500">
                 2. What Action To Take
               </p>
               <h2 className="text-base font-bold text-fg">
@@ -1108,7 +1108,7 @@ export function SupportEscalationsHub() {
             onClick={() => setActiveSubTab("partner")}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeSubTab === "partner"
-                ? "bg-amber-600 text-white shadow-xs"
+                ? "bg-orange-600 text-white shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -1469,7 +1469,7 @@ function PromosPage() {
               type="button"
               size="sm"
               variant="outline"
-              className="text-xs h-7 border-amber-500/30 text-amber-400 hover:bg-amber-950/20"
+              className="text-xs h-7 border-orange-500/30 text-orange-400 hover:bg-orange-950/20"
               onClick={() => {
                 setAovRupees(350);
                 setCommissionPercent(15);
@@ -1586,7 +1586,7 @@ function PromosPage() {
                 className={cn(
                   "h-9 px-3 rounded-[10px] border text-xs font-semibold flex items-center justify-between transition-colors",
                   isPostBookingCashback
-                    ? "border-amber-500/50 bg-amber-950/40 text-amber-300"
+                    ? "border-orange-500/50 bg-orange-950/40 text-orange-300"
                     : "border-border bg-elevated text-muted hover:text-foreground",
                 )}
               >
@@ -1733,7 +1733,7 @@ function PromosPage() {
           <Button
             onClick={() => save.mutate()}
             disabled={save.isPending}
-            className={cn(econ.isLossMaking && "border border-amber-500/60")}
+            className={cn(econ.isLossMaking && "border border-orange-500/60")}
           >
             {save.isPending ? "Saving..." : econ.isLossMaking ? "Publish Promo (Loss Warning Active)" : "Publish Promo"}
           </Button>
@@ -1873,9 +1873,9 @@ function MarketingPage() {
       <Panel title="Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+            <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-3">
               <span className="text-muted">Total Grants Vault:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-amber-600 dark:text-amber-300">₹3,74,50,000+</p>
+              <p className="mt-1 font-mono text-xl font-bold text-orange-600 dark:text-orange-300">₹3,74,50,000+</p>
               <p className="mt-0.5 text-[11px] text-muted">8 Non-Dilutive Subsidies &amp; Cloud Credits</p>
             </div>
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
@@ -1967,11 +1967,11 @@ function MarketingPage() {
                   <tr>
                     <td className="py-2.5 font-semibold">AWS Activate Portfolio Credits</td>
                     <td className="py-2.5 text-muted">Amazon Web Services (AWS)</td>
-                    <td className="py-2.5 font-mono text-amber-600 font-bold">$100,000 (₹83 Lakhs)</td>
+                    <td className="py-2.5 font-mono text-orange-600 font-bold">$100,000 (₹83 Lakhs)</td>
                     <td className="py-2.5 text-muted">AWS Compute / DB Credits</td>
-                    <td className="py-2.5"><span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-600">INCUBATOR ORG CODE</span></td>
+                    <td className="py-2.5"><span className="rounded bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-600">INCUBATOR ORG CODE</span></td>
                     <td className="py-2.5">
-                      <button className="rounded bg-amber-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim AWS", details: "AWS Activate org package linked", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("AWS Activate org package linked (copied)"); }}>Claim AWS</button>
+                      <button className="rounded bg-orange-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim AWS", details: "AWS Activate org package linked", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("AWS Activate org package linked (copied)"); }}>Claim AWS</button>
                     </td>
                   </tr>
                   <tr>
@@ -2741,7 +2741,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
             onClick={() => setActiveTab("growth")}
             className={cn(
               "rounded-xl px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              activeTab === "growth" ? "bg-amber-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
+              activeTab === "growth" ? "bg-orange-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
             )}
           >
             Growth &amp; Grants Vault
@@ -2763,8 +2763,8 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
           </p>
         </div>
 
-        <div className="rounded-[20px] border border-amber-500/30 bg-amber-500/5 p-4 space-y-1">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-500">
+        <div className="rounded-[20px] border border-orange-500/30 bg-orange-500/5 p-4 space-y-1">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-orange-500">
             2. What Action To Take
           </p>
           <h2 className="text-base font-bold text-fg">
@@ -2893,7 +2893,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
 
           <button
             type="button"
-            className="text-left rounded-[14px] border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/15 p-3 transition-all"
+            className="text-left rounded-[14px] border border-orange-500/30 bg-orange-500/10 hover:bg-orange-500/15 p-3 transition-all"
             onClick={() => {
               const prompt =
                 "Check live kitchen/rider SLA status, active restaurants online, available fleet riders, delayed orders, and sub-8-minute dispatch SLA telemetry.";
@@ -2904,10 +2904,10 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
             }}
           >
             <div className="flex items-center justify-between gap-1">
-              <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
+              <span className="text-xs font-bold text-orange-700 dark:text-orange-300">
                 4. Live Kitchen &amp; Rider Status
               </span>
-              <span className="text-[10px] font-mono text-amber-600">TEAM #09/#10</span>
+              <span className="text-[10px] font-mono text-orange-600">TEAM #09/#10</span>
             </div>
             <p className="mt-1 text-[11px] text-muted">
               Check active kitchens, online riders, and delayed orders right now.
@@ -3160,7 +3160,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                 </button>
                 <button
                   type="button"
-                  className="w-full text-left rounded-lg p-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-800 dark:text-amber-300 transition-all"
+                  className="w-full text-left rounded-lg p-2 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 text-orange-900 dark:text-orange-300 transition-all"
                   onClick={() => runPreset("generate_scheduled_report: Generate Wednesday weekly settlement statement with statutory GST, TCS, TDS, and strict tenant data isolation", "payments")}
                 >
                   <span className="font-semibold">Weekly Settlement Statement</span>
@@ -3239,7 +3239,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                                 className={cn(
                                   "rounded px-2 py-0.5 text-[10px] font-mono border",
                                   t.status === "executed" && "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-                                  t.status === "approval_required" && "border-amber-500/30 bg-amber-500/10 text-amber-400",
+                                  t.status === "approval_required" && "border-orange-500/30 bg-orange-500/10 text-orange-400",
                                   t.status === "failed" && "border-rose-500/30 bg-rose-500/10 text-rose-400"
                                 )}
                               >
@@ -3251,15 +3251,15 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
 
                         {/* Pending Approvals Bar */}
                         {entry.pendingApprovals && entry.pendingApprovals.length > 0 && (
-                          <div className="rounded-[16px] border border-amber-500/40 bg-amber-500/10 p-3 space-y-2">
+                          <div className="rounded-[16px] border border-orange-500/40 bg-orange-500/10 p-3 space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
+                              <span className="text-xs font-semibold text-orange-400 flex items-center gap-1.5">
                                 Approval Required for High-Risk Mutation
                               </span>
                               <Badge tone="warning">GOVERNANCE GATE</Badge>
                             </div>
                             {entry.pendingApprovals.map((app, idx) => (
-                              <div key={idx} className="text-xs flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-amber-500/20">
+                              <div key={idx} className="text-xs flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-orange-500/20">
                                 <div>
                                   <p className="font-mono font-medium text-foreground">{app.toolName} ({app.risk})</p>
                                   <p className="text-[11px] text-muted">{app.description}</p>
@@ -3324,7 +3324,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
                     <p>Branch: <span className="font-mono text-foreground">{repo.branch}</span></p>
                     <p>Working Tree: <span className="font-mono">{repo.isClean ? "clean" : "modified"}</span></p>
                     {repo.changedFiles && repo.changedFiles.length > 0 && (
-                      <p className="text-[11px] text-amber-400">
+                      <p className="text-[11px] text-orange-400">
                         {repo.changedFiles.length} unstaged changes
                       </p>
                     )}
@@ -3743,12 +3743,12 @@ function SettingsPage() {
       </div>
 
       {/* Dynamic Demand & Off-Peak Sales Stimulator */}
-      <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 space-y-3">
+      <div className="rounded-xl border border-orange-500/30 bg-orange-950/20 p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-amber-300 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-orange-300 flex items-center gap-2">
             Dynamic Demand &amp; Off-Peak Sales Stimulator
           </h3>
-          <span className="text-[11px] rounded bg-amber-500/20 px-2 py-0.5 text-amber-300 font-mono">
+          <span className="text-[11px] rounded bg-orange-500/20 px-2 py-0.5 text-orange-300 font-mono">
             Algorithmic Revenue Optimization
           </span>
         </div>
@@ -3971,7 +3971,7 @@ function GoLivePage() {
           <div
             className={cn(
               "h-full transition-all duration-500",
-              isProd ? "bg-emerald-500" : isPilot ? "bg-amber-500" : "bg-red-500",
+              isProd ? "bg-emerald-500" : isPilot ? "bg-orange-500" : "bg-red-500",
             )}
             style={{ width: `${score}%` }}
           />
@@ -4938,7 +4938,7 @@ export function ApprovalsPage() {
               <div className="rounded-xl border border-border/60 bg-subtle/20 p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                    <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
                       <ShieldAlert className="h-5 w-5" />
                     </div>
                     <div>
@@ -4946,7 +4946,7 @@ export function ApprovalsPage() {
                       <p className="text-xs text-muted">Role: Transaction Behavioral Analyst</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-amber-500 border-amber-500/30">
+                  <Badge variant="outline" className="text-orange-500 border-orange-500/30">
                     ONLINE
                   </Badge>
                 </div>
@@ -5059,7 +5059,7 @@ export function ApprovalsPage() {
           {/* Settlement Batch Reconciliation */}
           <div className="rounded-[24px] border border-border bg-surface p-6 space-y-4 md:col-span-2">
             <h3 className="font-display text-lg font-semibold flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5 text-amber-500" />
+              <ShieldAlert className="h-5 w-5 text-orange-500" />
               Reconcile Settlement Batch
             </h3>
             <p className="text-xs text-muted">

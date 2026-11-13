@@ -543,8 +543,8 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 border border-amber-400/40 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300">
-                <Briefcase className="size-3.5 text-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-400/15 border border-orange-400/40 px-3 py-1 text-xs font-bold uppercase tracking-wider text-orange-300">
+                <Briefcase className="size-3.5 text-orange-400" />
                 Jobs &amp; Opportunities Hub
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/15 border border-sky-400/40 px-3 py-1 text-xs font-semibold text-sky-300">
@@ -554,7 +554,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
-              Verified Openings &amp; <span className="text-amber-400">Career Network</span>
+              Verified Openings &amp; <span className="text-orange-400">Career Network</span>
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               Live job search across Remote / Work From Home, Pan-India National Roles, Local City &amp; Fleet Delivery Gigs, and Freelance Tasks.
@@ -569,7 +569,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer",
                 activeMode === "jobs"
-                  ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/25"
+                  ? "bg-gradient-to-r from-orange-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/25"
                   : "text-slate-300 hover:text-white hover:bg-slate-800"
               )}
             >
@@ -582,7 +582,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               className={cn(
                 "flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer",
                 activeMode === "tutor"
-                  ? "bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/25"
+                  ? "bg-gradient-to-r from-orange-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/25"
                   : "text-slate-300 hover:text-white hover:bg-slate-800"
               )}
             >
@@ -619,13 +619,13 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     setSearchTitle(e.target.value);
                     setShowRoleSuggestions(true);
                   }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 transition"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-400 transition"
                 />
 
                 {/* Suggestions Popover for Roles/Skills */}
                 {showRoleSuggestions && (
                   <div className="absolute left-0 right-0 top-full mt-1.5 z-40 bg-slate-950 border border-slate-700 rounded-2xl shadow-2xl p-2 max-h-64 overflow-y-auto space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-400/80 flex items-center justify-between">
+                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-400/80 flex items-center justify-between">
                       <span>Suggested Roles &amp; Skills</span>
                       <span className="text-[9px] text-slate-400">1-Tap Select</span>
                     </div>
@@ -659,13 +659,13 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     setSearchLocation(e.target.value);
                     setShowLocationSuggestions(true);
                   }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 transition"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-orange-400 transition"
                 />
 
                 {/* Suggestions Popover for Locations/Cities */}
                 {showLocationSuggestions && (
                   <div className="absolute left-0 right-0 top-full mt-1.5 z-40 bg-slate-950 border border-slate-700 rounded-2xl shadow-2xl p-2 max-h-64 overflow-y-auto space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-400/80 flex items-center justify-between">
+                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-orange-400/80 flex items-center justify-between">
                       <span>Suggested Cities &amp; Regions</span>
                       <span className="text-[9px] text-slate-400">1-Tap Select</span>
                     </div>
@@ -713,11 +713,11 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   className={cn(
                     "p-3 rounded-xl border text-left transition-all cursor-pointer",
                     selectedCategory === "ALL"
-                      ? "bg-amber-400/20 border-amber-400 text-amber-200"
+                      ? "bg-orange-400/20 border-orange-400 text-orange-200"
                       : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                   )}
                 >
-                  <Globe2 className="size-4 mb-1 text-amber-400" />
+                  <Globe2 className="size-4 mb-1 text-orange-400" />
                   <p className="text-xs font-black">All Categories</p>
                   <p className="text-[10px] text-slate-400 mt-0.5">Explore All</p>
                 </button>
@@ -732,13 +732,13 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                       className={cn(
                         "p-3 rounded-xl border text-left transition-all cursor-pointer",
                         isSelected
-                          ? "bg-amber-400/20 border-amber-400 text-amber-200"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-200"
                           : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                       )}
                     >
                       {cat === "Remote / Work From Home" && <Laptop className="size-4 mb-1 text-sky-400" />}
                       {cat === "Pan-India National Roles" && <Building2 className="size-4 mb-1 text-emerald-400" />}
-                      {cat === "Local City & Fleet Delivery Gigs" && <Zap className="size-4 mb-1 text-amber-400" />}
+                      {cat === "Local City & Fleet Delivery Gigs" && <Zap className="size-4 mb-1 text-orange-400" />}
                       {cat === "Freelance & Digital Tasks" && <Sparkles className="size-4 mb-1 text-purple-400" />}
                       <p className="text-xs font-black truncate">{cat}</p>
                       <p className="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -795,7 +795,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               <button
                 type="button"
                 onClick={handleClearFilters}
-                className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs cursor-pointer"
+                className="px-4 py-2 bg-orange-500 text-slate-950 font-bold rounded-xl text-xs cursor-pointer"
               >
                 Reset Search Filters
               </button>
@@ -805,7 +805,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               {jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950 p-5 flex flex-col justify-between hover:border-amber-400/40 transition shadow-md group"
+                  className="rounded-2xl border border-slate-800 bg-gradient-to-b from-slate-900/90 to-slate-950 p-5 flex flex-col justify-between hover:border-orange-400/40 transition shadow-md group"
                 >
                   <div className="space-y-3">
                     {/* Top Row: Category + Posted Date + Source */}
@@ -822,11 +822,11 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
 
                     {/* Job Title & Company */}
                     <div>
-                      <h4 className="text-base font-bold text-white group-hover:text-amber-300 transition-colors leading-snug">
+                      <h4 className="text-base font-bold text-white group-hover:text-orange-300 transition-colors leading-snug">
                         {job.title}
                       </h4>
-                      <p className="text-xs text-amber-400 font-semibold mt-1 flex items-center gap-1.5">
-                        <Building2 className="size-3.5 text-amber-400/80" />
+                      <p className="text-xs text-orange-400 font-semibold mt-1 flex items-center gap-1.5">
+                        <Building2 className="size-3.5 text-orange-400/80" />
                         <span>{job.company}</span>
                       </p>
                     </div>
@@ -872,7 +872,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     <button
                       type="button"
                       onClick={() => handleDirectApply(job)}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold text-xs transition shadow-sm active:scale-95 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-orange-500 hover:from-orange-400 hover:to-orange-400 text-slate-950 font-bold text-xs transition shadow-sm active:scale-95 cursor-pointer"
                     >
                       <span>Apply</span>
                       <ExternalLink className="size-3.5" />
@@ -894,7 +894,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 shadow-lg">
             <div className="border-b border-slate-800 pb-4">
               <h2 className="text-lg font-black text-white flex items-center gap-2">
-                <BookOpen className="size-5 text-amber-400" />
+                <BookOpen className="size-5 text-orange-400" />
                 Select Syllabus, Class &amp; Subject
               </h2>
               <p className="text-xs text-slate-400 mt-1">
@@ -924,7 +924,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     className={cn(
                       "px-3 py-2.5 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer",
                       selectedBoard === board
-                        ? "bg-amber-400/20 border-amber-400 text-amber-200 shadow-sm"
+                        ? "bg-orange-400/20 border-orange-400 text-orange-200 shadow-sm"
                         : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:text-white"
                     )}
                   >
@@ -960,7 +960,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     className={cn(
                       "px-3 py-2.5 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer",
                       selectedClass === cls
-                        ? "bg-amber-400/20 border-amber-400 text-amber-200 shadow-sm"
+                        ? "bg-orange-400/20 border-orange-400 text-orange-200 shadow-sm"
                         : "bg-slate-800/60 border-slate-700/60 text-slate-300 hover:text-white"
                     )}
                   >
@@ -979,7 +979,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 <select
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-orange-400"
                 >
                   {availableSubjects.map((sub) => (
                     <option key={sub} value={sub} className="bg-slate-900 text-white">
@@ -1002,7 +1002,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                       className={cn(
                         "py-2 px-1 text-[11px] font-bold rounded-lg border text-center transition-all truncate cursor-pointer",
                         deliveryFilter === mode
-                          ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
                           : "bg-slate-800/60 border-slate-700 text-slate-400"
                       )}
                     >
@@ -1018,7 +1018,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
               <div className="flex items-center gap-2.5">
-                <div className="size-8 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300">
+                <div className="size-8 rounded-xl bg-orange-400/20 border border-orange-400/40 flex items-center justify-center text-orange-300">
                   <GraduationCap className="size-4" />
                 </div>
                 <div>
@@ -1032,7 +1032,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               </div>
 
               <div className="flex items-center gap-2 self-start sm:self-auto">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-400/15 border border-amber-400/40 text-amber-300 text-xs font-bold">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-orange-400/15 border border-orange-400/40 text-orange-300 text-xs font-bold">
                   <KingPayMark className="size-3.5" />
                   <span>Wallet: ₹{walletBalance.toFixed(2)}</span>
                 </div>
@@ -1084,7 +1084,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                           setSelectedSubject("All Subjects");
                           setDeliveryFilter("ALL");
                         }}
-                        className="px-4 py-2 bg-amber-500 text-slate-950 font-bold rounded-xl text-xs cursor-pointer"
+                        className="px-4 py-2 bg-orange-500 text-slate-950 font-bold rounded-xl text-xs cursor-pointer"
                       >
                         Reset Subject Filters
                       </button>
@@ -1093,7 +1093,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                         search={{ tab: "tutor" }}
                         className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs cursor-pointer inline-flex items-center gap-1.5"
                       >
-                        <Sparkles className="size-3.5 text-amber-400" />
+                        <Sparkles className="size-3.5 text-orange-400" />
                         <span>Ask King Tutor Instant Doubt</span>
                       </Link>
                     </div>
@@ -1111,7 +1111,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-center gap-3">
-                            <div className="size-12 rounded-2xl bg-gradient-to-br from-amber-400/20 to-purple-500/20 border border-amber-400/30 flex items-center justify-center font-black text-amber-300 text-sm">
+                            <div className="size-12 rounded-2xl bg-gradient-to-br from-orange-400/20 to-purple-500/20 border border-orange-400/30 flex items-center justify-center font-black text-orange-300 text-sm">
                               {tutor.avatarText}
                             </div>
                             <div>
@@ -1125,7 +1125,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                           </div>
 
                           <div className="text-right shrink-0">
-                            <span className="font-mono text-base font-black text-amber-300 block">
+                            <span className="font-mono text-base font-black text-orange-300 block">
                               ₹{tutor.hourlyRateInr}
                             </span>
                             <span className="text-[10px] text-slate-400 block font-normal">
@@ -1139,8 +1139,8 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                         </p>
 
                         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                          <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-slate-700 inline-flex items-center gap-1">
-                            <Star className="size-3 fill-amber-400 text-amber-400" /> {tutor.rating} ({tutor.reviewsCount} sessions)
+                          <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-orange-300 border border-slate-700 inline-flex items-center gap-1">
+                            <Star className="size-3 fill-orange-400 text-orange-400" /> {tutor.rating} ({tutor.reviewsCount} sessions)
                           </span>
                           <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 border border-slate-700">
                             {tutor.experienceYears}+ yrs experience
@@ -1168,7 +1168,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                             setBookingStudentName("");
                             setBookingStudentContact("");
                           }}
-                          className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black transition flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                          className="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black transition flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
                         >
                           <Clock className="size-3.5" />
                           <span>Book Session (KingPay Escrow)</span>
@@ -1179,7 +1179,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                           className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
                           title="Ask instant question to King Tutor"
                         >
-                          <Sparkles className="size-4 text-amber-400" />
+                          <Sparkles className="size-4 text-orange-400" />
                         </Link>
                       </div>
                     </div>
@@ -1204,7 +1204,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           >
             <div className="flex items-start justify-between border-b border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase text-orange-400 tracking-wider flex items-center gap-1.5">
                   <ShieldCheck className="size-3 text-emerald-400" />
                   KingPay Escrow Protected Mentorship
                 </span>
@@ -1221,12 +1221,12 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
             </div>
 
             {/* Price and Escrow Banner */}
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-3.5 flex items-center justify-between">
+            <div className="rounded-2xl border border-orange-500/30 bg-orange-950/20 p-3.5 flex items-center justify-between">
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">
                   Session Fee (60 Minutes)
                 </span>
-                <span className="font-mono text-xl font-black text-amber-300">
+                <span className="font-mono text-xl font-black text-orange-300">
                   ₹{bookingTutor.hourlyRateInr}
                 </span>
               </div>
@@ -1251,7 +1251,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 <select
                   value={bookingDate}
                   onChange={(e) => setBookingDate(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-orange-400"
                 >
                   <option value="Today">Today (Immediate)</option>
                   <option value="Tomorrow">Tomorrow</option>
@@ -1267,7 +1267,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 <select
                   value={bookingTimeSlot}
                   onChange={(e) => setBookingTimeSlot(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-orange-400"
                 >
                   <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
                   <option value="03:00 PM - 04:00 PM">03:00 PM - 04:00 PM</option>
@@ -1291,7 +1291,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                     className={cn(
                       "py-2 px-3 rounded-xl border text-xs font-bold text-center transition cursor-pointer",
                       bookingDeliveryMode === mode
-                        ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                        ? "bg-orange-400/20 border-orange-400 text-orange-300"
                         : "bg-slate-900 border-slate-800 text-slate-400"
                     )}
                   >
@@ -1312,7 +1312,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   value={bookingStudentName}
                   onChange={(e) => setBookingStudentName(e.target.value)}
                   placeholder="Enter student full name"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1326,7 +1326,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   value={bookingStudentContact}
                   onChange={(e) => setBookingStudentContact(e.target.value)}
                   placeholder="+91 98765 43210 or name@orderking.in"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1339,7 +1339,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   value={bookingNotes}
                   onChange={(e) => setBookingNotes(e.target.value)}
                   placeholder="e.g. NCERT Quadratic formula proof or Calculus integration"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white outline-none focus:border-orange-400"
                 />
               </div>
             </div>
@@ -1359,7 +1359,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
               <button
                 type="submit"
                 disabled={isBookingSubmitting}
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black transition shadow-md shadow-amber-500/20 cursor-pointer disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:brightness-105 active:scale-95 text-slate-950 text-xs font-black transition shadow-md shadow-orange-500/20 cursor-pointer disabled:opacity-50"
               >
                 {isBookingSubmitting ? "Holding in Escrow..." : `Confirm & Hold ₹${bookingTutor.hourlyRateInr} in Escrow`}
               </button>
@@ -1375,7 +1375,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
           <div className="bg-slate-950 border border-slate-800 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl space-y-5">
             <div className="flex items-start justify-between border-b border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase text-amber-400 tracking-wider">
+                <span className="text-[10px] font-bold uppercase text-orange-400 tracking-wider">
                   Job Application
                 </span>
                 <h3 className="text-lg font-bold text-white">{applyingJob.title}</h3>
@@ -1399,7 +1399,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   placeholder="Enter your name"
                   value={applicantName}
                   onChange={(e) => setApplicantName(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1411,7 +1411,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   placeholder="Enter email or mobile number"
                   value={applicantContact}
                   onChange={(e) => setApplicantContact(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1422,7 +1422,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   placeholder="https://linkedin.com/in/... or drive link"
                   value={applicantPortfolio}
                   onChange={(e) => setApplicantPortfolio(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1433,7 +1433,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                   placeholder="Summarize your relevant background or skills..."
                   value={applicantNotes}
                   onChange={(e) => setApplicantNotes(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -1441,7 +1441,7 @@ export function TutorJobsHub({ defaultMode = "jobs" }: TutorJobsHubProps) {
                 <button
                   type="submit"
                   disabled={isSubmittingJob}
-                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-bold rounded-xl text-sm transition hover:brightness-105 active:scale-98 disabled:opacity-50 cursor-pointer"
+                  className="w-full py-3 bg-gradient-to-r from-orange-500 to-orange-500 text-slate-950 font-bold rounded-xl text-sm transition hover:brightness-105 active:scale-98 disabled:opacity-50 cursor-pointer"
                 >
                   {isSubmittingJob ? "Submitting..." : "Submit Application"}
                 </button>

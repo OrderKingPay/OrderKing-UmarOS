@@ -43,10 +43,22 @@ export interface MetroHub {
 
 export const POPULAR_METRO_HUBS: MetroHub[] = [
   {
+    city: "Guwahati",
+    cityId: "guwahati",
+    badge: "Assam Metro Hub",
+    gradient: "from-[#B85D19] via-[#E85D04] to-[#C2410C]",
+    areas: [
+      { name: "Paltan Bazar", zoneId: "guwahati_core", tag: "Station & Central Hub", lat: 26.1800, lng: 91.7500 },
+      { name: "GS Road / Christian Basti", zoneId: "guwahati_core", tag: "Bistros, Cafes & Bakeries", lat: 26.1550, lng: 91.7700 },
+      { name: "Pan Bazar", zoneId: "guwahati_core", tag: "Heritage & Street Treats", lat: 26.1860, lng: 91.7450 },
+      { name: "Zoo Road", zoneId: "guwahati_core", tag: "Mughlai, Rolls & Fast Food", lat: 26.1720, lng: 91.7820 },
+    ],
+  },
+  {
     city: "Delhi NCR",
     cityId: "del",
     badge: "Imperial Capital",
-    gradient: "from-amber-500 to-orange-500",
+    gradient: "from-orange-500 to-orange-500",
     areas: [
       { name: "Connaught Place", zoneId: "del-cp", tag: "Mughlai & Chaat", lat: 28.6315, lng: 77.2167 },
       { name: "Hauz Khas", zoneId: "del-hk", tag: "Cafes & Global Bistro", lat: 28.5494, lng: 77.2001 },
@@ -94,7 +106,7 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
     city: "Hyderabad",
     cityId: "hyd",
     badge: "Nizami Culinary Heritage",
-    gradient: "from-amber-600 to-yellow-600",
+    gradient: "from-orange-600 to-orange-600",
     areas: [
       { name: "Jubilee Hills", zoneId: "hyd-jubilee", tag: "Nizami Dum Biryani & Kebabs", lat: 17.4319, lng: 78.4073 },
       { name: "Banjara Hills", zoneId: "hyd-banjara", tag: "Fine Dining & Irani Chai", lat: 17.4156, lng: 78.4350 },
@@ -310,11 +322,11 @@ export function LocationDialog({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-md transition-all animate-in fade-in duration-200" />
-        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-[32px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl border-t border-amber-300/40 md:inset-auto md:left-1/2 md:top-1/2 md:w-[32rem] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:border md:border-amber-300/60 select-none">
+        <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 max-h-[92dvh] overflow-y-auto rounded-t-[32px] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl border-t border-orange-300/40 md:inset-auto md:left-1/2 md:top-1/2 md:w-[32rem] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:border md:border-orange-300/60 select-none">
           {/* Header Bar */}
-          <div className="flex items-start justify-between gap-3 pb-3 border-b border-amber-900/10">
+          <div className="flex items-start justify-between gap-3 pb-3 border-b border-orange-950/10">
             <div className="flex items-center gap-2.5">
-              <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-slate-950 shadow-[0_4px_14px_rgba(245,158,11,0.35)] border border-amber-200">
+              <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 text-slate-950 shadow-[0_4px_14px_rgba(245,158,11,0.35)] border border-orange-200">
                 <Crown className="size-5 fill-slate-950" />
               </div>
               <div>
@@ -369,7 +381,7 @@ export function LocationDialog({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search area (e.g. Connaught Place, Bandra, Koramangala)..."
-              className="h-11 rounded-2xl border-amber-300/70 bg-white/90 pl-10 pr-3.5 text-xs font-semibold text-stone-900 shadow-2xs focus:border-amber-500 focus:ring-2 focus:ring-amber-400/50"
+              className="h-11 rounded-2xl border-orange-300/70 bg-white/90 pl-10 pr-3.5 text-xs font-semibold text-stone-900 shadow-2xs focus:border-orange-500 focus:ring-2 focus:ring-orange-400/50"
             />
             {searchQuery && (
               <button
@@ -390,13 +402,13 @@ export function LocationDialog({
               </span>
               {filteredAreas.length === 0 ? (
                 /* Zero Dead-Ends Location Fallback */
-                <div className="rounded-2xl border border-amber-300/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white p-4 shadow-sm space-y-3.5 animate-in fade-in duration-200">
+                <div className="rounded-2xl border border-orange-300/80 bg-gradient-to-br from-orange-50/90 via-orange-50/50 to-white p-4 shadow-sm space-y-3.5 animate-in fade-in duration-200">
                   <div className="flex items-start gap-2.5">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-900 border border-amber-300/60 font-bold">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-orange-500/20 text-orange-950 border border-orange-300/60 font-bold">
                       <MapPin className="size-4" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-black text-amber-950 uppercase tracking-tight">
+                      <h4 className="text-xs font-black text-orange-950 uppercase tracking-tight">
                         Area not yet serviceable
                       </h4>
                       <p className="text-[11px] text-stone-600 mt-0.5 leading-relaxed">
@@ -409,7 +421,7 @@ export function LocationDialog({
 
                   {/* 3 Nearest Active Culinary Hubs with KM distance */}
                   <div className="space-y-2">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-amber-900/80 block">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-orange-950/80 block">
                       Nearby Available Zones
                     </span>
                     {(() => {
@@ -464,14 +476,14 @@ export function LocationDialog({
                               lng: hub.lng,
                             })
                           }
-                          className="flex w-full items-center justify-between rounded-xl border border-amber-300/80 bg-white/95 p-2.5 text-left hover:border-amber-500 hover:bg-amber-100/40 transition shadow-2xs active:scale-[0.99] cursor-pointer"
+                          className="flex w-full items-center justify-between rounded-xl border border-orange-300/80 bg-white/95 p-2.5 text-left hover:border-orange-500 hover:bg-orange-100/40 transition shadow-2xs active:scale-[0.99] cursor-pointer"
                         >
                           <div className="flex items-center gap-2.5">
                             <MapPin className="size-4 text-emerald-600 shrink-0" />
                             <div>
                               <p className="text-xs font-black text-gray-950 flex items-center gap-1.5">
                                 <span>{hub.name}</span>
-                                <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-1.5 py-0.2 rounded-full border border-amber-200">
+                                <span className="text-[10px] font-bold text-orange-900 bg-orange-100/80 px-1.5 py-0.2 rounded-full border border-orange-200">
                                   {hub.distanceKm < 1 ? "<1 km" : `${hub.distanceKm.toFixed(1)} km`}
                                 </span>
                               </p>
@@ -487,7 +499,7 @@ export function LocationDialog({
                   </div>
 
                   {/* Pre-Scheduled Orders & Packaged Pantry Delivery Options */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-amber-200/80">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-orange-200/80">
                     <button
                       type="button"
                       onClick={() => {
@@ -504,9 +516,9 @@ export function LocationDialog({
                         });
                         toast.success(`Pre-Scheduled delivery enabled for ${searchQuery}! Orders will be dispatched in next scheduled batch.`);
                       }}
-                      className="flex flex-col items-start p-2.5 rounded-xl border border-amber-400/80 bg-amber-50/70 hover:bg-amber-100/80 text-left transition shadow-2xs cursor-pointer group"
+                      className="flex flex-col items-start p-2.5 rounded-xl border border-orange-400/80 bg-orange-50/70 hover:bg-orange-100/80 text-left transition shadow-2xs cursor-pointer group"
                     >
-                      <span className="text-[11px] font-black text-amber-950 flex items-center gap-1">
+                      <span className="text-[11px] font-black text-orange-950 flex items-center gap-1">
                         <Calendar className="size-3.5" /> Schedule Advance Order
                       </span>
                       <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
@@ -559,7 +571,7 @@ export function LocationDialog({
                           lng: m.lng,
                         })
                       }
-                      className="flex w-full items-center justify-between rounded-xl border border-amber-200/80 bg-white p-3 text-left hover:border-amber-400 hover:bg-amber-50/60 transition shadow-2xs active:scale-[0.99] cursor-pointer"
+                      className="flex w-full items-center justify-between rounded-xl border border-orange-200/80 bg-white p-3 text-left hover:border-orange-400 hover:bg-orange-50/60 transition shadow-2xs active:scale-[0.99] cursor-pointer"
                     >
                       <div className="flex items-center gap-2.5">
                         <MapPin className="size-4 text-[#E23744] shrink-0" />
@@ -580,7 +592,7 @@ export function LocationDialog({
               {savedAddresses.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <span className="text-[10px] font-black uppercase tracking-wider text-stone-500 flex items-center gap-1">
-                    <HomeIcon className="size-3 text-amber-700" /> Saved Addresses
+                    <HomeIcon className="size-3 text-orange-700" /> Saved Addresses
                   </span>
                   <div className="grid grid-cols-2 gap-2">
                     {savedAddresses.slice(0, 2).map((a) => (
@@ -592,11 +604,11 @@ export function LocationDialog({
                           onOpenChange(false);
                           toast.success(`Switched to ${a.title} (${a.area})`);
                         }}
-                        className="flex flex-col items-start p-2.5 rounded-xl border border-amber-200/80 bg-white/90 hover:border-amber-400 hover:bg-amber-50/50 transition text-left shadow-2xs active:scale-95 cursor-pointer"
+                        className="flex flex-col items-start p-2.5 rounded-xl border border-orange-200/80 bg-white/90 hover:border-orange-400 hover:bg-orange-50/50 transition text-left shadow-2xs active:scale-95 cursor-pointer"
                       >
                         <div className="flex items-center gap-1.5 w-full">
                           {a.tag === "HOME" ? (
-                            <HomeIcon className="size-3.5 text-amber-700 shrink-0" />
+                            <HomeIcon className="size-3.5 text-orange-700 shrink-0" />
                           ) : (
                             <Briefcase className="size-3.5 text-blue-700 shrink-0" />
                           )}
@@ -617,8 +629,8 @@ export function LocationDialog({
               {/* Metro Cities Carousel Strip */}
               <div className="mt-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10.5px] font-black uppercase tracking-wider text-amber-900/80 flex items-center gap-1">
-                    <Sparkles className="size-3 text-amber-600" /> Popular Cities
+                  <span className="text-[10.5px] font-black uppercase tracking-wider text-orange-950/80 flex items-center gap-1">
+                    <Sparkles className="size-3 text-orange-600" /> Popular Cities
                   </span>
                   <span className="text-[10px] font-bold text-stone-500">Service Cities</span>
                 </div>
@@ -634,8 +646,8 @@ export function LocationDialog({
                         className={cn(
                           "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black whitespace-nowrap transition-all shadow-2xs shrink-0 select-none cursor-pointer active:scale-95",
                           isSelected
-                            ? "bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-500 shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
-                            : "bg-white hover:bg-amber-50 text-stone-800 border border-amber-200/80"
+                            ? "bg-gradient-to-r from-orange-600 to-orange-700 text-white border border-orange-500 shadow-[0_2px_8px_rgba(245,158,11,0.35)]"
+                            : "bg-white hover:bg-orange-50 text-stone-800 border border-orange-200/80"
                         )}
                       >
                         <span>{hub.city}</span>
@@ -647,13 +659,13 @@ export function LocationDialog({
               </div>
 
               {/* Areas inside selected Metro Hub */}
-              <div className="mt-3 rounded-2xl border border-amber-200/80 bg-white/95 p-3.5 shadow-2xs space-y-2">
+              <div className="mt-3 rounded-2xl border border-orange-200/80 bg-white/95 p-3.5 shadow-2xs space-y-2">
                 <div className="flex items-center justify-between pb-1 border-b border-stone-100">
                   <span className="text-xs font-black text-stone-900 flex items-center gap-1.5">
-                    <Building2 className="size-3.5 text-amber-700" />
+                    <Building2 className="size-3.5 text-orange-700" />
                     {activeHub.city} Delivery Zones
                   </span>
-                  <span className="text-[9.5px] font-extrabold uppercase tracking-wide text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                  <span className="text-[9.5px] font-extrabold uppercase tracking-wide text-orange-900 bg-orange-100/80 px-2 py-0.5 rounded-full">
                     {activeHub.badge}
                   </span>
                 </div>
@@ -684,7 +696,7 @@ export function LocationDialog({
                           "flex flex-col items-start p-2.5 rounded-xl border text-left transition-all active:scale-[0.98] cursor-pointer shadow-2xs",
                           isCurrent
                             ? "border-emerald-500 bg-emerald-50/70 ring-1 ring-emerald-500"
-                            : "border-stone-200/80 bg-[#FFFDF9] hover:border-amber-400 hover:bg-amber-50/60"
+                            : "border-stone-200/80 bg-[#FFFDF9] hover:border-orange-400 hover:bg-orange-50/60"
                         )}
                       >
                         <div className="flex items-center justify-between w-full">
@@ -694,7 +706,7 @@ export function LocationDialog({
                               Active
                             </span>
                           ) : (
-                            <span className="text-[9px] font-black text-amber-800 bg-amber-100/70 px-1.5 py-0.2 rounded-full">
+                            <span className="text-[9px] font-black text-orange-900 bg-orange-100/70 px-1.5 py-0.2 rounded-full">
                               25m
                             </span>
                           )}
@@ -711,12 +723,12 @@ export function LocationDialog({
           )}
 
           {/* Bottom Security Assurance */}
-          <div className="mt-4 pt-3 border-t border-amber-900/10 flex items-center justify-between text-[10.5px] text-stone-500 font-semibold">
+          <div className="mt-4 pt-3 border-t border-orange-950/10 flex items-center justify-between text-[10.5px] text-stone-500 font-semibold">
             <span className="flex items-center gap-1 text-emerald-800">
               <span className="size-1.5 rounded-full bg-emerald-500" />
               FSSAI-Licensed Restaurants
             </span>
-            <span className="text-amber-900 font-bold">Verified Menus</span>
+            <span className="text-orange-950 font-bold">Verified Menus</span>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

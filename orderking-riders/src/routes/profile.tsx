@@ -278,7 +278,7 @@ function Page() {
         </Card>
 
         {/* Partner Benefits & Affiliate Hub Callout */}
-        <Card className="border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-amber-500/10 p-4 space-y-3">
+        <Card className="border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-orange-500/10 p-4 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">

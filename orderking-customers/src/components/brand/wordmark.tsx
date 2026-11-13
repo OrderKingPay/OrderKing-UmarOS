@@ -90,7 +90,7 @@ export function Wordmark({ className }: { className?: string }) {
     >
       <BrandMark className="h-8 w-8 rounded-lg shadow-sm" />
       <span className="font-display text-xl font-black tracking-tight">
-        Order<span className="text-amber-500">King</span>
+        Order<span className="text-orange-500">King</span>
       </span>
     </Link>
   );

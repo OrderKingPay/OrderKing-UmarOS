@@ -68,23 +68,23 @@ export function StandaloneExporterModal({
 
   const getSectionIcon = (id: ExportableSectionId) => {
     switch (id) {
-      case "crm": return <Users className="size-5 text-amber-400" />;
+      case "crm": return <Users className="size-5 text-orange-400" />;
       case "app_factory": return <Code2 className="size-5 text-cyan-400" />;
       case "kingpay": return <QrCode className="size-5 text-emerald-400" />;
       case "media_studio": return <Sparkles className="size-5 text-purple-400" />;
-      case "revenue_os": return <DollarSign className="size-5 text-yellow-400" />;
-      case "chat": return <Crown className="size-5 text-amber-400" />;
+      case "revenue_os": return <DollarSign className="size-5 text-orange-400" />;
+      case "chat": return <Crown className="size-5 text-orange-400" />;
       case "integrations": return <Plug className="size-5 text-blue-400" />;
     }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-4xl rounded-2xl border-2 border-amber-500/40 bg-[#070e0b] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="relative w-full max-w-4xl rounded-2xl border-2 border-orange-500/40 bg-[#070e0b] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-amber-500/30 bg-black/60 px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-orange-500/30 bg-black/60 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 to-orange-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               <ExternalLink className="size-5" />
             </div>
             <div>
@@ -92,7 +92,7 @@ export function StandaloneExporterModal({
                 <h3 className="font-display font-black text-base text-white">
                   Standalone Section Separation &amp; App Exporter
                 </h3>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-400/40 text-[9px] font-mono font-bold">
+                <Badge className="bg-orange-500/20 text-orange-300 border-orange-400/40 text-[9px] font-mono font-bold">
                   1-CLICK SEPARATION
                 </Badge>
               </div>
@@ -116,7 +116,7 @@ export function StandaloneExporterModal({
         <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
           {/* Left: Section Picker */}
           <div className="p-3 overflow-y-auto space-y-1.5 bg-black/30">
-            <div className="px-2 py-1 text-[11px] font-mono text-amber-400 uppercase tracking-wider font-bold">
+            <div className="px-2 py-1 text-[11px] font-mono text-orange-400 uppercase tracking-wider font-bold">
               Select Section to Extract ({sections.length})
             </div>
             {sections.map((s) => (
@@ -126,7 +126,7 @@ export function StandaloneExporterModal({
                 onClick={() => setSelectedSection(s)}
                 className={`w-full text-left p-3 rounded-xl transition flex items-center gap-3 border ${
                   selectedSection.id === s.id
-                    ? "bg-amber-950/40 border-amber-500/50 text-white shadow-sm"
+                    ? "bg-orange-950/40 border-orange-500/50 text-white shadow-sm"
                     : "bg-[#0a1812] border-white/5 text-slate-400 hover:text-white hover:bg-white/5"
                 }`}
               >
@@ -146,7 +146,7 @@ export function StandaloneExporterModal({
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div>
                 <h4 className="font-bold text-white text-base">{selectedSection.title}</h4>
-                <div className="text-xs text-amber-400 font-mono mt-0.5">
+                <div className="text-xs text-orange-400 font-mono mt-0.5">
                   Suggested Domain: https://{selectedSection.suggestedDomain}
                 </div>
               </div>
@@ -176,7 +176,7 @@ export function StandaloneExporterModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <Button
                 onClick={handleLaunchWindow}
-                className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs h-10"
+                className="bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs h-10"
               >
                 <ExternalLink className="size-4 mr-2" />
                 Launch Standalone App
@@ -185,7 +185,7 @@ export function StandaloneExporterModal({
               <Button
                 onClick={handleDownload}
                 variant="outline"
-                className="border-amber-500/40 text-amber-300 hover:bg-amber-500/10 font-bold text-xs h-10"
+                className="border-orange-500/40 text-orange-300 hover:bg-orange-500/10 font-bold text-xs h-10"
               >
                 <Download className="size-4 mr-2" />
                 Download Standalone HTML Bundle
@@ -199,7 +199,7 @@ export function StandaloneExporterModal({
                 <button
                   type="button"
                   onClick={handleCopyEmbed}
-                  className="text-[11px] text-amber-400 hover:text-amber-300 flex items-center gap-1 font-mono"
+                  className="text-[11px] text-orange-400 hover:text-orange-300 flex items-center gap-1 font-mono"
                 >
                   {copiedCode ? <Check className="size-3" /> : <Copy className="size-3" />}
                   <span>{copiedCode ? "Copied" : "Copy Code"}</span>

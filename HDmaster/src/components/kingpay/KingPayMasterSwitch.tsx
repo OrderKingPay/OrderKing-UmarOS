@@ -287,8 +287,8 @@ export function KingPayMasterSwitch() {
         </div>
 
         {/* Box 2: Action Needed */}
-        <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-4">
-          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-800">
+        <div className="bg-orange-50/60 border border-orange-200 rounded-xl p-4">
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-orange-900">
             Action Needed
           </div>
           <div className="text-sm font-bold text-slate-900 mt-1">
@@ -532,7 +532,7 @@ export function KingPayMasterSwitch() {
                   <div>
                     <h3 className="font-semibold text-base flex items-center gap-2">
                       {isLocked ? (
-                        <Lock className="w-4 h-4 text-amber-600" />
+                        <Lock className="w-4 h-4 text-orange-600" />
                       ) : isActive ? (
                         <ShieldCheck className="w-4 h-4 text-emerald-600" />
                       ) : (
@@ -556,9 +556,9 @@ export function KingPayMasterSwitch() {
                   {isLocked ? (
                     <Badge
                       variant="outline"
-                      className="bg-amber-50 text-amber-800 border-amber-300 font-mono text-[10px] px-2 py-0.5 shrink-0 flex items-center gap-1"
+                      className="bg-orange-50 text-orange-900 border-orange-300 font-mono text-[10px] px-2 py-0.5 shrink-0 flex items-center gap-1"
                     >
-                      <Lock className="w-2.5 h-2.5 text-amber-700" />
+                      <Lock className="w-2.5 h-2.5 text-orange-700" />
                       LOCKED (OFF)
                     </Badge>
                   ) : isActive ? (
@@ -710,7 +710,7 @@ export function KingPayMasterSwitch() {
               <span className="text-slate-400 uppercase block text-[10px]">
                 Customer Wallet Cashback ({customSettings.walletCashbackPct}%)
               </span>
-              <div className="text-lg font-bold text-amber-400 mt-1">
+              <div className="text-lg font-bold text-orange-400 mt-1">
                 ₹{calcCashbackInr.toFixed(2)}
               </div>
               <span className="text-slate-500 text-[10px]">

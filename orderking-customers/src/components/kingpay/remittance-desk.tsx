@@ -258,12 +258,12 @@ export function RemittanceDesk() {
       {/* ========================================================= */}
       {/* 1. HERO DESK HEADER & REGULATORY BADGE */}
       {/* ========================================================= */}
-      <header className="relative overflow-hidden rounded-3xl border border-amber-400/30 bg-gradient-to-r from-slate-950 via-slate-900 to-amber-950/40 p-5 sm:p-7 shadow-2xl text-white">
+      <header className="relative overflow-hidden rounded-3xl border border-orange-400/30 bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950/40 p-5 sm:p-7 shadow-2xl text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-0.5 text-[11px] font-black uppercase tracking-wider text-amber-300">
-                <Globe className="size-3.5 text-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-400/20 border border-orange-400/40 px-3 py-0.5 text-[11px] font-black uppercase tracking-wider text-orange-300">
+                <Globe className="size-3.5 text-orange-400" />
                 KingPay Global Remittance Desk
               </span>
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/40 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
@@ -272,7 +272,7 @@ export function RemittanceDesk() {
               </span>
             </div>
             <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-              Cross-Border Currency Corridor <span className="text-amber-400">Desk</span>
+              Cross-Border Currency Corridor <span className="text-orange-400">Desk</span>
             </h1>
             <p className="text-xs text-slate-300 max-w-xl">
               Send SAR, AED, USD, QAR &amp; GBP directly to India (UPI / Bank) and Bangladesh (bKash / Bank) with transparent 0.45% Founder FX markup and instant nodal settlement.
@@ -280,8 +280,8 @@ export function RemittanceDesk() {
           </div>
 
           {/* 15-Min FX Rate Quote Lock Timer */}
-          <div className="rounded-2xl border border-amber-400/30 bg-black/60 p-3 sm:p-4 text-center sm:text-right shrink-0">
-            <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-black uppercase text-amber-400 tracking-wider">
+          <div className="rounded-2xl border border-orange-400/30 bg-black/60 p-3 sm:p-4 text-center sm:text-right shrink-0">
+            <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-black uppercase text-orange-400 tracking-wider">
               <Clock className="size-3.5" />
               Live FX Quote Lock
             </div>
@@ -292,9 +292,9 @@ export function RemittanceDesk() {
               type="button"
               onClick={handleManualRefreshRate}
               disabled={isRefreshingRate}
-              className="text-[10px] text-slate-400 hover:text-amber-300 flex items-center justify-center sm:justify-end gap-1 mt-1 transition-colors mx-auto sm:ml-auto"
+              className="text-[10px] text-slate-400 hover:text-orange-300 flex items-center justify-center sm:justify-end gap-1 mt-1 transition-colors mx-auto sm:ml-auto"
             >
-              <RefreshCw className={cn("size-3", isRefreshingRate && "animate-spin text-amber-400")} />
+              <RefreshCw className={cn("size-3", isRefreshingRate && "animate-spin text-orange-400")} />
               Sync Interbank Rates
             </button>
           </div>
@@ -309,7 +309,7 @@ export function RemittanceDesk() {
         <div className="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 shadow-xl">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <h2 className="text-sm sm:text-base font-black text-white flex items-center gap-2">
-              <DollarSign className="size-4 text-amber-400" />
+              <DollarSign className="size-4 text-orange-400" />
               1. Transfer Corridor &amp; Source Amount
             </h2>
             <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
@@ -336,11 +336,11 @@ export function RemittanceDesk() {
                     className={cn(
                       "p-2.5 rounded-xl border text-center transition-all",
                       isSelected
-                        ? "bg-amber-400/20 border-amber-400 text-amber-200 shadow-sm ring-1 ring-amber-400/40"
+                        ? "bg-orange-400/20 border-orange-400 text-orange-200 shadow-sm ring-1 ring-orange-400/40"
                         : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                     )}
                   >
-                    <span className="inline-flex items-center justify-center rounded-md bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-amber-300">{cur.flagEmoji}</span>
+                    <span className="inline-flex items-center justify-center rounded-md bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-orange-300">{cur.flagEmoji}</span>
                     <span className="text-xs font-black block mt-0.5">{cur.code}</span>
                     <span className="text-[9px] text-slate-400 block truncate">{cur.name.split(" ")[0]}</span>
                   </button>
@@ -361,11 +361,11 @@ export function RemittanceDesk() {
                 className={cn(
                   "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all",
                   destinationCountry === "India"
-                    ? "bg-amber-400/20 border-amber-400 text-white shadow-sm ring-1 ring-amber-400/40"
+                    ? "bg-orange-400/20 border-orange-400 text-white shadow-sm ring-1 ring-orange-400/40"
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                 )}
               >
-                <span className="flex size-9 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-400/30 text-xs font-black text-amber-300">IN</span>
+                <span className="flex size-9 items-center justify-center rounded-xl bg-orange-500/15 border border-orange-400/30 text-xs font-black text-orange-300">IN</span>
                 <div>
                   <p className="text-xs font-black">India (INR • ₹)</p>
                   <p className="text-[10px] text-slate-400">UPI &amp; Bank IMPS</p>
@@ -378,7 +378,7 @@ export function RemittanceDesk() {
                 className={cn(
                   "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all",
                   destinationCountry === "Bangladesh"
-                    ? "bg-amber-400/20 border-amber-400 text-white shadow-sm ring-1 ring-amber-400/40"
+                    ? "bg-orange-400/20 border-orange-400 text-white shadow-sm ring-1 ring-orange-400/40"
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                 )}
               >
@@ -406,7 +406,7 @@ export function RemittanceDesk() {
                     className={cn(
                       "px-2 py-0.5 rounded text-[10px] font-bold border transition",
                       sendAmount === preset
-                        ? "bg-amber-400 text-slate-950 border-amber-400"
+                        ? "bg-orange-400 text-slate-950 border-orange-400"
                         : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
                     )}
                   >
@@ -426,7 +426,7 @@ export function RemittanceDesk() {
                 step="10"
                 value={sendAmount || ""}
                 onChange={(e) => setSendAmount(Number(e.target.value))}
-                className="w-full bg-slate-950 border border-slate-700 rounded-2xl pl-10 pr-16 py-3 text-base sm:text-lg font-black text-white font-mono focus:outline-none focus:border-amber-400"
+                className="w-full bg-slate-950 border border-slate-700 rounded-2xl pl-10 pr-16 py-3 text-base sm:text-lg font-black text-white font-mono focus:outline-none focus:border-orange-400"
               />
               <div className="absolute right-3.5 top-3 text-slate-400 font-bold text-xs uppercase">
                 {sourceCurrency}
@@ -446,9 +446,9 @@ export function RemittanceDesk() {
               </span>
             </div>
 
-            <div className="flex justify-between text-amber-300">
+            <div className="flex justify-between text-orange-300">
               <span className="flex items-center gap-1 font-bold">
-                <Sparkles className="size-3 text-amber-400" />
+                <Sparkles className="size-3 text-orange-400" />
                 Founder Transparent FX Markup:
               </span>
               <span className="font-mono font-bold">
@@ -465,7 +465,7 @@ export function RemittanceDesk() {
 
             <div className="border-t border-slate-800 pt-2 flex justify-between items-center text-sm">
               <span className="font-black text-white">Effective Exchange Rate:</span>
-              <span className="font-mono font-black text-amber-400">
+              <span className="font-mono font-black text-orange-400">
                 1 {sourceCurrency} = {targetCurrencySymbol}{effectiveRate.toFixed(4)}
               </span>
             </div>
@@ -514,7 +514,7 @@ export function RemittanceDesk() {
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
               <h3 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
-                <Smartphone className="size-4 text-amber-400" />
+                <Smartphone className="size-4 text-orange-400" />
                 2. Beneficiary Details ({destinationCountry})
               </h3>
               <span className="text-[10px] font-bold text-slate-400">Instant Verification</span>
@@ -532,7 +532,7 @@ export function RemittanceDesk() {
                   placeholder="As per Government ID (Aadhaar / NID)"
                   value={beneficiaryName}
                   onChange={(e) => setBeneficiaryName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 />
               </div>
 
@@ -546,7 +546,7 @@ export function RemittanceDesk() {
                       className={cn(
                         "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
                         payoutMethodIndia === "UPI"
-                          ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
                           : "bg-slate-800 border-slate-700 text-slate-400"
                       )}
                     >
@@ -558,7 +558,7 @@ export function RemittanceDesk() {
                       className={cn(
                         "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
                         payoutMethodIndia === "BANK"
-                          ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
                           : "bg-slate-800 border-slate-700 text-slate-400"
                       )}
                     >
@@ -575,7 +575,7 @@ export function RemittanceDesk() {
                         placeholder="e.g. mobile@upi or name@okhdfcbank"
                         value={beneficiaryUpiId}
                         onChange={(e) => setBeneficiaryUpiId(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-400"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
                       />
                     </div>
                   ) : (
@@ -588,7 +588,7 @@ export function RemittanceDesk() {
                           placeholder="e.g. 501002349012"
                           value={beneficiaryAccountNumber}
                           onChange={(e) => setBeneficiaryAccountNumber(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-400"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
                         />
                       </div>
                       <div>
@@ -599,7 +599,7 @@ export function RemittanceDesk() {
                           placeholder="e.g. HDFC0000123"
                           value={beneficiaryIfsc}
                           onChange={(e) => setBeneficiaryIfsc(e.target.value.toUpperCase())}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono uppercase focus:outline-none focus:border-amber-400"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono uppercase focus:outline-none focus:border-orange-400"
                         />
                       </div>
                     </div>
@@ -617,7 +617,7 @@ export function RemittanceDesk() {
                       className={cn(
                         "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
                         payoutMethodBangladesh === "BKASH"
-                          ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
                           : "bg-slate-800 border-slate-700 text-slate-400"
                       )}
                     >
@@ -629,7 +629,7 @@ export function RemittanceDesk() {
                       className={cn(
                         "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
                         payoutMethodBangladesh === "BANK"
-                          ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
                           : "bg-slate-800 border-slate-700 text-slate-400"
                       )}
                     >
@@ -648,7 +648,7 @@ export function RemittanceDesk() {
                         placeholder="e.g. 01712345678"
                         value={beneficiaryBkashNumber}
                         onChange={(e) => setBeneficiaryBkashNumber(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-400"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
                       />
                     </div>
                   ) : (
@@ -661,7 +661,7 @@ export function RemittanceDesk() {
                           placeholder="e.g. Islami Bank / BRAC"
                           value={beneficiaryBdBank}
                           onChange={(e) => setBeneficiaryBdBank(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                         />
                       </div>
                       <div>
@@ -672,7 +672,7 @@ export function RemittanceDesk() {
                           placeholder="Account Number"
                           value={beneficiaryAccountNumber}
                           onChange={(e) => setBeneficiaryAccountNumber(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-amber-400"
+                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
                         />
                       </div>
                     </div>
@@ -686,7 +686,7 @@ export function RemittanceDesk() {
                 <select
                   value={remittancePurpose}
                   onChange={(e) => setRemittancePurpose(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
                 >
                   <option value="Family Maintenance & Support">Family Maintenance &amp; Support</option>
                   <option value="Education Fees & Courseware">Education Fees &amp; Courseware</option>
@@ -697,8 +697,8 @@ export function RemittanceDesk() {
               </div>
 
               {/* Transparent Regulatory Status & External Bank Handoff */}
-              <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1.5 mt-2">
-                <div className="flex items-center gap-1.5 font-bold text-amber-300">
+              <div className="p-3.5 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-xs text-slate-300 space-y-1.5 mt-2">
+                <div className="flex items-center gap-1.5 font-bold text-orange-300">
                   <ShieldCheck className="size-4" /> Informational FX Estimator Tool
                 </div>
                 <p className="text-[11px] leading-relaxed text-slate-400">
@@ -714,7 +714,7 @@ export function RemittanceDesk() {
                   className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
                 >
                   <span>SBI Global Remit</span>
-                  <ExternalLink className="size-3 text-amber-400" />
+                  <ExternalLink className="size-3 text-orange-400" />
                 </a>
                 <a
                   href="https://www.westernunion.com"
@@ -723,7 +723,7 @@ export function RemittanceDesk() {
                   className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
                 >
                   <span>Western Union</span>
-                  <ExternalLink className="size-3 text-amber-400" />
+                  <ExternalLink className="size-3 text-orange-400" />
                 </a>
                 <a
                   href="https://wise.com"
@@ -732,7 +732,7 @@ export function RemittanceDesk() {
                   className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
                 >
                   <span>Wise Global</span>
-                  <ExternalLink className="size-3 text-amber-400" />
+                  <ExternalLink className="size-3 text-orange-400" />
                 </a>
               </div>
 
@@ -752,7 +752,7 @@ export function RemittanceDesk() {
       {/* 3. PA-CB COMPLIANCE & LEGAL NOTICE */}
       {/* ========================================================= */}
       <footer className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 sm:p-5 text-slate-400 text-xs space-y-2">
-        <div className="flex items-center gap-2 text-amber-400 font-bold">
+        <div className="flex items-center gap-2 text-orange-400 font-bold">
           <ShieldCheck className="size-4" />
           <span>Payment Aggregator - Cross Border (PA-CB) Statutory Architecture</span>
         </div>

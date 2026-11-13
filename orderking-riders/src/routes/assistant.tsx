@@ -387,7 +387,7 @@ function Page() {
             }
             className="h-10 text-xs font-semibold justify-start border-border bg-card hover:bg-muted text-foreground"
           >
-            <Zap className="size-3.5 text-amber-500 mr-1.5 shrink-0" />
+            <Zap className="size-3.5 text-orange-500 mr-1.5 shrink-0" />
             <span className="truncate">Kitchen Delay (&gt;6m)</span>
           </Button>
 

@@ -128,7 +128,7 @@ export function DishDetailModal({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white dark:bg-zinc-900 border border-amber-500/25 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95 fade-in duration-200 focus:outline-none">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white dark:bg-zinc-900 border border-orange-500/25 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col animate-in zoom-in-95 fade-in duration-200 focus:outline-none">
           
           {/* Top Close & Share Floating Bar */}
           <div className="absolute top-3 right-3 z-20 flex items-center gap-2">
@@ -164,13 +164,13 @@ export function DishDetailModal({
 
             {/* Badges on bottom of hero photo */}
             <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur-md border border-amber-400/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-md">
-                <Sparkles className="size-3 text-amber-400" />
+              <span className="flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur-md border border-orange-400/40 px-3 py-1 text-xs font-bold text-orange-300 shadow-md">
+                <Sparkles className="size-3 text-orange-400" />
                 <span>Chef&apos;s Signature Recipe</span>
               </span>
 
               {dish.bestseller && (
-                <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 px-3 py-1 text-xs font-black text-zinc-950 shadow-md">
+                <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-orange-400 px-3 py-1 text-xs font-black text-zinc-950 shadow-md">
                   <Flame className="size-3 fill-zinc-950" />
                   <span>Bestseller</span>
                 </span>
@@ -210,7 +210,7 @@ export function DishDetailModal({
             </div>
 
             {/* Pricing Section with Strike-through Original Price and Transparent Taxes */}
-            <div className="rounded-2xl border border-amber-400/30 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-yellow-500/10 p-3.5 space-y-1.5">
+            <div className="rounded-2xl border border-orange-400/30 bg-gradient-to-r from-orange-500/10 via-orange-400/5 to-orange-500/10 p-3.5 space-y-1.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-baseline gap-2.5">
                   <span className="font-display text-2xl font-black text-zinc-950 dark:text-zinc-50 tabular-nums">
@@ -224,14 +224,14 @@ export function DishDetailModal({
                   </span>
                 </div>
 
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1">
-                  <Clock className="size-3.5 text-amber-600" />
+                <span className="text-xs font-bold text-orange-700 dark:text-orange-300 flex items-center gap-1">
+                  <Clock className="size-3.5 text-orange-600" />
                   <span>15-20 min prep</span>
                 </span>
               </div>
 
               {/* Transparent Taxes & Zero Hidden Charge Guarantee */}
-              <div className="flex items-center gap-2 pt-1 border-t border-amber-400/20 text-[11px] text-zinc-600 dark:text-zinc-300 font-medium">
+              <div className="flex items-center gap-2 pt-1 border-t border-orange-400/20 text-[11px] text-zinc-600 dark:text-zinc-300 font-medium">
                 <ShieldCheck className="size-3.5 text-emerald-600 shrink-0" />
                 <span>Inclusive of all GST taxes · Zero hidden charges · 0 platform fee</span>
               </div>
@@ -282,7 +282,7 @@ export function DishDetailModal({
             {/* Chef Cooking Instruction Input */}
             <div className="space-y-1.5">
               <label htmlFor="dish-notes" className="text-xs font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-                <ChefHat className="size-3.5 text-amber-500" />
+                <ChefHat className="size-3.5 text-orange-500" />
                 <span>Special Instructions for Kitchen (Optional)</span>
               </label>
               <input
@@ -290,15 +290,15 @@ export function DishDetailModal({
                 value={specialInstructions}
                 onChange={(e) => setSpecialInstructions(e.target.value)}
                 placeholder="e.g. Less spicy, extra gravy, no cutlery needed..."
-                className="w-full h-10 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 text-xs font-medium focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500"
+                className="w-full h-10 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 text-xs font-medium focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
               />
             </div>
 
             {/* Customization Note if variants or addons exist */}
             {hasCustomizations && (
-              <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-300/50 p-2.5 text-xs text-amber-900 dark:text-amber-200 font-medium flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Sparkles className="size-3.5 text-amber-500" /> This dish has customizable portions &amp; gourmet add-ons.</span>
-                <span className="font-extrabold text-[11px] uppercase tracking-wide text-amber-700 dark:text-amber-300">
+              <div className="rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-300/50 p-2.5 text-xs text-orange-950 dark:text-orange-200 font-medium flex items-center justify-between">
+                <span className="flex items-center gap-1.5"><Sparkles className="size-3.5 text-orange-500" /> This dish has customizable portions &amp; gourmet add-ons.</span>
+                <span className="font-extrabold text-[11px] uppercase tracking-wide text-orange-700 dark:text-orange-300">
                   Customisable
                 </span>
               </div>
@@ -310,7 +310,7 @@ export function DishDetailModal({
             {/* Quantity Stepper (for simple items) */}
             {!hasCustomizations ? (
               cartQuantity > 0 && onUpdateCartQuantity ? (
-                <div className="flex h-11 items-center gap-2 rounded-2xl bg-amber-500/15 border border-amber-400/50 px-2 text-zinc-950 font-black">
+                <div className="flex h-11 items-center gap-2 rounded-2xl bg-orange-500/15 border border-orange-400/50 px-2 text-zinc-950 font-black">
                   <button
                     type="button"
                     onClick={() => onUpdateCartQuantity(cartQuantity - 1)}
@@ -325,7 +325,7 @@ export function DishDetailModal({
                   <button
                     type="button"
                     onClick={() => onUpdateCartQuantity(cartQuantity + 1)}
-                    className="size-7 flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-xs active:scale-90 transition"
+                    className="size-7 flex items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 text-zinc-950 shadow-xs active:scale-90 transition"
                     aria-label="Increase quantity"
                   >
                     <Plus className="size-3.5 stroke-[3]" />
@@ -360,7 +360,7 @@ export function DishDetailModal({
             <button
               type="button"
               onClick={handlePrimaryAction}
-              className="flex-1 h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-sm uppercase tracking-wider shadow-[0_4px_16px_rgba(245,158,11,0.45)] hover:shadow-[0_6px_22px_rgba(245,158,11,0.6)] active:scale-95 transition-all flex items-center justify-between px-5 cursor-pointer"
+              className="flex-1 h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 hover:from-orange-400 hover:to-orange-300 text-zinc-950 font-black text-sm uppercase tracking-wider shadow-[0_4px_16px_rgba(245,158,11,0.45)] hover:shadow-[0_6px_22px_rgba(245,158,11,0.6)] active:scale-95 transition-all flex items-center justify-between px-5 cursor-pointer"
             >
               <span>{hasCustomizations ? "Customise & Add" : "Add to Order"}</span>
               <span className="font-mono text-base font-black">

@@ -274,7 +274,7 @@ export function UmarAiOmnibar({
                 variant="outline"
                 size="sm"
                 onClick={handleUndo}
-                className="h-7 text-xs gap-1 border-zinc-700 bg-zinc-900/80 text-amber-300 hover:bg-zinc-800 hover:text-amber-200"
+                className="h-7 text-xs gap-1 border-zinc-700 bg-zinc-900/80 text-orange-300 hover:bg-zinc-800 hover:text-orange-200"
                 title="1-Click Undo / Rollback Previous Modification"
               >
                 <RotateCcw className="size-3" />
@@ -369,7 +369,7 @@ export function UmarAiOmnibar({
           )}
 
           {state.speechError && (
-            <div className="flex items-center gap-2 mt-2 px-1 text-xs text-amber-400 font-mono">
+            <div className="flex items-center gap-2 mt-2 px-1 text-xs text-orange-400 font-mono">
               <AlertTriangle className="size-3.5 shrink-0" />
               <span>{state.speechError}</span>
             </div>
@@ -439,7 +439,7 @@ export function UmarAiOmnibar({
 
                 <div className="flex items-center gap-2">
                   {staged.requiresFounderApproval ? (
-                    <Badge variant="warning" className="bg-amber-500/10 text-amber-400 border-amber-500/40 gap-1">
+                    <Badge variant="warning" className="bg-orange-500/10 text-orange-400 border-orange-500/40 gap-1">
                       <ShieldAlert className="size-3" />
                       FOUNDER GATE REQUIRED
                     </Badge>
@@ -592,13 +592,13 @@ export function UmarAiOmnibar({
 
               {/* FOUNDER APPROVAL GATE BANNER & EXECUTION ACTIONS */}
               {staged.requiresFounderApproval ? (
-                <div className="rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 to-zinc-950 p-4 space-y-3">
+                <div className="rounded-xl border border-orange-500/40 bg-gradient-to-r from-orange-950/40 to-zinc-950 p-4 space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shrink-0">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/40 shrink-0">
                       <ShieldAlert className="size-5" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-black text-amber-300 tracking-wide">
+                      <h4 className="text-sm font-black text-orange-300 tracking-wide">
                         FOUNDER APPROVAL GATE ENFORCED
                       </h4>
                       <p className="text-xs text-zinc-300 mt-0.5">
@@ -621,7 +621,7 @@ export function UmarAiOmnibar({
                       variant="default"
                       size="sm"
                       onClick={() => handleExecute(true)}
-                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.35)]"
+                      className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs gap-1.5 shadow-[0_0_20px_rgba(245,158,11,0.35)]"
                     >
                       <ShieldCheck className="size-4" />
                       <span>Founder Authorize & Execute (1-Click)</span>
@@ -701,7 +701,7 @@ export function UmarAiOmnibar({
                   variant="outline"
                   size="sm"
                   onClick={handleUndo}
-                  className="h-8 text-xs gap-1.5 border-amber-500/50 bg-amber-950/30 text-amber-300 hover:bg-amber-900/40 hover:text-amber-200 font-semibold"
+                  className="h-8 text-xs gap-1.5 border-orange-500/50 bg-orange-950/30 text-orange-300 hover:bg-orange-950/40 hover:text-orange-200 font-semibold"
                 >
                   <RotateCcw className="size-3.5" />
                   <span>1-Click Undo / Rollback</span>
@@ -750,7 +750,7 @@ export function UmarAiOmnibar({
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/80 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-amber-400">
+                  <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-orange-400">
                     <ShieldAlert className="size-3.5" />
                     <span>Founder Gate</span>
                   </div>

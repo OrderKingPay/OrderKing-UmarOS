@@ -428,7 +428,7 @@ export const Route = createFileRoute("/api/v1/admin/settings")({
                 enabled: true,
                 text: "",
                 linkUrl: "",
-                bgGradient: "from-amber-600 via-orange-600 to-amber-700",
+                bgGradient: "from-orange-600 via-orange-600 to-orange-700",
                 badgeText: "",
               },
               featuredCityHubs: bag.dynamicBranding?.featuredCityHubs ?? [

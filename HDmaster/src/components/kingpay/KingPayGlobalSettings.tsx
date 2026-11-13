@@ -421,8 +421,8 @@ export function KingPayGlobalSettings({
           </div>
 
           {/* Box 2: Action Needed */}
-          <div className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/60 rounded-xl p-4">
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+          <div className="bg-orange-50/60 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/60 rounded-xl p-4">
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-orange-900 dark:text-orange-300">
               Action Needed
             </div>
             <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">
@@ -558,10 +558,10 @@ export function KingPayGlobalSettings({
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono font-semibold uppercase text-slate-500 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-orange-500" />
                   Refund Safety Cap
                 </span>
-                <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">
+                <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 font-medium">
                   Max ₹
                 </span>
               </div>
@@ -786,7 +786,7 @@ export function KingPayGlobalSettings({
               <span className="text-[11px] font-mono text-slate-400 uppercase block">
                 Total King Pay Fee Earnings
               </span>
-              <div className="text-lg font-mono font-bold text-amber-400 mt-1">
+              <div className="text-lg font-mono font-bold text-orange-400 mt-1">
                 ₹{calcTotalKingPayRevenueInr.toFixed(2)}
               </div>
               <span className="text-[10px] text-slate-500 block mt-0.5">

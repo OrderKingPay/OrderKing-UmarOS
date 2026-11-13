@@ -460,7 +460,7 @@ function DeliveryTownAreaPage() {
         </nav>
 
         {/* Hero Banner */}
-        <header className="rounded-3xl bg-gradient-to-br from-amber-500/10 via-red-500/5 to-surface p-6 sm:p-8 border border-amber-500/20 shadow-sm relative overflow-hidden">
+        <header className="rounded-3xl bg-gradient-to-br from-orange-500/10 via-red-500/5 to-surface p-6 sm:p-8 border border-orange-500/20 shadow-sm relative overflow-hidden">
           <div className="max-w-2xl">
             <div className="flex items-center gap-2 mb-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-[#E23744]/10 px-3 py-1 text-xs font-bold text-[#E23744]">
@@ -479,7 +479,7 @@ function DeliveryTownAreaPage() {
             </p>
 
             {area.isTownLevelFallback && (
-              <p className="mt-2 text-xs text-amber-700 bg-amber-500/15 rounded-lg px-3 py-1.5 inline-block">
+              <p className="mt-2 text-xs text-orange-700 bg-orange-500/15 rounded-lg px-3 py-1.5 inline-block">
                 Showing all active kitchens across {town.name} serviceable to {area.name}.
               </p>
             )}

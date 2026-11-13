@@ -108,7 +108,7 @@ export function OsmInteractiveMap({
                 setLng(m.lng);
                 onLocationSelect?.(m.lat, m.lng);
               }}
-              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-950/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-md backdrop-blur-md hover:border-amber-400"
+              className="pointer-events-auto flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-950/90 px-2.5 py-1 text-[11px] font-semibold text-white shadow-md backdrop-blur-md hover:border-orange-400"
             >
               <span
                 className="inline-block size-2 rounded-full"
@@ -125,7 +125,7 @@ export function OsmInteractiveMap({
         <button
           type="button"
           onClick={locateViaGps}
-          className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-amber-400 shadow-md hover:bg-slate-900"
+          className="flex size-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-950/90 text-orange-400 shadow-md hover:bg-slate-900"
           title="Use current location"
         >
           <LocateFixed className={`size-4 ${locating ? "animate-spin" : ""}`} />

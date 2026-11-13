@@ -724,7 +724,7 @@ export function TableReservationManager({
             className={cn(
               "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs",
               activeSection === "BOOKINGS"
-                ? "bg-amber-500 text-white font-extrabold shadow-amber-500/20"
+                ? "bg-orange-500 text-white font-extrabold shadow-orange-500/20"
                 : "bg-white text-gray-700 hover:bg-gray-100 hover:text-white border border-gray-200"
             )}
           >
@@ -801,7 +801,7 @@ export function TableReservationManager({
           <div className="flex flex-wrap items-center gap-2 border-b border-gray-200/70 pb-3">
             {(
               [
-                { id: "PENDING", label: "Pending Reservations", color: "text-amber-400" },
+                { id: "PENDING", label: "Pending Reservations", color: "text-orange-400" },
                 { id: "CONFIRMED", label: "Confirmed Tables", color: "text-emerald-400" },
                 { id: "SEATED", label: "Seated Diners", color: "text-indigo-400" },
                 { id: "COMPLETED", label: "Completed & Billed", color: "text-blue-400" },
@@ -852,7 +852,7 @@ export function TableReservationManager({
                   {/* Top Bar: Guest Info & Zone Details */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-400 font-black text-sm">
+                      <div className="flex size-10 items-center justify-center rounded-2xl bg-orange-500/15 border border-orange-500/30 text-orange-400 font-black text-sm">
                         {res.guestsCount}P
                       </div>
                       <div>
@@ -878,7 +878,7 @@ export function TableReservationManager({
 
                     <div className="flex flex-wrap items-center gap-2 text-xs">
                       <span className="rounded-xl bg-gray-50 border border-gray-200 px-2.5 py-1 font-semibold text-gray-800 flex items-center gap-1.5">
-                        <Clock className="size-3.5 text-amber-400" />
+                        <Clock className="size-3.5 text-orange-400" />
                         <span>{res.timeSlot} ({res.date})</span>
                       </span>
 
@@ -899,7 +899,7 @@ export function TableReservationManager({
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-2">
                       {res.occasion && (
-                        <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-xs font-semibold text-amber-400 flex items-center gap-1">
+                        <span className="rounded-lg bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 text-xs font-semibold text-orange-400 flex items-center gap-1">
                           {res.occasion}
                         </span>
                       )}
@@ -957,7 +957,7 @@ export function TableReservationManager({
                             onChange={(e) =>
                               setTableInput((prev) => ({ ...prev, [res.id]: e.target.value }))
                             }
-                            className="rounded-xl border border-gray-300 bg-gray-50 px-3 py-1.5 text-xs text-gray-800 outline-none focus:border-amber-400"
+                            className="rounded-xl border border-gray-300 bg-gray-50 px-3 py-1.5 text-xs text-gray-800 outline-none focus:border-orange-400"
                           >
                             <option value="">Auto-Pick Available Table</option>
                             {tables
@@ -994,7 +994,7 @@ export function TableReservationManager({
                           <Button
                             size="sm"
                             onClick={() => handleSeat(res.id)}
-                            className="gap-1.5 text-xs bg-amber-500 hover:bg-amber-400 text-white font-black shadow-amber-500/20"
+                            className="gap-1.5 text-xs bg-orange-500 hover:bg-orange-400 text-white font-black shadow-orange-500/20"
                           >
                             <Utensils className="size-3.5" /> Seat Guests
                           </Button>
@@ -1102,7 +1102,7 @@ export function TableReservationManager({
                   className={cn(
                     "relative border p-4 space-y-3 transition duration-200",
                     isAvail && "border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500/70",
-                    isRes && "border-amber-500/40 bg-amber-950/20 hover:border-amber-500/70",
+                    isRes && "border-orange-500/40 bg-orange-950/20 hover:border-orange-500/70",
                     isOcc && "border-indigo-500/40 bg-indigo-950/20 hover:border-indigo-500/70",
                     isBlk && "border-gray-200 bg-white/40 opacity-70"
                   )}
@@ -1125,7 +1125,7 @@ export function TableReservationManager({
                       className={cn(
                         "rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider",
                         isAvail && "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
-                        isRes && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
+                        isRes && "bg-orange-500/20 text-orange-300 border border-orange-500/40",
                         isOcc && "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40",
                         isBlk && "bg-gray-100 text-gray-500 border border-gray-300"
                       )}
@@ -1220,17 +1220,17 @@ export function TableReservationManager({
               </p>
             </Card>
 
-            <Card className="border-amber-500/30 bg-amber-950/20 p-4 space-y-1.5">
+            <Card className="border-orange-500/30 bg-orange-950/20 p-4 space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wide">
+                <span className="text-xs font-bold text-orange-400 uppercase tracking-wide">
                   5% Guest Platform Fee
                 </span>
-                <Sparkles className="size-4 text-amber-400" />
+                <Sparkles className="size-4 text-orange-400" />
               </div>
-              <div className="font-display text-2xl font-black text-amber-400">
+              <div className="font-display text-2xl font-black text-orange-400">
                 ₹{totalPlatformFee.toLocaleString("en-IN")}
               </div>
-              <p className="text-[11px] text-amber-400/80">
+              <p className="text-[11px] text-orange-400/80">
                 Guest concierge fee (0% restaurant cut)
               </p>
             </Card>
@@ -1318,7 +1318,7 @@ export function TableReservationManager({
                       <td className="py-3 px-3 text-right font-bold text-gray-900">
                         ₹{r.depositAmount}
                       </td>
-                      <td className="py-3 px-3 text-right text-amber-400 font-bold">
+                      <td className="py-3 px-3 text-right text-orange-400 font-bold">
                         -₹{r.platformFeeAmount}
                       </td>
                       <td className="py-3 px-3 text-right font-black text-emerald-400">
@@ -1344,7 +1344,7 @@ export function TableReservationManager({
                           </span>
                         )}
                         {r.status === "PENDING" && (
-                          <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                          <span className="rounded-full bg-orange-500/15 border border-orange-500/30 px-2 py-0.5 text-[10px] font-bold text-orange-300">
                             Cover Reserved
                           </span>
                         )}
@@ -1509,7 +1509,7 @@ export function TableReservationManager({
           <div className="w-full max-w-md rounded-2xl border border-gray-300 bg-white p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <h3 className="font-bold text-base text-gray-900 flex items-center gap-2">
-                <SlidersHorizontal className="size-4 text-amber-400" />
+                <SlidersHorizontal className="size-4 text-orange-400" />
                 Floor Plan &amp; Reservation Settings
               </h3>
               <button
@@ -1564,9 +1564,9 @@ export function TableReservationManager({
                 </select>
               </div>
 
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
-                <div className="font-bold flex items-center gap-1.5 text-amber-200">
-                  <ShieldCheck className="size-3.5 text-amber-400" />
+              <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-3.5 text-[11px] text-orange-300 space-y-1.5">
+                <div className="font-bold flex items-center gap-1.5 text-orange-200">
+                  <ShieldCheck className="size-3.5 text-orange-400" />
                   Order King 0% Dine-In Commission Guarantee
                 </div>
                 <p className="text-gray-700 leading-relaxed">
@@ -1579,7 +1579,7 @@ export function TableReservationManager({
               <Button
                 size="sm"
                 onClick={() => setFloorSettingsOpen(false)}
-                className="bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs"
+                className="bg-orange-500 hover:bg-orange-400 text-white font-bold text-xs"
               >
                 Save Settings
               </Button>

@@ -165,7 +165,7 @@ export function RevenueOperatingSystemDashboard() {
             { id: "delivery", label: "Delivery Factory", icon: Layers, badge: `${projects.length}` },
             { id: "qa", label: "Self-QA Engine", icon: CheckCircle2, badge: "14 Checks" },
             { id: "voice", label: "Voice Founder Mode", icon: Mic },
-            { id: "approvals", label: "Approval Gateway", icon: ShieldAlert, badge: approvals.length > 0 ? `${approvals.length} Pending` : undefined, badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
+            { id: "approvals", label: "Approval Gateway", icon: ShieldAlert, badge: approvals.length > 0 ? `${approvals.length} Pending` : undefined, badgeColor: "bg-orange-500/20 text-orange-400 border-orange-500/30" },
             { id: "connectors", label: "Universal Connectors", icon: Plug, badge: `${connectors.length}` },
             { id: "bi", label: "Business Intelligence", icon: BarChart3 },
           ].map((tab) => {
@@ -227,12 +227,12 @@ export function RevenueOperatingSystemDashboard() {
               </div>
 
               {/* 2. PENDING PAYMENTS (INVOICED) */}
-              <div className="relative overflow-hidden rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-slate-900/80 to-slate-950 p-5 shadow-lg">
+              <div className="relative overflow-hidden rounded-xl border border-orange-500/30 bg-gradient-to-br from-orange-950/30 via-slate-900/80 to-slate-950 p-5 shadow-lg">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-orange-400">
                     Pending Payments
                   </span>
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[10px]">
                     Invoiced
                   </Badge>
                 </div>
@@ -245,7 +245,7 @@ export function RevenueOperatingSystemDashboard() {
                 <p className="mt-2 text-xs text-slate-400">
                   {metrics.paymentsPendingCount} invoices awaiting client bank settlement via UPI/Razorpay.
                 </p>
-                <div className="mt-4 flex items-center justify-between text-[11px] text-amber-400/90 border-t border-amber-500/20 pt-2">
+                <div className="mt-4 flex items-center justify-between text-[11px] text-orange-400/90 border-t border-orange-500/20 pt-2">
                   <span>Due within 48 hours</span>
                   <span>Direct 0% King Pay UPI</span>
                 </div>
@@ -336,7 +336,7 @@ export function RevenueOperatingSystemDashboard() {
                             className={`text-[10px] ${
                               e.type === "payment_confirmed"
                                 ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                                : "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                                : "bg-orange-500/20 text-orange-400 border-orange-500/30"
                             }`}
                           >
                             {e.type.replace("_", " ").toUpperCase()}
@@ -436,7 +436,7 @@ export function RevenueOperatingSystemDashboard() {
                         className={`text-xs ${
                           fr.frictionLevel === "LOW"
                             ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                            : "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                            : "bg-orange-500/20 text-orange-400 border-orange-500/30"
                         }`}
                       >
                         {fr.frictionLevel} FRICTION ({fr.estimatedFrictionScore}/10)
@@ -479,7 +479,7 @@ export function RevenueOperatingSystemDashboard() {
                           <span className="text-slate-400">Missing Skills: </span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {opp.missingSkills.map((s) => (
-                              <Badge key={s} className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px]">
+                              <Badge key={s} className="bg-orange-500/10 text-orange-400 border-orange-500/20 text-[10px]">
                                 {s}
                               </Badge>
                             ))}
@@ -736,7 +736,7 @@ export function RevenueOperatingSystemDashboard() {
                   Approval Minimization: Low-risk actions auto-execute. High-risk actions require explicit signoff.
                 </p>
               </div>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
+              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
                 {approvals.length} Pending Actions
               </Badge>
             </div>
@@ -751,10 +751,10 @@ export function RevenueOperatingSystemDashboard() {
                 {approvals.map((card) => (
                   <div
                     key={card.id}
-                    className="rounded-xl border border-amber-500/30 bg-[#0B0F19] p-5 shadow-lg space-y-3"
+                    className="rounded-xl border border-orange-500/30 bg-[#0B0F19] p-5 shadow-lg space-y-3"
                   >
                     <div className="flex items-center justify-between">
-                      <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">
+                      <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-xs">
                         {card.riskCategory}
                       </Badge>
                       <span className="font-mono text-xs text-slate-500">{card.id}</span>
@@ -780,7 +780,7 @@ export function RevenueOperatingSystemDashboard() {
                     </div>
 
                     <div className="rounded bg-slate-950 p-2.5 text-[11px] font-mono text-slate-400">
-                      <span className="text-amber-400 font-sans font-semibold">RISK: </span>
+                      <span className="text-orange-400 font-sans font-semibold">RISK: </span>
                       {card.riskDescription}
                     </div>
 

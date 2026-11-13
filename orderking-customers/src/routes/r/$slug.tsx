@@ -96,7 +96,7 @@ function HighlightMatch({ text, query }: { text: string; query: string }) {
         seg.isMatch ? (
           <mark
             key={i}
-            className="bg-amber-300 dark:bg-amber-400/40 text-amber-950 dark:text-amber-100 rounded-xs px-0.5 font-black not-italic"
+            className="bg-orange-300 dark:bg-orange-400/40 text-orange-950 dark:text-orange-100 rounded-xs px-0.5 font-black not-italic"
           >
             {seg.text}
           </mark>
@@ -296,7 +296,7 @@ function RestaurantPage() {
           <p className="text-zinc-600 dark:text-zinc-400">Failed to load restaurant details.</p>
           <Button
             type="button"
-            className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold"
+            className="bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-bold"
             onClick={() => void detail.refetch()}
           >
             {t("common.retry")}
@@ -321,12 +321,12 @@ function RestaurantPage() {
                 className="h-full w-full object-cover object-center scale-105 transition-transform duration-700 ease-out"
               />
             ) : (
-              <div className="h-full w-full bg-gradient-to-br from-amber-950 via-zinc-900 to-black" />
+              <div className="h-full w-full bg-gradient-to-br from-stone-950 via-stone-900 to-black" />
             )}
 
             {/* Parallax Gradient Overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-black/60" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/20 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-500/20 via-transparent to-transparent pointer-events-none" />
 
             {/* Top Action Bar */}
             <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
@@ -341,7 +341,7 @@ function RestaurantPage() {
 
               <div className="flex items-center gap-2">
                 {restaurant.card.promoted && (
-                  <Badge className="bg-amber-500 text-zinc-950 font-bold shadow-md">
+                  <Badge className="bg-gradient-to-r from-[#B85D19] to-[#C2410C] text-white font-bold shadow-md">
                     {t("common.ad") || "Promoted"}
                   </Badge>
                 )}
@@ -384,8 +384,8 @@ function RestaurantPage() {
 
             {/* Bottom Floating Badges inside Hero */}
             <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-amber-400/40 px-3 py-1 text-xs font-bold text-amber-300 shadow-md">
-                <Sparkles className="size-3.5 text-amber-400" />
+              <span className="flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-orange-400/40 px-3 py-1 text-xs font-bold text-orange-300 shadow-md">
+                <Sparkles className="size-3.5 text-[#E85D04]" />
                 OrderKing Partner Kitchen
               </span>
               {restaurant.card.vegOnly && (
@@ -399,7 +399,7 @@ function RestaurantPage() {
 
           {/* 2. Restaurant Info Header */}
           <div className="relative -mt-12 sm:-mt-16 mx-3 sm:mx-6 md:mx-auto max-w-4xl z-20">
-            <div className="rounded-3xl border border-amber-500/25 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
+            <div className="rounded-3xl border border-orange-500/25 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
               {/* Title & Rating Row */}
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 <div className="min-w-0">
@@ -407,7 +407,7 @@ function RestaurantPage() {
                     {restaurant.card.name}
                   </h1>
                   <p className="mt-1 text-xs sm:text-sm font-medium text-zinc-500 dark:text-zinc-400">
-                    {restaurant.card.cuisineSummary} <span className="text-amber-500 mx-1">·</span> {restaurant.area}
+                    {restaurant.card.cuisineSummary} <span className="text-[#E85D04] mx-1">·</span> {restaurant.area}
                   </p>
                   <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
                     {restaurant.hoursLabel}
@@ -442,9 +442,9 @@ function RestaurantPage() {
               )}
 
               {/* 4-Item Metric Ribbon (Delivery, Distance, Min Order, Hours) */}
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-amber-500/10 p-3 border border-amber-400/20">
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 rounded-2xl bg-gradient-to-r from-orange-500/10 via-orange-400/5 to-orange-500/10 p-3 border border-orange-400/20">
                 <div className="flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-orange-500/20 text-[#E85D04]">
                     <Clock className="size-4" />
                   </div>
                   <div>
@@ -456,7 +456,7 @@ function RestaurantPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-orange-500/20 text-[#E85D04]">
                     <MapPin className="size-4" />
                   </div>
                   <div>
@@ -487,7 +487,7 @@ function RestaurantPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="flex size-8 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                  <div className="flex size-8 items-center justify-center rounded-xl bg-orange-500/20 text-[#E85D04]">
                     <ShoppingBag className="size-4" />
                   </div>
                   <div>
@@ -522,18 +522,18 @@ function RestaurantPage() {
                 <button
                   type="button"
                   onClick={() => setShowGroupOrder(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
                 >
-                  <Users className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <Users className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
                   <span>Group Order</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setShowDiningReservation(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
                 >
-                  <Utensils className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <Utensils className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
                   <span>Book Table</span>
                 </button>
 
@@ -543,9 +543,9 @@ function RestaurantPage() {
                     setCookingInstructionsItem(restaurant.card.name);
                     setShowCookingInstructions(true);
                   }}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-500/10 to-yellow-500/10 hover:from-amber-500/20 hover:to-yellow-500/20 p-2.5 text-xs font-bold text-amber-950 dark:text-amber-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
                 >
-                  <ChefHat className="size-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <ChefHat className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
                   <span>Chef Notes</span>
                 </button>
 
@@ -586,7 +586,7 @@ function RestaurantPage() {
                     value={menuQ}
                     onChange={(e) => setMenuQ(e.target.value)}
                     placeholder={`Search within ${restaurant.card.name} menu...`}
-                    className="h-12 w-full rounded-2xl border border-amber-400/30 bg-surface pl-10 pr-10 text-sm font-medium focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-400/30 shadow-xs"
+                    className="h-12 w-full rounded-2xl border border-orange-400/30 bg-surface pl-10 pr-10 text-sm font-medium focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-400/30 shadow-xs"
                   />
                   {menuQ && (
                     <button
@@ -633,11 +633,11 @@ function RestaurantPage() {
                     onClick={() => setOnlyBestsellers(!onlyBestsellers)}
                     className={`flex h-9 items-center gap-1.5 rounded-xl px-3.5 text-xs font-bold transition shadow-xs ${
                       onlyBestsellers
-                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-amber-500/20"
-                        : "bg-surface border border-amber-400/40 text-amber-900 dark:text-amber-200 hover:bg-amber-50"
+                        ? "bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shadow-orange-500/20"
+                        : "bg-surface border border-orange-400/40 text-orange-900 dark:text-orange-200 hover:bg-orange-50"
                     }`}
                   >
-                    <Flame className="size-3.5 text-amber-600 fill-amber-500" />
+                    <Flame className="size-3.5 text-[#E85D04] fill-[#E85D04]" />
                     Bestsellers
                   </button>
                 </div>
@@ -646,7 +646,7 @@ function RestaurantPage() {
           </div>
 
           {/* 3. MENU CATEGORIES WITH COLORED TABS (STICKY) */}
-          <nav className="sticky top-0 z-30 mt-6 border-y border-amber-500/20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md px-4 py-3 shadow-sm">
+          <nav className="sticky top-0 z-30 mt-6 border-y border-orange-500/20 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md px-4 py-3 shadow-sm">
             <div className="max-w-4xl mx-auto flex gap-2 overflow-x-auto no-scrollbar scroll-smooth">
               {restaurant.categories.map((c: any) => {
                 const isActive = activeCategory === c.id;
@@ -663,8 +663,8 @@ function RestaurantPage() {
                     }}
                     className={`shrink-0 rounded-2xl px-4 py-2 text-xs font-extrabold transition-all no-underline flex items-center gap-1.5 cursor-pointer ${
                       isActive
-                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-md scale-105"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-amber-100/60 dark:hover:bg-zinc-700"
+                        ? "bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shadow-md scale-105"
+                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-orange-100/60 dark:hover:bg-zinc-700"
                     }`}
                   >
                     <span>{c.name}</span>
@@ -701,10 +701,10 @@ function RestaurantPage() {
                     <h2 className="font-display text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-zinc-50">
                       {c.name}
                     </h2>
-                    <span className="rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold text-xs px-2.5 py-0.5">
+                    <span className="rounded-full bg-orange-500/15 text-orange-900 dark:text-orange-300 font-bold text-xs px-2.5 py-0.5">
                       {filteredItems.length}
                     </span>
-                    <div className="flex-1 h-px bg-gradient-to-r from-amber-500/30 to-transparent" />
+                    <div className="flex-1 h-px bg-gradient-to-r from-orange-500/30 to-transparent" />
                   </div>
 
                   <ul className="space-y-4">
@@ -716,7 +716,7 @@ function RestaurantPage() {
                       return (
                         <li
                           key={it.id}
-                          className="group relative rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-white to-amber-50/15 dark:from-zinc-900 dark:to-zinc-900/90 p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_rgba(245,158,11,0.08)] hover:border-amber-400/50 transition-all duration-300 flex items-start justify-between gap-4"
+                          className="group relative rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 bg-gradient-to-b from-white via-white to-orange-50/15 dark:from-zinc-900 dark:to-zinc-900/90 p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_28px_rgba(232,93,4,0.08)] hover:border-orange-400/50 transition-all duration-300 flex items-start justify-between gap-4"
                         >
                           {/* Item Details */}
                           <div className="min-w-0 flex-1">
@@ -738,13 +738,13 @@ function RestaurantPage() {
                                 </span>
                               )}
 
-                              <p className="font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                              <p className="font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-[#E85D04] dark:group-hover:text-orange-400 transition-colors">
                                 <HighlightMatch text={it.name} query={menuQ} />
                               </p>
 
                               {it.bestseller && (
-                                <span className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 border border-amber-400/40 shadow-2xs">
-                                  <Flame className="size-3 text-amber-600" />
+                                <span className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-extrabold text-orange-900 dark:text-orange-200 border border-orange-400/40 shadow-2xs">
+                                  <Flame className="size-3 text-[#E85D04]" />
                                   <span>Bestseller</span>
                                 </span>
                               )}
@@ -768,7 +768,7 @@ function RestaurantPage() {
                               
                               <span
                                 className={`font-bold ${
-                                  it.veg ? "text-emerald-600 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400"
+                                  it.veg ? "text-emerald-600 dark:text-emerald-400" : "text-orange-900 dark:text-orange-400"
                                 }`}
                               >
                                 {it.veg ? "Pure Veg" : "Non-Veg"}
@@ -798,7 +798,7 @@ function RestaurantPage() {
                                   className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
                               ) : (
-                                <div className="h-full w-full bg-gradient-to-br from-amber-500/10 via-zinc-100 to-amber-500/5 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center text-3xl">
+                                <div className="h-full w-full bg-gradient-to-br from-orange-500/10 via-zinc-100 to-orange-500/5 dark:from-zinc-800 dark:to-zinc-900 flex items-center justify-center text-3xl">
                                   <span className="text-sm font-semibold text-zinc-400">OrderKing</span>
                                 </div>
                               )}
@@ -812,29 +812,29 @@ function RestaurantPage() {
                                     <button
                                       type="button"
                                       onClick={() => onAddClick(it)}
-                                      className="h-9 px-5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs uppercase tracking-wider shadow-[0_4px_14px_rgba(245,158,11,0.4)] hover:shadow-[0_6px_20px_rgba(245,158,11,0.55)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+                                      className="h-9 px-5 rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black text-xs uppercase tracking-wider shadow-[0_4px_14px_rgba(232,93,4,0.35)] active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                                     >
                                       <Plus className="size-3.5 stroke-[3]" />
                                       <span>{t("restaurant.add") || "ADD"}</span>
                                     </button>
                                     {hasCustomizations && (
-                                      <span className="mt-1 text-[9px] font-extrabold uppercase tracking-tight text-amber-700 dark:text-amber-400">
+                                      <span className="mt-1 text-[9px] font-extrabold uppercase tracking-tight text-orange-700 dark:text-orange-400">
                                         Customisable
                                       </span>
                                     )}
                                   </div>
                                 ) : (
                                   /* Inline Stepper for items already in cart */
-                                  <div className="flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-2 text-zinc-950 font-black shadow-md">
+                                  <div className="flex h-9 items-center gap-2 rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] px-2 text-white font-black shadow-md">
                                     <button
                                       type="button"
                                       onClick={() => updateQty(itemInCart.key, itemInCart.quantity - 1)}
-                                      className="size-6 flex items-center justify-center rounded-lg bg-black/15 hover:bg-black/25 active:scale-90 transition"
+                                      className="size-6 flex items-center justify-center rounded-lg bg-black/20 hover:bg-black/30 active:scale-90 transition text-white"
                                       aria-label="Decrease quantity"
                                     >
                                       <Minus className="size-3 stroke-[3]" />
                                     </button>
-                                    <span className="w-5 text-center text-xs tabular-nums font-black">
+                                    <span className="w-5 text-center text-xs tabular-nums font-black text-white">
                                       {itemInCart.quantity}
                                     </span>
                                     <button
@@ -867,7 +867,7 @@ function RestaurantPage() {
               {/* Header: Official FSSAI emblem & license */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 dark:border-zinc-800 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-16 items-center justify-center rounded-xl border border-orange-200 dark:border-zinc-700 bg-gradient-to-br from-amber-50 to-orange-50 dark:bg-zinc-800 text-orange-950 dark:text-orange-400 font-black tracking-tighter text-xs shadow-2xs uppercase">
+                  <div className="flex h-9 w-16 items-center justify-center rounded-xl border border-orange-200 dark:border-zinc-700 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:bg-zinc-800 text-orange-950 dark:text-orange-400 font-black tracking-tighter text-xs shadow-2xs uppercase">
                     fssai
                   </div>
                   <div>
@@ -972,14 +972,14 @@ function RestaurantPage() {
           {/* 5. STICKY BOTTOM CART BAR WITH ITEM COUNT AND TOTAL */}
           {totalCartCount > 0 && (
             <div className="fixed bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-xl mx-auto z-40 animate-in slide-in-from-bottom-4 duration-300">
-              <div className="rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white p-3.5 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-amber-500/50 backdrop-blur-xl flex items-center justify-between">
+              <div className="rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white p-3.5 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-orange-500/60 backdrop-blur-xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-md">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black shadow-md">
                     <ShoppingBag className="size-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                      <span className="rounded-full bg-orange-500/20 border border-orange-400/40 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-orange-300">
                         {totalCartCount} {totalCartCount === 1 ? "ITEM" : "ITEMS"}
                       </span>
                       {cartSubtotalPaise > 0 && (
@@ -996,7 +996,7 @@ function RestaurantPage() {
 
                 <Link
                   to="/cart"
-                  className="rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm px-5 py-2.5 shadow-[0_0_24px_rgba(245,158,11,0.5)] flex items-center gap-2 uppercase tracking-wider hover:scale-105 active:scale-95 transition-all no-underline"
+                  className="rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black text-xs sm:text-sm px-5 py-2.5 shadow-[0_0_24px_rgba(232,93,4,0.45)] flex items-center gap-2 uppercase tracking-wider hover:scale-105 active:scale-95 transition-all no-underline"
                 >
                   <span>View Cart</span>
                   <ChevronRight className="size-4 stroke-[3]" />

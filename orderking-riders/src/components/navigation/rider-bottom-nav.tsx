@@ -145,7 +145,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isEarningsActive
-                  ? "text-amber-600 font-extrabold"
+                  ? "text-orange-600 font-extrabold"
                   : "text-gray-500 font-semibold",
               )}
             >
@@ -153,7 +153,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isEarningsActive
-                    ? "bg-amber-50 ring-1 ring-amber-500/20 text-amber-600 scale-105"
+                    ? "bg-orange-50 ring-1 ring-orange-500/20 text-orange-600 scale-105"
                     : "group-hover:bg-gray-100",
                 )}
               >
@@ -163,7 +163,7 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
                 Earnings
               </span>
               {isEarningsActive && (
-                <span className="size-1 rounded-full bg-amber-500 mt-1 shadow-[0_0_6px_rgba(245,158,11,1)]" />
+                <span className="size-1 rounded-full bg-orange-500 mt-1 shadow-[0_0_6px_rgba(245,158,11,1)]" />
               )}
             </Link>
           </li>

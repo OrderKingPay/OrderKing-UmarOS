@@ -119,12 +119,12 @@ export function CommercialCommandDials() {
     dialsQ.data && dialsQ.data.ok ? dialsQ.data.data : null;
 
   return (
-    <div className="w-full space-y-6 rounded-2xl border-2 border-amber-500/30 bg-[#060908] p-4 sm:p-6 text-slate-100 shadow-[0_0_50px_rgba(245,158,11,0.08)]">
+    <div className="w-full space-y-6 rounded-2xl border-2 border-orange-500/30 bg-[#060908] p-4 sm:p-6 text-slate-100 shadow-[0_0_50px_rgba(245,158,11,0.08)]">
       {/* 1. Header Banner: UmarOS Commercial Operations Dials */}
       <div className="flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-1.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 to-orange-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.4)]">
               <Sliders className="size-5" />
             </div>
             <div>
@@ -163,7 +163,7 @@ export function CommercialCommandDials() {
             className={cn(
               "rounded-xl border px-3 py-1.5 shadow-sm transition-all",
               dials?.rainSurgeActive
-                ? "border-amber-500/60 bg-amber-950/50 text-amber-300 animate-pulse"
+                ? "border-orange-500/60 bg-orange-950/50 text-orange-300 animate-pulse"
                 : "border-border/60 bg-black/40 text-slate-300",
             )}
           >
@@ -271,19 +271,19 @@ export function CommercialCommandDials() {
               className={cn(
                 "group relative flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition-all",
                 isSelected
-                  ? "border-amber-500/80 bg-gradient-to-b from-amber-500/20 to-black/80 shadow-[0_0_20px_rgba(245,158,11,0.2)] text-white"
-                  : "border-border/60 bg-black/40 hover:border-amber-500/40 hover:bg-black/60 text-slate-300",
+                  ? "border-orange-500/80 bg-gradient-to-b from-orange-500/20 to-black/80 shadow-[0_0_20px_rgba(245,158,11,0.2)] text-white"
+                  : "border-border/60 bg-black/40 hover:border-orange-500/40 hover:bg-black/60 text-slate-300",
               )}
             >
               <div className="flex w-full items-center justify-between">
                 <Icon
                   className={cn(
                     "size-4 transition-transform group-hover:scale-110",
-                    isSelected ? "text-amber-400" : "text-muted",
+                    isSelected ? "text-orange-400" : "text-muted",
                   )}
                 />
                 {isSelected && (
-                  <span className="size-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
+                  <span className="size-1.5 rounded-full bg-orange-400 shadow-[0_0_6px_#f59e0b]" />
                 )}
               </div>
               <span className="text-xs font-bold leading-tight mt-1">{tab.label}</span>
@@ -384,18 +384,18 @@ function PlatformFeeDialSection({
   };
 
   return (
-    <div className="space-y-6 rounded-xl border border-amber-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
+    <div className="space-y-6 rounded-xl border border-orange-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-4">
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <DollarSign className="size-5 text-amber-400" />
+            <DollarSign className="size-5 text-orange-400" />
             Platform Fee Dial (₹0 to ₹25)
           </h2>
           <p className="text-xs text-muted">
             Live real-time operational dial directly governing customer checkout convenience fees across all orders.
           </p>
         </div>
-        <Badge className="bg-amber-500/20 text-amber-300 font-mono text-xs w-fit">
+        <Badge className="bg-orange-500/20 text-orange-300 font-mono text-xs w-fit">
           Live Fee: ₹{feeInr.toFixed(2)} / {feePaise} paise
         </Badge>
       </div>
@@ -406,7 +406,7 @@ function PlatformFeeDialSection({
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm">
               <span className="font-semibold text-slate-300">Adjust Platform Fee Slider</span>
-              <span className="font-mono text-xl font-black text-amber-400 bg-amber-950/60 border border-amber-500/40 px-3 py-1 rounded-lg shadow-inner">
+              <span className="font-mono text-xl font-black text-orange-400 bg-orange-950/60 border border-orange-500/40 px-3 py-1 rounded-lg shadow-inner">
                 ₹{feeInr.toFixed(2)}
               </span>
             </div>
@@ -447,8 +447,8 @@ function PlatformFeeDialSection({
                   className={cn(
                     "rounded-lg border px-2.5 py-1 text-xs font-mono transition-all",
                     feeInr === p.val
-                      ? "border-amber-400 bg-amber-500/30 text-white font-bold shadow-[0_0_10px_rgba(245,158,11,0.3)]"
-                      : "border-border/60 bg-surface-2/60 text-slate-300 hover:border-amber-500/40 hover:text-white",
+                      ? "border-orange-400 bg-orange-500/30 text-white font-bold shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+                      : "border-border/60 bg-surface-2/60 text-slate-300 hover:border-orange-500/40 hover:text-white",
                   )}
                 >
                   {p.label}
@@ -461,7 +461,7 @@ function PlatformFeeDialSection({
             <Button
               onClick={() => void handleApplyFee(feeInr)}
               disabled={isSaving}
-              className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-bold hover:brightness-110 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-500 text-black font-bold hover:brightness-110 shadow-[0_0_20px_rgba(245,158,11,0.3)]"
             >
               <Check className="mr-2 size-4" />
               {isSaving ? "Persisting to Database..." : `Save & Enforce ₹${feeInr.toFixed(2)} Fee Platform-Wide`}
@@ -493,14 +493,14 @@ function PlatformFeeDialSection({
 
             <div className="flex justify-between items-center py-1 border-b border-border/40">
               <span className="text-muted">Monthly Platform Fee EBITDA</span>
-              <span className="text-amber-300 font-black text-sm">
+              <span className="text-orange-300 font-black text-sm">
                 ₹{formatNumber(monthlyRevenueInr)} / mo
               </span>
             </div>
 
             <div className="flex justify-between items-center py-1">
               <span className="text-muted">Annualized EBITDA Run-Rate</span>
-              <span className="text-yellow-400 font-black">
+              <span className="text-orange-400 font-black">
                 ₹{formatNumber(annualRunRateInr)} / yr
               </span>
             </div>
@@ -642,7 +642,7 @@ function CommissionOverridesSection() {
             size="sm"
             variant="outline"
             onClick={() => void handleBulkPreset(22.0, "Legacy Aggregator Parity")}
-            className="border-amber-500/40 bg-amber-950/40 text-xs text-amber-300 hover:bg-amber-900/60"
+            className="border-orange-500/40 bg-orange-950/40 text-xs text-orange-300 hover:bg-orange-950/60"
           >
             All 22% (Legacy Parity)
           </Button>
@@ -688,7 +688,7 @@ function CommissionOverridesSection() {
               tierColor = "bg-rose-500/20 text-rose-300 border-rose-500/30";
               tierLabel = "Enterprise / Cloud Kitchen Cap";
             } else if (currentPct >= 19) {
-              tierColor = "bg-amber-500/20 text-amber-300 border-amber-500/30";
+              tierColor = "bg-orange-500/20 text-orange-300 border-orange-500/30";
               tierLabel = "Standard Aggregator Parity";
             } else if (currentPct >= 8) {
               tierColor = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
@@ -701,7 +701,7 @@ function CommissionOverridesSection() {
                 className={cn(
                   "flex flex-col gap-4 rounded-xl border p-4 transition-all lg:flex-row lg:items-center lg:justify-between",
                   isDirty
-                    ? "border-amber-500/80 bg-amber-950/20"
+                    ? "border-orange-500/80 bg-orange-950/20"
                     : "border-border/70 bg-black/50 hover:border-emerald-500/40",
                 )}
               >
@@ -718,7 +718,7 @@ function CommissionOverridesSection() {
                     <span>|</span>
                     <span>{outlet.address}</span>
                     <span>|</span>
-                    <span className="text-amber-400 font-mono">{outlet.rating.toFixed(1)} Rating</span>
+                    <span className="text-orange-400 font-mono">{outlet.rating.toFixed(1)} Rating</span>
                   </div>
                   <div className="text-[11px] font-mono text-slate-400">
                     Weekly GMV: <span className="text-white font-bold">{formatInrExact(outlet.weeklyGmvPaise)}</span>
@@ -758,7 +758,7 @@ function CommissionOverridesSection() {
                 <div className="flex items-center justify-between gap-4 lg:w-1/4 lg:justify-end">
                   <div className="text-right font-mono text-xs">
                     <span className="text-muted block text-[10px]">Est. Weekly Cut</span>
-                    <span className="font-bold text-amber-300">
+                    <span className="font-bold text-orange-300">
                       {formatInrExact(Math.round((outlet.weeklyGmvPaise * Math.round(currentPct * 100)) / 10000))}
                     </span>
                   </div>
@@ -770,7 +770,7 @@ function CommissionOverridesSection() {
                     className={cn(
                       "text-xs font-bold transition-all",
                       isDirty
-                        ? "bg-amber-500 text-black hover:bg-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
+                        ? "bg-orange-500 text-black hover:bg-orange-400 shadow-[0_0_12px_rgba(245,158,11,0.4)]"
                         : "bg-surface-2/60 text-slate-500 border border-border/40",
                     )}
                   >
@@ -859,7 +859,7 @@ function SurgeControlsSection({
           className={cn(
             "font-mono text-xs font-bold px-3 py-1.5 transition-all",
             effectiveFactor > 1.2
-              ? "bg-amber-500/20 text-amber-300 border-amber-500/40 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+              ? "bg-orange-500/20 text-orange-300 border-orange-500/40 animate-pulse shadow-[0_0_15px_rgba(245,158,11,0.2)]"
               : "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
           )}
         >
@@ -937,10 +937,10 @@ function SurgeControlsSection({
         <div className="rounded-xl border border-border/70 bg-black/40 p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Zap className="size-5 text-amber-400" />
+              <Zap className="size-5 text-orange-400" />
               <span className="font-bold text-sm text-white">2. Demand Multiplier</span>
             </div>
-            <span className="font-mono text-sm font-black text-amber-400">{multiplier.toFixed(2)}x</span>
+            <span className="font-mono text-sm font-black text-orange-400">{multiplier.toFixed(2)}x</span>
           </div>
 
           <p className="text-xs text-slate-400 leading-relaxed">
@@ -979,7 +979,7 @@ function SurgeControlsSection({
                 className={cn(
                   "rounded px-2 py-1 text-[11px] font-mono border transition-all",
                   multiplier === m
-                    ? "border-amber-400 bg-amber-500/20 text-amber-300 font-bold"
+                    ? "border-orange-400 bg-orange-500/20 text-orange-300 font-bold"
                     : "border-border/60 bg-surface-2 text-muted hover:text-white",
                 )}
               >
@@ -992,7 +992,7 @@ function SurgeControlsSection({
             size="sm"
             disabled={isSaving}
             onClick={() => void handleSaveSurge()}
-            className="w-full bg-amber-500 text-black font-bold hover:bg-amber-400 text-xs mt-2"
+            className="w-full bg-orange-500 text-black font-bold hover:bg-orange-400 text-xs mt-2"
           >
             Apply Multiplier ({multiplier.toFixed(2)}x)
           </Button>
@@ -1134,7 +1134,7 @@ function PenaltyDisputeDeskSection() {
 
         {/* Dispute Counters */}
         <div className="flex items-center gap-2 font-mono text-xs">
-          <div className="rounded-lg border border-amber-500/40 bg-amber-950/40 px-3 py-1 text-amber-300">
+          <div className="rounded-lg border border-orange-500/40 bg-orange-950/40 px-3 py-1 text-orange-300">
             Pending: <span className="font-bold">{data?.pendingCount ?? 0}</span> (₹
             {((data?.pendingPaise ?? 0) / 100).toFixed(0)})
           </div>
@@ -1196,7 +1196,7 @@ function PenaltyDisputeDeskSection() {
                       className={cn(
                         "text-[10px] font-mono",
                         disp.status === "PENDING"
-                          ? "bg-amber-500/20 text-amber-300"
+                          ? "bg-orange-500/20 text-orange-300"
                           : disp.status === "WAIVED"
                             ? "bg-emerald-500/20 text-emerald-300"
                             : "bg-rose-500/20 text-rose-300",
@@ -1312,11 +1312,11 @@ function WednesdayPayoutReleaseSection() {
   };
 
   return (
-    <div className="space-y-6 rounded-xl border border-yellow-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
+    <div className="space-y-6 rounded-xl border border-orange-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-4">
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Building2 className="size-5 text-yellow-400" />
+            <Building2 className="size-5 text-orange-400" />
             T+1 Daily Automated Payout Release Gateway
           </h2>
           <p className="text-xs text-muted">
@@ -1329,7 +1329,7 @@ function WednesdayPayoutReleaseSection() {
             "font-mono text-xs px-3 py-1",
             batch?.batchStatus === "DISBURSED"
               ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-              : "bg-amber-500/20 text-amber-300 border-amber-500/40",
+              : "bg-orange-500/20 text-orange-300 border-orange-500/40",
           )}
         >
           Status: {batch?.batchStatus ?? "READY_FOR_APPROVAL"}
@@ -1345,7 +1345,7 @@ function WednesdayPayoutReleaseSection() {
 
         <div className="rounded-xl border border-border/80 bg-black/50 p-3 space-y-1">
           <span className="text-[10px] text-muted block uppercase">Scheduled Disbursement</span>
-          <span className="font-bold text-amber-400">Day T+1, {batch?.cycle.payoutDate}</span>
+          <span className="font-bold text-orange-400">Day T+1, {batch?.cycle.payoutDate}</span>
         </div>
 
         <div className="rounded-xl border border-border/80 bg-black/50 p-3 space-y-1">
@@ -1363,7 +1363,7 @@ function WednesdayPayoutReleaseSection() {
       <div className="rounded-xl border border-border/80 bg-black/70 p-4 space-y-4">
         <div className="flex items-center justify-between border-b border-border/40 pb-2">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-            <Scale className="size-4 text-amber-400" />
+            <Scale className="size-4 text-orange-400" />
             Statutory Reconciliation Breakdown (Section 9(5) CGST, 1% TCS, 1% TDS)
           </span>
           <span className="text-[11px] font-mono text-muted">100% SafeInteger Integer Paise</span>
@@ -1391,9 +1391,9 @@ function WednesdayPayoutReleaseSection() {
             </span>
           </div>
 
-          <div className="space-y-1 p-2 rounded bg-amber-500/10 border border-amber-500/30">
-            <span className="text-amber-300 text-[10px] block font-bold">Net Merchant Payout</span>
-            <span className="font-black text-amber-400 text-base">
+          <div className="space-y-1 p-2 rounded bg-orange-500/10 border border-orange-500/30">
+            <span className="text-orange-300 text-[10px] block font-bold">Net Merchant Payout</span>
+            <span className="font-black text-orange-400 text-base">
               ₹{formatNumber(Math.round((batch?.totalNetPayablePaise ?? 0) / 100))}
             </span>
           </div>
@@ -1410,7 +1410,7 @@ function WednesdayPayoutReleaseSection() {
             "w-full text-sm font-black tracking-wide shadow-xl transition-all py-6",
             batch?.batchStatus === "DISBURSED"
               ? "bg-surface-2 text-muted cursor-not-allowed border border-border"
-              : "bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600 text-black hover:brightness-110 shadow-[0_0_30px_rgba(245,158,11,0.4)]",
+              : "bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-black hover:brightness-110 shadow-[0_0_30px_rgba(245,158,11,0.4)]",
           )}
         >
           {batch?.batchStatus === "DISBURSED" ? (
@@ -1457,7 +1457,7 @@ function WednesdayPayoutReleaseSection() {
                   <td className="p-2.5 text-rose-400">
                     {formatInrExact(m.tcsDeductionPaise + m.tdsDeductionPaise)}
                   </td>
-                  <td className="p-2.5 text-right font-bold text-amber-300">
+                  <td className="p-2.5 text-right font-bold text-orange-300">
                     {formatInrExact(m.netPayablePaise)}
                   </td>
                 </tr>
@@ -1556,7 +1556,7 @@ function FeaturedAdAuctionStudioSection() {
       {/* Top of Feed Winning Slots */}
       <div className="space-y-3">
         <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block flex items-center gap-2">
-          <Award className="size-4 text-amber-400" />
+          <Award className="size-4 text-orange-400" />
           Live Auction Winners (Top 3 Customer Feed Placement)
         </span>
 
@@ -1564,10 +1564,10 @@ function FeaturedAdAuctionStudioSection() {
           {winners.map((win, idx) => (
             <div
               key={win.restaurantId}
-              className="rounded-xl border border-amber-500/50 bg-gradient-to-b from-amber-500/10 to-black/80 p-3.5 space-y-2 relative"
+              className="rounded-xl border border-orange-500/50 bg-gradient-to-b from-orange-500/10 to-black/80 p-3.5 space-y-2 relative"
             >
               <div className="flex justify-between items-start">
-                <Badge className="bg-amber-500 text-black font-black text-[10px]">
+                <Badge className="bg-orange-500 text-black font-black text-[10px]">
                   SLOT #{win.rank} SPONSORED
                 </Badge>
                 <span className="text-[10px] font-mono text-emerald-400 font-bold">
@@ -1584,7 +1584,7 @@ function FeaturedAdAuctionStudioSection() {
 
               <div className="text-[10px] font-mono text-slate-400 border-t border-border/40 pt-1.5 flex justify-between">
                 <span>Second-Price GSP Rule</span>
-                <span className="text-amber-300">Active in feed</span>
+                <span className="text-orange-300">Active in feed</span>
               </div>
             </div>
           ))}
@@ -1648,7 +1648,7 @@ function FeaturedAdAuctionStudioSection() {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs">
                 <span className="text-slate-300 font-semibold">Daily Campaign Budget</span>
-                <span className="font-mono font-bold text-amber-400 text-sm">
+                <span className="font-mono font-bold text-orange-400 text-sm">
                   ₹{formatNumber(dailyBudgetInr)} / day
                 </span>
               </div>
@@ -1687,7 +1687,7 @@ function FeaturedAdAuctionStudioSection() {
             </div>
             <div className="flex justify-between">
               <span className="text-muted">Placement Slot:</span>
-              <span className="text-amber-300">Top-of-Feed #1-#3</span>
+              <span className="text-orange-300">Top-of-Feed #1-#3</span>
             </div>
 
             <Button
@@ -1864,7 +1864,7 @@ function TravelPartnerGovernanceSection() {
           <div className="p-3 rounded-lg bg-black/40 border border-border/60 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-white">Travelpayouts Affiliate Marker</span>
-              <span className="text-[10px] font-mono text-amber-300">Marker ID: {markerDraft}</span>
+              <span className="text-[10px] font-mono text-orange-300">Marker ID: {markerDraft}</span>
             </div>
             <div className="flex gap-2">
               <Input
@@ -1931,7 +1931,7 @@ function TravelPartnerGovernanceSection() {
         <div className="rounded-xl border border-border/80 bg-surface/50 p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
-              <Building2 className="size-4 text-amber-400" />
+              <Building2 className="size-4 text-orange-400" />
               <h3 className="text-sm font-bold text-white">Hotels & Ground Logistics</h3>
             </div>
             <span className="text-[10px] font-mono text-muted">4 Integrated Networks</span>
@@ -2030,7 +2030,7 @@ function TravelPartnerGovernanceSection() {
           <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-white">Customer Gold Cashback</span>
-              <span className="text-xs font-mono font-bold text-amber-400">{cashbackDraft.toFixed(1)}% of Fare</span>
+              <span className="text-xs font-mono font-bold text-orange-400">{cashbackDraft.toFixed(1)}% of Fare</span>
             </div>
             <input
               type="range"
@@ -2100,7 +2100,7 @@ function TravelPartnerGovernanceSection() {
             />
             <div className="flex justify-between text-[10px] text-muted font-mono">
               <span>₹0</span>
-              <span className="text-amber-400">Target: ₹399</span>
+              <span className="text-orange-400">Target: ₹399</span>
               <span>₹999</span>
             </div>
           </div>
@@ -2109,9 +2109,9 @@ function TravelPartnerGovernanceSection() {
           <div className="p-4 rounded-xl bg-black/40 border border-border/60 space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                <Scale className="size-3.5 text-amber-400" /> Trains Fee
+                <Scale className="size-3.5 text-orange-400" /> Trains Fee
               </span>
-              <span className="text-xs font-mono font-bold text-amber-300">₹{trainFeeDraft}</span>
+              <span className="text-xs font-mono font-bold text-orange-300">₹{trainFeeDraft}</span>
             </div>
             <input
               type="range"
@@ -2125,7 +2125,7 @@ function TravelPartnerGovernanceSection() {
             />
             <div className="flex justify-between text-[10px] text-muted font-mono">
               <span>₹0</span>
-              <span className="text-amber-400">Target: ₹40</span>
+              <span className="text-orange-400">Target: ₹40</span>
               <span>₹100</span>
             </div>
           </div>
@@ -2150,7 +2150,7 @@ function TravelPartnerGovernanceSection() {
             />
             <div className="flex justify-between text-[10px] text-muted font-mono">
               <span>₹0</span>
-              <span className="text-amber-400">Target: ₹250</span>
+              <span className="text-orange-400">Target: ₹250</span>
               <span>₹750</span>
             </div>
           </div>
@@ -2174,7 +2174,7 @@ function TravelPartnerGovernanceSection() {
           <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
             <div>
               <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-amber-400 text-sm">GLOBAL5000</span>
+                <span className="font-mono font-black text-orange-400 text-sm">GLOBAL5000</span>
                 <Badge className={cn("text-[9px] font-mono", form.promoGlobal5000Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
                   {form.promoGlobal5000Active !== false ? "ACTIVE" : "PAUSED"}
                 </Badge>
@@ -2252,7 +2252,7 @@ function TravelPartnerGovernanceSection() {
           <div className="p-3.5 rounded-xl bg-black/40 border border-border/60 flex flex-col justify-between space-y-3">
             <div>
               <div className="flex items-center justify-between">
-                <span className="font-mono font-black text-amber-300 text-sm">PILGRIM3000</span>
+                <span className="font-mono font-black text-orange-300 text-sm">PILGRIM3000</span>
                 <Badge className={cn("text-[9px] font-mono", form.promoPilgrim3000Active !== false ? "bg-emerald-950/80 text-emerald-300 border-emerald-500/40" : "bg-zinc-900 text-zinc-500")}>
                   {form.promoPilgrim3000Active !== false ? "ACTIVE" : "PAUSED"}
                 </Badge>
@@ -2268,7 +2268,7 @@ function TravelPartnerGovernanceSection() {
                 setForm((prev) => ({ ...prev, promoPilgrim3000Active: nextVal }));
                 mutateSettings.mutate({ promoPilgrim3000Active: nextVal });
               }}
-              className={cn("w-full text-xs font-bold", form.promoPilgrim3000Active !== false ? "bg-amber-600 hover:bg-amber-500 text-white" : "border-border/60 text-slate-400")}
+              className={cn("w-full text-xs font-bold", form.promoPilgrim3000Active !== false ? "bg-orange-600 hover:bg-orange-500 text-white" : "border-border/60 text-slate-400")}
             >
               {form.promoPilgrim3000Active !== false ? "Campaign Live (1-Tap Pause)" : "Activate Campaign"}
             </Button>
@@ -2277,10 +2277,10 @@ function TravelPartnerGovernanceSection() {
       </div>
 
       {/* Card 6: 1-Click TBO API Password & Token Sync */}
-      <div className="rounded-xl border border-amber-500/40 bg-surface/50 p-5 space-y-4">
+      <div className="rounded-xl border border-orange-500/40 bg-surface/50 p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border/60 pb-3">
           <div className="flex items-center gap-2">
-            <Lock className="size-4 text-amber-400" />
+            <Lock className="size-4 text-orange-400" />
             <h3 className="text-sm font-bold text-white">TBO Tek Enterprise GDS Gateway & Token Synchronization</h3>
           </div>
           <Badge className={cn(
@@ -2288,7 +2288,7 @@ function TravelPartnerGovernanceSection() {
             state?.tboAuthStatus === "AUTHENTICATED"
               ? "border-emerald-500/40 bg-emerald-950/60 text-emerald-300"
               : state?.tboAuthStatus === "PENDING_CREDENTIALS"
-                ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
+                ? "border-orange-500/40 bg-orange-950/60 text-orange-300"
                 : "border-rose-500/40 bg-rose-950/60 text-rose-300"
           )}>
             Status: {state?.tboAuthStatus || "AUTHENTICATED"}
@@ -2359,12 +2359,12 @@ function TravelPartnerGovernanceSection() {
             size="sm"
             disabled={isSyncingTbo}
             onClick={handleSyncTbo}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs h-9 px-4 shrink-0 shadow-lg shadow-amber-950/50"
+            className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs h-9 px-4 shrink-0 shadow-lg shadow-orange-950/50"
           >
             {isSyncingTbo ? (
               <RefreshCw className="size-3.5 mr-1.5 animate-spin" />
             ) : (
-              <Zap className="size-3.5 mr-1.5 text-amber-200" />
+              <Zap className="size-3.5 mr-1.5 text-orange-200" />
             )}
             1-Click Sync TBO Token
           </Button>
@@ -2422,7 +2422,7 @@ function DisputeChatThread({ ticketId, customerName }: { ticketId: string; custo
           variant="outline"
           size="sm"
           onClick={() => setOpen(!open)}
-          className="h-7 px-2.5 text-xs font-bold border-amber-500/40 text-amber-300 hover:bg-amber-950/40"
+          className="h-7 px-2.5 text-xs font-bold border-orange-500/40 text-orange-300 hover:bg-orange-950/40"
         >
           <MessageSquare className="size-3.5 mr-1.5" />
           {open ? "Hide Live Chat" : `Live Chat with ${customerName} (${messages.length})`}
@@ -2465,12 +2465,12 @@ function DisputeChatThread({ ticketId, customerName }: { ticketId: string; custo
                     className={cn(
                       "flex flex-col max-w-[85%] rounded-xl p-2.5 text-xs space-y-1",
                       isAdmin
-                        ? "ml-auto bg-amber-950/60 border border-amber-500/40 text-amber-100"
+                        ? "ml-auto bg-orange-950/60 border border-orange-500/40 text-orange-100"
                         : "mr-auto bg-slate-900 border border-slate-700/60 text-slate-100"
                     )}
                   >
                     <div className="flex items-center justify-between gap-2 text-[10px]">
-                      <span className={cn("font-bold", isAdmin ? "text-amber-300" : "text-emerald-400")}>
+                      <span className={cn("font-bold", isAdmin ? "text-orange-300" : "text-emerald-400")}>
                         {isAdmin ? "Founder / Admin (You)" : customerName}
                       </span>
                       <span className="text-muted text-[9px] font-mono">
@@ -2496,14 +2496,14 @@ function DisputeChatThread({ ticketId, customerName }: { ticketId: string; custo
                 }
               }}
               placeholder={`Reply directly to ${customerName}...`}
-              className="flex-1 rounded-lg border border-border/60 bg-black/60 px-3 py-1.5 text-xs text-white placeholder:text-muted focus:border-amber-400 focus:outline-none"
+              className="flex-1 rounded-lg border border-border/60 bg-black/60 px-3 py-1.5 text-xs text-white placeholder:text-muted focus:border-orange-400 focus:outline-none"
               disabled={isSending}
             />
             <Button
               size="sm"
               onClick={handleSend}
               disabled={isSending || !reply.trim()}
-              className="h-8 px-3 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+              className="h-8 px-3 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs"
             >
               {isSending ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -2605,9 +2605,9 @@ export function CustomerSupportDisputeQueueSection() {
           <span className="text-[10px] text-muted">Awaiting Founder Decision</span>
         </div>
 
-        <div className="rounded-xl border border-amber-500/30 bg-black/40 p-4 space-y-1">
+        <div className="rounded-xl border border-orange-500/30 bg-black/40 p-4 space-y-1">
           <span className="text-[10px] font-mono uppercase text-muted">Total Claim Value</span>
-          <p className="text-2xl font-black font-mono text-amber-300">
+          <p className="text-2xl font-black font-mono text-orange-300">
             ₹{(((summary?.pendingRefundPaise || 0)) / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
           </p>
           <span className="text-[10px] text-muted">Pending Reimbursement</span>
@@ -2672,7 +2672,7 @@ export function CustomerSupportDisputeQueueSection() {
                         {d.ticketId}
                       </Badge>
                       {d.orderId && (
-                        <Badge className="font-mono text-[10px] bg-amber-950/60 border-amber-500/40 text-amber-300">
+                        <Badge className="font-mono text-[10px] bg-orange-950/60 border-orange-500/40 text-orange-300">
                           Order: {d.orderId}
                         </Badge>
                       )}
@@ -2681,7 +2681,7 @@ export function CustomerSupportDisputeQueueSection() {
                         d.priority === "CRITICAL"
                           ? "bg-rose-950 border-rose-500 text-rose-300"
                           : d.priority === "HIGH"
-                            ? "bg-amber-950 border-amber-500 text-amber-300"
+                            ? "bg-orange-950 border-orange-500 text-orange-300"
                             : "bg-zinc-900 border-zinc-700 text-zinc-300"
                       )}>
                         {d.priority} PRIORITY
@@ -2929,12 +2929,12 @@ function GeofencingThreatDialsSection() {
   const threatZones = data?.threatZones || [];
 
   return (
-    <div className="space-y-6 rounded-xl border border-amber-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
+    <div className="space-y-6 rounded-xl border border-orange-500/40 bg-black/60 p-5 sm:p-6 shadow-xl">
       {/* 1. Header Banner */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-4">
         <div>
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <ShieldAlert className="size-5 text-amber-400" />
+            <ShieldAlert className="size-5 text-orange-400" />
             Dynamic Geofencing & Threat Zones
           </h2>
           <p className="text-xs text-muted">
@@ -2945,7 +2945,7 @@ function GeofencingThreatDialsSection() {
         {/* Live IST Status Radar Pill */}
         <div className="flex flex-wrap items-center gap-2">
           <Badge className="bg-zinc-900 border border-zinc-700 text-zinc-300 font-mono text-xs gap-1.5 py-1">
-            <Clock className="size-3 text-amber-400" />
+            <Clock className="size-3 text-orange-400" />
             <span>IST: {data?.currentTimeIst || "Active"}</span>
           </Badge>
 
@@ -2953,7 +2953,7 @@ function GeofencingThreatDialsSection() {
             className={cn(
               "font-mono text-xs gap-1.5 py-1 uppercase",
               data?.currentActiveMode === "DAY" && "bg-emerald-950/60 border-emerald-500/40 text-emerald-300",
-              data?.currentActiveMode === "EVENING_RUSH" && "bg-amber-950/60 border-amber-500/40 text-amber-300",
+              data?.currentActiveMode === "EVENING_RUSH" && "bg-orange-950/60 border-orange-500/40 text-orange-300",
               data?.currentActiveMode === "LATE_NIGHT" && "bg-rose-950/60 border-rose-500/40 text-rose-300"
             )}
           >
@@ -2985,10 +2985,10 @@ function GeofencingThreatDialsSection() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Sun className="size-3.5 text-amber-400" />
+              <Sun className="size-3.5 text-orange-400" />
               Day Radius (06:00 – 18:00)
             </span>
-            <span className="font-mono text-base font-black text-amber-400 bg-amber-950/40 border border-amber-500/30 px-2 py-0.5 rounded">
+            <span className="font-mono text-base font-black text-orange-400 bg-orange-950/40 border border-orange-500/30 px-2 py-0.5 rounded">
               {dayRadius.toFixed(1)} km
             </span>
           </div>
@@ -3013,7 +3013,7 @@ function GeofencingThreatDialsSection() {
                 className={cn(
                   "px-2 py-0.5 text-[10px] rounded font-mono border transition",
                   dayRadius === v
-                    ? "bg-amber-500 text-black border-amber-400 font-bold"
+                    ? "bg-orange-500 text-black border-orange-400 font-bold"
                     : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
                 )}
               >
@@ -3027,10 +3027,10 @@ function GeofencingThreatDialsSection() {
         <div className="rounded-xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-              <Zap className="size-3.5 text-yellow-400" />
+              <Zap className="size-3.5 text-orange-400" />
               Evening Rush (18:00 – 22:30)
             </span>
-            <span className="font-mono text-base font-black text-yellow-400 bg-yellow-950/40 border border-yellow-500/30 px-2 py-0.5 rounded">
+            <span className="font-mono text-base font-black text-orange-400 bg-orange-950/40 border border-orange-500/30 px-2 py-0.5 rounded">
               {eveningRushRadius.toFixed(1)} km
             </span>
           </div>
@@ -3055,7 +3055,7 @@ function GeofencingThreatDialsSection() {
                 className={cn(
                   "px-2 py-0.5 text-[10px] rounded font-mono border transition",
                   eveningRushRadius === v
-                    ? "bg-yellow-500 text-black border-yellow-400 font-bold"
+                    ? "bg-orange-500 text-black border-orange-400 font-bold"
                     : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
                 )}
               >
@@ -3113,7 +3113,7 @@ function GeofencingThreatDialsSection() {
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-white flex items-center gap-1.5">
-              <Lock className="size-4 text-amber-400" />
+              <Lock className="size-4 text-orange-400" />
               Late-Night Cash on Delivery (COD) Safety Lockout
             </span>
             <Badge
@@ -3153,7 +3153,7 @@ function GeofencingThreatDialsSection() {
             size="sm"
             onClick={handleSaveDials}
             disabled={isSaving}
-            className="h-9 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs gap-1.5 px-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer"
+            className="h-9 bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs gap-1.5 px-4 shadow-[0_0_20px_rgba(245,158,11,0.3)] cursor-pointer"
           >
             <CheckCircle2 className="size-3.5" />
             <span>{isSaving ? "Deploying..." : "Save & Deploy Levers"}</span>
@@ -3180,7 +3180,7 @@ function GeofencingThreatDialsSection() {
             onClick={() => setShowAddZone(!showAddZone)}
             className="border-zinc-700 bg-zinc-900 text-zinc-200 hover:text-white text-xs gap-1.5 h-8"
           >
-            <Plus className="size-3 text-amber-400" />
+            <Plus className="size-3 text-orange-400" />
             <span>{showAddZone ? "Cancel Add" : "Add Exclusion Zone"}</span>
           </Button>
         </div>
@@ -3189,8 +3189,8 @@ function GeofencingThreatDialsSection() {
         {showAddZone && (
           <div className="rounded-xl border border-rose-500/30 bg-zinc-950/90 p-4 space-y-4 animate-fadeIn">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
-              <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldAlert className="size-3.5 text-amber-400" />
+              <h4 className="text-xs font-bold text-orange-300 uppercase tracking-wider flex items-center gap-1.5">
+                <ShieldAlert className="size-3.5 text-orange-400" />
                 Define Threat Zone Polygon Perimeter
               </h4>
               <span className="text-[11px] text-zinc-500">Ray-Casting Point-in-Polygon Engine</span>
@@ -3240,7 +3240,7 @@ function GeofencingThreatDialsSection() {
                 onChange={(e) => setNewZoneCoords(e.target.value)}
                 rows={4}
                 placeholder="24.8900, 92.3100&#10;24.9100, 92.3300&#10;24.9050, 92.3600&#10;24.8750, 92.3350"
-                className="w-full bg-zinc-900 border border-zinc-700 rounded-md text-xs font-mono p-2 text-zinc-200 focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-900 border border-zinc-700 rounded-md text-xs font-mono p-2 text-zinc-200 focus:outline-none focus:border-orange-500"
               />
             </div>
 
@@ -3257,7 +3257,7 @@ function GeofencingThreatDialsSection() {
                     "24.8900, 92.3100\n24.9100, 92.3300\n24.9050, 92.3600\n24.8750, 92.3350"
                   )
                 }
-                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-amber-300"
+                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-orange-300"
               >
                 + NH-37 Forest Stretch
               </button>
@@ -3271,7 +3271,7 @@ function GeofencingThreatDialsSection() {
                     "24.8400, 92.3400\n24.8550, 92.3650\n24.8450, 92.3800\n24.8300, 92.3550"
                   )
                 }
-                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-amber-300"
+                className="text-[10px] bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded text-zinc-300 hover:text-orange-300"
               >
                 + Canal Embankment Route
               </button>
@@ -3320,7 +3320,7 @@ function GeofencingThreatDialsSection() {
                         className={cn(
                           "text-[9px] font-mono uppercase px-1.5 py-0.2",
                           zone.severity === "CRITICAL" && "bg-rose-950/60 text-rose-300 border-rose-500/40",
-                          zone.severity === "HIGH" && "bg-amber-950/60 text-amber-300 border-amber-500/40",
+                          zone.severity === "HIGH" && "bg-orange-950/60 text-orange-300 border-orange-500/40",
                           zone.severity === "BLOCKED" && "bg-zinc-800 text-zinc-300 border-zinc-700"
                         )}
                       >

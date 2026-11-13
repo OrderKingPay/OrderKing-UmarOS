@@ -68,7 +68,7 @@ export function KingPayShell({
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-amber-400 selection:text-black pb-24">
+    <div className="min-h-screen bg-gradient-to-tr from-slate-950 via-[#0a0a0f] to-indigo-950 text-slate-50 flex flex-col antialiased selection:bg-orange-400 selection:text-black pb-24">
       {/* PURE FINTECH DEDICATED KINGPAY TOP APP BAR */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur-3xl shadow-2xl">
         <div className="mx-auto flex max-w-lg flex-wrap items-center justify-between gap-3 md:max-w-5xl">
@@ -77,9 +77,9 @@ export function KingPayShell({
             <KingPayMark className="size-8 rounded-xl shadow-md" />
             <div className="flex items-center gap-1.5">
               <span className="font-display font-black text-lg tracking-tight text-fg leading-none">
-                King<span className="text-amber-500">Pay</span>
+                King<span className="text-orange-500">Pay</span>
               </span>
-              <span className="rounded-full bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+              <span className="rounded-full bg-orange-500/15 border border-orange-500/30 px-2 py-0.5 text-[10px] font-bold text-orange-300">
                 Fintech Hub
               </span>
             </div>
@@ -93,11 +93,11 @@ export function KingPayShell({
               onClick={() => onSelectSection("wealth")}
               className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-xs ${
                 activeSection === "wealth"
-                  ? "border-amber-500/50 bg-amber-500/15 text-amber-500 ring-1 ring-amber-500/30"
+                  ? "border-orange-500/50 bg-orange-500/15 text-orange-500 ring-1 ring-orange-500/30"
                   : "border-border bg-surface-2 text-muted hover:text-fg"
               }`}
             >
-              <Sparkles className="size-3.5 text-amber-500" />
+              <Sparkles className="size-3.5 text-orange-500" />
               <span>Wealth</span>
               <span className="rounded-full bg-emerald-500/10 text-emerald-500 px-1 py-0.2 text-[9px] font-extrabold">
                 Explore
@@ -112,10 +112,10 @@ export function KingPayShell({
             <button
               type="button"
               onClick={onOpenScannerClick}
-              className="flex items-center gap-1.5 rounded-full border border-amber-400/60 bg-amber-500/15 px-3 py-1.5 text-xs font-black text-amber-300 hover:bg-amber-500/25 transition shadow-sm"
+              className="flex items-center gap-1.5 rounded-full border border-orange-400/60 bg-orange-500/15 px-3 py-1.5 text-xs font-black text-orange-300 hover:bg-orange-500/25 transition shadow-sm"
               title="Scan any UPI / BharatQR Code"
             >
-              <QrCode className="size-3.5 text-amber-300" />
+              <QrCode className="size-3.5 text-orange-300" />
               <span>Scan QR</span>
             </button>
 
@@ -123,19 +123,19 @@ export function KingPayShell({
             <button
               type="button"
               onClick={onAddMoneyClick}
-              className="flex items-center gap-2 rounded-full border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-yellow-600/20 px-3 py-1 text-xs text-white shadow-md hover:border-amber-300 transition group"
+              className="flex items-center gap-2 rounded-full border border-orange-400/80 bg-gradient-to-r from-orange-500/20 via-orange-600/20 to-orange-600/20 px-3 py-1 text-xs text-white shadow-md hover:border-orange-300 transition group"
               title="Click to Add Money to KingPay Wallet"
             >
-              <Wallet className="size-4 shrink-0 text-amber-300 group-hover:scale-110 transition-transform" aria-hidden />
+              <Wallet className="size-4 shrink-0 text-orange-300 group-hover:scale-110 transition-transform" aria-hidden />
               <div className="flex flex-col text-left leading-tight">
-                <span className="text-[9px] uppercase tracking-wider font-extrabold text-amber-400">
+                <span className="text-[9px] uppercase tracking-wider font-extrabold text-orange-400">
                   KingPay Vault
                 </span>
                 <span className="font-mono font-black text-white text-xs">
                   {formatPaise(walletBalance ?? 0)}
                 </span>
               </div>
-              <PlusCircle className="size-3.5 text-amber-400 ml-0.5 group-hover:rotate-90 transition-transform" />
+              <PlusCircle className="size-3.5 text-orange-400 ml-0.5 group-hover:rotate-90 transition-transform" />
             </button>
 
               </>
@@ -143,7 +143,7 @@ export function KingPayShell({
 
             {/* Far-right unified profile entry. Avatar is device-local until secure profile storage is enabled. */}
             <Link to={user ? "/account" : "/login"} aria-label={user ? "Open your OrderKing profile" : "Sign in to OrderKing"}
-              className="shrink-0 rounded-full border border-amber-400/70 bg-emerald-950 p-1 text-amber-200 no-underline shadow-sm hover:border-amber-200">
+              className="shrink-0 rounded-full border border-orange-400/70 bg-emerald-950 p-1 text-orange-200 no-underline shadow-sm hover:border-orange-200">
               {isPending ? <span className="block size-8 animate-pulse rounded-full bg-slate-700" /> :
                 user ? <DeviceAvatar userId={user.id} name={user.displayName} imageUrl={user.profileImageUrl} profileImageUrl={user.profileImageUrl} /> :
                 <span className="flex size-8 items-center justify-center"><Crown className="size-5" aria-hidden /></span>}
@@ -171,7 +171,7 @@ export function KingPayShell({
       {/* Search King Pay services */}
       <section aria-label="King Pay service search" className="mx-auto w-full max-w-lg px-4 pt-3 md:max-w-5xl">
         <div className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-3">
-          <Search className="size-4 text-amber-300" aria-hidden />
+          <Search className="size-4 text-orange-300" aria-hidden />
           <input
             id="kingpay-service-search"
             type="search"

@@ -156,12 +156,12 @@ export function AudioVoiceNote({
 
   return (
     <div
-      className={`rounded-2xl border border-amber-400/30 bg-gradient-to-br from-amber-500/5 via-white to-amber-500/10 dark:from-zinc-900 dark:to-zinc-850 p-4 shadow-sm ${className}`}
+      className={`rounded-2xl border border-orange-400/30 bg-gradient-to-br from-orange-500/5 via-white to-orange-500/10 dark:from-zinc-900 dark:to-zinc-850 p-4 shadow-sm ${className}`}
       data-testid={`audio-voice-note-${target}`}
     >
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
         <div className="flex items-center gap-2">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-400">
+          <span className="flex size-7 items-center justify-center rounded-lg bg-orange-500/15 text-orange-700 dark:text-orange-400">
             <TargetIcon className="size-4" aria-hidden="true" />
           </span>
           <div>
@@ -170,7 +170,7 @@ export function AudioVoiceNote({
           </div>
         </div>
 
-        <span className="rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 px-2 py-0.5 text-[10px] font-mono font-bold text-amber-800 dark:text-amber-300">
+        <span className="rounded-full bg-orange-100 dark:bg-orange-950/60 border border-orange-300 dark:border-orange-900 px-2 py-0.5 text-[10px] font-mono font-bold text-orange-900 dark:text-orange-300">
           Max 15s
         </span>
       </div>
@@ -208,13 +208,13 @@ export function AudioVoiceNote({
       ) : storeNote ? (
         /* State 2: Playable Audio Note Preview with Re-record and Delete */
         <div className="space-y-2.5">
-          <div className="flex items-center justify-between rounded-xl bg-bg border border-amber-300/40 p-2.5 shadow-2xs">
+          <div className="flex items-center justify-between rounded-xl bg-bg border border-orange-300/40 p-2.5 shadow-2xs">
             <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={handleTogglePlay}
                 data-testid="play-pause-voice-note-button"
-                className="grid size-9 place-items-center rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-stone-950 shadow-xs hover:scale-105 active:scale-95 transition cursor-pointer"
+                className="grid size-9 place-items-center rounded-full bg-gradient-to-r from-orange-500 to-orange-400 text-stone-950 shadow-xs hover:scale-105 active:scale-95 transition cursor-pointer"
                 aria-label={isPlaying ? "Pause audio note" : "Play audio note"}
               >
                 {isPlaying ? <Pause className="size-4 fill-stone-950" /> : <Play className="size-4 fill-stone-950 ml-0.5" />}
@@ -223,7 +223,7 @@ export function AudioVoiceNote({
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-black text-fg">Play Voice Note</span>
-                  <span className="text-[10px] font-mono font-bold text-amber-700 bg-amber-100 px-1.5 py-0.2 rounded">
+                  <span className="text-[10px] font-mono font-bold text-orange-700 bg-orange-100 px-1.5 py-0.2 rounded">
                     {storeNote.durationSeconds}s
                   </span>
                 </div>
@@ -279,7 +279,7 @@ export function AudioVoiceNote({
             type="button"
             onClick={startRecording}
             data-testid="record-voice-note-button"
-            className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-600 hover:to-yellow-500 text-stone-950 font-black text-xs px-4 py-2 shadow-sm shadow-amber-500/20 flex items-center justify-center gap-2 cursor-pointer transition active:scale-95 border border-amber-300 shrink-0"
+            className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 hover:from-orange-600 hover:to-orange-500 text-stone-950 font-black text-xs px-4 py-2 shadow-sm shadow-orange-500/20 flex items-center justify-center gap-2 cursor-pointer transition active:scale-95 border border-orange-300 shrink-0"
           >
             <Mic className="size-4 text-stone-950" />
             <span>Record 15s Voice Note</span>

@@ -151,7 +151,7 @@ export function LanguageSelectorModal({
         {/* Footer info */}
         <div className="pt-2 border-t border-border/60 text-center">
           <p className="text-[11px] text-muted flex items-center justify-center gap-1">
-            <Sparkles className="size-3 text-amber-500" />
+            <Sparkles className="size-3 text-orange-500" />
             <span>Translation and voice availability varies by language and service.</span>
           </p>
         </div>

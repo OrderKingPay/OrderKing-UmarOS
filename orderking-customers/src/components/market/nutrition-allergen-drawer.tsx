@@ -87,9 +87,9 @@ export function NutritionAllergenDrawer({
           <>
             {/* Energy Calorie Counter */}
             {caloriesKcal !== undefined && (
-              <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-amber-500/15 via-surface-2 to-amber-500/5 p-4 border border-amber-500/20">
+              <div className="flex items-center justify-between rounded-xl bg-gradient-to-r from-orange-500/15 via-surface-2 to-orange-500/5 p-4 border border-orange-500/20">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-orange-500/20 text-orange-600 dark:text-orange-400">
                     <Flame className="size-6" />
                   </span>
                   <div>
@@ -130,8 +130,8 @@ export function NutritionAllergenDrawer({
 
             {/* Allergen Information */}
             {allergens.length > 0 && (
-              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3.5 space-y-2">
-                <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-xs">
+              <div className="rounded-xl border border-orange-500/30 bg-orange-500/5 p-3.5 space-y-2">
+                <div className="flex items-center gap-1.5 text-orange-700 dark:text-orange-400 font-bold text-xs">
                   <AlertTriangle className="size-4" /> Allergen Advisory
                 </div>
                 <p className="text-[11px] text-muted">
@@ -141,7 +141,7 @@ export function NutritionAllergenDrawer({
                   {allergens.map((alg) => (
                     <span
                       key={alg}
-                      className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-surface px-2 py-1 text-[10px] font-semibold text-amber-900 dark:text-amber-300"
+                      className="inline-flex items-center gap-1 rounded-md border border-orange-500/30 bg-surface px-2 py-1 text-[10px] font-semibold text-orange-950 dark:text-orange-300"
                     >
                       <AlertTriangle className="size-3 shrink-0" />
                       <span>{alg}</span>

@@ -58,7 +58,7 @@ export function TravelSkeleton({ className }: { className?: string }) {
               <div className="h-6 w-20 rounded-lg bg-sky-100" />
               <div className="h-6 w-24 rounded-lg bg-slate-100" />
             </div>
-            <div className="h-5 w-24 rounded-full bg-amber-100/70" />
+            <div className="h-5 w-24 rounded-full bg-orange-100/70" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

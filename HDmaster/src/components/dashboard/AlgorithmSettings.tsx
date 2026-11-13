@@ -504,7 +504,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-amber-600" />
+                <Zap className="h-4 w-4 text-orange-600" />
                 <h3 className="text-sm font-bold text-slate-900">
                   3. Busy-Hour Price Limit (1.0x – 3.0x)
                 </h3>
@@ -514,7 +514,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               </p>
             </div>
 
-            <div className="flex items-center rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5">
+            <div className="flex items-center rounded-xl border border-orange-200 bg-orange-50 px-3 py-1.5">
               <input
                 type="number"
                 min="1.0"
@@ -528,9 +528,9 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
                     surgeMultiplierCap: Math.round(val * 10) / 10,
                   }));
                 }}
-                className="w-12 bg-transparent text-right font-mono text-sm font-bold text-amber-700 focus:outline-none"
+                className="w-12 bg-transparent text-right font-mono text-sm font-bold text-orange-700 focus:outline-none"
               />
-              <span className="ml-0.5 font-mono text-xs text-amber-700">x</span>
+              <span className="ml-0.5 font-mono text-xs text-orange-700">x</span>
             </div>
           </div>
 
@@ -560,7 +560,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
                   onClick={() => setSettings((prev) => ({ ...prev, surgeMultiplierCap: preset }))}
                   className={`rounded-lg px-2 py-0.5 border text-[11px] font-semibold cursor-pointer ${
                     settings.surgeMultiplierCap === preset
-                      ? "border-amber-600 bg-amber-50 text-amber-700"
+                      ? "border-orange-600 bg-orange-50 text-orange-700"
                       : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
@@ -1013,7 +1013,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
             <div className="text-[10px] font-bold uppercase text-slate-400">
               3. Max Busy-Hour Fee
             </div>
-            <div className="text-sm font-bold text-amber-700 mt-0.5">
+            <div className="text-sm font-bold text-orange-700 mt-0.5">
               ₹{sampleMath.maxBusyHourFee} ({settings.surgeMultiplierCap.toFixed(1)}x cap)
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">

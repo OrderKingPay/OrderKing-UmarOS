@@ -418,7 +418,7 @@ export function RiderBenefitsHub({
   return (
     <div className="space-y-4">
       {/* Hero Banner */}
-      <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-amber-500/10 p-4 sm:p-5">
+      <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-orange-500/10 p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -428,7 +428,7 @@ export function RiderBenefitsHub({
               <h2 className="font-display text-lg font-bold text-foreground">
                 Partner Benefits &amp; Affiliate Hub
               </h2>
-              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <span className="inline-flex items-center gap-1 rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
                 <Crown className="size-3" />
                 {trustTier.title}
               </span>
@@ -550,7 +550,7 @@ export function RiderBenefitsHub({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Fuel className="size-4 text-amber-500" />
+              <Fuel className="size-4 text-orange-500" />
               <span>Fuel Cashback &amp; Fleet Petrocard Integration</span>
             </h3>
             <Badge tone="online" className="text-[10.5px]">₹2.50/L Cashback</Badge>
@@ -564,7 +564,7 @@ export function RiderBenefitsHub({
                     <h4 className="font-bold text-sm text-foreground">{fuel.name}</h4>
                     <p className="text-xs text-muted-foreground">{fuel.service}</p>
                   </div>
-                  <span className="rounded-md bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-400">
+                  <span className="rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-700 dark:text-orange-400">
                     {fuel.discount}
                   </span>
                 </div>
@@ -786,7 +786,7 @@ export function RiderBenefitsHub({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Coffee className="size-4 text-amber-600" />
+              <Coffee className="size-4 text-orange-600" />
               <span>Designated Rider Rest Points &amp; Fast Charging Hubs</span>
             </h3>
             <Badge tone="online" className="text-[10.5px]">Partner Hub Amenities</Badge>

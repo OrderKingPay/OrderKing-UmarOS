@@ -69,7 +69,7 @@ export function UmarAiJumpCard({ card, onExecuted, className = "" }: UmarAiJumpC
           {card.badgeText && (
             <Badge
               variant="outline"
-              className="border-amber-500/40 bg-amber-950/40 text-[9px] font-semibold text-amber-300 uppercase tracking-wider px-1.5 py-0.5"
+              className="border-orange-500/40 bg-orange-950/40 text-[9px] font-semibold text-orange-300 uppercase tracking-wider px-1.5 py-0.5"
             >
               {card.badgeText}
             </Badge>
@@ -123,7 +123,7 @@ export function UmarAiJumpCard({ card, onExecuted, className = "" }: UmarAiJumpC
               </>
             ) : (
               <>
-                <Zap className="size-3 fill-amber-300 text-amber-300" />
+                <Zap className="size-3 fill-orange-300 text-orange-300" />
                 <span>Execute Direct</span>
               </>
             )}

@@ -54,10 +54,10 @@ const LUXURY_THEMES: Array<{
     id: "classic_gold",
     name: "Classic Gold",
     cardBg: "bg-gradient-to-b from-[#1C1504] via-[#2A1F07] to-[#120D02]",
-    borderClass: "border-2 border-amber-400/90 shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
-    accentText: "text-amber-400",
-    badgeBg: "bg-amber-400/20 text-amber-300 border-amber-400/40",
-    textColor: "text-amber-100",
+    borderClass: "border-2 border-orange-400/90 shadow-[0_12px_40px_rgba(245,158,11,0.35)]",
+    accentText: "text-orange-400",
+    badgeBg: "bg-orange-400/20 text-orange-300 border-orange-400/40",
+    textColor: "text-orange-100",
     tagline: "Classic Gold · Merchant Standard",
   },
   {
@@ -247,7 +247,7 @@ export function ReceiveMoneyQrStudio({
       {isModal && (
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div className="flex items-center gap-2">
-            <QrCode className="size-5 text-amber-500" />
+            <QrCode className="size-5 text-orange-500" />
             <div>
               <h2 className="font-display font-black text-base sm:text-lg text-fg">
                 Receive Money &amp; Custom QR
@@ -288,7 +288,7 @@ export function ReceiveMoneyQrStudio({
                 <span className={activeTheme.accentText}>{activeTheme.tagline}</span>
               </div>
               <h3 className="font-display text-xl font-black text-white tracking-tight">
-                King<span className="text-amber-400">Pay</span> UPI QR
+                King<span className="text-orange-400">Pay</span> UPI QR
               </h3>
               <p className="text-xs text-white/80 font-medium">
                 {payeeName || "OrderKing User"}
@@ -298,7 +298,7 @@ export function ReceiveMoneyQrStudio({
                 <button
                   type="button"
                   onClick={handleCopyUpi}
-                  className="p-1 hover:text-amber-300 transition"
+                  className="p-1 hover:text-orange-300 transition"
                   title="Copy UPI ID"
                 >
                   {copiedUpi ? <Check className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
@@ -320,7 +320,7 @@ export function ReceiveMoneyQrStudio({
               )}
 
               {/* Center Logo Overlay inside QR */}
-              <div className="absolute size-10 rounded-full bg-white p-1 shadow-md border-2 border-amber-400 flex items-center justify-center pointer-events-none">
+              <div className="absolute size-10 rounded-full bg-white p-1 shadow-md border-2 border-orange-400 flex items-center justify-center pointer-events-none">
                 <span className="text-xs font-black text-zinc-900">UPI</span>
               </div>
             </div>
@@ -329,7 +329,7 @@ export function ReceiveMoneyQrStudio({
             <div className="relative z-10 mt-4 space-y-1">
               {amount ? (
                 <div className="font-mono text-2xl font-black text-white tracking-tight flex items-center justify-center gap-1">
-                  <span className="text-amber-400 text-xl">₹</span>
+                  <span className="text-orange-400 text-xl">₹</span>
                   <span>{Number(amount).toLocaleString("en-IN")}.00</span>
                 </div>
               ) : (
@@ -366,7 +366,7 @@ export function ReceiveMoneyQrStudio({
             {/* Direct Mobile UPI Intent Trigger */}
             <a
               href={generateUpiUri()}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-500/30 transition active:scale-95 no-underline"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 hover:from-orange-300 hover:to-orange-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-orange-500/30 transition active:scale-95 no-underline"
             >
               <Zap className="size-4 fill-zinc-950" />
               <span>Open in UPI App (GPay / PhonePe / Paytm)</span>
@@ -376,19 +376,19 @@ export function ReceiveMoneyQrStudio({
             <div className="grid grid-cols-3 gap-1.5">
               <a
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "tez://upi/pay")}
-                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+                className="h-9 rounded-lg bg-surface border border-border hover:border-orange-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
-                <Zap className="size-3.5 text-amber-500" /> GPay
+                <Zap className="size-3.5 text-orange-500" /> GPay
               </a>
               <a
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "phonepe://pay")}
-                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+                className="h-9 rounded-lg bg-surface border border-border hover:border-orange-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
                 <Smartphone className="size-3.5 text-purple-500" /> PhonePe
               </a>
               <a
                 href={generateUpiUri().replace(/^upi:\/\/pay/, "paytmmp://pay")}
-                className="h-9 rounded-lg bg-surface border border-border hover:border-amber-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
+                className="h-9 rounded-lg bg-surface border border-border hover:border-orange-400 text-[11px] font-bold text-fg flex items-center justify-center gap-1 transition no-underline"
               >
                 <Smartphone className="size-3.5 text-sky-500" /> Paytm
               </a>
@@ -429,7 +429,7 @@ export function ReceiveMoneyQrStudio({
                 className="text-xs font-semibold py-2 px-3 flex items-center gap-1"
                 title="Test Soundbox Audio"
               >
-                <Volume2 className="size-3.5 text-amber-500" />
+                <Volume2 className="size-3.5 text-orange-500" />
                 <span>Soundbox</span>
               </Button>
             </div>
@@ -441,7 +441,7 @@ export function ReceiveMoneyQrStudio({
           {/* 1. Select Theme Style */}
           <div>
             <label className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-muted mb-2">
-              <Palette className="size-3.5 text-amber-500" />
+              <Palette className="size-3.5 text-orange-500" />
               <span>1. Choose Theme Style</span>
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -452,11 +452,11 @@ export function ReceiveMoneyQrStudio({
                   onClick={() => setSelectedTheme(theme.id)}
                   className={`rounded-2xl p-2.5 text-left border transition-all duration-200 flex flex-col justify-between ${
                     selectedTheme === theme.id
-                      ? "border-amber-500 bg-amber-500/15 ring-2 ring-amber-400/40 shadow-sm"
+                      ? "border-orange-500 bg-orange-500/15 ring-2 ring-orange-400/40 shadow-sm"
                       : "border-border bg-surface hover:bg-surface-2"
                   }`}
                 >
-                  <ThemeIcon id={theme.id} className="size-5 text-amber-500" />
+                  <ThemeIcon id={theme.id} className="size-5 text-orange-500" />
                   <div className="mt-1">
                     <span className="block text-xs font-bold text-fg leading-tight">
                       {theme.name}

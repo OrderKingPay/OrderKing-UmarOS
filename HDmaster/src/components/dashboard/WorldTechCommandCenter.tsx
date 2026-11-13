@@ -217,7 +217,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
           </div>
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Founder Actions</span>
-            <p className="text-lg font-mono font-bold text-amber-400 mt-0.5">{summary.totalFounderActions}</p>
+            <p className="text-lg font-mono font-bold text-orange-400 mt-0.5">{summary.totalFounderActions}</p>
           </div>
           <div className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60">
             <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">Average Latency</span>
@@ -358,7 +358,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                               ? "text-emerald-700"
                               : currentLatency < 150
                               ? "text-blue-700"
-                              : "text-amber-700"
+                              : "text-orange-700"
                           }`}
                         >
                           {currentLatency}ms
@@ -421,10 +421,10 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
       {/* TAB CONTENT: FOUNDER COMMAND ACTIONS */}
       {activeTab === "founder_actions" && (
         <div className="p-5 space-y-5">
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-3">
-            <ShieldAlert className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-orange-50 border border-orange-200 text-orange-950 text-xs flex items-start gap-3">
+            <ShieldAlert className="h-5 w-5 text-orange-700 shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-bold text-amber-900 text-sm">Founder System Execution Authority</h4>
+              <h4 className="font-bold text-orange-950 text-sm">Founder System Execution Authority</h4>
               <p className="mt-0.5 leading-relaxed">
                 The four founder command actions below possess kernel authority across all OrderKing financial, dispatch, and compliance subsystems. High-risk actions require explicit two-step confirmation. Every execution generates an immutable cryptographic audit signature.
               </p>
@@ -444,7 +444,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                     isP0
                       ? "border-rose-300 bg-rose-50/40"
                       : isHigh
-                      ? "border-amber-300 bg-amber-50/40"
+                      ? "border-orange-300 bg-orange-50/40"
                       : "border-slate-300 bg-slate-50/40"
                   }`}
                 >
@@ -453,7 +453,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                       <div className="flex items-center gap-2">
                         <span
                           className={`p-1.5 rounded-lg text-white ${
-                            isP0 ? "bg-rose-600" : isHigh ? "bg-amber-600" : "bg-slate-800"
+                            isP0 ? "bg-rose-600" : isHigh ? "bg-orange-600" : "bg-slate-800"
                           }`}
                         >
                           {isP0 ? <Flame className="h-4 w-4" /> : isHigh ? <Scale className="h-4 w-4" /> : <Zap className="h-4 w-4" />}
@@ -468,7 +468,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                           isP0
                             ? "bg-rose-100 text-rose-800 border-rose-300"
                             : isHigh
-                            ? "bg-amber-100 text-amber-800 border-amber-300"
+                            ? "bg-orange-100 text-orange-900 border-orange-300"
                             : "bg-slate-100 text-slate-800 border-slate-300"
                         }`}
                       >
@@ -500,7 +500,7 @@ export function WorldTechCommandCenter({ onActionTriggered, compactMode }: World
                         isP0
                           ? "bg-rose-600 hover:bg-rose-700 text-white"
                           : isHigh
-                          ? "bg-amber-600 hover:bg-amber-700 text-white"
+                          ? "bg-orange-600 hover:bg-orange-700 text-white"
                           : "bg-slate-900 hover:bg-slate-800 text-white"
                       }`}
                     >

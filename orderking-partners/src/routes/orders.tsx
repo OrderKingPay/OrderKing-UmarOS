@@ -240,7 +240,7 @@ function OrdersPage() {
                   onClick={() => rush.activate(10)}
                   className={`px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
                     rushBuffer === 10
-                      ? "bg-amber-500 text-white shadow-xs"
+                      ? "bg-orange-500 text-white shadow-xs"
                       : "text-gray-700 hover:text-gray-900"
                   }`}
                 >
@@ -273,7 +273,7 @@ function OrdersPage() {
       ) : (
         <div className="rounded-2xl border border-gray-200 bg-white p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs text-gray-900">
           <div className="flex items-center gap-2.5">
-            <Flame className="size-4 text-amber-500" />
+            <Flame className="size-4 text-orange-500" />
             <div>
               <span className="font-bold text-gray-900">Kitchen Rush Buffer Mode:</span>
               <span className="text-gray-500 ml-1.5">
@@ -285,7 +285,7 @@ function OrdersPage() {
             <button
               type="button"
               onClick={() => rush.activate(10)}
-              className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs transition cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 text-orange-900 font-bold text-xs transition cursor-pointer"
             >
               +10m Rush
             </button>
@@ -349,7 +349,7 @@ function OrdersPage() {
                   onClick={() => stopContinuousAlarm()}
                   className="text-xs border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded-xl font-semibold"
                 >
-                  <BellOff className="mr-1 size-3.5 text-amber-500" />
+                  <BellOff className="mr-1 size-3.5 text-orange-500" />
                   Silence
                 </Button>
                 <Button
@@ -427,7 +427,7 @@ function OrdersPage() {
                     <div className="flex items-center gap-2">
                       <span className="size-2 rounded-full bg-rose-600 animate-ping" />
                       <span className="font-bold text-rose-900">Kitchen Rush Buffer Active</span>
-                      <span className="text-[11px] font-mono text-amber-800 bg-amber-100 px-2 py-0.5 rounded font-bold">
+                      <span className="text-[11px] font-mono text-orange-900 bg-orange-100 px-2 py-0.5 rounded font-bold">
                         +{rushBuffer}m buffer
                       </span>
                     </div>
@@ -437,7 +437,7 @@ function OrdersPage() {
                       </span>
                       <span>
                         Rider Pickup Window:{" "}
-                        <strong className="text-amber-800 font-bold">
+                        <strong className="text-orange-900 font-bold">
                           {new Date(rushAdj.adjustedRiderArrivalAt).toLocaleTimeString([], {
                             hour: "numeric",
                             minute: "2-digit",

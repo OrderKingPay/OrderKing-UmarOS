@@ -230,7 +230,7 @@ export function KitchenDisplayStation({
                   isDelayed
                     ? "border-rose-500/50 bg-rose-500/5"
                     : isRush
-                    ? "border-amber-500/50 bg-amber-500/5"
+                    ? "border-orange-500/50 bg-orange-500/5"
                     : "border-border bg-surface"
                 }`}
               >
@@ -240,7 +240,7 @@ export function KitchenDisplayStation({
                     isDelayed
                       ? "bg-rose-500/20 border-rose-500/30"
                       : isRush
-                      ? "bg-amber-500/20 border-amber-500/30"
+                      ? "bg-orange-500/20 border-orange-500/30"
                       : "bg-surface-2 border-border"
                   }`}
                 >
@@ -258,7 +258,7 @@ export function KitchenDisplayStation({
                       isDelayed
                         ? "bg-rose-600 text-white animate-pulse"
                         : isRush
-                        ? "bg-amber-600 text-white"
+                        ? "bg-orange-600 text-white"
                         : "bg-surface text-fg border border-border"
                     }`}
                   >
@@ -290,7 +290,7 @@ export function KitchenDisplayStation({
                             {item.station}
                           </span>
                           {item.instructions && (
-                            <span className="text-amber-700 dark:text-amber-400 font-medium truncate inline-flex items-center gap-1">
+                            <span className="text-orange-700 dark:text-orange-400 font-medium truncate inline-flex items-center gap-1">
                               <AlertTriangle className="size-3 shrink-0" /> {item.instructions}
                             </span>
                           )}

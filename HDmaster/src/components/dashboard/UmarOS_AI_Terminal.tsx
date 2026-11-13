@@ -746,7 +746,7 @@ export function UmarOS_AI_Terminal() {
             <span className="font-mono text-xl font-bold text-blue-800">
               {telemetry ? telemetry.orders.active : 0}
             </span>
-            <span className="text-[11px] font-bold text-amber-800 font-mono">
+            <span className="text-[11px] font-bold text-orange-900 font-mono">
               ({telemetry ? telemetry.orders.unassigned : 0} unassigned)
             </span>
           </div>
@@ -883,7 +883,7 @@ export function UmarOS_AI_Terminal() {
                 onClick={() => handleSendCommand("/dispatch")}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-white border border-slate-300 text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors shadow-2xs cursor-pointer"
               >
-                <Zap className="h-3 w-3 text-amber-600" />
+                <Zap className="h-3 w-3 text-orange-600" />
                 <span>/dispatch (Haversine Auto-Dispatch)</span>
               </button>
               <button
@@ -930,9 +930,9 @@ export function UmarOS_AI_Terminal() {
               </button>
               <button
                 onClick={() => handleSendCommand("/rebalance")}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 transition-colors shadow-2xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-orange-50 border border-orange-300 text-orange-900 hover:bg-orange-100 transition-colors shadow-2xs cursor-pointer"
               >
-                <Scale className="h-3 w-3 text-amber-600" />
+                <Scale className="h-3 w-3 text-orange-600" />
                 <span>/rebalance (Ledger Audit)</span>
               </button>
               <button
@@ -1488,7 +1488,7 @@ export function UmarOS_AI_Terminal() {
               <div className="p-5 bg-white border border-slate-300 rounded-xl flex items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Flame className="h-4 w-4 text-amber-600" />
+                    <Flame className="h-4 w-4 text-orange-600" />
                     <h4 className="font-bold text-sm text-slate-900">AI Dynamic Surge & Zone Balancing</h4>
                   </div>
                   <p className="text-xs text-slate-700 mt-1 max-w-md">
@@ -1606,7 +1606,7 @@ export function UmarOS_AI_Terminal() {
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${z.status === "critical"
                               ? "bg-rose-100 text-rose-800"
                               : z.status === "strained"
-                                ? "bg-amber-100 text-amber-800"
+                                ? "bg-orange-100 text-orange-900"
                                 : "bg-emerald-100 text-emerald-800"
                             }`}>
                             {z.recommendedSurge}x Surge ({z.status})

@@ -45,7 +45,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
       to="/r/$slug"
       params={{ slug: restaurant.slug || restaurant.id || "restaurant" }}
       onClick={hapticTap}
-      className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-gray-100/90 shadow-[0_2px_16px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] hover:border-amber-300/40 hover:-translate-y-1 active:scale-[0.97] active:brightness-[0.98] transition-all duration-200 ease-out will-change-transform no-underline"
+      className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl bg-white border border-gray-100/90 shadow-[0_2px_16px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_36px_-6px_rgba(0,0,0,0.12),0_4px_16px_-2px_rgba(0,0,0,0.06)] hover:border-orange-500/50 hover:-translate-y-1 active:scale-[0.97] active:brightness-[0.98] transition-all duration-200 ease-out will-change-transform no-underline"
     >
       {/* ─── Image Section ─── */}
       <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-gray-100">
@@ -58,7 +58,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             decoding="async"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 p-6 text-center select-none">
+          <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-orange-50 via-stone-50 to-orange-100/50 p-6 text-center select-none">
             <div className="flex size-16 items-center justify-center rounded-2xl bg-white/90 shadow-sm border border-orange-100 mb-2 group-hover:scale-110 transition-transform">
               <Utensils className="size-8 text-[#E23744]" />
             </div>
@@ -72,19 +72,19 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           {/* Featured Partner Kitchen */}
           {restaurant.promoted && (
             <span
-              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg border border-amber-400/50"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black uppercase tracking-wider shadow-lg border border-orange-500/50"
               style={{
-                background: "linear-gradient(135deg, rgba(17,17,20,0.95) 0%, rgba(36,28,15,0.95) 100%)",
+                background: "linear-gradient(135deg, rgba(17,17,20,0.95) 0%, rgba(36,20,15,0.95) 100%)",
                 backdropFilter: "blur(10px)",
                 WebkitBackdropFilter: "blur(10px)",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(251,191,36,0.35)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(232,93,4,0.35)",
               }}
             >
               <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-amber-400 opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-gradient-to-r from-amber-300 to-yellow-500 shadow-[0_0_6px_rgba(251,191,36,1)]" />
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-gradient-to-r from-[#B85D19] to-[#E85D04] shadow-[0_0_6px_rgba(232,93,4,1)]" />
               </span>
-              <span className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-transparent font-black tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+              <span className="bg-gradient-to-r from-orange-200 via-orange-300 to-orange-400 bg-clip-text text-transparent font-black tracking-widest drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                 Featured Ad
               </span>
             </span>
@@ -109,7 +109,7 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             </span>
           ) : (
             <span
-              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-amber-900/60"
+              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-orange-950/60"
               style={{
                 background: "linear-gradient(135deg, rgba(30,15,10,0.95), rgba(50,25,15,0.92))",
                 backdropFilter: "blur(8px)",
@@ -140,13 +140,13 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
         {restaurant.hasOffer && restaurant.offerLabel && (
           <div className="absolute top-2.5 right-0 z-10">
             <div
-              className="rounded-l-xl px-2.5 sm:px-3 py-1 text-[10.5px] font-black text-white shadow-lg flex items-center gap-1.5 border-l border-y border-amber-200/40"
+              className="rounded-l-xl px-2.5 sm:px-3 py-1 text-[10.5px] font-black text-white shadow-lg flex items-center gap-1.5 border-l border-y border-orange-200/40"
               style={{
-                background: "linear-gradient(135deg, #ef4444 0%, #f97316 55%, #f59e0b 100%)",
-                boxShadow: "0 4px 14px rgba(239, 68, 68, 0.45)",
+                background: "linear-gradient(135deg, #ef4444 0%, #f97316 55%, #c2410c 100%)",
+                boxShadow: "0 4px 14px rgba(232, 93, 4, 0.45)",
               }}
             >
-              <Flame className="size-3.5 fill-amber-200 text-amber-100 animate-pulse shrink-0" />
+              <Flame className="size-3.5 fill-orange-200 text-orange-100 animate-pulse shrink-0" />
               <span className="truncate max-w-[125px] sm:max-w-[170px] uppercase tracking-wide">
                 {restaurant.offerLabel}
               </span>
@@ -207,8 +207,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
               )}
             </div>
           ) : (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 text-amber-800 font-bold text-xs px-2 py-[3px] rounded-lg shrink-0 border border-amber-200/80 shadow-sm flex items-center gap-1">
-              <Sparkles className="size-3 text-amber-600" />
+            <div className="bg-gradient-to-r from-orange-50 to-stone-50 text-orange-900 font-bold text-xs px-2 py-[3px] rounded-lg shrink-0 border border-orange-200/80 shadow-sm flex items-center gap-1">
+              <Sparkles className="size-3 text-[#E85D04]" />
               New
             </div>
           )}

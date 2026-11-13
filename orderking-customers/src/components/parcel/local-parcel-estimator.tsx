@@ -79,7 +79,7 @@ export function LocalParcelEstimator() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
         <div>
-          <div className="flex items-center gap-2 text-amber-400 text-xs font-black uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-orange-400 text-xs font-black uppercase tracking-wider">
             <Package className="size-4" />
             <span>Local Courier</span>
           </div>
@@ -91,7 +91,7 @@ export function LocalParcelEstimator() {
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-bold text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl self-start sm:self-auto">
-          <Clock className="size-3.5 text-amber-400" />
+          <Clock className="size-3.5 text-orange-400" />
           <span>Same-Day Hyperlocal Dispatch</span>
         </div>
       </div>
@@ -121,7 +121,7 @@ export function LocalParcelEstimator() {
             </div>
             <div>
               <span className="text-slate-400 block mb-0.5 font-bold">Estimated Distance &amp; Fare</span>
-              <p className="font-semibold text-amber-400">{confirmedOrder.distanceKm} km · ₹{confirmedOrder.totalInr}</p>
+              <p className="font-semibold text-orange-400">{confirmedOrder.distanceKm} km · ₹{confirmedOrder.totalInr}</p>
             </div>
           </div>
 
@@ -153,7 +153,7 @@ export function LocalParcelEstimator() {
                 value={pickup}
                 onChange={(e) => setPickup(e.target.value)}
                 placeholder="Shop / House / Office pickup landmark"
-                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-semibold focus:border-amber-400 outline-none placeholder:text-slate-500"
+                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-semibold focus:border-orange-400 outline-none placeholder:text-slate-500"
               />
             </div>
 
@@ -167,7 +167,7 @@ export function LocalParcelEstimator() {
                 value={drop}
                 onChange={(e) => setDrop(e.target.value)}
                 placeholder="Recipient address or landmark"
-                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-semibold focus:border-amber-400 outline-none placeholder:text-slate-500"
+                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-semibold focus:border-orange-400 outline-none placeholder:text-slate-500"
               />
             </div>
           </div>
@@ -188,11 +188,11 @@ export function LocalParcelEstimator() {
                     onClick={() => setCategory(cat.id)}
                     className={`p-2.5 rounded-xl border text-left transition flex flex-col items-start gap-1 cursor-pointer ${
                       isSelected
-                        ? "border-amber-400 bg-amber-400/10 text-white"
+                        ? "border-orange-400 bg-orange-400/10 text-white"
                         : "border-slate-800 bg-slate-900/60 text-slate-400 hover:border-slate-700 hover:text-slate-200"
                     }`}
                   >
-                    <Icon className={`size-4 ${isSelected ? "text-amber-400" : "text-slate-400"}`} />
+                    <Icon className={`size-4 ${isSelected ? "text-orange-400" : "text-slate-400"}`} />
                     <span className="text-xs font-bold leading-tight mt-0.5">{cat.label}</span>
                   </button>
                 );
@@ -206,7 +206,7 @@ export function LocalParcelEstimator() {
               <label htmlFor="distance-slider" className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                 Estimated Delivery Distance
               </label>
-              <span className="text-sm font-black text-amber-400 font-mono">
+              <span className="text-sm font-black text-orange-400 font-mono">
                 {distanceKm} km
               </span>
             </div>
@@ -243,7 +243,7 @@ export function LocalParcelEstimator() {
               </div>
               <div className="border-t border-slate-800 pt-2 flex justify-between items-center text-sm font-black text-white">
                 <span>Total Estimated Fare</span>
-                <span className="text-lg font-black text-amber-400 font-mono">₹{fare.totalInr}</span>
+                <span className="text-lg font-black text-orange-400 font-mono">₹{fare.totalInr}</span>
               </div>
             </div>
           </div>
@@ -255,14 +255,14 @@ export function LocalParcelEstimator() {
               value={senderPhone}
               onChange={(e) => setSenderPhone(e.target.value)}
               placeholder="Sender Contact Number (Optional)"
-              className="h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-white text-xs outline-none focus:border-amber-400 placeholder:text-slate-500"
+              className="h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-white text-xs outline-none focus:border-orange-400 placeholder:text-slate-500"
             />
             <input
               type="text"
               value={receiverPhone}
               onChange={(e) => setReceiverPhone(e.target.value)}
               placeholder="Recipient Contact Number (Optional)"
-              className="h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-white text-xs outline-none focus:border-amber-400 placeholder:text-slate-500"
+              className="h-10 px-3 rounded-xl border border-slate-800 bg-slate-900 text-white text-xs outline-none focus:border-orange-400 placeholder:text-slate-500"
             />
           </div>
 
@@ -271,7 +271,7 @@ export function LocalParcelEstimator() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-12 px-6 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer shadow-lg shadow-amber-500/20"
+              className="h-12 px-6 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer shadow-lg shadow-orange-500/20"
             >
               {isSubmitting ? (
                 <>

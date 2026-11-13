@@ -68,22 +68,22 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white p-4 sm:p-5 shadow-xs transition-all hover:shadow-md ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-orange-200/80 bg-gradient-to-br from-orange-50/90 via-orange-50/50 to-white p-4 sm:p-5 shadow-xs transition-all hover:shadow-md ${className}`}
     >
       {/* Decorative subtle background sparkle */}
-      <div className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full bg-amber-200/30 blur-2xl" />
+      <div className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full bg-orange-200/30 blur-2xl" />
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Left: Gift Graphic + Text */}
         <div className="flex items-start gap-3.5 min-w-0">
-          <div className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white shadow-md shadow-orange-500/20">
+          <div className="flex size-11 sm:size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-orange-500 to-orange-400 text-white shadow-md shadow-orange-500/20">
             <Gift className="size-6 text-white" />
           </div>
 
           <div className="min-w-0 space-y-0.5">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/90 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-800">
-                <Sparkles className="size-2.5 text-amber-600" />
+              <span className="inline-flex items-center gap-1 rounded-full bg-orange-100/90 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-orange-900">
+                <Sparkles className="size-2.5 text-orange-600" />
                 Invite friends
               </span>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">

@@ -180,7 +180,7 @@ export function LaunchPlaybookView() {
       {/* Executive Launch Command Header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white p-6 sm:p-8 shadow-2xl border border-emerald-900/40">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-20 w-96 h-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-20 w-96 h-96 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
@@ -196,13 +196,13 @@ export function LaunchPlaybookView() {
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-mono text-emerald-300">
               <span className="flex items-center gap-1.5 bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40">
-                <MapPin className="w-3.5 h-3.5 text-amber-400" />
+                <MapPin className="w-3.5 h-3.5 text-orange-400" />
                 Cluster: {DEFAULT_CLUSTER_CONFIG.name}
               </span>
               <span className="bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40">
                 1km Core to 3.5km Perimeter
               </span>
-              <span className="bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40 text-amber-300 font-bold">
+              <span className="bg-slate-900/80 px-3 py-1 rounded-lg border border-emerald-800/40 text-orange-300 font-bold">
                 Budget: ₹65k–₹95k Ledger
               </span>
             </div>
@@ -217,10 +217,10 @@ export function LaunchPlaybookView() {
               <div className="text-[10px] text-emerald-400 font-mono mt-0.5">Live + Printed</div>
             </div>
             <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3.5 text-center shadow-lg">
-              <Bike className="w-5 h-5 mx-auto text-amber-400 mb-1" />
+              <Bike className="w-5 h-5 mx-auto text-orange-400 mb-1" />
               <div className="text-2xl font-black text-white">15</div>
               <div className="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Riders</div>
-              <div className="text-[10px] text-amber-400 font-mono mt-0.5">₹500 Floor</div>
+              <div className="text-[10px] text-orange-400 font-mono mt-0.5">₹500 Floor</div>
             </div>
             <div className="bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-3.5 text-center shadow-lg">
               <Users className="w-5 h-5 mx-auto text-cyan-400 mb-1" />
@@ -242,7 +242,7 @@ export function LaunchPlaybookView() {
           </div>
           <div className="w-full bg-slate-800/80 rounded-full h-2.5 overflow-hidden border border-slate-700/50">
             <div
-              className="bg-gradient-to-r from-emerald-500 to-amber-400 h-2.5 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-emerald-500 to-orange-400 h-2.5 rounded-full transition-all duration-500"
               style={{ width: `${checklistProgressPct}%` }}
             />
           </div>
@@ -451,7 +451,7 @@ export function LaunchPlaybookView() {
               {/* Weather Surge Toggle */}
               <div className="flex items-center justify-between p-3 rounded-2xl border border-slate-200 bg-slate-50/70">
                 <div className="flex items-center gap-2.5">
-                  <div className="p-2 rounded-xl bg-amber-100 text-amber-700">
+                  <div className="p-2 rounded-xl bg-orange-100 text-orange-700">
                     <Flame className="w-4 h-4" />
                   </div>
                   <div>
@@ -463,7 +463,7 @@ export function LaunchPlaybookView() {
                   type="button"
                   onClick={() => setCalcWeatherSurge(!calcWeatherSurge)}
                   className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
-                    calcWeatherSurge ? "bg-amber-600" : "bg-slate-300"
+                    calcWeatherSurge ? "bg-orange-600" : "bg-slate-300"
                   }`}
                 >
                   <div
@@ -494,15 +494,15 @@ export function LaunchPlaybookView() {
                 </div>
 
                 {/* Card 2: Rider Payout */}
-                <div className="bg-amber-950 text-white rounded-3xl p-5 border border-amber-800 shadow-md">
-                  <div className="flex items-center justify-between text-amber-400 text-xs font-mono uppercase mb-1">
+                <div className="bg-orange-950 text-white rounded-3xl p-5 border border-orange-900 shadow-md">
+                  <div className="flex items-center justify-between text-orange-400 text-xs font-mono uppercase mb-1">
                     <span>Rider Compensation</span>
                     <Bike className="w-4 h-4" />
                   </div>
                   <div className="text-2xl font-black text-white">
                     {formatPaiseToInr(orderEconomics.riderGrossPayoutPaise)}
                   </div>
-                  <div className="text-xs text-amber-300 mt-1">
+                  <div className="text-xs text-orange-300 mt-1">
                     Base ₹25 + {formatPaiseToInr(orderEconomics.riderDistanceFarePaise)} dist {calcWeatherSurge ? "+ ₹15 surge" : ""}
                   </div>
                 </div>
@@ -605,7 +605,7 @@ export function LaunchPlaybookView() {
                     <Store className="w-4 h-4 text-emerald-200" />
                     Projected 30-Day Merchant Extra Profit (300 orders):
                   </span>
-                  <span className="font-black text-sm text-amber-300">
+                  <span className="font-black text-sm text-orange-300">
                     +{formatPaiseToInr(merchantComparison.projectedMonthlySavings300OrdersPaise)}
                   </span>
                 </div>
@@ -616,7 +616,7 @@ export function LaunchPlaybookView() {
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                      <Bike className="w-4 h-4 text-amber-600" />
+                      <Bike className="w-4 h-4 text-orange-600" />
                       8-Hour Rider Shift Floor Guarantee Calculator
                     </h4>
                     <p className="text-xs text-slate-500">
@@ -662,9 +662,9 @@ export function LaunchPlaybookView() {
                       {formatPaiseToInr(riderShiftOutput.grossOrderEarningsPaise)}
                     </div>
                   </div>
-                  <div className="p-3 bg-amber-50 rounded-xl border border-amber-200">
-                    <div className="text-amber-800 text-[10px] uppercase">Floor Top-Up</div>
-                    <div className="text-sm font-bold text-amber-900">
+                  <div className="p-3 bg-orange-50 rounded-xl border border-orange-200">
+                    <div className="text-orange-900 text-[10px] uppercase">Floor Top-Up</div>
+                    <div className="text-sm font-bold text-orange-950">
                       {formatPaiseToInr(riderShiftOutput.guaranteeTopUpPaise)}
                     </div>
                   </div>
@@ -809,8 +809,8 @@ export function LaunchPlaybookView() {
                       {scriptText}
                     </div>
 
-                    <div className="text-[11px] font-mono text-amber-800 bg-amber-50/80 p-2.5 rounded-xl border border-amber-200 flex items-center gap-2">
-                      <Info className="w-4 h-4 text-amber-600 shrink-0" />
+                    <div className="text-[11px] font-mono text-orange-900 bg-orange-50/80 p-2.5 rounded-xl border border-orange-200 flex items-center gap-2">
+                      <Info className="w-4 h-4 text-orange-600 shrink-0" />
                       <span>{stage.fieldActionNote}</span>
                     </div>
                   </div>
@@ -842,7 +842,7 @@ export function LaunchPlaybookView() {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+                        <AlertTriangle className="w-4 h-4 text-orange-500 shrink-0" />
                         "{obj.objectionTitle}"
                       </h4>
                       <button
@@ -877,8 +877,8 @@ export function LaunchPlaybookView() {
                         <span className="font-bold block text-[10px] uppercase text-emerald-700">Operational SLA:</span>
                         {obj.operationalCommitment}
                       </div>
-                      <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
-                        <span className="font-bold block text-[10px] uppercase text-amber-700">Physical Field Move:</span>
+                      <div className="p-2.5 rounded-xl bg-orange-50 border border-orange-200 text-orange-950">
+                        <span className="font-bold block text-[10px] uppercase text-orange-700">Physical Field Move:</span>
                         {obj.fieldMove}
                       </div>
                     </div>
@@ -909,7 +909,7 @@ export function LaunchPlaybookView() {
             <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-2">
               <div className="flex items-center justify-between text-xs font-mono text-slate-500 uppercase">
                 <span>Per-Delivery Pay Formula</span>
-                <Bike className="w-4 h-4 text-amber-600" />
+                <Bike className="w-4 h-4 text-orange-600" />
               </div>
               <div className="text-2xl font-black text-slate-900">₹25 + ₹8.50/km</div>
               <p className="text-xs text-slate-600">
@@ -947,9 +947,9 @@ export function LaunchPlaybookView() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-mono">
-              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-1">
-                <div className="text-amber-800 text-[10px] uppercase font-bold">Lunch Primary Cadre</div>
-                <div className="text-2xl font-black text-amber-950">
+              <div className="p-4 rounded-2xl bg-orange-50/70 border border-orange-200 space-y-1">
+                <div className="text-orange-900 text-[10px] uppercase font-bold">Lunch Primary Cadre</div>
+                <div className="text-2xl font-black text-orange-950">
                   {RIDER_RECRUITMENT_CONFIG.shiftRoster15.lunchPrimaryRiders} Riders
                 </div>
                 <div className="text-[11px] text-slate-600">11:30 AM – 03:30 PM shift coverage</div>
@@ -986,7 +986,7 @@ export function LaunchPlaybookView() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
               <div>
                 <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-amber-600" />
+                  <MessageSquare className="w-5 h-5 text-orange-600" />
                   Chai Stall & Petrol Pump Pitch Script (3:00–5:00 PM Window)
                 </h3>
                 <p className="text-xs text-slate-500">
@@ -1034,7 +1034,7 @@ export function LaunchPlaybookView() {
                 <ul className="space-y-1.5 text-slate-600">
                   {RIDER_RECRUITMENT_CONFIG.targetLocations.map((loc, i) => (
                     <li key={i} className="flex items-start gap-1.5">
-                      <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                      <ChevronRight className="w-3.5 h-3.5 text-orange-500 shrink-0 mt-0.5" />
                       <span>{loc}</span>
                     </li>
                   ))}
@@ -1065,7 +1065,7 @@ export function LaunchPlaybookView() {
           {/* Promo Offer Header Card */}
           <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-emerald-700/50 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-mono font-bold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-400/20 text-orange-300 text-xs font-mono font-bold">
                 <Sparkles className="w-3.5 h-3.5" /> Launch Offer: Code {CUSTOMER_LAUNCH_PLAN.promotionalOffer.couponCode}
               </div>
               <h3 className="text-2xl sm:text-3xl font-black">
@@ -1075,9 +1075,9 @@ export function LaunchPlaybookView() {
                 Minimum order value ₹149. Hard capped at the first 100 eligible local orders (₹4,000 launch budget envelope).
               </p>
             </div>
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-400/40 text-center shrink-0">
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-orange-400/40 text-center shrink-0">
               <div className="text-xs font-mono text-slate-400 uppercase">Redemption Cap</div>
-              <div className="text-3xl font-black text-amber-400 font-mono">100 Orders</div>
+              <div className="text-3xl font-black text-orange-400 font-mono">100 Orders</div>
               <div className="text-[10px] text-slate-400 font-mono mt-0.5">Budget Cap: ₹4,000</div>
             </div>
           </div>
@@ -1124,7 +1124,7 @@ export function LaunchPlaybookView() {
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <QrCode className="w-4 h-4 text-amber-600" />
+                  <QrCode className="w-4 h-4 text-orange-600" />
                   Rider & Counter Referral Invite Copy
                 </h4>
                 <button
@@ -1151,7 +1151,7 @@ export function LaunchPlaybookView() {
                 </button>
               </div>
 
-              <div className="p-4 rounded-2xl bg-amber-50/40 border border-amber-200 text-xs text-slate-800 whitespace-pre-line leading-relaxed font-sans">
+              <div className="p-4 rounded-2xl bg-orange-50/40 border border-orange-200 text-xs text-slate-800 whitespace-pre-line leading-relaxed font-sans">
                 {CUSTOMER_LAUNCH_PLAN.whatsAppBroadcastCopy.merchantRiderReferralHinglish}
               </div>
             </div>
@@ -1285,7 +1285,7 @@ export function LaunchPlaybookView() {
                   </div>
                   <div>
                     <div className="text-[10px] text-slate-500 uppercase">Cumulative Riders</div>
-                    <div className="text-xl font-black text-amber-600">
+                    <div className="text-xl font-black text-orange-600">
                       {currentQuota.cumulativeRiders} / 15
                     </div>
                   </div>
@@ -1518,9 +1518,9 @@ export function LaunchPlaybookView() {
             </div>
 
             {/* Crucial Financial Warning Notice */}
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-1 font-mono">
-              <div className="font-bold flex items-center gap-1.5 text-amber-800">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
+            <div className="p-4 rounded-2xl bg-orange-50 border border-orange-200 text-xs text-orange-950 space-y-1 font-mono">
+              <div className="font-bold flex items-center gap-1.5 text-orange-900">
+                <AlertTriangle className="w-4 h-4 text-orange-600" />
                 Critical Unit Economics & Fleet Discipline Warning
               </div>
               <p className="leading-relaxed">

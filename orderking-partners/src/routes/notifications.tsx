@@ -109,7 +109,7 @@ function NotificationsPage() {
             <Bell className="size-4 text-emerald-400" />
             <span className="text-sm font-semibold text-white">Alert Delivery Channels</span>
             {unreadCount > 0 ? (
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold text-amber-300">
+              <span className="rounded-full bg-orange-500/20 px-2 py-0.5 text-[11px] font-semibold text-orange-300">
                 {unreadCount} Unread
               </span>
             ) : (
@@ -149,7 +149,7 @@ function NotificationsPage() {
               className={
                 c.connected
                   ? "rounded-full border border-emerald-500/30 bg-emerald-950/40 px-2.5 py-1 text-emerald-300"
-                  : "rounded-full border border-amber-500/30 bg-amber-950/40 px-2.5 py-1 text-amber-300"
+                  : "rounded-full border border-orange-500/30 bg-orange-950/40 px-2.5 py-1 text-orange-300"
               }
             >
               {c.channel}: {c.connected ? "Active (In-App & KDS)" : t("app.notConnected")}

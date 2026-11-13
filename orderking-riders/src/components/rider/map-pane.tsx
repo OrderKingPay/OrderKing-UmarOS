@@ -165,7 +165,7 @@ export function MapPane({
             type="button"
             onClick={() => setHeatmapEnabled((v) => !v)}
             className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${heatmapEnabled
-                ? "bg-amber-500/20 text-[#E23744] border border-amber-500/40"
+                ? "bg-orange-500/20 text-[#E23744] border border-orange-500/40"
                 : "bg-muted/40 text-muted-foreground border border-border/50 hover:bg-muted"
               }`}
           >
@@ -337,8 +337,8 @@ export function MapPane({
         <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-white/95 px-2.5 py-1 text-[10px] text-gray-700 shadow-xs border border-gray-200">
           {isDeliveryMode ? (
             <>
-              <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-amber-400" /> Kitchen
+              <span className="flex items-center gap-1 text-orange-400 font-semibold">
+                <span className="size-1.5 rounded-full bg-orange-400" /> Kitchen
               </span>
               <span className="text-border">|</span>
               <span className="flex items-center gap-1 text-blue-400 font-semibold">
@@ -352,8 +352,8 @@ export function MapPane({
                 <span className="size-1.5 rounded-full bg-red-500" /> Peak Surge
               </span>
               <span className="text-border">|</span>
-              <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-amber-400" /> High Demand
+              <span className="flex items-center gap-1 text-orange-400 font-semibold">
+                <span className="size-1.5 rounded-full bg-orange-400" /> High Demand
               </span>
               <span className="text-border">|</span>
             </>
@@ -412,7 +412,7 @@ export function MapPane({
             {DEFAULT_DEMAND_HOTSPOTS.map((spot) => (
               <div
                 key={spot.id}
-                className="rounded-xl border border-border bg-card p-2 space-y-1 transition hover:border-amber-500/40"
+                className="rounded-xl border border-border bg-card p-2 space-y-1 transition hover:border-orange-500/40"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-medium text-muted-foreground truncate">

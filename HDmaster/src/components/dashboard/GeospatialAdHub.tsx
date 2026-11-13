@@ -421,7 +421,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
             <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
               Est. First Orders
             </span>
-            <Flame className="h-4 w-4 text-amber-500" />
+            <Flame className="h-4 w-4 text-orange-500" />
           </div>
           <div className="mt-2 text-2xl font-bold tracking-tight text-foreground">
             {polygonMetrics.projectedFirstOrders.toLocaleString("en-IN")}{" "}
@@ -574,15 +574,15 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
             </div>
 
             {/* Forceful First-Order Gift Incentive (₹) */}
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 space-y-3">
+            <div className="rounded-xl border border-orange-500/30 bg-orange-500/5 p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-amber-500" />
+                  <DollarSign className="h-4 w-4 text-orange-500" />
                   <label className="text-xs font-semibold text-foreground">
                     First-Order Gift Incentive (₹)
                   </label>
                 </div>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
                   ₹{giftIncentiveInr} per conversion
                 </span>
               </div>
@@ -602,7 +602,7 @@ export function GeospatialAdHub(props: GeospatialAdHubProps) {
                     }}
                     className={`py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                       giftIncentiveInr === amount
-                        ? "bg-amber-500 text-white border-amber-500"
+                        ? "bg-orange-500 text-white border-orange-500"
                         : "bg-background border-border text-foreground hover:bg-secondary"
                     }`}
                   >

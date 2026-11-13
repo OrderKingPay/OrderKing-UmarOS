@@ -147,11 +147,11 @@ function MyTripsPage() {
     <CustomerShell>
       <div className="min-h-dvh bg-slate-50 px-4 py-6 pb-32 text-slate-900">
         <div className="mx-auto max-w-5xl space-y-5">
-          <header className="rounded-3xl border border-amber-300/30 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 p-6 text-white shadow-xl">
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-amber-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
+          <header className="rounded-3xl border border-orange-300/30 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 p-6 text-white shadow-xl">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-orange-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Live Tracking</h1>
             <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and direct fare comparisons.</p>
-            <p className="mt-3 flex items-center gap-2 text-xs text-amber-200"><ShieldCheck className="size-4" /> Live carrier PNR &amp; flight status</p>
+            <p className="mt-3 flex items-center gap-2 text-xs text-orange-200"><ShieldCheck className="size-4" /> Live carrier PNR &amp; flight status</p>
           </header>
 
           <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Travel bookings">
@@ -170,15 +170,15 @@ function MyTripsPage() {
             </div>
 
             {view === "Cancelled / Refunds" && (
-              <div className="mt-4 rounded-2xl border border-amber-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white space-y-3 shadow-md">
+              <div className="mt-4 rounded-2xl border border-orange-300/40 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 p-5 text-white space-y-3 shadow-md">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="size-5 text-amber-400" />
-                    <h3 className="text-sm font-black text-amber-300">
+                    <ShieldCheck className="size-5 text-orange-400" />
+                    <h3 className="text-sm font-black text-orange-300">
                       Indian Railways IRCTC Statutory Cancellation &amp; TDR Rules (Gazette 2015)
                     </h3>
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40 px-2.5 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold uppercase tracking-wider bg-orange-400/20 text-orange-300 border border-orange-400/40 px-2.5 py-0.5 rounded-full">
                     Settlement Desk
                   </span>
                 </div>
@@ -349,9 +349,9 @@ function MyTripsPage() {
               )}
 
               {pnrError && (
-                <div className="rounded-xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-900 space-y-2">
+                <div className="rounded-xl bg-orange-50 border border-orange-200 p-3.5 text-xs text-orange-950 space-y-2">
                   <p className="font-semibold">{pnrError}</p>
-                  <p className="text-[11px] text-amber-800">
+                  <p className="text-[11px] text-orange-900">
                     Indian Railways mandates captcha verification directly on government PRS endpoints. Check your PNR instantly on official government portals:
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">

@@ -274,9 +274,9 @@ export function TravelpayoutsWhiteLabel({
           data-sub-id={subId}
         />
         {loadTimedOut && (
-          <div className="rounded-2xl border border-amber-300 bg-amber-50/80 p-3 text-xs text-amber-950 flex flex-col sm:flex-row items-center justify-between gap-3 mt-2">
+          <div className="rounded-2xl border border-orange-300 bg-orange-50/80 p-3 text-xs text-orange-950 flex flex-col sm:flex-row items-center justify-between gap-3 mt-2">
             <div className="flex items-center gap-2">
-              <AlertCircle className="size-4 text-amber-700 shrink-0" />
+              <AlertCircle className="size-4 text-orange-700 shrink-0" />
               <span>
                 Travelpayouts white label script is ready. Use the search bar above for instant live rates or reload widget.
               </span>
@@ -285,7 +285,7 @@ export function TravelpayoutsWhiteLabel({
               size="sm"
               variant="outline"
               onClick={handleRetry}
-              className="text-xs shrink-0 rounded-xl border-amber-400 text-amber-900 hover:bg-amber-100 h-7 px-3"
+              className="text-xs shrink-0 rounded-xl border-orange-400 text-orange-950 hover:bg-orange-100 h-7 px-3"
             >
               <RefreshCw className="size-3 mr-1" /> Reload Widget
             </Button>

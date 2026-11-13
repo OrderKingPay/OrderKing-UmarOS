@@ -93,19 +93,19 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
       aria-labelledby="one-tap-checkout-title"
     >
       <div
-        className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto rounded-t-[32px] border-t-2 border-amber-400/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-5 text-gray-900 shadow-[0_-20px_50px_rgba(0,0,0,0.35)] animate-in slide-in-from-bottom duration-300"
+        className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto rounded-t-[32px] border-t-2 border-orange-400/80 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-5 text-gray-900 shadow-[0_-20px_50px_rgba(0,0,0,0.35)] animate-in slide-in-from-bottom duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Specular golden top highlight */}
-        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-90" />
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-90" />
 
         {/* Ambient background glow */}
-        <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 size-48 rounded-full bg-gradient-to-br from-amber-400/20 via-yellow-300/10 to-transparent blur-2xl" />
+        <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 size-48 rounded-full bg-gradient-to-br from-orange-400/20 via-orange-300/10 to-transparent blur-2xl" />
 
         {/* DRAWER HEADER */}
-        <div className="relative flex items-center justify-between pb-3 border-b border-amber-900/10">
+        <div className="relative flex items-center justify-between pb-3 border-b border-orange-950/10">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 text-slate-950 shadow-[0_2px_10px_rgba(245,158,11,0.4)]">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 via-orange-300 to-orange-500 text-slate-950 shadow-[0_2px_10px_rgba(245,158,11,0.4)]">
               <Crown className="size-4.5" />
             </div>
             <div>
@@ -126,7 +126,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
           <button
             type="button"
             onClick={onClose}
-            className="flex size-8 items-center justify-center rounded-full bg-amber-100/80 text-gray-600 hover:bg-amber-200 transition-colors"
+            className="flex size-8 items-center justify-center rounded-full bg-orange-100/80 text-gray-600 hover:bg-orange-200 transition-colors"
             aria-label="Close checkout drawer"
           >
             <X className="size-4" />
@@ -134,7 +134,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
         </div>
 
         {/* DELIVERY ADDRESS PILL */}
-        <div className="mt-3.5 flex items-center justify-between p-3 rounded-2xl bg-white border border-amber-200/90 shadow-2xs">
+        <div className="mt-3.5 flex items-center justify-between p-3 rounded-2xl bg-white border border-orange-200/90 shadow-2xs">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
               <MapPin className="size-3.5" />
@@ -154,10 +154,10 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
         </div>
 
         {/* CART ITEMS SUMMARY LIST */}
-        <div className="mt-3.5 rounded-2xl border border-amber-200/80 bg-white/80 p-3 space-y-2">
-          <div className="flex items-center justify-between text-xs font-black text-stone-700 border-b border-amber-100 pb-1.5">
+        <div className="mt-3.5 rounded-2xl border border-orange-200/80 bg-white/80 p-3 space-y-2">
+          <div className="flex items-center justify-between text-xs font-black text-stone-700 border-b border-orange-100 pb-1.5">
             <span className="flex items-center gap-1.5">
-              <ShoppingBag className="size-3.5 text-amber-700" />
+              <ShoppingBag className="size-3.5 text-orange-700" />
               <span>Cart Items ({totalItemCount})</span>
             </span>
             <Link
@@ -173,7 +173,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             {(quoteQuery.data?.pricedLines ?? []).map((it) => (
               <div key={it.key} className="flex items-center justify-between text-gray-800">
                 <div className="flex items-center gap-2 truncate pr-2">
-                  <span className="flex size-4.5 shrink-0 items-center justify-center rounded bg-amber-100 text-[10px] font-black text-amber-950">
+                  <span className="flex size-4.5 shrink-0 items-center justify-center rounded bg-orange-100 text-[10px] font-black text-orange-950">
                     {it.quantity}x
                   </span>
                   <span className="font-semibold truncate">{it.name}</span>
@@ -187,11 +187,11 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
         </div>
 
         {/* ─── CRYSTALLINE TRANSPARENT ITEMIZED BILLING (ZERO HIDDEN FEES) ─── */}
-        <div className="mt-3.5 rounded-3xl border border-amber-300/80 bg-gradient-to-b from-white via-amber-50/20 to-white p-4 shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between border-b border-amber-100 pb-2">
+        <div className="mt-3.5 rounded-3xl border border-orange-300/80 bg-gradient-to-b from-white via-orange-50/20 to-white p-4 shadow-sm space-y-2.5">
+          <div className="flex items-center justify-between border-b border-orange-100 pb-2">
             <div className="flex items-center gap-1.5">
-              <Receipt className="size-4 text-amber-800" />
-              <h3 className="text-xs font-black uppercase tracking-wider text-amber-950">
+              <Receipt className="size-4 text-orange-900" />
+              <h3 className="text-xs font-black uppercase tracking-wider text-orange-950">
                 Transparent Itemized Pricing
               </h3>
             </div>
@@ -285,15 +285,15 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
           </div>
 
           {/* 7. GRAND TOTAL (24K GOLD & OBSIDIAN LUXURY CARD) */}
-          <div className="relative overflow-hidden mt-1 rounded-2xl bg-gradient-to-r from-slate-950 via-[#17140f] to-slate-950 p-3.5 text-white flex items-center justify-between shadow-[0_4px_16px_rgba(245,158,11,0.25)] border border-amber-400/50">
+          <div className="relative overflow-hidden mt-1 rounded-2xl bg-gradient-to-r from-slate-950 via-[#17140f] to-slate-950 p-3.5 text-white flex items-center justify-between shadow-[0_4px_16px_rgba(245,158,11,0.25)] border border-orange-400/50">
             <div className="space-y-0.5">
-              <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-amber-300">
-                <Crown className="size-3 text-amber-400" />
+              <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-orange-300">
+                <Crown className="size-3 text-orange-400" />
                 <span>Total Amount to Pay</span>
               </div>
               <p className="text-[10px] text-stone-400">All taxes &amp; fees included · 0 hidden charges</p>
             </div>
-            <div className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3.5 py-1.5 text-slate-950 font-black shadow-md border border-amber-300">
+            <div className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-orange-400 via-orange-300 to-orange-500 px-3.5 py-1.5 text-slate-950 font-black shadow-md border border-orange-300">
               <span className="font-mono text-base sm:text-lg">
                 {formatPaise(totalPaise, { locale })}
               </span>
@@ -313,13 +313,13 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               className={cn(
                 "flex flex-col items-center justify-center p-2.5 rounded-2xl border text-center transition-all cursor-pointer select-none",
                 selectedMethod === "KING_PAY"
-                  ? "border-amber-500 bg-amber-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
-                  : "border-stone-200 bg-white hover:border-amber-300"
+                  ? "border-orange-500 bg-orange-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
+                  : "border-stone-200 bg-white hover:border-orange-300"
               )}
             >
-              <Crown className="size-4 text-amber-800 mb-1" />
+              <Crown className="size-4 text-orange-900 mb-1" />
               <span className="text-xs font-black text-gray-950 leading-tight">KingPay UPI</span>
-              <span className="text-[9px] font-bold text-amber-800 mt-0.5">Instant Pay</span>
+              <span className="text-[9px] font-bold text-orange-900 mt-0.5">Instant Pay</span>
             </button>
 
             <button
@@ -328,8 +328,8 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               className={cn(
                 "flex flex-col items-center justify-center p-2.5 rounded-2xl border text-center transition-all cursor-pointer select-none",
                 selectedMethod === "UPI"
-                  ? "border-amber-500 bg-amber-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
-                  : "border-stone-200 bg-white hover:border-amber-300"
+                  ? "border-orange-500 bg-orange-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
+                  : "border-stone-200 bg-white hover:border-orange-300"
               )}
             >
               <Zap className="size-4 text-sky-600 mb-1" />
@@ -343,8 +343,8 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
               className={cn(
                 "flex flex-col items-center justify-center p-2.5 rounded-2xl border text-center transition-all cursor-pointer select-none",
                 selectedMethod === "COD"
-                  ? "border-amber-500 bg-amber-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
-                  : "border-stone-200 bg-white hover:border-amber-300"
+                  ? "border-orange-500 bg-orange-500/15 shadow-[0_2px_10px_rgba(245,158,11,0.25)]"
+                  : "border-stone-200 bg-white hover:border-orange-300"
               )}
             >
               <ShieldCheck className="size-4 text-emerald-600 mb-1" />
@@ -360,10 +360,10 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             type="button"
             disabled={isSubmitting || items.length === 0}
             onClick={handle1TapPay}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 hover:to-yellow-300 text-slate-950 font-black shadow-[0_8px_25px_rgba(245,158,11,0.45)] flex items-center justify-between px-5 transition-all active:scale-98 disabled:opacity-50 cursor-pointer border border-amber-300"
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-orange-400 via-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-300 text-slate-950 font-black shadow-[0_8px_25px_rgba(245,158,11,0.45)] flex items-center justify-between px-5 transition-all active:scale-98 disabled:opacity-50 cursor-pointer border border-orange-300"
           >
             <div className="flex items-center gap-2">
-              <Lock className="size-4 text-amber-950" />
+              <Lock className="size-4 text-orange-950" />
               <span className="text-sm font-black uppercase tracking-wider">
                 1-Tap Place Order
               </span>

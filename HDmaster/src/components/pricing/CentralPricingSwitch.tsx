@@ -402,8 +402,8 @@ export function CentralPricingSwitch() {
           </div>
 
           {/* Box 2: Action Needed */}
-          <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-4">
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-800">
+          <div className="bg-orange-50/60 border border-orange-200 rounded-xl p-4">
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-orange-900">
               Action Needed
             </div>
             <div className="text-sm font-bold text-slate-900 mt-1">

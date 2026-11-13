@@ -175,10 +175,10 @@ function OrderDetailPage() {
     return (
       <CustomerShell>
         <div className="min-h-screen bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] p-6 space-y-4 animate-pulse">
-          <div className="h-6 w-1/4 bg-gradient-to-r from-amber-100 via-amber-200/70 to-amber-100 rounded-xl" />
-          <div className="h-9 w-2/3 bg-gradient-to-r from-amber-100 via-amber-200/70 to-amber-100 rounded-2xl" />
-          <div className="h-44 bg-gradient-to-r from-amber-100/80 via-amber-200/50 to-amber-100/80 rounded-3xl border border-amber-200/50" />
-          <div className="h-40 bg-gradient-to-r from-amber-100/80 via-amber-200/50 to-amber-100/80 rounded-3xl border border-amber-200/50" />
+          <div className="h-6 w-1/4 bg-gradient-to-r from-orange-100 via-orange-200/70 to-orange-100 rounded-xl" />
+          <div className="h-9 w-2/3 bg-gradient-to-r from-orange-100 via-orange-200/70 to-orange-100 rounded-2xl" />
+          <div className="h-44 bg-gradient-to-r from-orange-100/80 via-orange-200/50 to-orange-100/80 rounded-3xl border border-orange-200/50" />
+          <div className="h-40 bg-gradient-to-r from-orange-100/80 via-orange-200/50 to-orange-100/80 rounded-3xl border border-orange-200/50" />
         </div>
       </CustomerShell>
     );
@@ -206,10 +206,10 @@ function OrderDetailPage() {
     <CustomerShell>
       <div className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] px-4 py-5 pb-28">
         <div className="flex items-center justify-between">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-100 to-yellow-100 border border-amber-300 px-3 py-1 text-xs font-mono font-black text-amber-900 shadow-2xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-orange-100 to-orange-100 border border-orange-300 px-3 py-1 text-xs font-mono font-black text-orange-950 shadow-2xs">
             #{order.summary.publicId}
           </span>
-          <span className="text-xs font-black text-stone-900 tabular-nums bg-white border border-amber-200 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-black text-stone-900 tabular-nums bg-white border border-orange-200 px-2.5 py-1 rounded-lg">
             {formatPaise(order.summary.totalPaise, { locale })}
           </span>
         </div>
@@ -236,22 +236,22 @@ function OrderDetailPage() {
         </div>
 
         {/* Live Order Timeline Card */}
-        <div className="mt-4 rounded-3xl border border-amber-300/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)]">
-          <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-900/10">
+        <div className="mt-4 rounded-3xl border border-orange-300/80 bg-gradient-to-br from-white via-orange-50/40 to-orange-50/20 p-5 shadow-[0_8px_30px_rgba(245,158,11,0.1)]">
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-orange-950/10">
             <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-xs">
                 <Clock className="size-4" />
               </span>
               <h2 className="font-display font-extrabold text-stone-900 text-base">
                 Live Order Journey
               </h2>
             </div>
-            <span className="rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-0.5 text-[10px] font-black text-white uppercase tracking-wider shadow-2xs">
+            <span className="rounded-full bg-gradient-to-r from-orange-500 to-orange-500 px-3 py-0.5 text-[10px] font-black text-white uppercase tracking-wider shadow-2xs">
               {labels[order.status] || order.status}
             </span>
           </div>
 
-          <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-amber-400 before:via-orange-400 before:to-emerald-400">
+          <div className="relative pl-6 space-y-4 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-gradient-to-b before:from-orange-400 before:via-orange-400 before:to-emerald-400">
             {CUSTOMER_TRACK_STEPS.map((step, i) => {
               const isPastStep = i < idx;
               const isCurrent = order.status === step;
@@ -262,19 +262,19 @@ function OrderDetailPage() {
                       isPastStep
                         ? "bg-gradient-to-tr from-emerald-500 to-teal-500 text-white shadow-xs"
                         : isCurrent
-                          ? "bg-gradient-to-tr from-amber-500 to-orange-500 text-white shadow-md shadow-orange-500/30 ring-4 ring-amber-300/50 animate-pulse"
-                          : "bg-amber-100 text-amber-500 border border-amber-200"
+                          ? "bg-gradient-to-tr from-orange-500 to-orange-500 text-white shadow-md shadow-orange-500/30 ring-4 ring-orange-300/50 animate-pulse"
+                          : "bg-orange-100 text-orange-500 border border-orange-200"
                     }`}
                   >
                     {isPastStep ? <Check className="size-3" /> : isCurrent ? <span className="size-2 rounded-full bg-white" /> : i + 1}
                   </span>
                   <div className="pl-2">
-                    <p className={`text-xs font-bold ${isCurrent ? "text-amber-950 font-black text-sm" : isPastStep ? "text-stone-700" : "text-stone-400"}`}>
+                    <p className={`text-xs font-bold ${isCurrent ? "text-orange-950 font-black text-sm" : isPastStep ? "text-stone-700" : "text-stone-400"}`}>
                       {labels[step]}
                     </p>
                   </div>
                   {isCurrent && (
-                    <span className="text-[10px] font-extrabold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md animate-pulse">
+                    <span className="text-[10px] font-extrabold text-orange-900 bg-orange-100/80 px-2 py-0.5 rounded-md animate-pulse">
                       In Progress
                     </span>
                   )}
@@ -301,13 +301,13 @@ function OrderDetailPage() {
         />
 
         {order.deliveryOtp && !["DELIVERED", "CANCELLED", "CANCELLED_BY_CUSTOMER"].includes(order.status) ? (
-          <div className="mt-4 rounded-2xl border-2 border-amber-400/90 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
+          <div className="mt-4 rounded-2xl border-2 border-orange-400/90 bg-gradient-to-r from-orange-500/15 via-orange-400/20 to-orange-500/10 p-4 shadow-[0_8px_25px_rgba(245,158,11,0.18)] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-white shadow-xs">
+              <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-400 text-white shadow-xs">
                 <ShieldCheck className="size-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-wider text-amber-900">
+                <p className="text-[10px] font-black uppercase tracking-wider text-orange-950">
                   Delivery Verification OTP
                 </p>
                 <p className="font-mono text-3xl font-black tracking-widest text-stone-900 mt-0.5">
@@ -315,7 +315,7 @@ function OrderDetailPage() {
                 </p>
               </div>
             </div>
-            <p className="max-w-[140px] text-right text-[11px] font-medium text-amber-950 leading-tight">
+            <p className="max-w-[140px] text-right text-[11px] font-medium text-orange-950 leading-tight">
               Share this OTP only when delivery partner reaches door
             </p>
           </div>
@@ -401,7 +401,7 @@ function OrderDetailPage() {
             <Button
               type="button"
               onClick={() => setDishReviewOpen(true)}
-              className="w-full bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-yellow-600 text-stone-950 font-black py-3 rounded-2xl shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 border border-amber-300 transition-all active:scale-98 cursor-pointer"
+              className="w-full bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-600 text-stone-950 font-black py-3 rounded-2xl shadow-md shadow-orange-500/25 flex items-center justify-center gap-2 border border-orange-300 transition-all active:scale-98 cursor-pointer"
             >
               <Star className="size-4 fill-stone-950" />
               <span>Rate &amp; Review Dishes</span>
@@ -421,7 +421,7 @@ function OrderDetailPage() {
 
         {/* Multi-Category Post-Delivery Review Card (Restaurant + Food + Rider + App) */}
         {order.status === "DELIVERED" && (
-          <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-surface to-amber-500/10 p-4 sm:p-5 shadow-md">
+          <div className="mt-4 rounded-[var(--radius-xl)] border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-surface to-orange-500/10 p-4 sm:p-5 shadow-md">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
@@ -444,7 +444,7 @@ function OrderDetailPage() {
                     {[1, 2, 3, 4, 5].map((s) => (
                       <Star
                         key={s}
-                        className={`size-3.5 ${s <= reviewQuery.data.review!.rating ? "fill-amber-400 text-amber-400" : "text-muted/30"}`}
+                        className={`size-3.5 ${s <= reviewQuery.data.review!.rating ? "fill-orange-400 text-orange-400" : "text-muted/30"}`}
                       />
                     ))}
                   </div>
@@ -487,7 +487,7 @@ function OrderDetailPage() {
                           onClick={() => setFoodRating(star)}
                           aria-label={`Rate food ${star} stars`}
                           className={`transition hover:scale-125 ${
-                            star <= foodRating ? "text-amber-400" : "text-muted/30"
+                            star <= foodRating ? "text-orange-400" : "text-muted/30"
                           }`}
                         >
                           <Star className="size-4 fill-current" />
@@ -513,7 +513,7 @@ function OrderDetailPage() {
                           onClick={() => setRestaurantRating(star)}
                           aria-label={`Rate restaurant ${star} stars`}
                           className={`transition hover:scale-125 ${
-                            star <= restaurantRating ? "text-amber-400" : "text-muted/30"
+                            star <= restaurantRating ? "text-orange-400" : "text-muted/30"
                           }`}
                         >
                           <Star className="size-4 fill-current" />
@@ -538,7 +538,7 @@ function OrderDetailPage() {
                           onClick={() => setRiderRating(star)}
                           aria-label={`Rate rider ${star} stars`}
                           className={`transition hover:scale-125 ${
-                            star <= riderRating ? "text-amber-400" : "text-muted/30"
+                            star <= riderRating ? "text-orange-400" : "text-muted/30"
                           }`}
                         >
                           <Star className="size-4 fill-current" />
@@ -563,7 +563,7 @@ function OrderDetailPage() {
                           onClick={() => setAppRating(star)}
                           aria-label={`Rate app ${star} stars`}
                           className={`transition hover:scale-125 ${
-                            star <= appRating ? "text-amber-400" : "text-muted/30"
+                            star <= appRating ? "text-orange-400" : "text-muted/30"
                           }`}
                         >
                           <Star className="size-4 fill-current" />
@@ -674,8 +674,8 @@ function OrderDetailPage() {
                   <span className="font-mono font-bold text-rose-700 dark:text-rose-300">
                     Ticket #{submittedComplaint.ticketId}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 font-bold text-amber-800 dark:text-amber-300">
-                    <span className="size-1.5 rounded-full bg-amber-500 animate-ping" />
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5 font-bold text-orange-900 dark:text-orange-300">
+                    <span className="size-1.5 rounded-full bg-orange-500 animate-ping" />
                     {submittedComplaint.status}
                   </span>
                 </div>
@@ -924,16 +924,16 @@ function OrderDetailPage() {
         </div>
 
         {order.summary.dataLabel === "REAL" ? (
-          <p className="mt-4 text-center text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/80 rounded-xl p-2.5 flex items-center justify-center gap-1.5">
+          <p className="mt-4 text-center text-xs font-bold text-orange-900 bg-orange-50 border border-orange-200/80 rounded-xl p-2.5 flex items-center justify-center gap-1.5">
             <Check className="size-3.5 text-emerald-600" />
             <span>Live status synchronized in real-time from OrderKing Command</span>
           </p>
         ) : null}
 
         {/* Order Bill Invoice */}
-        <div className="mt-6 rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-900/10">
-            <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-xs">
+        <div className="mt-6 rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-orange-950/10">
+            <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-xs">
               <Receipt className="size-4" />
             </span>
             <h2 className="font-display font-extrabold text-stone-900 text-base">{t("orders.invoice")}</h2>
@@ -961,7 +961,7 @@ function OrderDetailPage() {
             </Button>
           ) : null}
           <Button
-            className="flex-1 min-w-[140px] rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-400 text-zinc-950 font-black shadow-lg shadow-amber-500/25 px-5 py-2.5 hover:from-amber-400 hover:to-yellow-300 transition-all active:scale-95 flex items-center justify-center gap-1.5"
+            className="flex-1 min-w-[140px] rounded-2xl bg-gradient-to-r from-orange-500 via-orange-500 to-orange-400 text-zinc-950 font-black shadow-lg shadow-orange-500/25 px-5 py-2.5 hover:from-orange-400 hover:to-orange-300 transition-all active:scale-95 flex items-center justify-center gap-1.5"
             onClick={async () => {
               try {
                 const res = await reorderItems({ data: { orderId: order.summary.id } });
@@ -984,7 +984,7 @@ function OrderDetailPage() {
           </Button>
           <Button
             variant="outline"
-            className="rounded-2xl border border-amber-200 bg-white hover:bg-amber-50 text-amber-950 font-bold px-4 py-2.5"
+            className="rounded-2xl border border-orange-200 bg-white hover:bg-orange-50 text-orange-950 font-bold px-4 py-2.5"
             asChild
           >
             <Link to="/support">{t("orders.help")}</Link>

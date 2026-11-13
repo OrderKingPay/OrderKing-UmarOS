@@ -65,31 +65,31 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
       {/* 24K Gold & Obsidian Luxury Grand Total Card */}
       {total ? (
         <div
-          className="relative overflow-hidden mt-3 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex items-center justify-between text-white shadow-[0_8px_25px_rgba(245,158,11,0.22)] border border-amber-400/40 transform-gpu transition-all duration-300"
+          className="relative overflow-hidden mt-3 rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex items-center justify-between text-white shadow-[0_8px_25px_rgba(245,158,11,0.22)] border border-orange-400/40 transform-gpu transition-all duration-300"
           style={{
             background: "linear-gradient(135deg, #09090b 0%, #17140f 50%, #0d0a06 100%)",
           }}
         >
           {/* Specular ambient gold highlight */}
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400/80 to-transparent pointer-events-none" />
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-orange-400/80 to-transparent pointer-events-none" />
 
           <div className="relative z-10 space-y-1">
             <div className="flex items-center gap-1.5">
-              <span className="flex size-5 items-center justify-center rounded-md bg-amber-400/20 border border-amber-400/40 text-amber-300 shadow-2xs">
-                <Crown className="size-3 text-amber-300" />
+              <span className="flex size-5 items-center justify-center rounded-md bg-orange-400/20 border border-orange-400/40 text-orange-300 shadow-2xs">
+                <Crown className="size-3 text-orange-300" />
               </span>
-              <span className="font-display text-sm sm:text-base font-black tracking-tight text-amber-100">
+              <span className="font-display text-sm sm:text-base font-black tracking-tight text-orange-100">
                 {t("cart.toPay") || "To Pay"}
               </span>
             </div>
-            <p className="text-[10px] sm:text-[11px] text-amber-300/70 flex items-center gap-1">
+            <p className="text-[10px] sm:text-[11px] text-orange-300/70 flex items-center gap-1">
               <ShieldCheck className="size-3 text-emerald-400" />
               <span>Taxes &amp; charges included</span>
             </p>
           </div>
 
           {/* Total Amount Pill */}
-          <div className="relative z-10 flex items-center gap-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3.5 sm:px-4 py-2 text-stone-950 font-black shadow-[0_4px_14px_rgba(245,158,11,0.45)] border border-amber-200">
+          <div className="relative z-10 flex items-center gap-1.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-orange-400 via-orange-300 to-orange-500 px-3.5 sm:px-4 py-2 text-stone-950 font-black shadow-[0_4px_14px_rgba(245,158,11,0.45)] border border-orange-200">
             <span className="text-base sm:text-lg tabular-nums tracking-tight">
               {formatPaise(total.amountPaise, { locale })}
             </span>

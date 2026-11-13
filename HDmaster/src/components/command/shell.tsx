@@ -130,8 +130,8 @@ const TIER_STYLES: Record<AlertSeverityTier, { badge: string; border: string }> 
     border: "border-orange-500/30 bg-orange-950/10",
   },
   HIGH: {
-    badge: "bg-amber-500/20 text-amber-400 border-amber-500/40",
-    border: "border-amber-500/30 bg-amber-950/10",
+    badge: "bg-orange-500/20 text-orange-400 border-orange-500/40",
+    border: "border-orange-500/30 bg-orange-950/10",
   },
   MEDIUM: {
     badge: "bg-sky-500/20 text-sky-400 border-sky-500/40",
@@ -651,11 +651,11 @@ export function CommandShell() {
             <button
               type="button"
               onClick={() => setPageSettingsOpen(true)}
-              className="flex h-10 items-center gap-1.5 rounded-[10px] border border-amber-400/50 bg-amber-500/15 px-2.5 text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition"
+              className="flex h-10 items-center gap-1.5 rounded-[10px] border border-orange-400/50 bg-orange-500/15 px-2.5 text-xs font-bold text-orange-300 hover:bg-orange-500/25 transition"
               aria-label="Open Page Settings and Customize"
               title="Customize this page's settings, rules, and layout"
             >
-              <Settings className="size-4 text-amber-400 shrink-0" />
+              <Settings className="size-4 text-orange-400 shrink-0" />
               <span className="hidden sm:inline">Page Settings &amp; Customize</span>
               <span className="sm:hidden">Settings</span>
             </button>
@@ -668,7 +668,7 @@ export function CommandShell() {
               aria-label="Open 6-Tier Founder Notification and Auto-Remediation Center"
               title="6-Tier Founder Notification & Auto-Remediation Center"
             >
-              <Bell className="size-4 text-amber-400" />
+              <Bell className="size-4 text-orange-400" />
               <span className="hidden lg:inline">Alerts</span>
               {unresolvedCount > 0 ? (
                 <span className="rounded-full bg-red-600 px-1.5 py-0.5 font-mono text-[10px] font-bold text-white">
@@ -780,7 +780,7 @@ export function CommandShell() {
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <Settings className="size-5 text-amber-400" />
+                  <Settings className="size-5 text-orange-400" />
                   <h2 className="text-base font-bold">
                     Page Settings &amp; Customize
                   </h2>
@@ -822,7 +822,7 @@ export function CommandShell() {
                           className={cn(
                             "rounded-xl border px-3 py-2 font-semibold capitalize transition",
                             pageDensity === mode
-                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              ? "border-orange-400 bg-orange-500/15 text-fg"
                               : "border-border bg-surface text-muted hover:text-fg"
                           )}
                         >
@@ -848,7 +848,7 @@ export function CommandShell() {
                           className={cn(
                             "rounded-xl border px-2.5 py-2 font-semibold uppercase transition",
                             pageAutoRefresh === interval
-                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              ? "border-orange-400 bg-orange-500/15 text-fg"
                               : "border-border bg-surface text-muted hover:text-fg"
                           )}
                         >
@@ -880,7 +880,7 @@ export function CommandShell() {
                           className={cn(
                             "rounded-xl border px-2.5 py-2 font-semibold transition",
                             pageDefaultCity === cityOpt.id
-                              ? "border-amber-400 bg-amber-500/15 text-fg"
+                              ? "border-orange-400 bg-orange-500/15 text-fg"
                               : "border-border bg-surface text-muted hover:text-fg"
                           )}
                         >
@@ -909,7 +909,7 @@ export function CommandShell() {
                       setPageSettingsOpen(false);
                       handleOpenWorldSettings(currentRouteWorld);
                     }}
-                    className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-1.5 font-bold text-amber-300 hover:bg-amber-500/25 transition"
+                    className="rounded-xl border border-orange-400/50 bg-orange-500/15 px-3 py-1.5 font-bold text-orange-300 hover:bg-orange-500/25 transition"
                   >
                     Open Drawer
                   </button>
@@ -950,7 +950,7 @@ export function CommandShell() {
                       setPageSettingsOpen(false);
                       void navigate({ to: "/app/settings" as "/app" });
                     }}
-                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-orange-400/40 hover:bg-elevated transition"
                   >
                     <p className="font-bold text-fg">Fees &amp; SLA Rules</p>
                     <p className="mt-0.5 text-[11px] text-muted">
@@ -963,7 +963,7 @@ export function CommandShell() {
                       setPageSettingsOpen(false);
                       void navigate({ to: "/app/flags" as "/app" });
                     }}
-                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-orange-400/40 hover:bg-elevated transition"
                   >
                     <p className="font-bold text-fg">Feature Switches</p>
                     <p className="mt-0.5 text-[11px] text-muted">
@@ -976,7 +976,7 @@ export function CommandShell() {
                       setPageSettingsOpen(false);
                       void navigate({ to: "/app/branding" as "/app" });
                     }}
-                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-orange-400/40 hover:bg-elevated transition"
                   >
                     <p className="font-bold text-fg">App Colors &amp; Brand</p>
                     <p className="mt-0.5 text-[11px] text-muted">
@@ -989,7 +989,7 @@ export function CommandShell() {
                       setPageSettingsOpen(false);
                       void navigate({ to: "/app/golive" as "/app" });
                     }}
-                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-amber-400/40 hover:bg-elevated transition"
+                    className="rounded-xl border border-border bg-surface p-3 text-left hover:border-orange-400/40 hover:bg-elevated transition"
                   >
                     <p className="font-bold text-fg">API Keys &amp; Go-Live</p>
                     <p className="mt-0.5 text-[11px] text-muted">
@@ -1016,7 +1016,7 @@ export function CommandShell() {
             <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <Bell className="size-5 text-amber-400" />
+                  <Bell className="size-5 text-orange-400" />
                   <h2 className="text-base font-bold">
                     6-Tier Founder Notification &amp; Auto-Remediation Desk
                   </h2>
@@ -1110,7 +1110,7 @@ export function CommandShell() {
                         <button
                           type="button"
                           onClick={() => handleAutoFixAlert(item)}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-black hover:bg-amber-400 transition"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-orange-500 px-3 py-1.5 text-xs font-bold text-black hover:bg-orange-400 transition"
                         >
                           <Zap className="size-3.5" />
                           <span>Auto-Fix: {item.autoFixActionLabel}</span>
@@ -1185,7 +1185,7 @@ export function CommandShell() {
                   className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-xl border text-lg",
                     activeWorld.isPrimary
-                      ? "border-amber-400/50 bg-amber-500/15 text-amber-300"
+                      ? "border-orange-400/50 bg-orange-500/15 text-orange-300"
                       : "border-border bg-surface text-fg"
                   )}
                 >
@@ -1200,7 +1200,7 @@ export function CommandShell() {
                       className={cn(
                         "rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider",
                         activeWorld.isPrimary
-                          ? "border-amber-400/50 bg-amber-500/20 text-amber-300"
+                          ? "border-orange-400/50 bg-orange-500/20 text-orange-300"
                           : "border-border bg-surface text-muted"
                       )}
                     >
@@ -1223,7 +1223,7 @@ export function CommandShell() {
                 <button
                   type="button"
                   onClick={() => handleOpenWorldSettings(activeWorld)}
-                  className="rounded-xl border border-amber-400/50 bg-amber-500/15 px-3 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition"
+                  className="rounded-xl border border-orange-400/50 bg-orange-500/15 px-3 py-2 text-xs font-bold text-orange-300 hover:bg-orange-500/25 transition"
                 >
                   World Settings
                 </button>
@@ -1269,7 +1269,7 @@ export function CommandShell() {
                           "flex shrink-0 items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-left transition md:w-full",
                           isSelected
                             ? activeWorld.isPrimary
-                              ? "border-amber-400/50 bg-amber-500/15 text-fg shadow-xs"
+                              ? "border-orange-400/50 bg-orange-500/15 text-fg shadow-xs"
                               : "border-primary/50 bg-elevated text-fg shadow-xs"
                             : "border-transparent bg-surface/50 text-muted hover:border-border hover:bg-surface hover:text-fg"
                         )}
@@ -1295,7 +1295,7 @@ export function CommandShell() {
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-orange-400">
                           2. Sub-Category &amp; Option
                         </span>
                         <span className="rounded-full border border-border bg-elevated px-2 py-0.5 font-mono text-[10px] text-muted">
@@ -1310,7 +1310,7 @@ export function CommandShell() {
                   </div>
                 ) : (
                   <div className="mb-4 border-b border-border/60 pb-3">
-                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-amber-400">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-orange-400">
                       Filtered Results ({displayedOptions.length})
                     </p>
                     <p className="text-xs text-muted">
@@ -1345,13 +1345,13 @@ export function CommandShell() {
                           className={cn(
                             "group flex flex-col justify-between rounded-2xl border p-4 text-left transition",
                             isCurrentRoute
-                              ? "border-amber-400/50 bg-amber-500/10"
-                              : "border-border bg-bg/40 hover:border-amber-400/40 hover:bg-elevated/70"
+                              ? "border-orange-400/50 bg-orange-500/10"
+                              : "border-border bg-bg/40 hover:border-orange-400/40 hover:bg-elevated/70"
                           )}
                         >
                           <div>
                             <div className="flex items-center justify-between gap-2">
-                              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-orange-400">
                                 {normalizedHubQuery
                                   ? `${categoryLabel} · ${option.subCategory}`
                                   : option.subCategory}
@@ -1360,7 +1360,7 @@ export function CommandShell() {
                                 {option.badge}
                               </span>
                             </div>
-                            <h4 className="mt-1.5 text-sm font-bold text-fg group-hover:text-amber-300 transition">
+                            <h4 className="mt-1.5 text-sm font-bold text-fg group-hover:text-orange-300 transition">
                               {option.label}
                             </h4>
                             <p className="mt-1 text-xs leading-relaxed text-muted">

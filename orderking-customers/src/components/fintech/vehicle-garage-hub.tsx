@@ -41,7 +41,7 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
             onClick={handleFastag}
             className="w-full text-base py-6 rounded-2xl shadow-sm bg-surface-2 hover:bg-surface border-2 border-transparent hover:border-indigo-500/30 text-fg justify-start"
           >
-            <Zap className="mr-3 size-5 text-yellow-500" />
+            <Zap className="mr-3 size-5 text-orange-500" />
             <div className="flex flex-col items-start">
               <span className="font-bold">FASTag Recharge</span>
               <span className="text-xs text-muted font-normal">All Banks Supported</span>

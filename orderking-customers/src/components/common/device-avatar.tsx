@@ -66,8 +66,8 @@ export function DeviceAvatar({
       <div
         className={
           editor
-            ? "flex size-20 items-center justify-center overflow-hidden rounded-3xl border-2 border-amber-400 bg-emerald-950 shadow-lg ring-2 ring-amber-400/20"
-            : "flex size-8 items-center justify-center overflow-hidden rounded-full border border-amber-400/90 bg-emerald-950 shadow-sm"
+            ? "flex size-20 items-center justify-center overflow-hidden rounded-3xl border-2 border-orange-400 bg-emerald-950 shadow-lg ring-2 ring-orange-400/20"
+            : "flex size-8 items-center justify-center overflow-hidden rounded-full border border-orange-400/90 bg-emerald-950 shadow-sm"
         }
       >
         {activeImage ? (
@@ -80,21 +80,21 @@ export function DeviceAvatar({
             onError={() => setRemoteFailed(true)}
           />
         ) : initial ? (
-          <span className="font-black text-amber-300 text-xs select-none">{initial}</span>
+          <span className="font-black text-orange-300 text-xs select-none">{initial}</span>
         ) : (
-          <UserRound className="size-4 text-amber-300" aria-hidden />
+          <UserRound className="size-4 text-orange-300" aria-hidden />
         )}
       </div>
       {editor && (
         <div className="space-y-2">
           <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <Crown className="size-4 text-amber-600" /> Your profile picture
+            <Crown className="size-4 text-orange-600" /> Your profile picture
           </p>
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => picker.current?.click()}
-              className="flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-emerald-900"
+              className="flex items-center gap-1.5 rounded-xl border border-orange-300 bg-orange-50 px-3 py-2 text-xs font-semibold text-emerald-900"
             >
               <ImagePlus className="size-4" /> Choose Photo
             </button>

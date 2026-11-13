@@ -160,7 +160,7 @@ function AnalyticsPage() {
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">CANCELLED</span>
-                <span className="font-bold text-amber-400 text-sm tabular">{cancelledOrders}</span>
+                <span className="font-bold text-orange-400 text-sm tabular">{cancelledOrders}</span>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">REJECTED</span>
@@ -238,7 +238,7 @@ function AnalyticsPage() {
 
           <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="flex items-center gap-2 mb-3">
-              <UtensilsCrossed className="size-4 text-amber-400" />
+              <UtensilsCrossed className="size-4 text-orange-400" />
               <h2 className="font-display text-base font-bold text-gray-900">{t("analytics.low")}</h2>
             </div>
             {items.length === 0 ? (

@@ -214,7 +214,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
       )}
     >
       <div className="flex items-center gap-2 sm:gap-2.5 w-full max-w-lg md:max-w-[560px] justify-center">
-        {/* Left Floating Pink/Red Gradient AI Concierge FAB (Zomato Parity) */}
+        {/* Left Floating Copper & Orange Metallic AI Concierge FAB */}
         <button
           type="button"
           onClick={() => {
@@ -226,7 +226,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
           }}
           aria-label="Ask OrderKing AI"
           title="Ask OrderKing AI"
-          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF3366] via-[#FF5E7E] to-[#FF8FA3] text-white shadow-[0_6px_20px_rgba(255,51,102,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
+          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#B85D19] via-[#E85D04] to-[#F48C06] text-white shadow-[0_6px_20px_rgba(232,93,4,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
         >
           <Sparkles className="size-5 sm:size-6 drop-shadow-xs" />
         </button>
@@ -257,7 +257,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   <Icon
                     className={cn(
                       "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
-                      selected && id === "delivery" && "text-rose-500 fill-rose-500/20",
+                      selected && id === "delivery" && "text-[#E85D04] fill-[#E85D04]/20",
                       !selected && id === "dining" && "text-purple-600",
                       selected && "scale-105"
                     )}

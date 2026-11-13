@@ -15,16 +15,16 @@ function TutorJobsIndexPage() {
       <div className="min-h-screen bg-slate-950 text-white pb-28 pt-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-2 flex items-center justify-between text-xs text-slate-400">
           <div className="flex items-center gap-2">
-            <Link to="/" className="hover:text-amber-400 transition-colors">
+            <Link to="/" className="hover:text-orange-400 transition-colors">
               Home
             </Link>
             <span>/</span>
-            <span className="text-amber-400 font-bold">Careers Hub</span>
+            <span className="text-orange-400 font-bold">Careers Hub</span>
           </div>
 
           <Link
             to="/tutor-jobs/history"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-400/40 text-slate-300 hover:text-amber-300 font-bold text-xs transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-orange-400/40 text-slate-300 hover:text-orange-300 font-bold text-xs transition"
           >
             <History className="size-3.5" />
             <span>My Applications</span>

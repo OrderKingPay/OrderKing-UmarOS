@@ -207,9 +207,9 @@ function Login() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-[#07090E] px-4 py-10 text-slate-100 font-sans">
-      <div className="w-full max-w-md rounded-3xl border border-amber-500/20 bg-[#0C1018]/95 p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+      <div className="w-full max-w-md rounded-3xl border border-orange-500/20 bg-[#0C1018]/95 p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
         {/* Top Glow */}
-        <div className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -top-24 -right-24 size-48 rounded-full bg-orange-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 size-48 rounded-full bg-blue-500/10 blur-3xl" />
 
         <div className="flex items-center gap-3 mb-6">
@@ -233,7 +233,7 @@ function Login() {
             }}
             className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition ${
               authMethod === "phone"
-                ? "bg-amber-500 text-black shadow-sm"
+                ? "bg-orange-500 text-black shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -249,7 +249,7 @@ function Login() {
             }}
             className={`flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-xl transition ${
               authMethod === "email"
-                ? "bg-amber-500 text-black shadow-sm"
+                ? "bg-orange-500 text-black shadow-sm"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -283,7 +283,7 @@ function Login() {
                         setPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
                         if (error) setError(null);
                       }}
-                      className="border-[#1E283D] bg-[#141A26] pl-20 text-white placeholder:text-[#64748B] focus:border-amber-400 h-12 text-base font-medium rounded-2xl"
+                      className="border-[#1E283D] bg-[#141A26] pl-20 text-white placeholder:text-[#64748B] focus:border-orange-400 h-12 text-base font-medium rounded-2xl"
                     />
                   </div>
                 </div>
@@ -303,7 +303,7 @@ function Login() {
                   type="button"
                   onClick={() => void onSendPhoneOtp("sms")}
                   disabled={busy || !isPhoneValid}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-amber-500/20 active:scale-[0.98] transition hover:brightness-105"
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-orange-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
                   {busy ? "Dispatching SMS OTP..." : "Send Cellular SMS OTP"}
                 </Button>
@@ -321,7 +321,7 @@ function Login() {
                       setOtp("");
                       setError(null);
                     }}
-                    className="font-bold text-amber-400 hover:underline flex items-center gap-1"
+                    className="font-bold text-orange-400 hover:underline flex items-center gap-1"
                   >
                     <ArrowLeft className="size-3" /> Change
                   </button>
@@ -347,7 +347,7 @@ function Login() {
                         void onVerifyPhoneOtp(val);
                       }
                     }}
-                    className="text-center font-mono tracking-widest text-2xl font-black rounded-2xl border-2 border-amber-400/80 bg-[#141A26] text-white h-14 focus:border-amber-400"
+                    className="text-center font-mono tracking-widest text-2xl font-black rounded-2xl border-2 border-orange-400/80 bg-[#141A26] text-white h-14 focus:border-orange-400"
                   />
                 </div>
 
@@ -366,7 +366,7 @@ function Login() {
                   type="button"
                   onClick={() => void onVerifyPhoneOtp()}
                   disabled={busy || otp.replace(/\D/g, "").length !== 6}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-amber-500/20 active:scale-[0.98] transition hover:brightness-105"
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-orange-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
                   {busy ? "Verifying..." : "Verify & Enter Command Center"}
                 </Button>
@@ -377,7 +377,7 @@ function Login() {
                     <button
                       type="button"
                       onClick={() => void onSendPhoneOtp("sms")}
-                      className="font-bold text-amber-400 hover:underline flex items-center gap-1"
+                      className="font-bold text-orange-400 hover:underline flex items-center gap-1"
                     >
                       <RefreshCw className="size-3" /> Resend SMS
                     </button>
@@ -449,7 +449,7 @@ function Login() {
                   {error ? <p className="text-xs font-semibold text-rose-400">{error}</p> : null}
                   <Button
                     type="submit"
-                    className="w-full h-11 bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs"
+                    className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs"
                     disabled={busy}
                   >
                     {busy ? "Working…" : mode === "up" ? "Create Administrator Account" : "Sign in"}

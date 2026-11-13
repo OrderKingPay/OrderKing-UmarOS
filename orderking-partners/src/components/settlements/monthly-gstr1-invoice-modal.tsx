@@ -372,7 +372,7 @@ export function MonthlyGstr1InvoiceModal({
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">GSTIN:</span>
-                    <span className={`font-mono font-bold ${merchantGstin === "EXEMPT / UNREGISTERED" ? "text-amber-700" : "text-slate-950"}`}>
+                    <span className={`font-mono font-bold ${merchantGstin === "EXEMPT / UNREGISTERED" ? "text-orange-700" : "text-slate-950"}`}>
                       {merchantGstin}
                     </span>
                   </div>
@@ -613,7 +613,7 @@ export function MonthlyGstr1InvoiceModal({
                     <td className="p-2 border border-slate-300 text-right font-mono">
                       0.25% ({formatINR(tcsSgstPaise)})
                     </td>
-                    <td className="p-2 border border-slate-300 text-right font-mono text-amber-700 font-semibold">
+                    <td className="p-2 border border-slate-300 text-right font-mono text-orange-700 font-semibold">
                       −{formatINR(effectiveTotals.tcs)}
                     </td>
                   </tr>
@@ -634,7 +634,7 @@ export function MonthlyGstr1InvoiceModal({
                     </td>
                     <td className="p-2 border border-slate-300 text-center font-mono text-slate-500">—</td>
                     <td className="p-2 border border-slate-300 text-center font-mono text-slate-500">—</td>
-                    <td className="p-2 border border-slate-300 text-right font-mono text-amber-700 font-semibold">
+                    <td className="p-2 border border-slate-300 text-right font-mono text-orange-700 font-semibold">
                       −{formatINR(effectiveTotals.tds)}
                     </td>
                   </tr>

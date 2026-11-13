@@ -49,15 +49,15 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
     <div
       className={`rounded-2xl border p-5 sm:p-6 shadow-xl space-y-6 ${
         isDark
-          ? "border-amber-400/40 bg-gradient-to-b from-slate-900/90 to-slate-950 text-white"
+          ? "border-orange-400/40 bg-gradient-to-b from-slate-900/90 to-slate-950 text-white"
           : "border-stone-200 bg-white text-stone-900"
       } ${className}`}
     >
       <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4 ${
-        isDark ? "border-amber-400/20" : "border-stone-200"
+        isDark ? "border-orange-400/20" : "border-stone-200"
       }`}>
         <div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-500">
+          <span className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-500">
             <Users className="size-3.5" /> Fair Group Dining Settlement
           </span>
           <h3 className={`text-lg font-black mt-0.5 ${isDark ? "text-white" : "text-stone-900"}`}>
@@ -67,7 +67,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
             Zero-drift SafeInteger paise arithmetic ensures exact accounting down to 1 paisa (NPCI compliant)
           </p>
         </div>
-        <span className="text-[10px] font-black uppercase bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-300 px-2.5 py-1 rounded-full self-start sm:self-auto">
+        <span className="text-[10px] font-black uppercase bg-orange-500/10 border border-orange-500/30 text-orange-600 dark:text-orange-300 px-2.5 py-1 rounded-full self-start sm:self-auto">
           WhatsApp Instant Handoff
         </span>
       </div>
@@ -93,8 +93,8 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
                 onChange={(e) => setTotalInr(Math.max(1, Number(e.target.value) || 0))}
                 className={`w-full h-11 pl-8 pr-3.5 rounded-xl border font-mono text-sm font-bold outline-none transition ${
                   isDark
-                    ? "border-slate-700 bg-slate-950 text-white focus:border-amber-400"
-                    : "border-stone-300 bg-stone-50 text-stone-900 focus:border-amber-500"
+                    ? "border-slate-700 bg-slate-950 text-white focus:border-orange-400"
+                    : "border-stone-300 bg-stone-50 text-stone-900 focus:border-orange-500"
                 }`}
               />
             </div>
@@ -114,7 +114,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
                   onClick={() => setSplitCount(n)}
                   className={`flex-1 h-10 rounded-xl text-xs font-mono font-bold transition border ${
                     count === n
-                      ? "bg-amber-400/20 border-amber-400 text-amber-500 dark:text-amber-300 ring-1 ring-amber-400/30"
+                      ? "bg-orange-400/20 border-orange-400 text-orange-500 dark:text-orange-300 ring-1 ring-orange-400/30"
                       : isDark
                       ? "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500"
                       : "bg-stone-100 border-stone-200 text-stone-600 hover:border-stone-400"
@@ -138,7 +138,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
                   onClick={() => setTipPercent(pct)}
                   className={`flex-1 h-9 rounded-xl text-xs font-bold transition border ${
                     tipPercent === pct
-                      ? "bg-amber-400/20 border-amber-400 text-amber-500 dark:text-amber-300"
+                      ? "bg-orange-400/20 border-orange-400 text-orange-500 dark:text-orange-300"
                       : isDark
                       ? "bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500"
                       : "bg-stone-100 border-stone-200 text-stone-600 hover:border-stone-400"
@@ -161,8 +161,8 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
               placeholder="e.g. 9395065587@ybl"
               className={`w-full h-11 px-3.5 rounded-xl border font-mono text-sm outline-none transition ${
                 isDark
-                  ? "border-slate-700 bg-slate-950 text-white focus:border-amber-400"
-                  : "border-stone-300 bg-stone-50 text-stone-900 focus:border-amber-500"
+                  ? "border-slate-700 bg-slate-950 text-white focus:border-orange-400"
+                  : "border-stone-300 bg-stone-50 text-stone-900 focus:border-orange-500"
               }`}
             />
           </div>
@@ -171,22 +171,22 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
         {/* Calculation Summary Card */}
         <div
           className={`rounded-2xl border-2 p-5 space-y-4 shadow-xl ${
-            isDark ? "border-amber-400/50 bg-black/60" : "border-amber-300 bg-amber-50/40"
+            isDark ? "border-orange-400/50 bg-black/60" : "border-orange-300 bg-orange-50/40"
           }`}
         >
           <div
             className={`rounded-xl border p-4 text-center ${
-              isDark ? "bg-amber-500/10 border-amber-400/30" : "bg-white border-amber-200 shadow-xs"
+              isDark ? "bg-orange-500/10 border-orange-400/30" : "bg-white border-orange-200 shadow-xs"
             }`}
           >
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
+            <span className="text-[10px] font-black uppercase tracking-wider text-orange-600 dark:text-orange-400 block">
               Each Person&apos;s Exact Share
             </span>
             <span className={`text-3xl font-black font-mono mt-1 block ${isDark ? "text-white" : "text-stone-900"}`}>
               {formatPaise(perPersonBasePaise)}
             </span>
             {remainderPaise > 0 && (
-              <span className="text-[10px] text-amber-600 dark:text-amber-300/80 block mt-1">
+              <span className="text-[10px] text-orange-600 dark:text-orange-300/80 block mt-1">
                 ({remainderPaise} people pay 1 paisa extra for absolute total match)
               </span>
             )}
@@ -204,7 +204,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
               </span>
             </div>
             {tipPaise > 0 && (
-              <div className="flex justify-between text-amber-500 font-medium">
+              <div className="flex justify-between text-orange-500 font-medium">
                 <span>Gratuity ({tipPercent}%):</span>
                 <span className="font-mono font-bold">+{formatPaise(tipPaise)}</span>
               </div>
@@ -228,7 +228,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
               onClick={handleCopyLink}
               className={`h-10 rounded-xl text-xs font-bold ${
                 isDark
-                  ? "border-amber-400/40 text-amber-300 bg-slate-950 hover:bg-slate-900"
+                  ? "border-orange-400/40 text-orange-300 bg-slate-950 hover:bg-slate-900"
                   : "border-stone-300 text-stone-800 bg-white hover:bg-stone-50"
               }`}
             >

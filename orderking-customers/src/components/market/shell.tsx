@@ -65,7 +65,7 @@ const SEARCH_PLACEHOLDERS = [
 
 export const SOVEREIGN_ECOSYSTEM_TABS = [
   {
-    id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
+    id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-orange-500 to-[#C2410C]", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v))
   },
   {
@@ -81,7 +81,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
     match: (p: string) => p.startsWith("/travel")
   },
   {
-    id: "kingpay", name: "KingPay", icon: Wallet, iconGradient: "from-amber-400 to-amber-700", to: "/kingpay",
+    id: "kingpay", name: "KingPay", icon: Wallet, iconGradient: "from-[#B85D19] to-[#C2410C]", to: "/kingpay",
     match: (p: string) => ["/kingpay", "/king-pay", "/news", "/earn"].some((v) => p.startsWith(v))
   },
   {
@@ -232,8 +232,8 @@ export function CustomerShell({
                 ? "bg-[#0b0f19]/95 border-b border-white/10 shadow-[0_6px_24px_rgba(0,0,0,0.4)] text-white"
                 : "bg-[#080a10]/90 border-b border-white/5 text-white"
               : isScrolled
-                ? "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-amber-900/15 shadow-[0_6px_24px_rgba(40,25,10,0.08)] text-gray-900"
-                : "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-amber-900/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-gray-900"
+                ? "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-orange-950/15 shadow-[0_6px_24px_rgba(184,93,25,0.08)] text-gray-900"
+                : "bg-gradient-to-b from-[#FFFDF9]/95 via-[#FAF6F0]/95 to-[#F5EFEB]/90 border-b border-orange-950/5 shadow-[0_2px_8px_rgba(0,0,0,0.02)] text-gray-900"
           )}
         >
           {/* ROW 1: Authentic Indian Food Delivery Header: Logo + Delivery Address (Left) | Language + AI Support + Cart + Profile (Right) */}
@@ -246,7 +246,7 @@ export function CustomerShell({
                     <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
                     <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
                   </div>
-                  <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-amber-300" : "text-amber-950")}>
+                  <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-orange-400" : "text-orange-950")}>
                     KingPay
                   </span>
                 </Link>
@@ -269,13 +269,13 @@ export function CustomerShell({
                   onClick={() => setLocOpen(true)}
                   className={cn(
                     "flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl border border-transparent transition-all max-w-[130px] xs:max-w-[170px] sm:max-w-[220px] group cursor-pointer",
-                    isDark ? "hover:bg-white/10 hover:border-white/15 text-slate-200" : "hover:bg-amber-100/50 hover:border-amber-200/80 text-gray-900"
+                    isDark ? "hover:bg-white/10 hover:border-white/15 text-slate-200" : "hover:bg-orange-100/50 hover:border-orange-200/80 text-gray-900"
                   )}
                   title="Change delivery location"
                   aria-label="Select delivery address"
                 >
                   <div className="relative shrink-0 flex items-center justify-center">
-                    <MapPin className="size-3.5 sm:size-4 text-amber-600 group-hover:scale-110 transition-transform" />
+                    <MapPin className="size-3.5 sm:size-4 text-[#E85D04] group-hover:scale-110 transition-transform" />
                     <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
                   <div className="flex flex-col min-w-0">
@@ -304,11 +304,11 @@ export function CustomerShell({
                   "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
                   path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
                     ? isDark
-                      ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
-                      : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
+                      ? "border-orange-500 bg-gradient-to-b from-orange-600/30 to-[#B85D19]/25 text-orange-200 ring-1 ring-orange-400/50 shadow-[0_0_12px_rgba(232,93,4,0.25)]"
+                      : "border-orange-500 bg-gradient-to-b from-orange-100 to-orange-50 text-orange-950 ring-1 ring-orange-400 shadow-[0_2px_8px_rgba(232,93,4,0.2)]"
                     : isDark
-                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-amber-400/40"
-                      : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-orange-400/40"
+                      : "border-slate-200 bg-white/90 hover:bg-orange-50/80 text-gray-800 hover:border-orange-400/60"
                 )}
               >
                 <UtensilsCrossed className="size-3.5 sm:size-4 shrink-0" aria-hidden="true" />
@@ -341,7 +341,7 @@ export function CustomerShell({
 
             {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* 1-Tap Language selector (English, Hindi, Bengali, etc.) */}
+              {/* Language Selector */}
               <button
                 type="button"
                 onClick={() => setLangOpen(true)}
@@ -349,26 +349,35 @@ export function CustomerShell({
                   "flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer border",
                   isDark
                     ? "bg-white/10 hover:bg-white/20 border-white/15 text-slate-200"
-                    : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-300"
+                    : "bg-white/80 hover:bg-orange-50 border-orange-200/80 text-gray-800 hover:border-orange-300"
                 )}
-                title="Change Language (English, हिन्दी, বাংলা, etc.)"
+                title="Change Language"
                 aria-label="Select language"
               >
-                <Languages className={cn("size-3.5", isDark ? "text-amber-400" : "text-amber-700")} />
-                <span className={cn("text-[11px] font-black uppercase", isDark ? "text-amber-300" : "text-amber-950")}>
+                <Languages className={cn("size-3.5", isDark ? "text-orange-400" : "text-[#B85D19]")} />
+                <span className={cn("text-[11px] font-black uppercase", isDark ? "text-orange-300" : "text-orange-950")}>
                   {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
                 </span>
               </button>
 
+              {/* Copper Pass VIP Pill (Beating Zomato Gold with Luxury Copper & Sunset Orange) */}
+              <Link
+                to="/rewards"
+                className="flex items-center justify-center px-2 sm:px-2.5 py-1 rounded-full border border-orange-500/50 bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white text-[9.5px] font-black uppercase tracking-tight shadow-[0_2px_8px_rgba(232,93,4,0.35)] hover:brightness-110 active:scale-95 no-underline shrink-0 cursor-pointer"
+                title="OrderKing Copper Pass"
+              >
+                <span>COPPER ₹1</span>
+              </Link>
+
               {/* Gold Crown Wallet - Direct link to KingPay */}
               <Link
                 to="/kingpay"
-                className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/15 border border-amber-400/80 text-amber-300 hover:border-amber-300 shadow-2xs hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+                className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-[#B85D19]/35 via-[#E85D04]/25 to-[#9A3412]/30 border border-orange-500/70 text-orange-200 hover:border-orange-400 shadow-2xs hover:shadow-[0_0_12px_rgba(232,93,4,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
                 title="OrderKing Gold Crown Wallet &amp; KingPay"
                 aria-label="Gold Crown Wallet"
               >
-                <Crown className="size-3.5 text-amber-300 fill-amber-400" />
-                <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
+                <Crown className="size-3.5 text-orange-400 fill-orange-500" />
+                <span className="text-[10.5px] font-black uppercase tracking-tight text-orange-300 hidden xs:inline">
                   Wallet
                 </span>
               </Link>
@@ -381,14 +390,14 @@ export function CustomerShell({
                     "relative flex items-center justify-center p-1.5 sm:p-2 rounded-xl shadow-2xs transition-all active:scale-95 shrink-0 no-underline cursor-pointer border",
                     isDark
                       ? "bg-white/10 hover:bg-white/20 border-white/15 text-white"
-                      : "bg-white/80 hover:bg-amber-50 border-amber-200/80 text-gray-800 hover:border-amber-400"
+                      : "bg-white/80 hover:bg-orange-50 border-orange-200/80 text-gray-800 hover:border-orange-400"
                   )}
                   title="Shopping Cart"
                   aria-label={`Cart with ${count} items`}
                 >
                   <ShoppingBag className={cn("size-4", isDark ? "text-white" : "text-gray-900")} />
                   {count > 0 && (
-                    <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
+                    <span className="absolute -top-1 -right-1 flex min-w-4 h-4 px-1 items-center justify-center rounded-full bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-[9px] font-black text-white shadow-2xs ring-1 ring-white">
                       {count > 99 ? "99+" : count}
                     </span>
                   )}
@@ -397,17 +406,17 @@ export function CustomerShell({
 
               {/* User profile avatar / standard top-right user menu with fallback avatar */}
               {isPending ? (
-                <div className="size-7 sm:size-8 animate-pulse rounded-full bg-amber-100 shrink-0" />
+                <div className="size-7 sm:size-8 animate-pulse rounded-full bg-orange-100 shrink-0" />
               ) : user ? (
                 <div className="relative shrink-0" ref={userMenuRef}>
                   <button
                     type="button"
                     onClick={() => setUserMenuOpen((v) => !v)}
                     className={cn(
-                      "flex items-center gap-1 p-0.5 rounded-full border transition no-underline shadow-2xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-400/50",
+                      "flex items-center gap-1 p-0.5 rounded-full border transition no-underline shadow-2xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-400/50",
                       isDark
-                        ? "border-amber-400/60 bg-slate-900 hover:bg-slate-800 text-white"
-                        : "border-amber-300/90 bg-white/95 hover:bg-amber-50 hover:border-amber-400 text-gray-900"
+                        ? "border-orange-500/60 bg-slate-900 hover:bg-slate-800 text-white"
+                        : "border-orange-300/90 bg-white/95 hover:bg-orange-50 hover:border-orange-400 text-gray-900"
                     )}
                     title="Your Profile & Account Menu"
                     aria-label="Account and Profile Menu"
@@ -419,14 +428,14 @@ export function CustomerShell({
                       imageUrl={user.profileImageUrl}
                       profileImageUrl={user.profileImageUrl}
                     />
-                    <ChevronDown className={cn("size-3 text-amber-700 transition-transform duration-200 hidden xs:block mr-0.5", userMenuOpen && "rotate-180")} />
+                    <ChevronDown className={cn("size-3 text-orange-700 transition-transform duration-200 hidden xs:block mr-0.5", userMenuOpen && "rotate-180")} />
                   </button>
 
                   {/* Standard Top-Right User Menu Dropdown */}
                   {userMenuOpen && (
-                    <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-xl shadow-xl shadow-amber-950/10 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-orange-900/10 bg-white/95 backdrop-blur-xl shadow-xl shadow-orange-950/10 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                       {/* User Identity Header with Clean Avatar & Fallback */}
-                      <div className="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-amber-50/80 to-yellow-50/60 border border-amber-200/60 mb-1.5">
+                      <div className="flex items-center gap-3 p-2.5 rounded-xl bg-gradient-to-r from-orange-50/90 via-stone-50 to-orange-50/70 border border-orange-200/60 mb-1.5">
                         <DeviceAvatar
                           userId={user.id}
                           name={user.displayName}
@@ -440,8 +449,8 @@ export function CustomerShell({
                           <span className="text-[10px] text-gray-500 truncate">
                             {user.primaryEmail || "Authenticated Patron"}
                           </span>
-                          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 mt-0.5">
-                            <Crown className="size-2.5 fill-amber-500 text-amber-600" /> Verified Patron
+                          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-orange-800 mt-0.5">
+                            <Crown className="size-2.5 fill-[#E85D04] text-[#B85D19]" /> Verified Patron
                           </span>
                         </div>
                       </div>
@@ -451,54 +460,54 @@ export function CustomerShell({
                         <Link
                           to="/account"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline"
                         >
-                          <User className="size-4 text-amber-600" />
+                          <User className="size-4 text-[#E85D04]" />
                           <span>Profile &amp; Addresses</span>
                         </Link>
 
                         <Link
                           to="/orders"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline"
                         >
-                          <Package className="size-4 text-amber-600" />
+                          <Package className="size-4 text-[#E85D04]" />
                           <span>My Orders &amp; Passes</span>
                         </Link>
 
                         <Link
                           to="/kingpay"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline"
                         >
-                          <CreditCard className="size-4 text-amber-600" />
+                          <CreditCard className="size-4 text-[#E85D04]" />
                           <span>KingPay &amp; Crowns</span>
                         </Link>
 
                         <Link
                           to="/tutor"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline"
                         >
-                          <GraduationCap className="size-4 text-amber-600" />
+                          <GraduationCap className="size-4 text-[#E85D04]" />
                           <span>King Tutor &amp; Solutions</span>
                         </Link>
 
                         <Link
                           to="/tutor-jobs"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline"
                         >
-                          <Briefcase className="size-4 text-amber-600" />
+                          <Briefcase className="size-4 text-[#E85D04]" />
                           <span>King Job &amp; Careers</span>
                         </Link>
 
                         <Link
                           to="/settings"
                           onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline border-b border-gray-100 pb-2 mb-1"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition no-underline border-b border-gray-100 pb-2 mb-1"
                         >
-                          <Settings className="size-4 text-amber-600" />
+                          <Settings className="size-4 text-[#E85D04]" />
                           <span>Preferences</span>
                         </Link>
 
@@ -517,7 +526,7 @@ export function CustomerShell({
                 <SignedOut>
                   <Link
                     to="/login"
-                    className="flex items-center gap-1 rounded-xl border border-amber-400/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2 sm:px-2.5 py-1 text-amber-300 shadow-2xs no-underline transition hover:border-amber-300 active:scale-95 shrink-0"
+                    className="flex items-center gap-1 rounded-xl border border-orange-500/80 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-2 sm:px-2.5 py-1 text-orange-300 shadow-2xs no-underline transition hover:border-orange-400 active:scale-95 shrink-0"
                     aria-label="Sign in"
                   >
                     <span className="text-[10.5px] font-black uppercase tracking-wider">Sign In</span>
@@ -531,11 +540,11 @@ export function CustomerShell({
         {hasSearchRow && (
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              {/* Luxury Center Search (Glassmorphism, rounded pill) */}
+              {/* Center Search (Glassmorphism, rounded pill) */}
               <button
                 type="button"
                 onClick={() => (onSearch ? onSearch() : void navigate({ to: "/search" }))}
-                className="flex-1 flex h-10 sm:h-11 items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-stone-100/90 backdrop-blur-md hover:bg-white hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 px-3.5 text-left text-gray-500 transition-all shadow-2xs min-w-0 group cursor-pointer"
+                className="flex-1 flex h-10 sm:h-11 items-center gap-2.5 rounded-2xl border border-stone-200/90 bg-stone-100/90 backdrop-blur-md hover:bg-white hover:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 px-3.5 text-left text-gray-500 transition-all shadow-2xs min-w-0 group cursor-pointer"
               >
                 <Search className="size-4 shrink-0 text-stone-500 group-hover:scale-110 transition-transform" aria-hidden />
                 <div className="relative flex-1 h-4 overflow-hidden">
@@ -605,13 +614,13 @@ export function CustomerShell({
         {/* Floating View Cart & 1-Tap Checkout Bar */}
         {count > 0 && !isKingPayDomain && path !== "/cart" && path !== "/checkout" ? (
           <div className="pointer-events-none fixed inset-x-0 bottom-20 z-40 flex flex-col items-center justify-center px-4 gap-1.5">
-            <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-slate-950 via-[#18130d] to-slate-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-amber-400/60 backdrop-blur-md">
+            <div className="pointer-events-auto flex min-h-12 w-full max-w-md items-center justify-between rounded-2xl bg-gradient-to-r from-stone-950 via-[#1c130d] to-stone-950 px-3.5 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] transition-all font-bold border border-orange-500/60 backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <span className="flex size-7 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-500 text-slate-950 text-xs font-black shadow-md">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white text-xs font-black shadow-md">
                   {count}
                 </span>
                 <div className="flex flex-col">
-                  <span className="text-xs font-black uppercase tracking-wider text-amber-200 leading-none">
+                  <span className="text-xs font-black uppercase tracking-wider text-orange-200 leading-none">
                     {count === 1 ? t("cart.item") : t("cart.items")} added
                   </span>
                   <span className="text-[10px] text-stone-400 font-medium mt-0.5">
@@ -624,9 +633,9 @@ export function CustomerShell({
                 <button
                   type="button"
                   onClick={() => setOneTapDrawerOpen(true)}
-                  className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all border border-amber-200 cursor-pointer"
+                  className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] px-3 py-1.5 text-xs font-black text-white shadow-md hover:brightness-105 active:scale-95 transition-all border border-orange-400/40 cursor-pointer"
                 >
-                  <Crown className="size-3.5 fill-slate-950" />
+                  <Crown className="size-3.5 fill-white text-white" />
                   <span>1-Tap Pay</span>
                 </button>
 

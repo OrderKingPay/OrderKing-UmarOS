@@ -870,7 +870,7 @@ export function OperatorBadge({
             className
           )}
         >
-          <span className="text-[9px] font-black tracking-wider text-amber-300 leading-none">
+          <span className="text-[9px] font-black tracking-wider text-orange-300 leading-none">
             BSNL
           </span>
         </div>
@@ -879,7 +879,7 @@ export function OperatorBadge({
       return (
         <div
           className={cn(
-            "rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-amber-400 shrink-0 font-black text-xs select-none",
+            "rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-orange-400 shrink-0 font-black text-xs select-none",
             className
           )}
         >
@@ -1259,7 +1259,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-            <Zap className="size-5 text-amber-400" /> Utilities
+            <Zap className="size-5 text-orange-400" /> Utilities
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
             Electricity, mobile recharge, broadband, DTH, FASTag, gas &amp; water bill payments
@@ -1274,7 +1274,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search biller (e.g. APDCL, Jio, Airtel, FASTag)..."
-            className="w-full h-10 pl-9 pr-8 rounded-xl border border-slate-800 bg-slate-900/90 text-white text-xs placeholder:text-slate-500 focus:border-amber-400/80 focus:bg-slate-900 outline-none transition"
+            className="w-full h-10 pl-9 pr-8 rounded-xl border border-slate-800 bg-slate-900/90 text-white text-xs placeholder:text-slate-500 focus:border-orange-400/80 focus:bg-slate-900 outline-none transition"
           />
           {searchQuery && (
             <button
@@ -1301,7 +1301,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
               className={cn(
                 "flex flex-col items-start p-3 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden group",
                 isSelected
-                  ? "border-amber-400 bg-gradient-to-b from-amber-950/40 via-slate-900 to-[#10141E] ring-1 ring-amber-400/50 shadow-[0_4px_20px_rgba(245,158,11,0.15)]"
+                  ? "border-orange-400 bg-gradient-to-b from-orange-950/40 via-slate-900 to-[#10141E] ring-1 ring-orange-400/50 shadow-[0_4px_20px_rgba(245,158,11,0.15)]"
                   : "border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-900"
               )}
             >
@@ -1309,7 +1309,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                 className={cn(
                   "flex size-8 items-center justify-center rounded-xl mb-2 transition-transform group-hover:scale-105",
                   isSelected
-                    ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                    ? "bg-orange-400/20 text-orange-300 border border-orange-400/40"
                     : "bg-slate-800 text-slate-300 border border-slate-700/60"
                 )}
               >
@@ -1328,7 +1328,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
           {/* Header & Operator Switcher */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
                 ⚡ Instant Mobile Recharge
               </span>
               <h3 className="text-base sm:text-lg font-black text-white mt-0.5">
@@ -1353,7 +1353,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     className={cn(
                       "flex items-center gap-2 px-3 py-2 rounded-xl border transition-all cursor-pointer",
                       isActive
-                        ? "border-amber-400 bg-amber-400/15 text-white shadow-sm ring-1 ring-amber-400/30"
+                        ? "border-orange-400 bg-orange-400/15 text-white shadow-sm ring-1 ring-orange-400/30"
                         : "border-slate-800 bg-slate-900/80 text-slate-400 hover:text-white hover:border-slate-700"
                     )}
                   >
@@ -1371,7 +1371,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
               <label className="text-xs font-bold text-slate-200 block mb-1.5">
                 Mobile Number (10 Digits)
               </label>
-              <div className="flex items-center rounded-xl border border-slate-700 bg-slate-900 focus-within:border-amber-400 transition overflow-hidden">
+              <div className="flex items-center rounded-xl border border-slate-700 bg-slate-900 focus-within:border-orange-400 transition overflow-hidden">
                 <span className="px-3.5 text-xs font-mono font-bold text-slate-400 bg-slate-800/60 border-r border-slate-700 py-3">
                   +91
                 </span>
@@ -1393,7 +1393,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
               <select
                 value={mobileCircle}
                 onChange={(e) => setMobileCircle(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold outline-none focus:border-amber-400 cursor-pointer"
+                className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white text-xs font-bold outline-none focus:border-orange-400 cursor-pointer"
               >
                 <option value="Assam & North East">Assam &amp; North East</option>
                 <option value="All India">All India</option>
@@ -1412,7 +1412,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
               <span className="text-xs font-bold text-slate-200">
                 Browse Plans for {selectedBiller.name}
               </span>
-              <span className="text-[11px] text-amber-400 font-bold">
+              <span className="text-[11px] text-orange-400 font-bold">
                 {availablePlans.length} Plans Available
               </span>
             </div>
@@ -1432,7 +1432,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                   className={cn(
                     "px-3 py-1.5 rounded-xl text-xs font-bold transition shrink-0 cursor-pointer border",
                     planFilterTab === tab.id
-                      ? "border-amber-400 bg-amber-400/20 text-amber-300"
+                      ? "border-orange-400 bg-orange-400/20 text-orange-300"
                       : "border-slate-800 bg-slate-900 text-slate-400 hover:text-white"
                   )}
                 >
@@ -1452,7 +1452,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     className={cn(
                       "p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between relative overflow-hidden group",
                       isSelected
-                        ? "border-amber-400 bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-950 ring-1 ring-amber-400/50 shadow-lg"
+                        ? "border-orange-400 bg-gradient-to-br from-orange-950/40 via-slate-900 to-slate-950 ring-1 ring-orange-400/50 shadow-lg"
                         : "border-slate-800 bg-slate-900/60 hover:border-slate-700 hover:bg-slate-900"
                     )}
                   >
@@ -1466,13 +1466,13 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                               ({(plan.priceRupees / Math.max(1, parseInt(plan.validity) || 1)).toFixed(1)}/day)
                             </span>
                           </div>
-                          <span className="text-[11px] font-bold text-amber-300">
+                          <span className="text-[11px] font-bold text-orange-300">
                             {plan.validity}
                           </span>
                         </div>
 
                         {plan.badge && (
-                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300">
+                          <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-orange-400/15 border border-orange-400/30 text-orange-300">
                             {plan.badge}
                           </span>
                         )}
@@ -1509,7 +1509,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                         className={cn(
                           "size-5 rounded-full flex items-center justify-center border transition",
                           isSelected
-                            ? "bg-amber-400 border-amber-400 text-slate-950"
+                            ? "bg-orange-400 border-orange-400 text-slate-950"
                             : "border-slate-700 text-transparent"
                         )}
                       >
@@ -1537,7 +1537,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             <button
               type="button"
               onClick={handleProceedToPay}
-              className="w-full sm:w-auto px-8 h-12 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-98 transition cursor-pointer"
+              className="w-full sm:w-auto px-8 h-12 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-slate-950 font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-98 transition cursor-pointer"
             >
               <span>Recharge ₹{cleanAmount} via UPI</span>
               <ArrowRight className="size-4" />
@@ -1556,7 +1556,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                   : `Select Biller (${filteredBillers.length})`}
               </span>
               <span className="text-[11px] text-slate-400">
-                Selected: <strong className="text-amber-400">{selectedBiller.code}</strong>
+                Selected: <strong className="text-orange-400">{selectedBiller.code}</strong>
               </span>
             </div>
 
@@ -1571,12 +1571,12 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     className={cn(
                       "shrink-0 px-3.5 py-2.5 rounded-xl border text-left text-xs transition cursor-pointer max-w-[220px]",
                       isCurrent
-                        ? "border-amber-400 bg-amber-400/10 text-white"
+                        ? "border-orange-400 bg-orange-400/10 text-white"
                         : "border-slate-800 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:bg-slate-900"
                     )}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-bold text-[11px] text-amber-300">{b.code}</span>
+                      <span className="font-bold text-[11px] text-orange-300">{b.code}</span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">
                         {b.state}
                       </span>
@@ -1605,7 +1605,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     placeholder={selectedBiller.accountPlaceholder}
-                    className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-xs focus:border-amber-400 outline-none"
+                    className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-xs focus:border-orange-400 outline-none"
                   />
                 </div>
 
@@ -1619,7 +1619,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     min={1}
                     value={amountRupees}
                     onChange={(e) => setAmountRupees(Math.max(1, Number(e.target.value) || 0))}
-                    className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-sm font-bold focus:border-amber-400 outline-none"
+                    className="w-full h-11 px-3.5 rounded-xl border border-slate-700 bg-slate-900 text-white font-mono text-sm font-bold focus:border-orange-400 outline-none"
                   />
 
                   {/* Preset Amount Chips */}
@@ -1632,7 +1632,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                         className={cn(
                           "h-8 px-2.5 rounded-lg border text-xs font-mono font-bold transition shrink-0 cursor-pointer",
                           amountRupees === amt
-                            ? "bg-amber-400/20 border-amber-400 text-amber-300"
+                            ? "bg-orange-400/20 border-orange-400 text-orange-300"
                             : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
                         )}
                       >
@@ -1657,7 +1657,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     </div>
                     <div className="flex justify-between text-slate-400">
                       <span>Consumer Account</span>
-                      <span className="font-mono text-amber-300">
+                      <span className="font-mono text-orange-300">
                         {accountNumber.trim() || "Pending input"}
                       </span>
                     </div>
@@ -1677,7 +1677,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                 <button
                   type="button"
                   onClick={handleProceedToPay}
-                  className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-98 transition cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-98 transition cursor-pointer"
                 >
                   <span>Pay ₹{cleanAmount.toFixed(2)} via UPI</span>
                   <ArrowRight className="size-4" />
@@ -1695,7 +1695,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-400/10 text-orange-300 border border-orange-400/30">
                   {paymentCompleted ? "Payment Confirmed" : "UPI Instant Checkout"}
                 </span>
                 <h3 className="text-base font-black text-white mt-1.5">{selectedBiller.name}</h3>
@@ -1727,7 +1727,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                       className="size-44 sm:size-48 object-contain"
                     />
                   </div>
-                  <span className="text-xs font-mono text-amber-300 font-bold mt-2.5">
+                  <span className="text-xs font-mono text-orange-300 font-bold mt-2.5">
                     Scan with PhonePe, Google Pay, Paytm, or BHIM
                   </span>
                   <span className="text-[10px] text-slate-400 mt-0.5 font-mono">
@@ -1780,7 +1780,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                       href={appLinks.universal}
                       className="flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold transition no-underline cursor-pointer"
                     >
-                      <Zap className="size-3.5 text-amber-400" />
+                      <Zap className="size-3.5 text-orange-400" />
                       <span>Any UPI App</span>
                     </a>
                   </div>
@@ -1810,7 +1810,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     type="button"
                     disabled={isPaying}
                     onClick={handlePayViaRazorpay}
-                    className="w-full h-11 rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-60 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-amber-500/20"
+                    className="w-full h-11 rounded-xl bg-orange-400 hover:bg-orange-300 disabled:opacity-60 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-orange-500/20"
                   >
                     <CreditCard className="size-4" />
                     <span>{isPaying ? "Processing..." : `Pay ₹${cleanAmount.toFixed(2)} via Razorpay`}</span>
@@ -1867,7 +1867,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[10px]">Account / Mobile</span>
-                      <span className="font-bold font-mono text-amber-300">
+                      <span className="font-bold font-mono text-orange-300">
                         {accountNumber || "N/A"}
                       </span>
                     </div>
@@ -1928,7 +1928,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
         <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-              <Receipt className="size-4 text-amber-400" />
+              <Receipt className="size-4 text-orange-400" />
               <span>Recent Verified Utility Payments</span>
             </h3>
             <span className="text-[10px] font-mono text-slate-400">PostgreSQL Ledger</span>

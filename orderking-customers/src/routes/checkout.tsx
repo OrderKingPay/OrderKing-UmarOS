@@ -97,7 +97,7 @@ function BillTooltip({ text, title }: { text: string; title?: string }) {
         onClick={() => setOpen(!open)}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
-        className="text-zinc-400 hover:text-amber-500 transition p-0.5 rounded-full cursor-pointer focus:outline-none"
+        className="text-zinc-400 hover:text-[#E85D04] transition p-0.5 rounded-full cursor-pointer focus:outline-none"
         aria-label={title || "More information"}
       >
         <Info className="size-3.5" />
@@ -105,10 +105,10 @@ function BillTooltip({ text, title }: { text: string; title?: string }) {
       {open && (
         <div
           role="tooltip"
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 rounded-xl border border-amber-400/40 bg-zinc-950 p-3 text-xs text-zinc-100 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 pointer-events-none"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-64 rounded-xl border border-orange-400/40 bg-zinc-950 p-3 text-xs text-zinc-100 shadow-2xl backdrop-blur-md animate-in fade-in zoom-in-95 pointer-events-none"
         >
           {title && (
-            <div className="font-extrabold text-amber-400 mb-1 flex items-center gap-1.5">
+            <div className="font-extrabold text-orange-400 mb-1 flex items-center gap-1.5">
               <span>{title}</span>
             </div>
           )}
@@ -190,7 +190,7 @@ function CheckoutPage() {
     return (
       <CustomerShell>
         <div className="p-6 max-w-3xl mx-auto space-y-4 animate-pulse">
-          <div className="h-10 w-1/3 bg-amber-500/20 rounded-2xl" />
+          <div className="h-10 w-1/3 bg-orange-500/20 rounded-2xl" />
           <div className="h-40 bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
           <div className="h-32 bg-zinc-200 dark:bg-zinc-800 rounded-3xl" />
         </div>
@@ -400,14 +400,14 @@ function CheckoutPage() {
 
   return (
     <CustomerShell>
-      <div className="min-h-[85vh] bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-32 px-3 sm:px-6 py-6">
+      <div className="min-h-[85vh] bg-gradient-to-b from-orange-500/10 via-white to-orange-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-32 px-3 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
 
           {/* Checkout Steps */}
           <div className="flex items-center justify-between px-2">
             <Link
               to="/cart"
-              className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-amber-600 transition"
+              className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-orange-600 transition"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to Cart</span>
@@ -415,8 +415,8 @@ function CheckoutPage() {
 
             <div className="flex items-center gap-2 text-xs font-black">
               <span className="inline-flex items-center gap-1 text-zinc-400"><span>Cart</span><Check className="size-3.5 text-emerald-500" /></span>
-              <span className="text-amber-500">──</span>
-              <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 px-2.5 py-0.5 shadow-xs">
+              <span className="text-orange-500">──</span>
+              <span className="rounded-full bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white px-2.5 py-0.5 shadow-xs">
                 2. Checkout
               </span>
               <span className="text-zinc-300">──</span>
@@ -433,10 +433,10 @@ function CheckoutPage() {
                 </div>
                 <div>
                   <h1 className="font-display text-xl font-bold text-slate-900 tracking-tight">
-                    {t("checkout.title") || "Secure Checkout"}
+                    {t("checkout.title") || "Checkout"}
                   </h1>
                   <p className="text-xs text-slate-500">
-                    Delivering fresh from <span className="text-slate-900 font-semibold">{restaurantName || "Kitchen"}</span>
+                    Delivering from <span className="text-slate-900 font-semibold">{restaurantName || "Kitchen"}</span>
                   </p>
                 </div>
               </div>
@@ -451,40 +451,40 @@ function CheckoutPage() {
           {!items.length ? (
             <div className="p-8 text-center rounded-3xl bg-surface border border-zinc-200">
               <p className="text-muted">{t("cart.empty")}</p>
-              <Button asChild className="mt-4 bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-bold">
+              <Button asChild className="mt-4 bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-bold">
                 <Link to="/">Browse Restaurants</Link>
               </Button>
             </div>
           ) : (
             <>
               {/* 1. ADDRESS SELECTION WITH MAP PREVIEW */}
-              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
+              <section className="rounded-3xl border border-orange-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/20 text-orange-600">
                       <MapPin className="size-5" />
                     </div>
                     <div>
                       <h2 className="font-display text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-50">
                         {t("checkout.address") || "Delivery Address"}
                       </h2>
-                      <p className="text-xs text-zinc-400">Where should we deliver your feast?</p>
+                      <p className="text-xs text-zinc-400">Select delivery address</p>
                     </div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setLocationPickerOpen(true)}
-                    className="flex items-center gap-1.5 rounded-xl border border-amber-400/40 bg-amber-50 dark:bg-zinc-800 px-3 py-1.5 text-xs font-black text-amber-900 dark:text-amber-200 hover:bg-amber-100 transition shadow-xs cursor-pointer"
+                    className="flex items-center gap-1.5 rounded-xl border border-orange-400/40 bg-orange-50 dark:bg-zinc-800 px-3 py-1.5 text-xs font-black text-orange-950 dark:text-orange-200 hover:bg-orange-100 transition shadow-xs cursor-pointer"
                   >
                     <Edit3 className="size-3.5" />
                     <span>Change</span>
                   </button>
                 </div>
 
-                <div className="rounded-2xl border border-amber-400/25 bg-white dark:bg-zinc-900 p-4 shadow-xs">
+                <div className="rounded-2xl border border-orange-400/25 bg-white dark:bg-zinc-900 p-4 shadow-xs">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black text-[10px] uppercase px-2 py-0.5">
+                    <span className="rounded-full bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black text-[10px] uppercase px-2 py-0.5">
                       {location.label || "HOME"}
                     </span>
                     <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
@@ -504,19 +504,19 @@ function CheckoutPage() {
 
                   <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-xs text-amber-400 font-extrabold uppercase tracking-wider">
+                      <div className="flex items-center gap-2 text-xs text-orange-400 font-extrabold uppercase tracking-wider">
                         <Sparkles className="size-3.5" />
                         <span>Live Delivery Route Preview</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
                         <span>{restaurantName || "Kitchen"}</span>
-                        <span className="text-amber-400">┈┈┈┈┈┈</span>
+                        <span className="text-orange-400">┈┈┈┈┈┈</span>
                         <span>{location.label || "Your Location"}</span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="rounded-xl bg-amber-400/20 border border-amber-400/40 px-2.5 py-1 text-xs font-black text-amber-300">
+                      <span className="rounded-xl bg-orange-400/20 border border-orange-400/40 px-2.5 py-1 text-xs font-black text-orange-300">
                         {scheduledSlot ? scheduledSlot.timeSlot : "Live Route"}
                       </span>
                       <span className="text-[11px] font-mono text-zinc-400">
@@ -528,10 +528,10 @@ function CheckoutPage() {
               </section>
 
               {/* Delivery Timing & Scheduling Section */}
-              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+              <section className="rounded-3xl border border-orange-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/20 text-[#E85D04]">
                       <Clock className="size-5" />
                     </div>
                     <div>
@@ -548,7 +548,7 @@ function CheckoutPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setScheduleModalOpen(true)}
-                    className="rounded-xl border-amber-400/40 text-xs font-bold hover:bg-amber-50"
+                    className="rounded-xl border-orange-400/40 text-xs font-bold hover:bg-orange-50"
                   >
                     {scheduledSlot ? "Change Slot" : "Schedule for Later"}
                   </Button>
@@ -590,10 +590,10 @@ function CheckoutPage() {
               )}
 
               {/* Ordering for someone else */}
-              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+              <section className="rounded-3xl border border-orange-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
                 <label className="flex cursor-pointer items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700">
+                    <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/20 text-[#E85D04]">
                       <Gift className="size-5" />
                     </div>
                     <div>
@@ -605,20 +605,20 @@ function CheckoutPage() {
                   </div>
                   <input
                     type="checkbox"
-                    className="size-5 rounded-lg border-amber-400 text-amber-500 focus:ring-amber-400"
+                    className="size-5 rounded-lg border-orange-500 text-[#E85D04] focus:ring-orange-500"
                     checked={forSomeoneElse}
                     onChange={(e) => setForSomeoneElse(e.target.checked)}
                   />
                 </label>
 
                 {forSomeoneElse && (
-                  <div className="mt-4 grid gap-3 border-t border-amber-400/20 pt-4 sm:grid-cols-2">
+                  <div className="mt-4 grid gap-3 border-t border-orange-400/20 pt-4 sm:grid-cols-2">
                     <div>
                       <label className="block text-xs font-bold text-zinc-600 dark:text-zinc-400">
                         Recipient Name
                       </label>
                       <Input
-                        className="mt-1 text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                        className="mt-1 text-sm rounded-xl border-orange-400/40 focus:border-orange-500"
                         placeholder="e.g. Priya Sharma"
                         value={recipientName}
                         onChange={(e) => setRecipientName(e.target.value)}
@@ -629,7 +629,7 @@ function CheckoutPage() {
                         Recipient Phone Number
                       </label>
                       <Input
-                        className="mt-1 text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                        className="mt-1 text-sm rounded-xl border-orange-400/40 focus:border-orange-500"
                         placeholder="10-digit mobile number"
                         type="tel"
                         value={recipientPhone}
@@ -666,7 +666,7 @@ function CheckoutPage() {
               </section>
 
               {/* Delivery Instructions Chips */}
-              <section className="rounded-3xl border border-amber-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
+              <section className="rounded-3xl border border-orange-400/25 bg-gradient-to-br from-white via-zinc-50/70 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3">
                 <h2 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-50">
                   Delivery instructions for rider
                 </h2>
@@ -680,7 +680,7 @@ function CheckoutPage() {
                         onClick={() => toggleInstruction(chip)}
                         className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition shadow-2xs ${
                           active
-                            ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 shadow-xs"
+                            ? "bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shadow-xs"
                             : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100"
                         }`}
                       >
@@ -691,7 +691,7 @@ function CheckoutPage() {
                   })}
                 </div>
                 <Input
-                  className="text-sm rounded-xl border-amber-400/40 focus:border-amber-500"
+                  className="text-sm rounded-xl border-orange-400/40 focus:border-orange-500"
                   placeholder="Add specific landmark, gate code, or floor directions..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
@@ -706,7 +706,7 @@ function CheckoutPage() {
               </section>
 
               {/* Feeding India Micro-Donation Opt-in (₹2) */}
-              <section className="rounded-3xl border border-rose-400/30 bg-gradient-to-r from-rose-500/10 via-white to-amber-500/5 dark:from-rose-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
+              <section className="rounded-3xl border border-rose-400/30 bg-gradient-to-r from-rose-500/10 via-white to-orange-500/5 dark:from-rose-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm">
                 <label className="flex cursor-pointer items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600">
@@ -737,7 +737,7 @@ function CheckoutPage() {
               </section>
 
               {/* Delivery Partner Tip Selector */}
-              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-amber-500/10 via-white to-amber-500/5 dark:from-amber-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3.5">
+              <section className="rounded-3xl border border-orange-400/30 bg-gradient-to-br from-orange-500/10 via-white to-orange-500/5 dark:from-orange-950/20 dark:via-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-sm space-y-3.5">
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="font-display text-sm font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
@@ -771,7 +771,7 @@ function CheckoutPage() {
                         }}
                         className={`flex flex-col items-center justify-center rounded-2xl py-2.5 px-2 transition active:scale-95 cursor-pointer relative ${
                           selected
-                            ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-md border-transparent"
+                            ? "bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black shadow-md border-transparent"
                             : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                         }`}
                       >
@@ -791,7 +791,7 @@ function CheckoutPage() {
                     }}
                     className={`flex flex-col items-center justify-center rounded-2xl py-2.5 px-2 transition active:scale-95 cursor-pointer ${
                       isCustomTipOpen || (safeTipPaise > 0 && !TIP_PRESETS.some((p) => p.valuePaise === safeTipPaise))
-                        ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-md border-transparent"
+                        ? "bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black shadow-md border-transparent"
                         : "bg-surface border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     }`}
                   >
@@ -825,7 +825,7 @@ function CheckoutPage() {
                           const parsed = parseCustomTip(val);
                           setTipPaise(parsed);
                         }}
-                        className="pl-7 rounded-xl border-amber-400/40 text-sm font-bold"
+                        className="pl-7 rounded-xl border-orange-400/40 text-sm font-bold"
                       />
                     </div>
                     {safeTipPaise > 0 && (
@@ -847,8 +847,8 @@ function CheckoutPage() {
                 )}
 
                 {safeTipPaise > 0 && (
-                  <div className="flex items-center justify-between rounded-xl bg-amber-500/15 border border-amber-500/30 px-3 py-1.5 text-xs">
-                    <span className="font-bold text-amber-900 dark:text-amber-200">
+                  <div className="flex items-center justify-between rounded-xl bg-orange-500/15 border border-orange-500/30 px-3 py-1.5 text-xs">
+                    <span className="font-bold text-orange-950 dark:text-orange-200">
                       Added {formatPaise(safeTipPaise, { locale })} tip for your delivery partner. Thank you.
                     </span>
                     <button
@@ -858,7 +858,7 @@ function CheckoutPage() {
                         setCustomTipRupees("");
                         setIsCustomTipOpen(false);
                       }}
-                      className="font-black text-[11px] text-amber-900 dark:text-amber-200 hover:underline cursor-pointer"
+                      className="font-black text-[11px] text-orange-950 dark:text-orange-200 hover:underline cursor-pointer"
                     >
                       Remove
                     </button>
@@ -878,10 +878,10 @@ function CheckoutPage() {
               )}
 
               {/* 2. PAYMENT METHOD SELECTION WITH KINGPAY GOLD HIGHLIGHT */}
-              <section className="rounded-3xl border border-amber-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
+              <section className="rounded-3xl border border-orange-400/30 bg-gradient-to-br from-white via-zinc-50/70 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-5 shadow-md space-y-4">
                 <div className="flex items-center justify-between">
                   <h2 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                    <CreditCard className="size-4 text-amber-600" />
+                    <CreditCard className="size-4 text-orange-600" />
                     <span>Select Payment Method</span>
                   </h2>
                   <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">
@@ -894,25 +894,25 @@ function CheckoutPage() {
                 <div
                   className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
                     method === "DIRECT_UPI"
-                      ? "border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-400/15 to-amber-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
-                      : "border-amber-400/30 bg-surface hover:border-amber-400/60"
+                      ? "border-orange-400 bg-gradient-to-br from-orange-500/20 via-orange-400/15 to-orange-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
+                      : "border-orange-400/30 bg-surface hover:border-orange-400/60"
                   }`}
                 >
                   <label className="flex cursor-pointer items-start gap-3.5">
                     <input
                       type="radio"
                       name="pay"
-                      className="mt-1 size-5 text-amber-500 focus:ring-amber-400"
+                      className="mt-1 size-5 text-orange-500 focus:ring-orange-400"
                       checked={method === "DIRECT_UPI"}
                       onChange={() => setMethod("DIRECT_UPI")}
                     />
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs">
+                          <span className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 to-orange-500 text-zinc-950 font-black shadow-xs">
                             <QrCode className="size-4" />
                           </span>
-                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
+                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-orange-100">
                             Direct NPCI UPI Intent &amp; Live QR
                           </span>
                         </div>
@@ -927,11 +927,11 @@ function CheckoutPage() {
                   </label>
 
                   {method === "DIRECT_UPI" && (
-                    <div className="mt-3.5 border-t border-amber-400/30 pt-3 space-y-3">
+                    <div className="mt-3.5 border-t border-orange-400/30 pt-3 space-y-3">
                       {/* VPA Details */}
                       <div className="flex items-center justify-between bg-black/40 rounded-xl p-2.5 text-xs">
                         <span className="text-zinc-400">Merchant Settlement VPA:</span>
-                        <div className="flex items-center gap-1.5 font-mono font-bold text-amber-300">
+                        <div className="flex items-center gap-1.5 font-mono font-bold text-orange-300">
                           <span>{FOUNDER_UPI_VPA}</span>
                           <button
                             type="button"
@@ -961,7 +961,7 @@ function CheckoutPage() {
                           merchantCategoryCode: "5812",
                           mode: "02",
                         })}
-                        className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/30 transition active:scale-95 no-underline"
+                        className="w-full h-11 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 hover:from-orange-300 hover:to-orange-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-orange-500/30 transition active:scale-95 no-underline"
                       >
                         <Zap className="size-4 fill-zinc-950" />
                         <span>Open in UPI App (GPay / PhonePe / Paytm)</span>
@@ -979,7 +979,7 @@ function CheckoutPage() {
                             transactionNote: `OrderKing Feast`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "tez://upi/pay")}
-                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
                         >
                           <Smartphone className="size-4 text-emerald-600" />
                           <span className="text-[10px] font-bold mt-0.5">GPay</span>
@@ -995,7 +995,7 @@ function CheckoutPage() {
                             transactionNote: `OrderKing Feast`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "phonepe://pay")}
-                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
                         >
                           <Smartphone className="size-4 text-violet-600" />
                           <span className="text-[10px] font-bold mt-0.5">PhonePe</span>
@@ -1011,7 +1011,7 @@ function CheckoutPage() {
                             transactionNote: `OrderKing Feast`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "paytmmp://pay")}
-                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-amber-400 no-underline"
+                          className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
                         >
                           <Smartphone className="size-4 text-sky-600" />
                           <span className="text-[10px] font-bold mt-0.5">Paytm</span>
@@ -1020,10 +1020,10 @@ function CheckoutPage() {
                         <button
                           type="button"
                           onClick={() => setDirectUpiModalOpen(true)}
-                          className="flex flex-col items-center justify-center rounded-xl border border-amber-400/50 bg-amber-500/10 p-2 transition hover:bg-amber-500/20 cursor-pointer"
+                          className="flex flex-col items-center justify-center rounded-xl border border-orange-400/50 bg-orange-500/10 p-2 transition hover:bg-orange-500/20 cursor-pointer"
                         >
-                          <QrCode className="size-4 text-amber-500" />
-                          <span className="text-[10px] font-bold text-amber-900 dark:text-amber-200 mt-0.5">Live QR</span>
+                          <QrCode className="size-4 text-orange-500" />
+                          <span className="text-[10px] font-bold text-orange-950 dark:text-orange-200 mt-0.5">Live QR</span>
                         </button>
                       </div>
                     </div>
@@ -1034,15 +1034,15 @@ function CheckoutPage() {
                 <div
                   className={`rounded-2xl border-2 transition-all p-4 duration-300 ${
                     method === "KING_PAY"
-                      ? "border-amber-400 bg-gradient-to-br from-amber-500/20 via-yellow-400/15 to-amber-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
-                      : "border-amber-400/30 bg-amber-500/5 hover:border-amber-400/60"
+                      ? "border-orange-400 bg-gradient-to-br from-orange-500/20 via-orange-400/15 to-orange-600/20 shadow-[0_8px_25px_rgba(245,158,11,0.25)]"
+                      : "border-orange-400/30 bg-orange-500/5 hover:border-orange-400/60"
                   }`}
                 >
                   <label className="flex cursor-pointer items-start gap-3.5">
                     <input
                       type="radio"
                       name="pay"
-                      className="mt-1 size-5 text-amber-500 focus:ring-amber-400"
+                      className="mt-1 size-5 text-orange-500 focus:ring-orange-400"
                       checked={method === "KING_PAY"}
                       onChange={() => setMethod("KING_PAY")}
                     />
@@ -1052,10 +1052,10 @@ function CheckoutPage() {
                           <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold shadow-xs">
                             <Wallet className="size-4" />
                           </span>
-                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-amber-100">
+                          <span className="font-display font-black text-sm sm:text-base text-zinc-950 dark:text-orange-100">
                             KingPay Wallet
                           </span>
-                          <span className="rounded-full bg-amber-500/30 border border-amber-500/40 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                          <span className="rounded-full bg-orange-500/30 border border-orange-500/40 px-2 py-0.2 text-[9px] font-black uppercase tracking-wider text-orange-950 dark:text-orange-200">
                             Instant 1-Click
                           </span>
                         </div>
@@ -1064,7 +1064,7 @@ function CheckoutPage() {
                           className={`text-xs font-black tabular-nums ${
                             isKingPaySufficient
                               ? "text-emerald-700 dark:text-emerald-400"
-                              : "text-amber-800 dark:text-amber-300"
+                              : "text-orange-900 dark:text-orange-300"
                           }`}
                         >
                           Balance: {checkoutCtx.isPending ? "Checking..." : formatPaise(walletBalancePaise, { locale })}
@@ -1078,7 +1078,7 @@ function CheckoutPage() {
                   </label>
 
                   {method === "KING_PAY" && (
-                    <div className="mt-3 flex items-center justify-between border-t border-amber-400/30 pt-3 text-xs">
+                    <div className="mt-3 flex items-center justify-between border-t border-orange-400/30 pt-3 text-xs">
                       <span className="text-zinc-600 dark:text-zinc-400">
                         Available:{" "}
                         <strong className="text-zinc-900 dark:text-zinc-100 font-bold">
@@ -1090,7 +1090,7 @@ function CheckoutPage() {
                           </span>
                         )}
                       </span>
-                      <Link to="/king-pay" className="font-black text-amber-800 dark:text-amber-300 hover:underline">
+                      <Link to="/king-pay" className="font-black text-orange-900 dark:text-orange-300 hover:underline">
                         + Add Money / Recharges
                       </Link>
                     </div>
@@ -1155,7 +1155,7 @@ function CheckoutPage() {
                               }}
                               className={`flex flex-col items-center justify-center rounded-xl border p-2.5 transition active:scale-95 cursor-pointer ${
                                 isSelected
-                                  ? "border-amber-400 bg-amber-500/15 text-zinc-950 dark:text-amber-100 font-black shadow-xs"
+                                  ? "border-orange-400 bg-orange-500/15 text-zinc-950 dark:text-orange-100 font-black shadow-xs"
                                   : "border-zinc-200 dark:border-zinc-800 bg-surface text-zinc-700 dark:text-zinc-300"
                               }`}
                             >
@@ -1172,25 +1172,25 @@ function CheckoutPage() {
                 {/* Cash on Delivery (COD) with Late-Night Lockout Protection */}
                 <div className="space-y-2">
                   {isLateNight && (
-                    <div className="flex items-start gap-2.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3.5 text-xs text-amber-900 dark:text-amber-200">
-                      <Moon className="size-4 text-amber-500 shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/30 p-3.5 text-xs text-orange-950 dark:text-orange-200">
+                      <Moon className="size-4 text-orange-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="font-bold block">Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
-                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-amber-800 dark:text-amber-300">orderking@ybl</strong>) and KingPay Wallet are 100% active.</span>
+                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-orange-900 dark:text-orange-300">orderking@ybl</strong>) and KingPay Wallet are 100% active.</span>
                       </div>
                     </div>
                   )}
                   <label
                     className={`flex cursor-pointer items-start gap-3.5 rounded-2xl border-2 p-4 transition-all ${
                       method === "COD"
-                        ? "border-amber-400 bg-amber-500/15"
+                        ? "border-orange-500 bg-orange-500/15"
                         : "border-zinc-200 dark:border-zinc-800 bg-surface"
                     } ${!isCodEligible ? "opacity-50" : ""}`}
                   >
                     <input
                       type="radio"
                       name="pay"
-                      className="mt-1 size-5 text-amber-500"
+                      className="mt-1 size-5 text-[#E85D04]"
                       checked={method === "COD"}
                       disabled={!isCodEligible}
                       onChange={() => setMethod("COD")}
@@ -1200,7 +1200,7 @@ function CheckoutPage() {
                         <span className="font-display font-bold text-sm sm:text-base text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
                           {t("checkout.cod") || "Cash on Delivery"}
                           {isLateNight && (
-                            <span className="text-[10px] font-black uppercase tracking-wider rounded-md bg-amber-500/20 text-amber-800 dark:text-amber-300 px-1.5 py-0.5">
+                            <span className="text-[10px] font-black uppercase tracking-wider rounded-md bg-orange-500/20 text-orange-900 dark:text-orange-300 px-1.5 py-0.5">
                               Night Curfew
                             </span>
                           )}
@@ -1222,14 +1222,14 @@ function CheckoutPage() {
               </section>
 
               {/* 3. Order Bill Breakdown */}
-              <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-b from-white via-zinc-50/70 to-amber-50/20 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-5 sm:p-6 shadow-xl space-y-4">
-                <div className="flex items-center justify-between border-b border-amber-400/20 dark:border-zinc-800 pb-3">
+              <div className="rounded-3xl border border-orange-400/40 bg-gradient-to-b from-white via-zinc-50/70 to-orange-50/20 dark:from-zinc-900 dark:via-zinc-900/90 dark:to-zinc-950 p-5 sm:p-6 shadow-xl space-y-4">
+                <div className="flex items-center justify-between border-b border-orange-400/20 dark:border-zinc-800 pb-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 shadow-xs">
+                    <div className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white shadow-xs">
                       <Receipt className="size-4" />
                     </div>
                     <div>
-                      <h3 className="font-display text-base font-black text-zinc-950 dark:text-amber-100">
+                      <h3 className="font-display text-base font-black text-zinc-950 dark:text-orange-100">
                         Bill Details
                       </h3>
                       <p className="text-[11px] text-zinc-500">100% Transparent · Zero Hidden Charges</p>
@@ -1267,7 +1267,7 @@ function CheckoutPage() {
                       </div>
                     )}
                     {quote.data.quote.platformDiscountPaise > 0 && (
-                      <div className="flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 py-0.5">
+                      <div className="flex items-center justify-between text-xs font-bold text-[#E85D04] dark:text-orange-400 py-0.5">
                         <div className="flex items-center gap-1.5">
                           <span>Platform Discount</span>
                         </div>
@@ -1292,11 +1292,11 @@ function CheckoutPage() {
                     )}
 
                     {/* Delivery Fee with Distance Slabs & Dynamic Surge Breakdown */}
-                    <div className="rounded-2xl border border-amber-400/25 dark:border-zinc-800 bg-amber-500/5 dark:bg-zinc-850/60 p-3.5 space-y-2">
+                    <div className="rounded-2xl border border-orange-400/25 dark:border-zinc-800 bg-orange-500/5 dark:bg-zinc-850/60 p-3.5 space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
-                            <Bike className="size-3.5 text-amber-600" />
+                            <Bike className="size-3.5 text-[#E85D04]" />
                             <span>Delivery Fee</span>
                           </span>
                           <BillTooltip
@@ -1304,7 +1304,7 @@ function CheckoutPage() {
                             text="Calculated using verified distance slabs: Base delivery 0-3km (₹25-₹35), 3-7km (+₹10/km), >7km (+₹14/km) plus any active dynamic surge."
                           />
                           {quote.data.quote.surgeFeePaise > 0 && (
-                            <span className="rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 text-[9px] font-black uppercase px-2 py-0.5 flex items-center gap-0.5 shadow-2xs animate-pulse">
+                            <span className="rounded-full bg-gradient-to-r from-[#B85D19] to-[#C2410C] text-white text-[9px] font-black uppercase px-2 py-0.5 flex items-center gap-0.5 shadow-2xs animate-pulse">
                               <Zap className="size-2.5" />
                               Surge Active
                             </span>
@@ -1329,25 +1329,25 @@ function CheckoutPage() {
 
                       {/* Dynamic Surge itemized breakdown if active */}
                       {quote.data.quote.surgeFeePaise > 0 && (
-                        <div className="space-y-1.5 border-t border-dashed border-amber-400/30 pt-2">
-                          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        <div className="space-y-1.5 border-t border-dashed border-orange-400/30 pt-2">
+                          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-orange-900 dark:text-orange-400">
                             <span>Active Surge Breakdown</span>
                             <span>+{formatPaise(quote.data.quote.surgeFeePaise, { locale })}</span>
                           </div>
                           {quote.data.quote.surgeBreakdown?.activeSurges.map((surge) => (
-                            <div key={surge.type} className="flex items-center justify-between text-xs py-0.5 bg-amber-500/10 dark:bg-amber-500/5 rounded-lg px-2">
+                            <div key={surge.type} className="flex items-center justify-between text-xs py-0.5 bg-orange-500/10 dark:bg-orange-500/5 rounded-lg px-2">
                               <div className="flex items-center gap-1.5">
                                 {surge.type === "RAIN" ? (
                                   <CloudRain className="size-3.5 text-sky-500" />
                                 ) : surge.type === "PEAK_DEMAND" ? (
-                                  <Zap className="size-3.5 text-amber-500" />
+                                  <Zap className="size-3.5 text-[#E85D04]" />
                                 ) : (
                                   <Moon className="size-3.5 text-indigo-400" />
                                 )}
                                 <span className="font-semibold text-zinc-800 dark:text-zinc-200">{surge.label}</span>
                                 <BillTooltip title={surge.label} text={surge.description} />
                               </div>
-                              <span className="tabular-nums font-bold text-amber-800 dark:text-amber-300">
+                              <span className="tabular-nums font-bold text-orange-900 dark:text-orange-300">
                                 +{formatPaise(surge.amountPaise, { locale })}
                               </span>
                             </div>
@@ -1373,9 +1373,9 @@ function CheckoutPage() {
                     )}
 
                     {/* Platform Fee */}
-                    <div className="flex items-center justify-between text-sm py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 px-2.5 border border-amber-400/20">
+                    <div className="flex items-center justify-between text-sm py-1 rounded-xl bg-orange-500/10 dark:bg-orange-500/5 px-2.5 border border-orange-400/20">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-amber-950 dark:text-amber-100 flex items-center gap-1.5">
+                        <span className="font-bold text-orange-950 dark:text-orange-100 flex items-center gap-1.5">
                           <span>Platform Fee</span>
                         </span>
                         <BillTooltip
@@ -1383,13 +1383,13 @@ function CheckoutPage() {
                           text="This fee helps maintain 24/7 platform support and secure order processing."
                         />
                       </div>
-                      <span className="tabular-nums font-extrabold text-amber-950 dark:text-amber-200">
+                      <span className="tabular-nums font-extrabold text-orange-950 dark:text-orange-200">
                         {formatPaise(quote.data.quote.platformFeePaise, { locale })}
                       </span>
                     </div>
 
                     {/* Govt Taxes: 5% Food GST + 18% Services GST */}
-                    <div className="space-y-1.5 rounded-2xl border border-dashed border-amber-400/30 p-3 bg-amber-500/5 dark:bg-zinc-850/40 text-xs text-zinc-600 dark:text-zinc-400">
+                    <div className="space-y-1.5 rounded-2xl border border-dashed border-orange-400/30 p-3 bg-orange-500/5 dark:bg-zinc-850/40 text-xs text-zinc-600 dark:text-zinc-400">
                       <div className="flex items-center justify-between font-bold text-zinc-850 dark:text-zinc-150">
                         <div className="flex items-center gap-1.5">
                           <span className="text-zinc-900 dark:text-zinc-100 font-bold">Govt Taxes (GST)</span>
@@ -1425,7 +1425,7 @@ function CheckoutPage() {
                             100% to Rider
                           </span>
                         </div>
-                        <span className="text-amber-600 font-extrabold tabular-nums">+{formatPaise(safeTipPaise, { locale })}</span>
+                        <span className="text-[#E85D04] font-extrabold tabular-nums">+{formatPaise(safeTipPaise, { locale })}</span>
                       </div>
                     )}
 
@@ -1443,8 +1443,8 @@ function CheckoutPage() {
                       </div>
                     )}
 
-                    {/* Total Payable (Ultra-Crisp 3D Golden Card) */}
-                    <div className="flex items-center justify-between rounded-2xl border-2 border-amber-400/60 bg-gradient-to-r from-amber-500/15 via-yellow-400/20 to-amber-500/10 dark:from-amber-950/40 dark:to-zinc-900 p-3.5 mt-3 shadow-md">
+                    {/* Total Payable (Ultra-Crisp 3D Copper & Sunset Orange Card) */}
+                    <div className="flex items-center justify-between rounded-2xl border-2 border-orange-500/60 bg-gradient-to-r from-orange-500/15 via-[#B85D19]/20 to-orange-500/10 dark:from-orange-950/40 dark:to-zinc-900 p-3.5 mt-3 shadow-md">
                       <div>
                         <span className="block font-display text-sm sm:text-base font-black text-zinc-950 dark:text-zinc-50 tracking-tight">
                           Total Payable
@@ -1453,7 +1453,7 @@ function CheckoutPage() {
                           All taxes &amp; operational fees included
                         </span>
                       </div>
-                      <span className="font-display text-2xl sm:text-3xl font-black text-amber-950 dark:text-amber-300 tabular-nums tracking-tight">
+                      <span className="font-display text-2xl sm:text-3xl font-black text-orange-950 dark:text-orange-300 tabular-nums tracking-tight">
                         {formatPaise(totalPayable, { locale })}
                       </span>
                     </div>
@@ -1560,12 +1560,12 @@ function CheckoutPage() {
                     (method === "COD" && !isCodEligible)
                   }
                   onClick={() => void submit()}
-                  className="w-full h-16 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-lg sm:text-xl shadow-[0_12px_40px_rgba(245,158,11,0.55)] hover:shadow-[0_16px_50px_rgba(245,158,11,0.7)] flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  className="w-full h-16 rounded-2xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black text-lg sm:text-xl shadow-[0_12px_40px_rgba(232,93,4,0.55)] hover:shadow-[0_16px_50px_rgba(232,93,4,0.7)] flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                   aria-label="Place Order"
                 >
                   {busy ? (
                     <span className="flex items-center gap-2">
-                      <span className="size-5 border-3 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin" />
+                      <span className="size-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
                       <span>Processing Order...</span>
                     </span>
                   ) : (

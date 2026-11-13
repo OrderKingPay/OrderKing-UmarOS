@@ -455,8 +455,8 @@ export function LiveFounderProfitDashboard() {
         </div>
 
         {/* Box 2: Action Needed */}
-        <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-4">
-          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-800">
+        <div className="bg-orange-50/60 border border-orange-200 rounded-xl p-4">
+          <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-orange-900">
             Action Needed
           </div>
           <div className="text-sm font-bold text-slate-900 mt-1">
@@ -933,10 +933,10 @@ export function LiveFounderProfitDashboard() {
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
-                    <CreditCard className="h-3.5 w-3.5 text-amber-600" />
+                    <CreditCard className="h-3.5 w-3.5 text-orange-600" />
                     Payment Fee %
                   </span>
-                  <span className="font-mono font-black text-amber-700">
+                  <span className="font-mono font-black text-orange-700">
                     {pgFeePct}%
                   </span>
                 </div>

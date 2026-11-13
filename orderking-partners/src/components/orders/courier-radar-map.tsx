@@ -133,7 +133,7 @@ export function CourierRadarMap({
                     ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                     : isPickedUp
                       ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "bg-amber-50 text-amber-700 border border-amber-200"
+                      : "bg-orange-50 text-orange-700 border border-orange-200"
                 )}
               >
                 {statusText}
@@ -179,7 +179,7 @@ export function CourierRadarMap({
               <span
                 className={cn(
                   "size-2 rounded-full",
-                  hasLiveGps || isArrived ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                  hasLiveGps || isArrived ? "bg-emerald-500 animate-pulse" : "bg-orange-500"
                 )}
               />
               <span>
@@ -216,8 +216,8 @@ export function CourierRadarMap({
             <div className="flex items-center gap-2">
               <span className="font-bold text-gray-900 text-sm">{displayRiderName}</span>
               {riderRating != null && (
-                <span className="flex items-center gap-0.5 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
-                  <Star className="size-3 fill-amber-500 text-amber-500" /> {riderRating}
+                <span className="flex items-center gap-0.5 rounded-md bg-orange-50 px-1.5 py-0.5 text-[10px] font-bold text-orange-900 border border-orange-200">
+                  <Star className="size-3 fill-orange-500 text-orange-500" /> {riderRating}
                 </span>
               )}
               {riderTrips != null && (
@@ -306,7 +306,7 @@ export function CourierRadarMap({
                 <span
                   className={cn(
                     "size-2 rounded-full",
-                    hasLiveGps || isArrived ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+                    hasLiveGps || isArrived ? "bg-emerald-500 animate-pulse" : "bg-orange-500"
                   )}
                 />
                 <span>{telemetrySummary}</span>

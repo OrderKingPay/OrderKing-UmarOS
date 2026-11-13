@@ -546,19 +546,19 @@ function SettingsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                     <div className="text-[10px] font-mono text-gray-500">14-DIGIT FSSAI LICENSE</div>
-                    <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-700" : "text-amber-700"}`}>
+                    <div className={`font-bold mt-1 ${fssaiReady ? "text-emerald-700" : "text-orange-700"}`}>
                       {fssaiReady ? `Verified (${r?.fssai_number})` : "Action Needed in KYC"}
                     </div>
                   </div>
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                     <div className="text-[10px] font-mono text-gray-500">PAYOUT BANK ACCOUNT</div>
-                    <div className={`font-bold mt-1 ${bankReady ? "text-emerald-700" : "text-amber-700"}`}>
+                    <div className={`font-bold mt-1 ${bankReady ? "text-emerald-700" : "text-orange-700"}`}>
                       {bankReady ? `Ready (${r?.bank_ifsc})` : "Action Needed in KYC"}
                     </div>
                   </div>
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                     <div className="text-[10px] font-mono text-gray-500">PAN (TDS §194-O)</div>
-                    <div className={`font-bold mt-1 ${panReady ? "text-emerald-700" : "text-amber-700"}`}>
+                    <div className={`font-bold mt-1 ${panReady ? "text-emerald-700" : "text-orange-700"}`}>
                       {panReady ? `Linked (${r?.pan})` : "Action Needed in KYC"}
                     </div>
                   </div>
@@ -692,7 +692,7 @@ function SettingsPage() {
                       <span className="text-gray-700">
                         Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
                       </span>
-                      <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-1.5 rounded">
+                      <span className="text-[10px] font-mono text-orange-700 bg-orange-500/10 px-1.5 rounded">
                         {effectiveBps} BPS
                       </span>
                     </div>
@@ -927,10 +927,10 @@ function SettingsPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between border-b border-gray-200/80 pb-2.5">
                         <div className="flex items-center gap-2">
-                          <AlertTriangle className="size-4 text-amber-700" />
+                          <AlertTriangle className="size-4 text-orange-700" />
                           <span className="font-bold text-sm text-gray-900">SMS Rush &amp; Kitchen Alerts</span>
                         </div>
-                        <span className="text-[10px] font-mono text-amber-700 bg-amber-500/10 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-mono text-orange-700 bg-orange-500/10 px-2 py-0.5 rounded">
                           PRIORITY SMS
                         </span>
                       </div>
@@ -956,7 +956,7 @@ function SettingsPage() {
                           type="checkbox"
                           checked={currentSmsConsent}
                           onChange={(e) => setSmsConsent(e.target.checked)}
-                          className="mt-1 size-3.5 rounded border-gray-300 bg-white text-amber-500 focus:ring-amber-500"
+                          className="mt-1 size-3.5 rounded border-gray-300 bg-white text-orange-500 focus:ring-orange-500"
                         />
                         <span className="text-[11px] text-gray-700 leading-tight">
                           I consent to receive priority transactional SMS alerts for kitchen throttles and dish stockouts.
@@ -965,10 +965,10 @@ function SettingsPage() {
 
                       {/* SMS Inclusions */}
                       <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-gray-500 bg-white/60 p-2.5 rounded-lg border border-gray-200/60">
-                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Kitchen Rush Surge Alert</div>
-                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Sold-Out (86) Dish Alert</div>
-                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Prep Buffer Adjustments</div>
-                        <div className="text-amber-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Emergency Pause Alert</div>
+                        <div className="text-orange-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Kitchen Rush Surge Alert</div>
+                        <div className="text-orange-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Sold-Out (86) Dish Alert</div>
+                        <div className="text-orange-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Prep Buffer Adjustments</div>
+                        <div className="text-orange-700 flex items-center gap-1"><Check className="size-3 shrink-0" /> Emergency Pause Alert</div>
                       </div>
                     </div>
 
@@ -977,9 +977,9 @@ function SettingsPage() {
                       variant="secondary"
                       disabled={testingChannel === "sms"}
                       onClick={() => void handleTestNotification("sms")}
-                      className="w-full text-xs border-gray-300 hover:border-amber-500/50 hover:bg-amber-950/40"
+                      className="w-full text-xs border-gray-300 hover:border-orange-500/50 hover:bg-orange-950/40"
                     >
-                      <Send className="mr-1.5 size-3.5 text-amber-700" />
+                      <Send className="mr-1.5 size-3.5 text-orange-700" />
                       {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
                     </Button>
                   </div>

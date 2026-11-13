@@ -214,10 +214,10 @@ export function StructuredRejectionModal({
 
         {/* Sub-Panel: If Item(s) in Order Out of Stock is Selected */}
         {isStockoutReason && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 space-y-4 animate-in fade-in duration-200">
+          <div className="rounded-2xl border border-orange-200 bg-orange-50/60 p-4 space-y-4 animate-in fade-in duration-200">
             <div>
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-amber-900 uppercase tracking-wider font-mono">
+                <label className="text-xs font-bold text-orange-950 uppercase tracking-wider font-mono">
                   2. Select Out-of-Stock Dishes in this Order:
                 </label>
                 <span className="text-[10px] text-gray-500 font-mono">
@@ -240,7 +240,7 @@ export function StructuredRejectionModal({
                     onClick={() => toggleItemSelection(lineId)}
                     className={`flex items-center justify-between p-2.5 rounded-xl border text-xs cursor-pointer select-none transition ${
                       isChecked
-                        ? "border-amber-300 bg-white text-gray-900 font-semibold shadow-xs"
+                        ? "border-orange-300 bg-white text-gray-900 font-semibold shadow-xs"
                         : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                   >
@@ -248,7 +248,7 @@ export function StructuredRejectionModal({
                       <div
                         className={`size-4 rounded border flex items-center justify-center ${
                           isChecked
-                            ? "border-amber-600 bg-amber-600 text-white"
+                            ? "border-orange-600 bg-orange-600 text-white"
                             : "border-gray-300 bg-white"
                         }`}
                       >
@@ -259,7 +259,7 @@ export function StructuredRejectionModal({
                         {line.variantName ? ` (${line.variantName})` : ""}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-orange-100 text-orange-950 font-bold">
                       Out of Stock
                     </span>
                   </label>
@@ -268,8 +268,8 @@ export function StructuredRejectionModal({
             </div>
 
             {/* Timed Stockout Presets */}
-            <div className="space-y-2 pt-2 border-t border-amber-200">
-              <label className="text-xs font-bold text-amber-900 uppercase tracking-wider font-mono">
+            <div className="space-y-2 pt-2 border-t border-orange-200">
+              <label className="text-xs font-bold text-orange-950 uppercase tracking-wider font-mono">
                 3. Choose Timed Stockout Duration:
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -285,17 +285,17 @@ export function StructuredRejectionModal({
                       onClick={() => setStockoutOption(preset.id)}
                       className={`text-left p-2.5 rounded-xl border text-xs transition cursor-pointer select-none flex items-center justify-between ${
                         isPresetSelected
-                          ? "border-amber-400 bg-amber-100/70 text-gray-900 font-bold ring-1 ring-amber-400"
+                          ? "border-orange-400 bg-orange-100/70 text-gray-900 font-bold ring-1 ring-orange-400"
                           : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
                       }`}
                     >
                       <div className="flex items-center gap-2">
                         {preset.icon === "Sunrise" ? (
-                          <Sunrise className="size-4 text-amber-600 shrink-0" />
+                          <Sunrise className="size-4 text-orange-600 shrink-0" />
                         ) : preset.icon === "Infinity" ? (
-                          <InfinityIcon className="size-4 text-amber-600 shrink-0" />
+                          <InfinityIcon className="size-4 text-orange-600 shrink-0" />
                         ) : (
-                          <Clock className="size-4 text-amber-600 shrink-0" />
+                          <Clock className="size-4 text-orange-600 shrink-0" />
                         )}
                         <div>
                           <div className="leading-tight">{preset.label}</div>
@@ -305,7 +305,7 @@ export function StructuredRejectionModal({
                         </div>
                       </div>
                       {isPresetSelected && (
-                        <Check className="size-3.5 text-amber-700 shrink-0 stroke-[3]" />
+                        <Check className="size-3.5 text-orange-700 shrink-0 stroke-[3]" />
                       )}
                     </button>
                   );

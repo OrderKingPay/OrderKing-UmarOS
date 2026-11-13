@@ -295,7 +295,7 @@ function TrackingRoute() {
           to="/support"
           className="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-semibold text-white backdrop-blur transition"
         >
-          <HelpCircle className="size-3.5 text-amber-400" />
+          <HelpCircle className="size-3.5 text-orange-400" />
           <span>Help</span>
         </Link>
       </div>
@@ -406,15 +406,15 @@ function TrackingRoute() {
 
           {/* Doorstep Handover Verification PIN Card */}
           {order?.deliveryOtp ? (
-            <div className="flex items-center justify-between rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 via-surface to-amber-500/10 p-3 text-xs">
+            <div className="flex items-center justify-between rounded-2xl border border-orange-500/40 bg-gradient-to-r from-orange-500/20 via-surface to-orange-500/10 p-3 text-xs">
               <div className="flex items-center gap-2.5">
-                <ShieldCheck className="size-5 text-amber-400 shrink-0" />
+                <ShieldCheck className="size-5 text-orange-400 shrink-0" />
                 <div>
                   <span className="font-bold text-white">Customer Handover PIN</span>
                   <p className="text-[11px] text-slate-300">Share with delivery partner at door</p>
                 </div>
               </div>
-              <div className="rounded-xl bg-black/60 px-3 py-1 font-mono text-base font-black tracking-widest text-amber-300 border border-amber-400/50">
+              <div className="rounded-xl bg-black/60 px-3 py-1 font-mono text-base font-black tracking-widest text-orange-300 border border-orange-400/50">
                 {order.deliveryOtp}
               </div>
             </div>
@@ -503,12 +503,12 @@ function TrackingRoute() {
 
               <a
                 href="tel:108"
-                className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-gradient-to-b from-amber-600 to-yellow-700 p-3.5 text-center text-white shadow-md active:scale-95 transition"
+                className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-gradient-to-b from-orange-600 to-orange-700 p-3.5 text-center text-white shadow-md active:scale-95 transition"
               >
                 <span className="text-base font-black flex items-center gap-1.5">
                   <Phone className="size-4" /> Call 108
                 </span>
-                <span className="text-[10px] text-amber-100">Ambulance &amp; Medical</span>
+                <span className="text-[10px] text-orange-100">Ambulance &amp; Medical</span>
               </a>
             </div>
 

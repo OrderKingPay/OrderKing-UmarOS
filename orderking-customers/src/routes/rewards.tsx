@@ -37,10 +37,10 @@ function RewardsPage() {
     <CustomerShell>
       <div className="px-4 py-5 space-y-6 pb-28">
         {/* Header Vault Card */}
-        <div className="relative overflow-hidden rounded-[var(--radius-xl)] border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/20 via-surface to-amber-500/5 p-5 shadow-sm">
+        <div className="relative overflow-hidden rounded-[var(--radius-xl)] border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/20 via-surface to-orange-500/5 p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2.5 py-0.5 text-xs font-bold text-amber-800 dark:text-amber-200">
+              <span className="inline-flex items-center gap-1 rounded-full bg-orange-500/20 px-2.5 py-0.5 text-xs font-bold text-orange-900 dark:text-orange-200">
                 King Club Rewards
               </span>
               <h1 className="mt-2 font-display text-2xl font-bold text-fg">
@@ -51,7 +51,7 @@ function RewardsPage() {
               </p>
             </div>
             <div className="text-right">
-              <p className="font-mono text-3xl font-black text-amber-600 dark:text-amber-400">
+              <p className="font-mono text-3xl font-black text-orange-600 dark:text-orange-400">
                 {userCoins.toLocaleString()}
               </p>
               <p className="text-[11px] font-semibold text-muted">
@@ -60,9 +60,9 @@ function RewardsPage() {
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between border-t border-amber-500/20 pt-3 text-xs">
+          <div className="mt-4 flex items-center justify-between border-t border-orange-500/20 pt-3 text-xs">
             <div className="flex items-center gap-1.5">
-              <MapPin className="size-3.5 text-amber-600" />
+              <MapPin className="size-3.5 text-orange-600" />
               <span className="font-semibold text-fg">{location.cityName || "Barak Valley"}</span>
               <span className="text-muted">({location.zoneName || "Current Zone"})</span>
             </div>
@@ -143,7 +143,7 @@ function RewardsPage() {
 
                   {promo.code && (
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="rounded border border-dashed border-amber-400 bg-amber-500/10 px-2.5 py-1 font-mono text-xs font-bold text-fg">
+                      <span className="rounded border border-dashed border-orange-400 bg-orange-500/10 px-2.5 py-1 font-mono text-xs font-bold text-fg">
                         {promo.code}
                       </span>
                       <Button

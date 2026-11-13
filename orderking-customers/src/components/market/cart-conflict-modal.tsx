@@ -25,9 +25,9 @@ export function CartConflictModal({
       aria-labelledby="cart-conflict-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
     >
-      <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-amber-400/30 text-center space-y-4">
+      <div className="relative w-full max-w-sm rounded-3xl bg-white dark:bg-zinc-900 p-6 shadow-2xl border border-orange-400/30 text-center space-y-4">
         {/* Warning Icon Badge */}
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 shadow-inner">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-orange-500/15 text-orange-600 dark:text-orange-400 shadow-inner">
           <AlertTriangle className="size-7" />
         </div>
 
@@ -44,7 +44,7 @@ export function CartConflictModal({
               {currentRestaurantName || "another restaurant"}
             </span>
             . Do you want to discard your selection and add dishes from{" "}
-            <span className="font-bold text-amber-600 dark:text-amber-400">
+            <span className="font-bold text-orange-600 dark:text-orange-400">
               {newRestaurantName || "this restaurant"}
             </span>
             ?
@@ -63,7 +63,7 @@ export function CartConflictModal({
           <Button
             type="button"
             onClick={onConfirm}
-            className="flex-1 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 font-black text-xs shadow-md"
+            className="flex-1 rounded-xl bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-300 text-zinc-950 font-black text-xs shadow-md"
           >
             Clear Cart &amp; Add New Dish
           </Button>

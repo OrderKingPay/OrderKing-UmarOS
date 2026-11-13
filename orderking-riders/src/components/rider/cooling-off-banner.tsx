@@ -47,10 +47,10 @@ export function CoolingOffBanner({
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
   return (
-    <Card className="border border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent p-4 shadow-sm dark:border-amber-500/30">
+    <Card className="border border-orange-500/40 bg-gradient-to-r from-orange-500/10 via-orange-500/5 to-transparent p-4 shadow-sm dark:border-orange-500/30">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/20 text-orange-600 dark:text-orange-400">
             <Coffee className="size-5" />
           </div>
           <div className="space-y-1">
@@ -58,7 +58,7 @@ export function CoolingOffBanner({
               <h3 className="font-display text-sm font-bold text-foreground">
                 Temporary Cooling-Off Active
               </h3>
-              <Badge tone="busy" className="bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold text-[10px]">
+              <Badge tone="busy" className="bg-orange-500/20 text-orange-700 dark:text-orange-300 font-semibold text-[10px]">
                 Pausing Dispatches
               </Badge>
             </div>
@@ -69,10 +69,10 @@ export function CoolingOffBanner({
         </div>
 
         {/* Live Countdown Display */}
-        <div className="flex items-center gap-3 self-end sm:self-auto rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-2">
-          <Clock className="size-4 text-amber-600 dark:text-amber-400 animate-pulse" />
+        <div className="flex items-center gap-3 self-end sm:self-auto rounded-lg border border-orange-500/30 bg-orange-500/10 px-3.5 py-2">
+          <Clock className="size-4 text-orange-600 dark:text-orange-400 animate-pulse" />
           <div>
-            <span className="font-mono text-lg font-extrabold text-amber-900 dark:text-amber-200">
+            <span className="font-mono text-lg font-extrabold text-orange-950 dark:text-orange-200">
               {formattedTime}
             </span>
             <p className="text-[10px] text-muted-foreground font-medium">Resumes Automatically</p>

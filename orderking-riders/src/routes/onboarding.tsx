@@ -354,7 +354,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep1()) setStep(2);
                   }}
-                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-orange-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -421,7 +421,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep2()) setStep(3);
                   }}
-                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-orange-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -492,7 +492,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep3()) setStep(4);
                   }}
-                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-orange-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -572,7 +572,7 @@ export function RiderOnboardingPage() {
                   onClick={() => {
                     if (validateStep4()) setStep(5);
                   }}
-                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-11 rounded-xl"
+                  className="bg-primary text-primary-foreground hover:bg-orange-400 text-black font-bold px-6 h-11 rounded-xl"
                 >
                   Continue
                 </Button>
@@ -646,7 +646,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   disabled={pending}
                   onClick={() => void handleCompleteRiderOnboarding()}
-                  className="bg-primary text-primary-foreground hover:bg-amber-400 text-black font-bold px-6 h-12 rounded-xl flex items-center gap-2"
+                  className="bg-primary text-primary-foreground hover:bg-orange-400 text-black font-bold px-6 h-12 rounded-xl flex items-center gap-2"
                 >
                   <ShieldCheck className="size-4" />
                   <span>{pending ? "Activating..." : "Complete KYC"}</span>

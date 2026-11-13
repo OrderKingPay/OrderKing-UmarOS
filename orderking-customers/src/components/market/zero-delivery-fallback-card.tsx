@@ -43,20 +43,20 @@ export function SmartZeroDeliveryFallbackCard({
     <section
       data-testid="zero-delivery-smart-fallback"
       aria-label="Alternative services in your area"
-      className={`relative overflow-hidden rounded-3xl border border-amber-300/80 bg-gradient-to-br from-[#FFFDF9] via-white to-amber-50/60 p-5 sm:p-8 text-center shadow-md ${className}`}
+      className={`relative overflow-hidden rounded-3xl border border-orange-300/80 bg-gradient-to-br from-[#FFFDF9] via-white to-orange-50/60 p-5 sm:p-8 text-center shadow-md ${className}`}
     >
       {/* Background ambient radial aura */}
-      <div className="absolute top-0 right-0 -mt-12 -mr-12 w-72 h-72 rounded-full bg-amber-400/15 blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 -mt-12 -mr-12 w-72 h-72 rounded-full bg-orange-400/15 blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-72 h-72 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-4xl mx-auto space-y-6">
         {/* Badge & Icon */}
         <div className="flex flex-col items-center gap-2">
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-orange-600 text-white shadow-md shadow-amber-500/25">
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 via-orange-600 to-orange-600 text-white shadow-md shadow-orange-500/25">
             <MapPin className="size-7" />
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/90 border border-amber-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-amber-950">
-            <Sparkles className="size-3 text-amber-600 fill-amber-500" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100/90 border border-orange-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-wider text-orange-950">
+            <Sparkles className="size-3 text-orange-600 fill-orange-500" />
             <span>Active Nationwide Services · Serving {currentCity}</span>
           </span>
         </div>
@@ -72,8 +72,8 @@ export function SmartZeroDeliveryFallbackCard({
         </div>
 
         {/* Hour-Aware Context Alert Strip */}
-        <div className="rounded-2xl border border-amber-200/90 bg-white/90 p-3 sm:p-4 text-left flex items-start gap-3 shadow-2xs">
-          <div className="size-8 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 mt-0.5 text-amber-800">
+        <div className="rounded-2xl border border-orange-200/90 bg-white/90 p-3 sm:p-4 text-left flex items-start gap-3 shadow-2xs">
+          <div className="size-8 rounded-xl bg-orange-100 flex items-center justify-center shrink-0 mt-0.5 text-orange-900">
             <Clock className="size-4" />
           </div>
           <div className="text-xs leading-relaxed text-stone-700">
@@ -121,13 +121,13 @@ export function SmartZeroDeliveryFallbackCard({
         {/* High-Converting 4 Real Platform Services (2x2 Grid) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left pt-1">
           {/* Service 1: KingPay UPI */}
-          <div className="flex flex-col justify-between p-5 rounded-2xl border border-amber-200/90 bg-white hover:border-amber-400 hover:shadow-md transition-all duration-200">
+          <div className="flex flex-col justify-between p-5 rounded-2xl border border-orange-200/90 bg-white hover:border-orange-400 hover:shadow-md transition-all duration-200">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-700">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-orange-500/15 text-orange-700">
                   <Crown className="size-5" />
                 </div>
-                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-950 border border-orange-300">
                   24/7 NATIONWIDE
                 </span>
               </div>
@@ -140,7 +140,7 @@ export function SmartZeroDeliveryFallbackCard({
             </div>
             <Link
               to="/king-pay"
-              className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-xs transition-all no-underline"
+              className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:brightness-105 px-4 py-2.5 text-xs font-bold text-slate-950 shadow-xs transition-all no-underline"
             >
               <CreditCard className="size-3.5" />
               <span>Open KingPay UPI</span>

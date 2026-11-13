@@ -52,8 +52,8 @@ export const TravelpayoutsWhiteLabel: React.FC<TravelpayoutsWhiteLabelProps> = (
   }, [config.enabled, config.scriptSrc, hasTrackingConsent, resultsUrl]);
   if (!hasTrackingConsent) {
     return (
-      <div className="rounded-2xl border border-amber-500/30 bg-slate-900/90 p-4 text-slate-100">
-        <p className="text-sm font-semibold text-amber-300">
+      <div className="rounded-2xl border border-orange-500/30 bg-slate-900/90 p-4 text-slate-100">
+        <p className="text-sm font-semibold text-orange-300">
           Partner Search &amp; Cookie Consent Required
         </p>
         <p className="mt-1 text-xs text-slate-300">
@@ -64,7 +64,7 @@ export const TravelpayoutsWhiteLabel: React.FC<TravelpayoutsWhiteLabelProps> = (
         <button
           type="button"
           onClick={onGrantConsent}
-          className="mt-3 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400"
+          className="mt-3 rounded-xl bg-orange-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-orange-400"
         >
           Allow Partner Search Widget
         </button>

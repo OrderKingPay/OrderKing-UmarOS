@@ -278,12 +278,12 @@ export function KitchenKdsOperationsPanel({
         <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Flame className="size-4 text-amber-600" />
+              <Flame className="size-4 text-orange-600" />
               <Label className="text-xs font-bold text-gray-800">
                 Peak Rush-Hour Prep Time
               </Label>
             </div>
-            <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md shadow-xs">
+            <span className="text-xs font-bold text-orange-900 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-md shadow-xs">
               {peakPrepBuffer} mins
             </span>
           </div>
@@ -320,7 +320,7 @@ export function KitchenKdsOperationsPanel({
                 onClick={() => setPeakPrepBuffer(mins)}
                 className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
                   peakPrepBuffer === mins
-                    ? "bg-amber-600 text-white shadow-xs"
+                    ? "bg-orange-600 text-white shadow-xs"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                 }`}
               >

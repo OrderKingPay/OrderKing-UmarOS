@@ -171,11 +171,11 @@ export function AiMediaStudioModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-5xl rounded-2xl border-2 border-amber-500/50 bg-[#071510] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[94vh]">
+      <div className="relative w-full max-w-5xl rounded-2xl border-2 border-orange-500/50 bg-[#071510] shadow-[0_0_90px_rgba(245,158,11,0.25)] overflow-hidden flex flex-col max-h-[94vh]">
         {/* Header */}
-        <header className="flex items-center justify-between border-b border-amber-500/30 bg-black/70 px-5 py-3.5">
+        <header className="flex items-center justify-between border-b border-orange-500/30 bg-black/70 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 to-orange-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               <Sparkles className="size-5" />
             </div>
             <div>
@@ -199,7 +199,7 @@ export function AiMediaStudioModal({
                 type="button"
                 onClick={() => setActiveTab("image")}
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                  activeTab === "image" ? "bg-amber-500 text-black shadow" : "text-slate-300 hover:text-white"
+                  activeTab === "image" ? "bg-orange-500 text-black shadow" : "text-slate-300 hover:text-white"
                 }`}
               >
                 <ImageIcon className="size-3.5" />
@@ -209,7 +209,7 @@ export function AiMediaStudioModal({
                 type="button"
                 onClick={() => setActiveTab("video")}
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                  activeTab === "video" ? "bg-amber-500 text-black shadow" : "text-slate-300 hover:text-white"
+                  activeTab === "video" ? "bg-orange-500 text-black shadow" : "text-slate-300 hover:text-white"
                 }`}
               >
                 <Video className="size-3.5" />
@@ -219,7 +219,7 @@ export function AiMediaStudioModal({
                 type="button"
                 onClick={() => setActiveTab("multiscene")}
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                  activeTab === "multiscene" ? "bg-amber-500 text-black shadow" : "text-slate-300 hover:text-white"
+                  activeTab === "multiscene" ? "bg-orange-500 text-black shadow" : "text-slate-300 hover:text-white"
                 }`}
               >
                 <Film className="size-3.5" />
@@ -229,7 +229,7 @@ export function AiMediaStudioModal({
                 type="button"
                 onClick={() => setActiveTab("vault")}
                 className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-bold transition ${
-                  activeTab === "vault" ? "bg-amber-500 text-black shadow" : "text-slate-300 hover:text-white"
+                  activeTab === "vault" ? "bg-orange-500 text-black shadow" : "text-slate-300 hover:text-white"
                 }`}
               >
                 <Layers className="size-3.5" />
@@ -252,17 +252,17 @@ export function AiMediaStudioModal({
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Progress Bar during generation */}
           {isGenerating && (
-            <div className="rounded-xl border border-amber-500/40 bg-black/60 p-4 space-y-2 animate-fadeIn">
+            <div className="rounded-xl border border-orange-500/40 bg-black/60 p-4 space-y-2 animate-fadeIn">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-amber-300 flex items-center gap-2">
+                <span className="font-bold text-orange-300 flex items-center gap-2">
                   <RefreshCw className="size-3.5 animate-spin" />
                   Synthesizing realistic assets with neural physics engine...
                 </span>
-                <span className="font-mono text-amber-400">{generationProgress}%</span>
+                <span className="font-mono text-orange-400">{generationProgress}%</span>
               </div>
               <div className="h-2 w-full rounded-full bg-surface-2 overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-500 via-yellow-400 to-emerald-400 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-orange-500 via-orange-400 to-emerald-400 transition-all duration-300"
                   style={{ width: `${generationProgress}%` }}
                 />
               </div>
@@ -273,7 +273,7 @@ export function AiMediaStudioModal({
           {activeTab === "image" && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
+                <label className="text-xs font-bold text-orange-300 flex items-center justify-between">
                   <span>Enter Photorealistic Prompt:</span>
                   <span className="text-[10px] text-muted font-normal">8K UHD · Octane Raytracing · Native Production</span>
                 </label>
@@ -282,12 +282,12 @@ export function AiMediaStudioModal({
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Describe scene (e.g. 'OrderKing autonomous delivery drone flying over skyline at sunset, 8K')..."
-                    className="flex-1 bg-black/60 border-amber-500/40 text-xs sm:text-sm text-white focus-visible:ring-amber-400"
+                    className="flex-1 bg-black/60 border-orange-500/40 text-xs sm:text-sm text-white focus-visible:ring-orange-400"
                   />
                   <Button
                     disabled={isGenerating}
                     onClick={handleGenerateImage}
-                    className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs px-5 shadow-lg"
+                    className="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-300 text-black font-black text-xs px-5 shadow-lg"
                   >
                     {isGenerating ? <RefreshCw className="size-4 mr-1 animate-spin" /> : <Sparkles className="size-4 mr-1" />}
                     <span>{isGenerating ? "Synthesizing..." : "Generate 8K Image"}</span>
@@ -306,7 +306,7 @@ export function AiMediaStudioModal({
                       onClick={() => setAspectRatio(ar.id)}
                       className={`p-2 rounded-xl border text-left text-xs font-medium transition ${
                         aspectRatio === ar.id
-                          ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold shadow-sm"
+                          ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold shadow-sm"
                           : "bg-surface-2 border-border text-slate-400 hover:text-white"
                       }`}
                     >
@@ -328,7 +328,7 @@ export function AiMediaStudioModal({
                       onClick={() => setSelectedStyle(st.id)}
                       className={`p-2 rounded-xl border text-left text-xs font-medium transition ${
                         selectedStyle === st.id
-                          ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold shadow-sm"
+                          ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold shadow-sm"
                           : "bg-black/40 border-border/60 text-slate-400 hover:text-white"
                       }`}
                     >
@@ -345,16 +345,16 @@ export function AiMediaStudioModal({
                     type="checkbox"
                     checked={upscale8K}
                     onChange={(e) => setUpscale8K(e.target.checked)}
-                    className="rounded border-amber-500 text-amber-500 focus:ring-amber-400"
+                    className="rounded border-orange-500 text-orange-500 focus:ring-orange-400"
                   />
-                  <span className="font-bold text-amber-300">8K Advanced-Resolution Upscaling</span>
+                  <span className="font-bold text-orange-300">8K Advanced-Resolution Upscaling</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={watermarkBrand}
                     onChange={(e) => setWatermarkBrand(e.target.checked)}
-                    className="rounded border-amber-500 text-amber-500 focus:ring-amber-400"
+                    className="rounded border-orange-500 text-orange-500 focus:ring-orange-400"
                   />
                   <span className="text-slate-300">OrderKing Founder Hologram Badge</span>
                 </label>
@@ -382,7 +382,7 @@ export function AiMediaStudioModal({
                       className="w-full h-full object-contain max-h-[360px] transition duration-200"
                     />
                     {watermarkBrand && (
-                      <div className="absolute bottom-3 right-3 rounded-lg bg-black/75 px-2.5 py-1 border border-amber-500/50 backdrop-blur text-[10px] font-bold text-amber-300">
+                      <div className="absolute bottom-3 right-3 rounded-lg bg-black/75 px-2.5 py-1 border border-orange-500/50 backdrop-blur text-[10px] font-bold text-orange-300">
                         AI OrderKing Founder Studio Edition
                       </div>
                     )}
@@ -428,7 +428,7 @@ export function AiMediaStudioModal({
                   <div className="flex flex-wrap gap-2 pt-1">
                     <Button
                       size="sm"
-                      className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs"
+                      className="flex-1 bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs"
                       onClick={() => {
                         window.open(generatedItem.url, "_blank");
                         toast.success("Opening 8K high-res image!");
@@ -476,7 +476,7 @@ export function AiMediaStudioModal({
           {activeTab === "video" && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-amber-300 flex items-center justify-between">
+                <label className="text-xs font-bold text-orange-300 flex items-center justify-between">
                   <span>Enter Video Motion &amp; Cinematics Prompt:</span>
                   <span className="text-[10px] text-muted font-normal">AI Motion · 60FPS</span>
                 </label>
@@ -485,12 +485,12 @@ export function AiMediaStudioModal({
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Describe motion scene (e.g. 'Hyper-speed delivery drone flight through futuristic city')..."
-                    className="flex-1 bg-black/60 border-amber-500/40 text-xs sm:text-sm text-white focus-visible:ring-amber-400"
+                    className="flex-1 bg-black/60 border-orange-500/40 text-xs sm:text-sm text-white focus-visible:ring-orange-400"
                   />
                   <Button
                     disabled={isGenerating}
                     onClick={handleGenerateVideo}
-                    className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs px-5 shadow-lg"
+                    className="bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-300 text-black font-black text-xs px-5 shadow-lg"
                   >
                     {isGenerating ? <RefreshCw className="size-4 mr-1 animate-spin" /> : <Film className="size-4 mr-1" />}
                     <span>{isGenerating ? "Rendering..." : "Generate AI Video"}</span>
@@ -511,7 +511,7 @@ export function AiMediaStudioModal({
                         onClick={() => setVideoDuration(d.id)}
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           videoDuration === d.id
-                            ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
+                            ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold"
                             : "bg-surface-2 border-border text-slate-400 hover:text-white"
                         }`}
                       >
@@ -532,7 +532,7 @@ export function AiMediaStudioModal({
                         onClick={() => setAspectRatio(ar.id)}
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           aspectRatio === ar.id
-                            ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
+                            ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold"
                             : "bg-surface-2 border-border text-slate-400 hover:text-white"
                         }`}
                       >
@@ -553,7 +553,7 @@ export function AiMediaStudioModal({
                         onClick={() => setCameraMotion(cm.id)}
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           cameraMotion === cm.id
-                            ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
+                            ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold"
                             : "bg-surface-2 border-border text-slate-400 hover:text-white"
                         }`}
                       >
@@ -574,7 +574,7 @@ export function AiMediaStudioModal({
                         onClick={() => setVoiceoverVoice(vo.id)}
                         className={`w-full py-1.5 px-2.5 rounded-lg border text-left text-xs font-medium transition ${
                           voiceoverVoice === vo.id
-                            ? "bg-amber-500/20 border-amber-400 text-amber-200 font-bold"
+                            ? "bg-orange-500/20 border-orange-400 text-orange-200 font-bold"
                             : "bg-surface-2 border-border text-slate-400 hover:text-white"
                         }`}
                       >
@@ -622,7 +622,7 @@ export function AiMediaStudioModal({
                   <div className="flex flex-wrap gap-2 pt-1">
                     <Button
                       size="sm"
-                      className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs"
+                      className="flex-1 bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs"
                       onClick={() => {
                         window.open(generatedItem.url, "_blank");
                         toast.success("Downloading video!");
@@ -656,13 +656,13 @@ export function AiMediaStudioModal({
           {/* TAB 3: COMMERCIAL MULTI-SCENE VIDEO STITCHER */}
           {activeTab === "multiscene" && (
             <div className="space-y-4">
-              <div className="rounded-xl border border-amber-500/40 bg-black/50 p-4 space-y-2">
+              <div className="rounded-xl border border-orange-500/40 bg-black/50 p-4 space-y-2">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-amber-300 text-sm flex items-center gap-2">
+                  <h4 className="font-bold text-orange-300 text-sm flex items-center gap-2">
                     <Film className="size-4" />
                     Multi-Scene Long Commercial Video Stitcher
                   </h4>
-                  <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-mono">
+                  <Badge className="bg-orange-500/20 text-orange-300 text-[10px] font-mono">
                     Total Runtime: {multiScenes.reduce((acc, s) => acc + s.duration, 0)}s
                   </Badge>
                 </div>
@@ -680,7 +680,7 @@ export function AiMediaStudioModal({
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-xs text-white flex items-center gap-1.5">
-                        <span className="size-5 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center text-[10px] font-mono">
+                        <span className="size-5 rounded-full bg-orange-500/20 text-orange-300 flex items-center justify-center text-[10px] font-mono">
                           {idx + 1}
                         </span>
                         {scene.title}
@@ -707,7 +707,7 @@ export function AiMediaStudioModal({
                 <Button
                   disabled={isGenerating}
                   onClick={handleGenerateMultiScene}
-                  className="w-full bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs py-5 shadow-xl"
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-400 hover:from-orange-400 hover:to-orange-300 text-black font-black text-xs py-5 shadow-xl"
                 >
                   {isGenerating ? <RefreshCw className="size-4 mr-2 animate-spin" /> : <Film className="size-4 mr-2" />}
                   <span>{isGenerating ? "Stitching Multi-Scene Masterpiece..." : "Stitch & Render Long Commercial Video"}</span>
@@ -733,7 +733,7 @@ export function AiMediaStudioModal({
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs"
+                      className="flex-1 bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs"
                       onClick={() => window.open(generatedItem.url, "_blank")}
                     >
                       <Download className="size-3.5 mr-1.5" />
@@ -770,7 +770,7 @@ export function AiMediaStudioModal({
                     Persistent repository of all generated 8K images, cinematic videos, and stitched commercials.
                   </p>
                 </div>
-                <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-mono">
+                <Badge className="bg-orange-500/20 text-orange-300 text-[10px] font-mono">
                   {vaultItems.length} Stored Items
                 </Badge>
               </div>
@@ -779,7 +779,7 @@ export function AiMediaStudioModal({
                 {vaultItems.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-xl border border-border/60 bg-black/50 p-3 space-y-2 hover:border-amber-500/50 transition group"
+                    className="rounded-xl border border-border/60 bg-black/50 p-3 space-y-2 hover:border-orange-500/50 transition group"
                   >
                     <div className="relative aspect-video rounded-lg overflow-hidden bg-black flex items-center justify-center">
                       {item.type === "video" ? (

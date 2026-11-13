@@ -331,7 +331,7 @@ export function KitchenPage({
         {/* Kitchen Throttling Quick Toggles */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-[11px] font-bold text-muted uppercase tracking-wider flex items-center gap-1">
-            <Flame className="size-3 text-amber-500" /> Throttling:
+            <Flame className="size-3 text-orange-500" /> Throttling:
           </span>
           <button
             type="button"
@@ -347,7 +347,7 @@ export function KitchenPage({
             type="button"
             onClick={() => handleSetThrottle(10)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 10 && !kitchenPaused
-                ? "bg-amber-600 text-gray-900 shadow-xs"
+                ? "bg-orange-600 text-gray-900 shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
               }`}
           >
@@ -392,14 +392,14 @@ export function KitchenPage({
         <div
           className={`rounded-xl border p-3 flex items-center justify-between gap-3 text-xs font-bold ${kitchenPaused
               ? "border-rose-500 bg-rose-500/10 text-rose-800 dark:text-rose-200"
-              : "border-amber-500 bg-amber-500/10 text-amber-800 dark:text-amber-200"
+              : "border-orange-500 bg-orange-500/10 text-orange-900 dark:text-orange-200"
             }`}
         >
           <div className="flex items-center gap-2">
             {kitchenPaused ? (
               <PauseCircle className="size-5 text-rose-600 shrink-0" />
             ) : (
-              <Flame className="size-5 text-amber-600 shrink-0" />
+              <Flame className="size-5 text-orange-600 shrink-0" />
             )}
             <div>
               <div>
@@ -465,7 +465,7 @@ export function KitchenPage({
               onClick={() => stopContinuousAlarm()}
               className="text-xs border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800"
             >
-              <BellOff className="mr-1.5 size-3.5 text-amber-400" />
+              <BellOff className="mr-1.5 size-3.5 text-orange-400" />
               Silence Alarm
             </Button>
             <Button
@@ -510,7 +510,7 @@ export function KitchenPage({
               <div
                 key={col.state}
                 className={`rounded-lg border px-3 py-2 flex items-center justify-between ${isUrgent
-                    ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                    ? "border-orange-500/40 bg-orange-500/10 text-orange-300"
                     : "border-gray-200 bg-gray-50 text-gray-700"
                   }`}
               >

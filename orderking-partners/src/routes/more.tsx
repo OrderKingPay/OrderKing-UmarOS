@@ -280,7 +280,7 @@ function MorePage() {
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-gray-500 text-xs">
-              <Sparkles className="size-3 text-amber-500" />
+              <Sparkles className="size-3 text-orange-500" />
               <span>OrderKing Partner Platform</span>
             </div>
           </div>

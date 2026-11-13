@@ -164,7 +164,7 @@ export function FlightBookingEngine({
 
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
             {walletBalance > 0 && (
-              <div className="flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/40 px-3 py-1.5 rounded-full text-amber-300 text-xs font-extrabold">
+              <div className="flex items-center gap-1.5 bg-orange-500/20 border border-orange-400/40 px-3 py-1.5 rounded-full text-orange-300 text-xs font-extrabold">
                 <Coins className="size-4" />
                 <span>KingPay: {formatPaise(walletBalance)}</span>
               </div>

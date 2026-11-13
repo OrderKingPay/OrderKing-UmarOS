@@ -216,11 +216,11 @@ export function PassengerDrawer({
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md overflow-y-auto animate-in fade-in duration-200">
         <div className="relative w-full max-w-md bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-auto p-6 sm:p-8 text-center space-y-4">
-          <div className="size-14 rounded-2xl bg-amber-500/20 text-amber-600 border border-amber-400/40 flex items-center justify-center mx-auto">
+          <div className="size-14 rounded-2xl bg-orange-500/20 text-orange-600 border border-orange-400/40 flex items-center justify-center mx-auto">
             <ShieldCheck className="size-8" />
           </div>
           <div>
-            <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 block">
+            <span className="text-[11px] font-black uppercase tracking-wider text-orange-600 block">
               Identity Verification Required
             </span>
             <h3 className="text-xl font-black text-slate-900 mt-1">
@@ -237,7 +237,7 @@ export function PassengerDrawer({
                 onClose();
                 navigate({ to: "/login" });
               }}
-              className="w-full h-11 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-black text-xs shadow-md"
+              className="w-full h-11 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-xs shadow-md"
             >
               Sign In to OrderKing
             </Button>
@@ -470,9 +470,9 @@ export function PassengerDrawer({
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-slate-100 pb-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                <Sparkles className="size-4 text-amber-500" /> Choose Booking Loyalty Rebate
+                <Sparkles className="size-4 text-orange-500" /> Choose Booking Loyalty Rebate
               </span>
-              <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+              <span className="text-[11px] font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
                 Credited Upon Booking
               </span>
             </div>
@@ -481,7 +481,7 @@ export function PassengerDrawer({
               <label
                 className={`flex items-start gap-3 p-3.5 rounded-2xl border cursor-pointer transition ${
                   rebateChoice === "24k_gold"
-                    ? "bg-amber-50/60 border-amber-400 shadow-sm ring-1 ring-amber-400/50"
+                    ? "bg-orange-50/60 border-orange-400 shadow-sm ring-1 ring-orange-400/50"
                     : "bg-slate-50 border-slate-200 hover:border-slate-300"
                 }`}
               >
@@ -494,7 +494,7 @@ export function PassengerDrawer({
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <Coins className="size-4 text-amber-600" />
+                    <Coins className="size-4 text-orange-600" />
                     <span className="text-xs font-black text-slate-900">
                       Gold Reward ({fareCalc.rebateGoldMilligrams} mg)
                     </span>

@@ -265,9 +265,9 @@ function DashboardPage() {
                 variant="outline"
                 disabled={throttleBusy !== null || !vendor.restaurantId}
                 onClick={() => void handleThrottle("RUSH")}
-                className="border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold h-10 px-4 rounded-xl"
+                className="border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-950 text-xs font-bold h-10 px-4 rounded-xl"
               >
-                <Flame className="mr-1.5 size-3.5 text-amber-600" />
+                <Flame className="mr-1.5 size-3.5 text-orange-600" />
                 {throttleBusy === "RUSH" ? "Updating..." : "Peak Rush Mode (35m)"}
               </Button>
               <Button
@@ -311,14 +311,14 @@ function DashboardPage() {
 
           {/* Actionable Attention Banner if Pending Orders > 0 */}
           {pendingCount > 0 ? (
-            <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+            <div className="rounded-2xl border border-orange-300 bg-orange-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
               <div className="flex items-center gap-3">
-                <AlertTriangle className="size-5 text-amber-600 shrink-0" />
+                <AlertTriangle className="size-5 text-orange-600 shrink-0" />
                 <div>
-                  <div className="text-sm font-bold text-amber-900">
+                  <div className="text-sm font-bold text-orange-950">
                     {pendingCount} Pending {pendingCount === 1 ? "Order" : "Orders"} Awaiting Kitchen Acceptance
                   </div>
-                  <div className="text-xs text-amber-700">
+                  <div className="text-xs text-orange-900">
                     Accept orders below or in the Order Queue to maintain SLA and dispatch riders on time.
                   </div>
                 </div>
@@ -362,7 +362,7 @@ function DashboardPage() {
                             {st}
                           </span>
                           {ord.isCod ? (
-                            <span className="rounded-md border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-mono font-bold text-amber-800">
+                            <span className="rounded-md border border-orange-300 bg-orange-50 px-1.5 py-0.5 text-[10px] font-mono font-bold text-orange-900">
                               COD
                             </span>
                           ) : null}
@@ -373,7 +373,7 @@ function DashboardPage() {
                             : "Standard Kitchen Order"}
                         </div>
                         {ord.specialInstructions ? (
-                          <div className="text-[11px] text-amber-800 bg-amber-50 rounded px-2 py-0.5 mt-1">
+                          <div className="text-[11px] text-orange-900 bg-orange-50 rounded px-2 py-0.5 mt-1">
                             Note: {ord.specialInstructions}
                           </div>
                         ) : null}
@@ -415,7 +415,7 @@ function DashboardPage() {
                           size="sm"
                           disabled={orderActionBusy !== null}
                           onClick={() => void handleQuickOrderAction(ord.id, "PREPARING")}
-                          className="h-9 text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg"
+                          className="h-9 text-xs bg-[#E85D04] hover:bg-[#C2410C] text-white font-bold rounded-lg shadow-xs"
                         >
                           <Flame className="mr-1 size-3.5" />
                           Mark Preparing
@@ -464,10 +464,10 @@ function DashboardPage() {
           <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
             <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
               <span className="uppercase tracking-wider">Pending Orders</span>
-              <ClipboardList className={cn("size-4", pendingCount > 0 ? "text-amber-600" : "text-gray-400")} />
+              <ClipboardList className={cn("size-4", pendingCount > 0 ? "text-[#E85D04]" : "text-gray-400")} />
             </div>
             <div className="my-3">
-              <div className={cn("font-display text-3xl font-black tabular", pendingCount > 0 ? "text-amber-600" : "text-gray-900")}>
+              <div className={cn("font-display text-3xl font-black tabular", pendingCount > 0 ? "text-[#E85D04]" : "text-gray-900")}>
                 {pendingCount}
               </div>
               <div className="text-xs text-gray-500 mt-1">
@@ -574,7 +574,7 @@ function DashboardPage() {
           <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
             <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
               <span className="uppercase tracking-wider">Customer Rating</span>
-              <Star className="size-4 text-amber-500" />
+              <Star className="size-4 text-[#E85D04] fill-[#E85D04]/30" />
             </div>
             <div className="my-3">
               <div className="font-display text-2xl font-black text-gray-900 tabular">
@@ -614,7 +614,7 @@ function DashboardPage() {
                       item.tone === "danger"
                         ? "bg-rose-50 text-rose-800 border border-rose-200"
                         : item.tone === "warn"
-                          ? "bg-amber-50 text-amber-800 border border-amber-200"
+                          ? "bg-orange-50 text-orange-900 border border-orange-200"
                           : "bg-gray-100 text-gray-800 border border-gray-200",
                     )}
                   >
@@ -760,7 +760,7 @@ function DashboardPage() {
                   Verified customer ratings &amp; instant replies
                 </div>
               </div>
-              <Star className="size-4 text-amber-500 shrink-0" />
+              <Star className="size-4 text-[#E85D04] fill-[#E85D04]/30 shrink-0" />
             </Link>
 
             <Link

@@ -237,7 +237,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold ${contract.status === 'SIGNED'
                               ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-amber-100 text-amber-800'
+                              : 'bg-orange-100 text-orange-900'
                             }`}
                         >
                           {contract.status === 'SIGNED' ? (
@@ -257,7 +257,7 @@ export const GigWorkerComplianceCenter: React.FC = () => {
                         <span
                           className={`inline-block px-2 py-0.5 rounded text-[11px] font-bold ${contract.umarOsApprovalStatus === 'APPROVED'
                               ? 'bg-slate-900 text-white'
-                              : 'bg-amber-50 text-amber-900 border border-amber-200'
+                              : 'bg-orange-50 text-orange-950 border border-orange-200'
                             }`}
                         >
                           {contract.umarOsApprovalStatus === 'APPROVED'

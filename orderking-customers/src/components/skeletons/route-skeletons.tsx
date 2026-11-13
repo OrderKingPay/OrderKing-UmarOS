@@ -14,25 +14,25 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
       aria-label="Loading Crown Opportunities"
     >
       {/* Top Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-900/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-950/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-2.5">
-          <div className="size-8 rounded-xl bg-amber-400/30 flex items-center justify-center">
-            <span className="text-xs font-bold text-amber-700">OK</span>
+          <div className="size-8 rounded-xl bg-orange-400/30 flex items-center justify-center">
+            <span className="text-xs font-bold text-orange-700">OK</span>
           </div>
           <div className="space-y-1">
-            <div className="h-4 w-28 rounded-md bg-amber-200/60" />
-            <div className="h-2.5 w-16 rounded bg-amber-100" />
+            <div className="h-4 w-28 rounded-md bg-orange-200/60" />
+            <div className="h-2.5 w-16 rounded bg-orange-100" />
           </div>
         </div>
-        <div className="h-7 w-20 rounded-full bg-amber-200/40" />
+        <div className="h-7 w-20 rounded-full bg-orange-200/40" />
       </div>
 
       <div className="space-y-6 px-4 py-5">
         {/* Royal Hero Banner */}
-        <div className="relative overflow-hidden rounded-3xl border-2 border-amber-400/40 bg-gradient-to-br from-stone-900 via-stone-900 to-amber-950 p-6 shadow-xl space-y-4">
+        <div className="relative overflow-hidden rounded-3xl border-2 border-orange-400/40 bg-gradient-to-br from-stone-900 via-stone-900 to-orange-950 p-6 shadow-xl space-y-4">
           <div className="flex items-center gap-2">
-            <div className="size-7 rounded-lg bg-amber-400/40" />
-            <div className="h-3 w-36 rounded bg-amber-200/40" />
+            <div className="size-7 rounded-lg bg-orange-400/40" />
+            <div className="h-3 w-36 rounded bg-orange-200/40" />
           </div>
           <div className="h-8 w-3/4 rounded-xl bg-stone-700/60" />
           <div className="space-y-1.5">
@@ -40,14 +40,14 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
             <div className="h-3 w-5/6 rounded bg-stone-700/40" />
           </div>
           <div className="flex gap-2 pt-2">
-            <div className="h-6 w-32 rounded-full bg-amber-400/20" />
+            <div className="h-6 w-32 rounded-full bg-orange-400/20" />
             <div className="h-6 w-28 rounded-full bg-emerald-400/20" />
           </div>
         </div>
 
         {/* Info Cards Grid */}
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="rounded-3xl border border-amber-900/10 bg-white p-5 space-y-3 shadow-xs">
+          <div className="rounded-3xl border border-orange-950/10 bg-white p-5 space-y-3 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-xl bg-emerald-100" />
               <div className="space-y-1">
@@ -57,9 +57,9 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
             </div>
             <div className="h-10 w-full rounded-lg bg-slate-50" />
           </div>
-          <div className="rounded-3xl border border-amber-900/10 bg-white p-5 space-y-3 shadow-xs">
+          <div className="rounded-3xl border border-orange-950/10 bg-white p-5 space-y-3 shadow-xs">
             <div className="flex items-center gap-3">
-              <div className="size-10 rounded-xl bg-amber-100" />
+              <div className="size-10 rounded-xl bg-orange-100" />
               <div className="space-y-1">
                 <div className="h-4 w-32 rounded bg-slate-200" />
                 <div className="h-2.5 w-24 rounded bg-slate-100" />
@@ -71,20 +71,20 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
 
         {/* Task List Skeletons */}
         <div className="space-y-3">
-          <div className="h-5 w-40 rounded bg-amber-200/50" />
+          <div className="h-5 w-40 rounded bg-orange-200/50" />
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="flex items-center justify-between rounded-2xl border border-amber-900/10 bg-white p-4 shadow-2xs"
+              className="flex items-center justify-between rounded-2xl border border-orange-950/10 bg-white p-4 shadow-2xs"
             >
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-amber-100/70" />
+                <div className="size-10 rounded-xl bg-orange-100/70" />
                 <div className="space-y-1.5">
                   <div className="h-4 w-36 rounded bg-slate-200" />
                   <div className="h-2.5 w-20 rounded bg-slate-100" />
                 </div>
               </div>
-              <div className="h-8 w-24 rounded-xl bg-amber-400/30" />
+              <div className="h-8 w-24 rounded-xl bg-orange-400/30" />
             </div>
           ))}
         </div>
@@ -107,12 +107,12 @@ export function KingPayPageSkeleton({ className }: { className?: string }) {
       aria-label="Loading KingPay Hub"
     >
       {/* Top Fintech Nav */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-500/20 bg-[#0a0a0f]/95 px-4 py-3 backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-500/20 bg-[#0a0a0f]/95 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-xl bg-gradient-to-tr from-amber-400/40 to-yellow-500/20 flex items-center justify-center">
-            <span className="text-xs font-bold text-amber-700">OK</span>
+          <div className="size-8 rounded-xl bg-gradient-to-tr from-orange-400/40 to-orange-500/20 flex items-center justify-center">
+            <span className="text-xs font-bold text-orange-700">OK</span>
           </div>
-          <div className="h-5 w-24 rounded bg-amber-400/40" />
+          <div className="h-5 w-24 rounded bg-orange-400/40" />
         </div>
         <div className="flex items-center gap-2">
           <div className="size-8 rounded-full bg-zinc-800" />
@@ -122,15 +122,15 @@ export function KingPayPageSkeleton({ className }: { className?: string }) {
 
       <div className="space-y-5 px-4 py-4">
         {/* Wallet Balance Hero Card */}
-        <div className="relative overflow-hidden rounded-3xl border border-amber-500/30 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-amber-950/40 p-6 shadow-2xl space-y-4">
+        <div className="relative overflow-hidden rounded-3xl border border-orange-500/30 bg-gradient-to-br from-zinc-900 via-zinc-900/90 to-orange-950/40 p-6 shadow-2xl space-y-4">
           <div className="flex items-center justify-between">
             <div className="h-3 w-28 rounded bg-zinc-700" />
             <div className="h-5 w-16 rounded-full bg-emerald-500/20" />
           </div>
-          <div className="h-10 w-44 rounded-xl bg-gradient-to-r from-amber-400/50 to-yellow-200/50" />
+          <div className="h-10 w-44 rounded-xl bg-gradient-to-r from-orange-400/50 to-orange-200/50" />
           <div className="h-3 w-32 rounded bg-zinc-700" />
           <div className="grid grid-cols-2 gap-3 pt-2">
-            <div className="h-11 rounded-2xl bg-amber-500/30 border border-amber-400/40" />
+            <div className="h-11 rounded-2xl bg-orange-500/30 border border-orange-400/40" />
             <div className="h-11 rounded-2xl bg-zinc-800/80 border border-zinc-700" />
           </div>
         </div>
@@ -188,19 +188,19 @@ export function OrdersPageSkeleton({ className }: { className?: string }) {
       aria-label="Loading Orders"
     >
       {/* Top Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-900/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-950/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
         <div className="space-y-1">
-          <div className="h-5 w-28 rounded-md bg-amber-200/60" />
-          <div className="h-2.5 w-36 rounded bg-amber-100" />
+          <div className="h-5 w-28 rounded-md bg-orange-200/60" />
+          <div className="h-2.5 w-36 rounded bg-orange-100" />
         </div>
-        <div className="h-8 w-24 rounded-full bg-amber-200/40" />
+        <div className="h-8 w-24 rounded-full bg-orange-200/40" />
       </div>
 
       <div className="space-y-4 px-4 py-4">
         {/* Search Input */}
-        <div className="h-10 w-full rounded-2xl border border-amber-200/60 bg-white p-3 flex items-center gap-2">
-          <div className="size-4 rounded-full bg-amber-200" />
-          <div className="h-3 w-40 rounded bg-amber-100" />
+        <div className="h-10 w-full rounded-2xl border border-orange-200/60 bg-white p-3 flex items-center gap-2">
+          <div className="size-4 rounded-full bg-orange-200" />
+          <div className="h-3 w-40 rounded bg-orange-100" />
         </div>
 
         {/* Order Status Tabs */}
@@ -210,7 +210,7 @@ export function OrdersPageSkeleton({ className }: { className?: string }) {
               key={tab}
               className={cn(
                 "h-7 rounded-full px-3.5 flex items-center",
-                i === 0 ? "bg-amber-500/20 border border-amber-300 w-24" : "bg-white border border-stone-200 w-20"
+                i === 0 ? "bg-orange-500/20 border border-orange-300 w-24" : "bg-white border border-stone-200 w-20"
               )}
             >
               <div className="h-2.5 w-full rounded bg-stone-300/60" />
@@ -222,11 +222,11 @@ export function OrdersPageSkeleton({ className }: { className?: string }) {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="overflow-hidden rounded-3xl border border-amber-900/10 bg-white p-5 shadow-xs space-y-4"
+            className="overflow-hidden rounded-3xl border border-orange-950/10 bg-white p-5 shadow-xs space-y-4"
           >
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="size-12 rounded-2xl bg-amber-100/70" />
+                <div className="size-12 rounded-2xl bg-orange-100/70" />
                 <div className="space-y-1.5">
                   <div className="h-4 w-32 rounded bg-stone-300/80" />
                   <div className="h-2.5 w-20 rounded bg-stone-200" />
@@ -235,16 +235,16 @@ export function OrdersPageSkeleton({ className }: { className?: string }) {
               <div className="h-6 w-20 rounded-full bg-emerald-100 border border-emerald-200" />
             </div>
 
-            <div className="border-t border-amber-900/5 pt-3 space-y-2">
+            <div className="border-t border-orange-950/5 pt-3 space-y-2">
               <div className="h-3 w-3/4 rounded bg-stone-200/70" />
               <div className="h-3 w-1/2 rounded bg-stone-200/50" />
             </div>
 
-            <div className="flex items-center justify-between border-t border-amber-900/5 pt-3">
+            <div className="flex items-center justify-between border-t border-orange-950/5 pt-3">
               <div className="h-4 w-16 rounded bg-stone-300" />
               <div className="flex gap-2">
                 <div className="h-8 w-20 rounded-xl bg-stone-100 border border-stone-200" />
-                <div className="h-8 w-24 rounded-xl bg-amber-500/20 border border-amber-300" />
+                <div className="h-8 w-24 rounded-xl bg-orange-500/20 border border-orange-300" />
               </div>
             </div>
           </div>
@@ -268,29 +268,29 @@ export function CartPageSkeleton({ className }: { className?: string }) {
       aria-label="Loading Cart"
     >
       {/* Top Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-900/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-950/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="size-8 rounded-xl bg-stone-200/60" />
           <div className="space-y-1">
-            <div className="h-4 w-24 rounded bg-amber-200/60" />
-            <div className="h-2.5 w-32 rounded bg-amber-100" />
+            <div className="h-4 w-24 rounded bg-orange-200/60" />
+            <div className="h-2.5 w-32 rounded bg-orange-100" />
           </div>
         </div>
-        <div className="h-6 w-16 rounded-full bg-amber-200/40" />
+        <div className="h-6 w-16 rounded-full bg-orange-200/40" />
       </div>
 
       <div className="space-y-4 px-4 py-4">
         {/* Restaurant Banner Skeleton */}
-        <div className="rounded-2xl border border-amber-200/60 bg-amber-50/40 p-3.5 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-amber-200/60" />
+        <div className="rounded-2xl border border-orange-200/60 bg-orange-50/40 p-3.5 flex items-center gap-3">
+          <div className="size-10 rounded-xl bg-orange-200/60" />
           <div className="space-y-1">
-            <div className="h-3.5 w-32 rounded bg-amber-300/70" />
-            <div className="h-2.5 w-24 rounded bg-amber-200/50" />
+            <div className="h-3.5 w-32 rounded bg-orange-300/70" />
+            <div className="h-2.5 w-24 rounded bg-orange-200/50" />
           </div>
         </div>
 
         {/* Cart Item Rows */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white p-4 shadow-xs space-y-4">
+        <div className="rounded-3xl border border-orange-950/10 bg-white p-4 shadow-xs space-y-4">
           {[1, 2].map((i) => (
             <div key={i} className="flex items-center justify-between py-2 border-b border-stone-100 last:border-0">
               <div className="flex items-center gap-2.5">
@@ -301,7 +301,7 @@ export function CartPageSkeleton({ className }: { className?: string }) {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="h-7 w-20 rounded-xl bg-amber-100/70 border border-amber-200" />
+                <div className="h-7 w-20 rounded-xl bg-orange-100/70 border border-orange-200" />
                 <div className="h-3.5 w-12 rounded bg-stone-300" />
               </div>
             </div>
@@ -309,16 +309,16 @@ export function CartPageSkeleton({ className }: { className?: string }) {
         </div>
 
         {/* Coupon Card */}
-        <div className="h-12 rounded-2xl border border-dashed border-amber-300 bg-amber-50/50 p-3 flex items-center justify-between">
+        <div className="h-12 rounded-2xl border border-dashed border-orange-300 bg-orange-50/50 p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="size-5 rounded bg-amber-300/60" />
-            <div className="h-3 w-28 rounded bg-amber-200" />
+            <div className="size-5 rounded bg-orange-300/60" />
+            <div className="h-3 w-28 rounded bg-orange-200" />
           </div>
-          <div className="h-6 w-16 rounded-lg bg-amber-400/30" />
+          <div className="h-6 w-16 rounded-lg bg-orange-400/30" />
         </div>
 
         {/* Bill Summary */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white p-5 shadow-xs space-y-3">
+        <div className="rounded-3xl border border-orange-950/10 bg-white p-5 shadow-xs space-y-3">
           <div className="h-4 w-28 rounded bg-stone-300 mb-2" />
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex justify-between">
@@ -328,19 +328,19 @@ export function CartPageSkeleton({ className }: { className?: string }) {
           ))}
           <div className="border-t border-stone-200 pt-3 flex justify-between">
             <div className="h-4 w-20 rounded bg-stone-400" />
-            <div className="h-4 w-16 rounded bg-amber-500/70" />
+            <div className="h-4 w-16 rounded bg-orange-500/70" />
           </div>
         </div>
       </div>
 
       {/* Sticky Bottom Action */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-amber-900/10 bg-[#FFFDF9]/95 p-4 backdrop-blur-md">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-orange-950/10 bg-[#FFFDF9]/95 p-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg md:max-w-5xl items-center justify-between">
           <div className="space-y-1">
             <div className="h-2.5 w-14 rounded bg-stone-300" />
-            <div className="h-5 w-20 rounded bg-amber-500/60" />
+            <div className="h-5 w-20 rounded bg-orange-500/60" />
           </div>
-          <div className="h-12 w-48 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 shadow-md" />
+          <div className="h-12 w-48 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 shadow-md" />
         </div>
       </div>
     </div>
@@ -361,12 +361,12 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
       aria-label="Loading Checkout"
     >
       {/* Top Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-amber-900/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
+      <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-950/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <div className="size-8 rounded-xl bg-stone-200/60" />
           <div className="space-y-1">
-            <div className="h-4 w-28 rounded bg-amber-200/60" />
-            <div className="h-2.5 w-20 rounded bg-amber-100" />
+            <div className="h-4 w-28 rounded bg-orange-200/60" />
+            <div className="h-2.5 w-20 rounded bg-orange-100" />
           </div>
         </div>
         <div className="h-6 w-24 rounded-full bg-emerald-100 border border-emerald-200" />
@@ -374,10 +374,10 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
 
       <div className="space-y-4 px-4 py-4">
         {/* Address Card */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white p-5 shadow-xs space-y-3">
+        <div className="rounded-3xl border border-orange-950/10 bg-white p-5 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="size-6 rounded-lg bg-amber-400/30" />
+              <div className="size-6 rounded-lg bg-orange-400/30" />
               <div className="h-4 w-32 rounded bg-stone-300" />
             </div>
             <div className="h-6 w-14 rounded-lg bg-stone-100" />
@@ -390,9 +390,9 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
 
         {/* Delivery Options */}
         <div className="grid grid-cols-2 gap-3">
-          <div className="h-16 rounded-2xl border border-amber-400/50 bg-amber-50/60 p-3 space-y-1.5">
-            <div className="h-3 w-20 rounded bg-amber-300" />
-            <div className="h-2.5 w-16 rounded bg-amber-200" />
+          <div className="h-16 rounded-2xl border border-orange-400/50 bg-orange-50/60 p-3 space-y-1.5">
+            <div className="h-3 w-20 rounded bg-orange-300" />
+            <div className="h-2.5 w-16 rounded bg-orange-200" />
           </div>
           <div className="h-16 rounded-2xl border border-stone-200 bg-white p-3 space-y-1.5">
             <div className="h-3 w-20 rounded bg-stone-300" />
@@ -401,7 +401,7 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
         </div>
 
         {/* Payment Methods */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white p-5 shadow-xs space-y-3">
+        <div className="rounded-3xl border border-orange-950/10 bg-white p-5 shadow-xs space-y-3">
           <div className="h-4 w-36 rounded bg-stone-300 mb-2" />
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center justify-between py-2 border-b border-stone-100 last:border-0">
@@ -415,7 +415,7 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
         </div>
 
         {/* Bill Summary */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white p-5 shadow-xs space-y-3">
+        <div className="rounded-3xl border border-orange-950/10 bg-white p-5 shadow-xs space-y-3">
           <div className="h-4 w-28 rounded bg-stone-300 mb-2" />
           <div className="space-y-2">
             <div className="flex justify-between">
@@ -428,20 +428,20 @@ export function CheckoutPageSkeleton({ className }: { className?: string }) {
             </div>
             <div className="flex justify-between border-t border-stone-100 pt-2">
               <div className="h-4 w-20 rounded bg-stone-400" />
-              <div className="h-4 w-16 rounded bg-amber-500/70" />
+              <div className="h-4 w-16 rounded bg-orange-500/70" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Sticky Bottom Place Order Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-amber-900/10 bg-[#FFFDF9]/95 p-4 backdrop-blur-md">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-orange-950/10 bg-[#FFFDF9]/95 p-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-lg md:max-w-5xl items-center justify-between">
           <div className="space-y-1">
             <div className="h-2.5 w-16 rounded bg-stone-300" />
-            <div className="h-5 w-24 rounded bg-amber-500/70" />
+            <div className="h-5 w-24 rounded bg-orange-500/70" />
           </div>
-          <div className="h-12 w-48 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 shadow-md" />
+          <div className="h-12 w-48 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 shadow-md" />
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ export function KitchenDiscoveryEmptyState() {
       className="relative isolate overflow-hidden rounded-2xl border border-stone-200 bg-white p-6 shadow-xs sm:p-8"
     >
       <div className="flex flex-col items-center text-center max-w-md mx-auto">
-        <div className="flex size-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 border border-amber-200/60 mb-4">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-orange-50 text-orange-700 border border-orange-200/60 mb-4">
           <ChefHat className="size-7" />
         </div>
 

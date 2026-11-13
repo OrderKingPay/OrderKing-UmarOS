@@ -135,7 +135,7 @@ export function WalletPage() {
               <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
                 In-Hand Cash
               </span>
-              <p className={`text-3xl font-black font-mono tracking-tight mt-0.5 ${isBlocked ? "text-amber-600" : "text-foreground"}`}>
+              <p className={`text-3xl font-black font-mono tracking-tight mt-0.5 ${isBlocked ? "text-orange-600" : "text-foreground"}`}>
                 {formatPaise(unreconciledPaise)}
               </p>
             </div>
@@ -147,7 +147,7 @@ export function WalletPage() {
           <div className="space-y-1.5">
             <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
-                className={`h-full transition-all duration-300 ${isBlocked ? "bg-amber-600" : isSoftWarning ? "bg-amber-500" : "bg-emerald-500"}`}
+                className={`h-full transition-all duration-300 ${isBlocked ? "bg-orange-600" : isSoftWarning ? "bg-orange-500" : "bg-emerald-500"}`}
                 style={{ width: `${Math.min(100, utilizationPct)}%` }}
               />
             </div>
@@ -158,7 +158,7 @@ export function WalletPage() {
           </div>
 
           {isBlocked ? (
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-950 dark:text-amber-200">
+            <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3 text-xs text-orange-950 dark:text-orange-200">
               <p className="font-bold">Cash limit reached</p>
               <p className="text-[11px] mt-0.5 text-muted-foreground">Deposit cash to continue receiving cash on delivery orders.</p>
             </div>

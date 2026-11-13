@@ -146,12 +146,12 @@ export function CatalogueStockControlsPanel({
           <div className="space-y-3">
             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="size-4 text-amber-600" />
+                <ShieldAlert className="size-4 text-orange-600" />
                 <span className="font-bold text-xs text-gray-900">
                   Low-Stock Warning Level
                 </span>
               </div>
-              <span className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-md shadow-xs">
+              <span className="text-xs font-bold text-orange-900 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-md shadow-xs">
                 ≤ {lowStockThreshold} portions
               </span>
             </div>
@@ -215,8 +215,8 @@ export function CatalogueStockControlsPanel({
           {/* Live Preview of Alert Badge */}
           <div className="rounded-xl border border-gray-200 bg-white p-3 flex items-center justify-between text-xs shadow-xs">
             <span className="text-gray-600 font-medium">Alert Preview:</span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-xs font-semibold text-amber-800">
-              <AlertTriangle className="size-3 text-amber-600" /> Low Stock ({lowStockThreshold} left)
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-semibold text-orange-900">
+              <AlertTriangle className="size-3 text-orange-600" /> Low Stock ({lowStockThreshold} left)
             </span>
           </div>
         </div>

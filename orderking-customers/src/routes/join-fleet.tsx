@@ -130,7 +130,7 @@ export function JoinFleetPage() {
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-[11px] font-bold text-zinc-300">
-                  <Coins className="size-3.5 text-amber-400" />
+                  <Coins className="size-3.5 text-orange-400" />
                   Earn ₹18,000 – ₹35,000/mo
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-[11px] font-bold text-zinc-300">
@@ -277,7 +277,7 @@ export function JoinFleetPage() {
                               : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:text-white"
                           }`}
                         >
-                          <Bike className="size-4 text-amber-400" />
+                          <Bike className="size-4 text-orange-400" />
                           <span className="text-[11px] font-black">Petrol 2W</span>
                         </button>
                         <button
@@ -376,7 +376,7 @@ export function JoinFleetPage() {
             <div className="lg:col-span-5 space-y-4">
               <div className="rounded-3xl border border-zinc-800 bg-zinc-900/50 p-6 space-y-4">
                 <h3 className="text-sm font-black text-white flex items-center gap-2">
-                  <Award className="size-4 text-amber-400" />
+                  <Award className="size-4 text-orange-400" />
                   Rider Partner Advantages
                 </h3>
                 <ul className="space-y-3 text-xs text-zinc-300">

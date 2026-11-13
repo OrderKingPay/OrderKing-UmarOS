@@ -197,7 +197,7 @@ function HoursPage() {
                 type="checkbox"
                 checked={vacation}
                 onChange={(e) => setVacation(e.target.checked)}
-                className="mt-1 rounded border-slate-700 bg-white text-amber-500"
+                className="mt-1 rounded border-slate-700 bg-white text-orange-500"
               />
               <div>
                 <div className="text-xs font-semibold text-gray-900">{t("hours.vacation")}</div>
@@ -228,7 +228,7 @@ function HoursPage() {
             </div>
             <div>
               <Label className="text-xs text-gray-700 flex items-center gap-1.5">
-                <Flame className="size-3.5 text-amber-400" />
+                <Flame className="size-3.5 text-orange-400" />
                 {t("hours.peak")} (Peak Rush SLA Buffer)
               </Label>
               <Input
@@ -301,7 +301,7 @@ function HoursPage() {
 
           <div className="pt-3 border-t border-gray-200 space-y-2">
             <div className="flex items-center gap-2">
-              <CalendarOff className="size-4 text-amber-400" />
+              <CalendarOff className="size-4 text-orange-400" />
               <h3 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                 Weekly Scheduled Day-Off / Holiday Toggles
               </h3>

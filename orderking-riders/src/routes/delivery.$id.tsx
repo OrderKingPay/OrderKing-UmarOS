@@ -225,7 +225,7 @@ function Page() {
                   <p className="font-semibold text-foreground">{d.restaurant.name}</p>
                   <p className="text-[11px] text-muted-foreground">{d.restaurant.address || d.restaurant.area}</p>
                   {d.restaurant.specialPickupInstructions ? (
-                    <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5">
+                    <p className="text-[11px] text-orange-600 dark:text-orange-400 mt-0.5">
                       Note: {d.restaurant.specialPickupInstructions}
                     </p>
                   ) : null}
@@ -238,7 +238,7 @@ function Page() {
                   <p className="font-semibold text-foreground">{d.customer.displayName || d.customer.area}</p>
                   <p className="text-[11px] text-muted-foreground">{d.customer.address || d.customer.area}</p>
                   {d.customer.instructions ? (
-                    <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5">
+                    <p className="text-[11px] text-orange-600 dark:text-orange-400 mt-0.5">
                       Note: {d.customer.instructions}
                     </p>
                   ) : null}

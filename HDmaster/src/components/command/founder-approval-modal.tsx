@@ -44,7 +44,7 @@ export function FounderApprovalModal({
       case "LOW":
         return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40">LOW RISK</Badge>;
       case "MEDIUM":
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/40">MEDIUM RISK</Badge>;
+        return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">MEDIUM RISK</Badge>;
       case "HIGH":
         return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/40">HIGH RISK</Badge>;
       case "IRREVERSIBLE":
@@ -54,11 +54,11 @@ export function FounderApprovalModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn">
-      <div className="relative w-full max-w-2xl rounded-2xl border-2 border-amber-500/60 bg-gradient-to-b from-[#0B1D16] via-[#06140F] to-black shadow-[0_0_60px_rgba(245,158,11,0.25)] p-6 space-y-5 text-slate-100">
+      <div className="relative w-full max-w-2xl rounded-2xl border-2 border-orange-500/60 bg-gradient-to-b from-[#0B1D16] via-[#06140F] to-black shadow-[0_0_60px_rgba(245,158,11,0.25)] p-6 space-y-5 text-slate-100">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-border/70">
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-orange-500/20 text-orange-400 border border-orange-500/40">
               <ShieldAlert className="size-5" />
             </div>
             <div>
@@ -96,7 +96,7 @@ export function FounderApprovalModal({
             <span className="text-muted block text-[10px] uppercase font-bold tracking-wider">
               Target
             </span>
-            <span className="text-sm font-black text-amber-300 mt-0.5 block truncate">
+            <span className="text-sm font-black text-orange-300 mt-0.5 block truncate">
               {request.target}
             </span>
           </div>
@@ -132,7 +132,7 @@ export function FounderApprovalModal({
 
         {/* WHY (STRATEGIC RATIONALE) */}
         <div className="rounded-xl bg-surface-2/60 p-3.5 border border-border/60 space-y-1 text-xs">
-          <span className="text-amber-400 font-bold block text-[10px] uppercase tracking-wider">
+          <span className="text-orange-400 font-bold block text-[10px] uppercase tracking-wider">
             Strategic Rationale (Why):
           </span>
           <p className="text-slate-300 leading-relaxed">{request.why}</p>
@@ -163,7 +163,7 @@ export function FounderApprovalModal({
             size="sm"
             variant="primary"
             onClick={() => onApprove(request)}
-            className="text-xs font-black bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg"
+            className="text-xs font-black bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-black shadow-lg"
           >
             <CheckCircle2 className="size-4 mr-1.5" />
             Authorize &amp; Execute

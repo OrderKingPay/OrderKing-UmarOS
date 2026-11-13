@@ -98,7 +98,7 @@ export function InStoreMarketingKit({
           </div>
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
             <span className="text-[10px] font-mono text-gray-500 uppercase">Diner Retention &amp; Cashback</span>
-            <div className="font-bold text-amber-300 mt-0.5 text-sm">KingPay Wallet Cashbacks</div>
+            <div className="font-bold text-orange-300 mt-0.5 text-sm">KingPay Wallet Cashbacks</div>
             <p className="text-[10px] text-gray-500">Diners return to redeem cashback balance</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
@@ -199,7 +199,7 @@ export function InStoreMarketingKit({
             {/* Customer Cashback Incentive */}
             <div>
               <Label className="text-xs text-gray-700 flex items-center gap-1.5">
-                <Gift className="size-3 text-amber-400" /> Dine-In Customer Cashback Reward
+                <Gift className="size-3 text-orange-400" /> Dine-In Customer Cashback Reward
               </Label>
               <div className="grid grid-cols-1 gap-1.5 mt-1">
                 {[
@@ -216,7 +216,7 @@ export function InStoreMarketingKit({
                     }}
                     className={`rounded-lg p-2 text-left text-xs font-medium border transition ${
                       cashbackOffer === c
-                        ? "border-amber-500/70 bg-amber-500/15 text-amber-200 font-bold"
+                        ? "border-orange-500/70 bg-orange-500/15 text-orange-200 font-bold"
                         : "border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 hover:text-white"
                     }`}
                   >
@@ -339,8 +339,8 @@ export function InStoreMarketingKit({
                     <div className="font-extrabold text-sm text-emerald-950">
                       {customHeadline}
                     </div>
-                    <div className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300 px-3 py-0.5 text-[11px] font-bold text-amber-900">
-                      <Gift className="size-3 text-amber-700" />
+                    <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 border border-orange-300 px-3 py-0.5 text-[11px] font-bold text-orange-950">
+                      <Gift className="size-3 text-orange-700" />
                       <span>{cashbackOffer}</span>
                     </div>
                     <p className="text-[11px] text-emerald-800">

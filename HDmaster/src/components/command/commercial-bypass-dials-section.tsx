@@ -215,14 +215,14 @@ export function CommercialBypassDialsSection() {
   return (
     <div className="space-y-6">
       {/* Top Banner: Commercial Operational Dials */}
-      <div className="rounded-2xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-black to-zinc-950/60 p-5 shadow-[0_0_35px_rgba(245,158,11,0.12)]">
+      <div className="rounded-2xl border-2 border-orange-500/40 bg-gradient-to-r from-orange-950/40 via-black to-zinc-950/60 p-5 shadow-[0_0_35px_rgba(245,158,11,0.12)]">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Badge className="bg-amber-500 text-black font-black uppercase text-xs tracking-wider">
+              <Badge className="bg-orange-500 text-black font-black uppercase text-xs tracking-wider">
                 SILENT BYPASS 10
               </Badge>
-              <Badge className="border-amber-500/40 bg-amber-500/10 text-amber-300 font-mono text-xs">
+              <Badge className="border-orange-500/40 bg-orange-500/10 text-orange-300 font-mono text-xs">
                 GSTIN: 18AFXPH9838M1Z9
               </Badge>
               <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-mono text-xs">
@@ -230,7 +230,7 @@ export function CommercialBypassDialsSection() {
               </Badge>
             </div>
             <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
-              <SlidersHorizontal className="size-5 text-amber-400" />
+              <SlidersHorizontal className="size-5 text-orange-400" />
               Consolidated Commercial Bypass Master Dials
             </h2>
             <p className="text-xs text-muted max-w-2xl">
@@ -259,11 +259,11 @@ export function CommercialBypassDialsSection() {
         {/* ================================================================= */}
         {/* DIAL 1: Direct UPI VPA Switcher & Soundbox Triggers */}
         {/* ================================================================= */}
-        <div className="rounded-xl border border-amber-500/30 bg-zinc-950/80 p-4 space-y-4 shadow-lg flex flex-col justify-between">
+        <div className="rounded-xl border border-orange-500/30 bg-zinc-950/80 p-4 space-y-4 shadow-lg flex flex-col justify-between">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                <div className="p-1.5 rounded-lg bg-orange-500/20 text-orange-400">
                   <Radio className="size-4" />
                 </div>
                 <h3 className="font-bold text-sm text-white">1. Direct UPI & Soundbox</h3>
@@ -290,7 +290,7 @@ export function CommercialBypassDialsSection() {
                     className={cn(
                       "text-[11px] font-mono p-2 rounded-lg border text-left transition-all",
                       primaryVpa === "orderking@ybl"
-                        ? "border-amber-400 bg-amber-500/20 text-amber-300 font-bold"
+                        ? "border-orange-400 bg-orange-500/20 text-orange-300 font-bold"
                         : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
                     )}
                   >
@@ -304,7 +304,7 @@ export function CommercialBypassDialsSection() {
                     className={cn(
                       "text-[11px] font-mono p-2 rounded-lg border text-left transition-all",
                       primaryVpa === "9395065587@ybl"
-                        ? "border-amber-400 bg-amber-500/20 text-amber-300 font-bold"
+                        ? "border-orange-400 bg-orange-500/20 text-orange-300 font-bold"
                         : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
                     )}
                   >
@@ -341,7 +341,7 @@ export function CommercialBypassDialsSection() {
                     setSoundboxLanguage(nextLang);
                     updateMutation.mutate({ soundboxLanguage: nextLang });
                   }}
-                  className="bg-zinc-900 border border-zinc-700 text-amber-300 text-xs rounded px-2 py-1"
+                  className="bg-zinc-900 border border-zinc-700 text-orange-300 text-xs rounded px-2 py-1"
                 >
                   <option value="BENGALI_SYLHETI">Sylheti / Bengali</option>
                   <option value="HINDI">Hindi (National)</option>
@@ -352,7 +352,7 @@ export function CommercialBypassDialsSection() {
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-zinc-400">Soundbox Volume:</span>
-                  <span className="text-amber-400 font-mono font-bold">{soundboxVolume}/10</span>
+                  <span className="text-orange-400 font-mono font-bold">{soundboxVolume}/10</span>
                 </div>
                 <input
                   type="range"
@@ -371,7 +371,7 @@ export function CommercialBypassDialsSection() {
             size="sm"
             disabled={isTestingSoundbox}
             onClick={handleSoundboxTest}
-            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-black text-xs h-8 shadow-md"
+            className="w-full bg-gradient-to-r from-orange-500 to-orange-500 hover:from-orange-400 hover:to-orange-400 text-black font-black text-xs h-8 shadow-md"
           >
             <Volume2 className="size-3.5 mr-1.5" />
             1-Tap Soundbox Test Alert (₹500)
@@ -464,7 +464,7 @@ export function CommercialBypassDialsSection() {
 
           <div className="pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-400 flex justify-between">
             <span>Platform GSTIN:</span>
-            <span className="text-amber-400 font-bold">18AFXPH9838M1Z9</span>
+            <span className="text-orange-400 font-bold">18AFXPH9838M1Z9</span>
           </div>
         </div>
 
@@ -787,16 +787,16 @@ export function CommercialBypassDialsSection() {
         {/* ================================================================= */}
         {/* DIAL 7: Proximity Dispatch Radius Controls */}
         {/* ================================================================= */}
-        <div className="rounded-xl border border-yellow-500/30 bg-zinc-950/80 p-4 space-y-4 shadow-lg flex flex-col justify-between">
+        <div className="rounded-xl border border-orange-500/30 bg-zinc-950/80 p-4 space-y-4 shadow-lg flex flex-col justify-between">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-yellow-500/20 text-yellow-400">
+                <div className="p-1.5 rounded-lg bg-orange-500/20 text-orange-400">
                   <Navigation className="size-4" />
                 </div>
                 <h3 className="font-bold text-sm text-white">7. Proximity Dispatch Radius</h3>
               </div>
-              <Badge className="bg-yellow-950 border-yellow-500 text-yellow-300 text-[10px] font-mono">
+              <Badge className="bg-orange-950 border-orange-500 text-orange-300 text-[10px] font-mono">
                 HAVERSINE AI
               </Badge>
             </div>
@@ -808,7 +808,7 @@ export function CommercialBypassDialsSection() {
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-zinc-400">Day Shift Radius (06:00-18:00):</span>
-                  <span className="text-yellow-400 font-mono font-bold">{dayShiftRadiusKm.toFixed(1)} km</span>
+                  <span className="text-orange-400 font-mono font-bold">{dayShiftRadiusKm.toFixed(1)} km</span>
                 </div>
                 <input
                   type="range"
@@ -825,7 +825,7 @@ export function CommercialBypassDialsSection() {
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-zinc-400">Evening Shift Radius (18:00-23:00):</span>
-                  <span className="text-yellow-400 font-mono font-bold">{eveningShiftRadiusKm.toFixed(1)} km</span>
+                  <span className="text-orange-400 font-mono font-bold">{eveningShiftRadiusKm.toFixed(1)} km</span>
                 </div>
                 <input
                   type="range"
@@ -842,7 +842,7 @@ export function CommercialBypassDialsSection() {
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-zinc-400">Late-Night Shift Radius (23:00-06:00):</span>
-                  <span className="text-yellow-400 font-mono font-bold">{lateNightShiftRadiusKm.toFixed(1)} km</span>
+                  <span className="text-orange-400 font-mono font-bold">{lateNightShiftRadiusKm.toFixed(1)} km</span>
                 </div>
                 <input
                   type="range"
@@ -860,7 +860,7 @@ export function CommercialBypassDialsSection() {
 
           <div className="pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-400 flex justify-between">
             <span>Max Batch per Rider:</span>
-            <span className="text-yellow-300 font-bold">{maxBatchCapacityPerRider} orders max</span>
+            <span className="text-orange-300 font-bold">{maxBatchCapacityPerRider} orders max</span>
           </div>
         </div>
 

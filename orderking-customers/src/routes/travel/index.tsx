@@ -639,9 +639,9 @@ export function TravelPage() {
         {/* Authoritative Single Travel Desk Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-5 sm:p-6 text-white border border-slate-800 shadow-xl">
           <div>
-            <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-400 mb-1">
+            <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-amber-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
+                <Crown className="size-3.5 text-orange-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -655,7 +655,7 @@ export function TravelPage() {
             <button
               type="button"
               onClick={() => setQuotationModal({ isOpen: true, category: "UMRAH" })}
-              className="shrink-0 rounded-2xl px-3.5 py-2.5 text-xs font-black transition flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 shadow-md cursor-pointer"
+              className="shrink-0 rounded-2xl px-3.5 py-2.5 text-xs font-black transition flex items-center gap-1.5 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-slate-950 shadow-md cursor-pointer"
             >
               <Compass className="size-3.5" />
               <span>Direct Quotation Desk (Umrah / Trains)</span>
@@ -753,24 +753,24 @@ export function TravelPage() {
                 className={cn(
                   "group rounded-2xl border p-3 sm:p-4 text-left transition-all duration-200 active:scale-[0.98] flex flex-col justify-between min-h-[96px] sm:min-h-[104px] cursor-pointer",
                   activeTab === "hotels"
-                    ? "border-amber-500 bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950 text-white shadow-md ring-2 ring-amber-400"
-                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-amber-300 text-slate-800"
+                    ? "border-orange-500 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950 text-white shadow-md ring-2 ring-orange-400"
+                    : "border-slate-200 bg-slate-50 hover:bg-white hover:border-orange-300 text-slate-800"
                 )}
               >
                 <div className="flex items-center justify-between">
                   <div className={cn(
                     "size-9 sm:size-10 rounded-xl flex items-center justify-center transition shrink-0",
-                    activeTab === "hotels" ? "bg-amber-400/20 text-amber-300 border border-amber-400/30" : "bg-amber-100 text-amber-600"
+                    activeTab === "hotels" ? "bg-orange-400/20 text-orange-300 border border-orange-400/30" : "bg-orange-100 text-orange-600"
                   )}>
                     <Building2 className="size-4.5 sm:size-5" />
                   </div>
-                  <ChevronRight className={cn("size-4 transition", activeTab === "hotels" ? "text-amber-300" : "text-slate-400 group-hover:text-amber-600")} />
+                  <ChevronRight className={cn("size-4 transition", activeTab === "hotels" ? "text-orange-300" : "text-slate-400 group-hover:text-orange-600")} />
                 </div>
                 <div className="min-w-0 mt-2">
                   <span className={cn("text-xs sm:text-sm font-black truncate block", activeTab === "hotels" ? "text-white" : "text-slate-950")}>
                     Hotels
                   </span>
-                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "hotels" ? "text-amber-200/80" : "text-slate-500")}>
+                  <span className={cn("text-[10px] sm:text-[11px] truncate block mt-0.5", activeTab === "hotels" ? "text-orange-200/80" : "text-slate-500")}>
                     Hotels &amp; Resorts Worldwide
                   </span>
                 </div>
@@ -1587,7 +1587,7 @@ export function TravelPage() {
                       </div>
                       <span className={`px-2.5 py-1 rounded-full text-xs font-black uppercase border self-start ${pnrLiveResult.chartStatus === "CHART PREPARED"
                           ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                          : "bg-amber-100 text-amber-800 border-amber-300"
+                          : "bg-orange-100 text-orange-900 border-orange-300"
                         }`}>
                         {pnrLiveResult.chartStatus}
                       </span>
@@ -1657,23 +1657,23 @@ export function TravelPage() {
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-600">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-orange-600">
                     Hotels &amp; Accommodations
                   </span>
                   <h2 className="text-base sm:text-lg font-black text-slate-900 mt-0.5">
                     Book Hotels &amp; Resorts Worldwide
                   </h2>
                 </div>
-                <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full self-start">
+                <span className="text-[11px] font-bold text-orange-900 bg-orange-50 border border-orange-200 px-3 py-1 rounded-full self-start">
                   Direct Hotel Portals &amp; Concierge Quotes
                 </span>
               </div>
 
               {/* Working Hotel Search Inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-amber-500 focus-within:bg-white transition">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
-                    <MapPin className="size-3 text-amber-600" /> Destination City / Area
+                    <MapPin className="size-3 text-orange-600" /> Destination City / Area
                   </label>
                   <input
                     type="text"
@@ -1684,9 +1684,9 @@ export function TravelPage() {
                   />
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-amber-500 focus-within:bg-white transition">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
-                    <Calendar className="size-3 text-amber-600" /> Check-In Date
+                    <Calendar className="size-3 text-orange-600" /> Check-In Date
                   </label>
                   <input
                     type="date"
@@ -1697,9 +1697,9 @@ export function TravelPage() {
                   />
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-amber-500 focus-within:bg-white transition">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
-                    <Clock className="size-3 text-amber-600" /> Nights
+                    <Clock className="size-3 text-orange-600" /> Nights
                   </label>
                   <select
                     value={hotelNights}
@@ -1714,9 +1714,9 @@ export function TravelPage() {
                   </select>
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-amber-500 focus-within:bg-white transition">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
-                    <Building2 className="size-3 text-amber-600" /> Rooms
+                    <Building2 className="size-3 text-orange-600" /> Rooms
                   </label>
                   <select
                     value={hotelRooms}
@@ -1731,9 +1731,9 @@ export function TravelPage() {
                   </select>
                 </div>
 
-                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-amber-500 focus-within:bg-white transition">
+                <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 focus-within:border-orange-500 focus-within:bg-white transition">
                   <label className="text-[10px] font-bold text-slate-500 flex items-center gap-1 uppercase tracking-wider mb-1">
-                    <Users className="size-3 text-amber-600" /> Guests
+                    <Users className="size-3 text-orange-600" /> Guests
                   </label>
                   <input
                     type="text"
@@ -1751,7 +1751,7 @@ export function TravelPage() {
                   type="button"
                   disabled={hotelsLoading}
                   onClick={handleSearchHotels}
-                  className="w-full sm:w-auto h-11 px-6 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto h-11 px-6 rounded-xl bg-orange-500 hover:bg-orange-600 text-slate-950 font-black text-xs shadow-md shadow-orange-500/20 flex items-center justify-center gap-2"
                 >
                   {hotelsLoading ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />}
                   {hotelsLoading ? "Searching Live Stays..." : "Search Live Hotels"}
@@ -1762,7 +1762,7 @@ export function TravelPage() {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <Building2 className="size-4 text-amber-600" />
+                    <Building2 className="size-4 text-orange-600" />
                     <span>
                       {hotelsLoading
                         ? "Fetching Properties..."
@@ -1776,7 +1776,7 @@ export function TravelPage() {
 
                 {hotelsLoading ? (
                   <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center text-xs font-bold text-slate-600 flex items-center justify-center gap-2">
-                    <Loader2 className="size-4 animate-spin text-amber-600" />
+                    <Loader2 className="size-4 animate-spin text-orange-600" />
                     <span>Querying hotel availability in {hotelCity || "India"}...</span>
                   </div>
                 ) : hotelOffers.length > 0 ? (
@@ -1784,12 +1784,12 @@ export function TravelPage() {
                     {hotelOffers.map((hotel) => (
                       <div
                         key={hotel.id}
-                        className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-amber-300 hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between gap-4"
+                        className="rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-orange-300 hover:shadow-md transition p-4 sm:p-5 flex flex-col justify-between gap-4"
                       >
                         <div className="space-y-2">
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 block">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-orange-700 block">
                                 {hotel.city}
                               </span>
                               <h4 className="text-base font-black text-slate-900 mt-0.5">
@@ -1798,7 +1798,7 @@ export function TravelPage() {
                               <p className="text-xs text-slate-500 mt-0.5">{hotel.address}</p>
                             </div>
                             {hotel.starRating > 0 && (
-                              <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[10px] shrink-0">
+                              <span className="px-2 py-0.5 rounded-md bg-orange-100 text-orange-950 font-bold text-[10px] shrink-0">
                                 {hotel.starRating}-Star Hotel
                               </span>
                             )}
@@ -1825,7 +1825,7 @@ export function TravelPage() {
                               onClick={() => {
                                 toast.info(`Checking live room rates for ${hotel.hotelName}...`);
                               }}
-                              className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs shadow-md shadow-amber-500/20 inline-flex items-center gap-1.5 transition"
+                              className="h-10 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-slate-950 font-black text-xs shadow-md shadow-orange-500/20 inline-flex items-center gap-1.5 transition"
                             >
                               <span>Check Live Rates</span>
                               <ExternalLink className="size-3.5" />
@@ -1850,7 +1850,7 @@ export function TravelPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-amber-50/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="rounded-2xl border border-slate-200 bg-orange-50/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <p className="text-xs font-black text-slate-900">
                         {hotelsSearched
@@ -1866,7 +1866,7 @@ export function TravelPage() {
                         href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotelCity || "Goa")}&checkin=${encodeURIComponent(hotelCheckIn)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-10 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 shadow-sm"
+                        className="h-10 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-slate-950 font-black text-xs inline-flex items-center gap-1.5 shadow-sm"
                       >
                         <span>Search Booking.com</span>
                         <ExternalLink className="size-3.5" />
@@ -2114,7 +2114,7 @@ export function TravelPage() {
               <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-6 text-white border border-slate-800 shadow-lg">
                 <div className="relative z-10 max-w-2xl space-y-2">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700 text-[11px] font-black uppercase tracking-wider text-slate-300">
-                    <Compass className="size-3.5 text-amber-400" /> Holiday Tours
+                    <Compass className="size-3.5 text-orange-400" /> Holiday Tours
                   </span>
                   <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                     Holiday Tours
@@ -2132,7 +2132,7 @@ export function TravelPage() {
                     className={cn(
                       "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer border",
                       toursSubCategory === "holidays"
-                        ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-102"
+                        ? "bg-orange-400 text-slate-950 border-orange-300 shadow-md scale-102"
                         : "bg-white/10 text-white border-white/20 hover:bg-white/20"
                     )}
                   >
@@ -2146,7 +2146,7 @@ export function TravelPage() {
                     className={cn(
                       "px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer border",
                       toursSubCategory === "pilgrimage"
-                        ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md scale-102"
+                        ? "bg-orange-400 text-slate-950 border-orange-300 shadow-md scale-102"
                         : "bg-white/10 text-white border-white/20 hover:bg-white/20"
                     )}
                   >
@@ -2177,9 +2177,9 @@ export function TravelPage() {
                           category: "HOLIDAY",
                         });
                       }}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold transition active:scale-95 shadow-sm cursor-pointer shrink-0"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-bold transition active:scale-95 shadow-sm cursor-pointer shrink-0"
                     >
-                      <Compass className="size-3.5 text-amber-400" />
+                      <Compass className="size-3.5 text-orange-400" />
                       <span>+ Customize My Trip</span>
                     </button>
                   </div>
@@ -2282,7 +2282,7 @@ export function TravelPage() {
                         destination: "North & South Goa",
                         duration: "3 Nights / 4 Days",
                         category: "Coastal Leisure",
-                        badgeColor: "bg-amber-600",
+                        badgeColor: "bg-orange-600",
                         image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=600&auto=format&fit=crop&q=80",
                         inclusions: [
                           "Return Flights to Goa (GOI / GOX)",
@@ -2371,11 +2371,11 @@ export function TravelPage() {
                             </div>
                           </div>
                           <div>
-                            <h4 className="text-sm font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
+                            <h4 className="text-sm font-black text-slate-900 leading-snug group-hover:text-orange-700 transition-colors">
                               {pkg.title}
                             </h4>
                             <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1 mt-0.5">
-                              <MapPin className="size-3 text-amber-500 shrink-0" />
+                              <MapPin className="size-3 text-orange-500 shrink-0" />
                               {pkg.destination}
                             </span>
                           </div>
@@ -2427,7 +2427,7 @@ export function TravelPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="space-y-1">
                         <h3 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-                          <Compass className="size-5 text-amber-400" />
+                          <Compass className="size-5 text-orange-400" />
                           <span>Religious Tours</span>
                         </h3>
                         <p className="text-xs text-slate-400 max-w-2xl">
@@ -2447,7 +2447,7 @@ export function TravelPage() {
                           }}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition active:scale-95 shrink-0 cursor-pointer"
                         >
-                          <Compass className="size-3 text-amber-300" />
+                          <Compass className="size-3 text-orange-300" />
                           <span>Change Religion</span>
                         </button>
                       )}
@@ -2471,7 +2471,7 @@ export function TravelPage() {
                               id: "SANATAN",
                               label: "Hindu",
                               sub: "Kashi, Ayodhya, Kamakhya & Char Dham",
-                              color: "from-amber-950/80 to-orange-900/60 border-orange-500/40 hover:border-orange-400 text-orange-300",
+                              color: "from-orange-950/80 to-orange-900/60 border-orange-500/40 hover:border-orange-400 text-orange-300",
                             },
                             {
                               id: "SIKH",
@@ -2585,7 +2585,7 @@ export function TravelPage() {
                           duration: "2 Nights / 3 Days",
                           category: "Sacred Hindu Circuit",
                           faith: "SANATAN",
-                          badgeColor: "bg-amber-600",
+                          badgeColor: "bg-orange-600",
                           image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=600&auto=format&fit=crop&q=80",
                           inclusions: [
                             "VIP Temple Entry Pass for Maa Kamakhya Devi",
@@ -2684,11 +2684,11 @@ export function TravelPage() {
                               </div>
 
                               <div>
-                                <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-amber-700 transition-colors">
+                                <h4 className="text-base font-black text-slate-900 leading-snug group-hover:text-orange-700 transition-colors">
                                   {pkg.title}
                                 </h4>
                                 <span className="text-xs font-semibold text-slate-500 flex items-center gap-1 mt-1">
-                                  <MapPin className="size-3 text-amber-500 shrink-0" />
+                                  <MapPin className="size-3 text-orange-500 shrink-0" />
                                   {pkg.destination}
                                 </span>
                               </div>
@@ -2724,9 +2724,9 @@ export function TravelPage() {
                                     destination: pkg.destination,
                                   });
                                 }}
-                                className="w-full h-11 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
+                                className="w-full h-11 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-900 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
                               >
-                                <Crown className="size-4 text-amber-200" />
+                                <Crown className="size-4 text-orange-200" />
                                 <span>Request Tour Quote</span>
                               </Button>
                             </div>

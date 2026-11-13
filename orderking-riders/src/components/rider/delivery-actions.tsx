@@ -281,8 +281,8 @@ export function DeliveryActions({
         </p>
       ) : null}
       {d.cod ? (
-        <div className="flex items-center justify-between rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs">
-          <span className="font-semibold text-amber-900 dark:text-amber-200">
+        <div className="flex items-center justify-between rounded-lg border border-orange-500/40 bg-orange-500/10 px-3 py-2 text-xs">
+          <span className="font-semibold text-orange-950 dark:text-orange-200">
             Cash on Delivery (COD) Order
           </span>
           <Badge tone="cod">
@@ -616,8 +616,8 @@ export function DeliveryActions({
       {d.state === "ARRIVED_AT_CUSTOMER" || d.state === "SUPPORT_ESCALATION" ? (
         <div className="space-y-3">
           {d.cod && cash && cash.state === "EXPECTED" ? (
-            <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 space-y-2">
-              <p className="text-xs font-medium text-amber-900 dark:text-amber-200">
+            <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 space-y-2">
+              <p className="text-xs font-medium text-orange-950 dark:text-orange-200">
                 {t("cashMustMatch")} ({formatPaise(cash.expectedPaise)})
               </p>
               <Button
@@ -753,7 +753,7 @@ export function DeliveryActions({
       ) : null}
 
       {d.state === "CUSTOMER_UNAVAILABLE" ? (
-        <div className="space-y-2.5 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3">
+        <div className="space-y-2.5 rounded-lg border border-orange-500/40 bg-orange-500/10 p-3">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-foreground">
               {t("waitTimer")}: {Math.floor(customerWaitSec / 60)}m{" "}

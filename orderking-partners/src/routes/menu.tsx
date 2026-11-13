@@ -151,12 +151,12 @@ function FssaiDietBadge({ diet, showLabel = false }: { diet: string; showLabel?:
   const borderColor = isVeg
     ? "border-emerald-500"
     : isEgg
-      ? "border-amber-500"
+      ? "border-orange-500"
       : "border-rose-500";
   const dotColor = isVeg
     ? "bg-emerald-500"
     : isEgg
-      ? "bg-amber-500"
+      ? "bg-orange-500"
       : "bg-rose-500";
   const labelText = isVeg ? "Veg" : isEgg ? "Egg" : "Non-Veg";
 
@@ -169,7 +169,7 @@ function FssaiDietBadge({ diet, showLabel = false }: { diet: string; showLabel?:
       </span>
       {showLabel && (
         <span
-          className={`text-xs font-semibold ${isVeg ? "text-emerald-700" : isEgg ? "text-amber-400" : "text-rose-600"
+          className={`text-xs font-semibold ${isVeg ? "text-emerald-700" : isEgg ? "text-orange-400" : "text-rose-600"
             }`}
         >
           {labelText}
@@ -1309,16 +1309,16 @@ function MenuPage() {
 
       {/* Statutory KYC Menu Locking Banner: Locked in PENDING_VERIFICATION */}
       {isMenuLocked && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm space-y-3">
+        <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-amber-100 border border-amber-300 p-2 text-amber-700 shrink-0">
+              <div className="rounded-lg bg-orange-100 border border-orange-300 p-2 text-orange-700 shrink-0">
                 <ShieldCheck className="size-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="inline-block size-2 rounded-full bg-amber-500 animate-pulse" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
+                  <span className="inline-block size-2 rounded-full bg-orange-500 animate-pulse" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-orange-900">
                     Menu Under Review ({menuStatus})
                   </span>
                 </div>
@@ -1384,7 +1384,7 @@ function MenuPage() {
                 onClick={() => setKitchenRushMode(!kitchenRushMode)}
                 title="Toggle large tactile hit-targets for kitchen rush hours"
                 className={`px-2.5 py-1.5 rounded-lg border text-xs font-bold transition flex items-center gap-1 font-mono ${kitchenRushMode
-                    ? "bg-amber-500 text-black border-amber-400 shadow-md font-extrabold"
+                    ? "bg-orange-500 text-black border-orange-400 shadow-md font-extrabold"
                     : "border-border bg-surface-2 text-muted hover:text-foreground"
                   }`}
               >
@@ -1435,7 +1435,7 @@ function MenuPage() {
         {/* Partner Filter Pills: All Items, In Stock, Out of Stock, Veg Only, Non-Veg / Egg */}
         <div className="flex items-center gap-2 flex-wrap pt-1 border-t border-border/60 font-mono">
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted flex items-center gap-1 mr-1">
-            <Zap className="size-3.5 text-amber-500" />
+            <Zap className="size-3.5 text-orange-500" />
             Filter Menu:
           </span>
 
@@ -1504,33 +1504,33 @@ function MenuPage() {
 
       {/* Kitchen Rush / Surge Operational Overload Controls */}
       {kitchenRushMode && (
-        <div className="rounded-xl border border-amber-500/60 bg-amber-50 border-amber-200 text-amber-900 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-200 font-mono shadow-md">
+        <div className="rounded-xl border border-orange-500/60 bg-orange-50 border-orange-200 text-orange-950 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-orange-200 font-mono shadow-md">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400">
-              <Flame className="size-4.5 animate-pulse text-amber-400" />
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-orange-500/20 border border-orange-500/40 text-orange-400">
+              <Flame className="size-4.5 animate-pulse text-orange-400" />
             </span>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-gray-900 text-xs sm:text-sm">
                   Kitchen Rush Surge Active (+{kitchenRush.bufferMinutes}m Prep Buffer)
                 </span>
-                <span className="rounded bg-amber-500/30 border border-amber-400/50 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 uppercase">
+                <span className="rounded bg-orange-500/30 border border-orange-400/50 px-1.5 py-0.2 text-[10px] font-bold text-orange-300 uppercase">
                   Tactile Touch Targets Active
                 </span>
               </div>
-              <p className="text-[11px] text-amber-300/80 font-sans mt-0.5">
+              <p className="text-[11px] text-orange-300/80 font-sans mt-0.5">
                 Incoming order prep windows expanded. Rider dispatch deferred automatically to prevent kitchen counter congestion. Dish stock toggles enlarged for high-speed touch input.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center rounded-lg border border-amber-500/40 bg-white/80 p-0.5">
+            <div className="flex items-center rounded-lg border border-orange-500/40 bg-white/80 p-0.5">
               <button
                 type="button"
                 onClick={() => kitchenRush.setBuffer(10)}
                 className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${kitchenRush.bufferMinutes === 10
-                    ? "bg-amber-500 text-black shadow-xs"
-                    : "text-amber-300 hover:text-white"
+                    ? "bg-orange-500 text-black shadow-xs"
+                    : "text-orange-300 hover:text-white"
                   }`}
               >
                 +10 Mins
@@ -1539,8 +1539,8 @@ function MenuPage() {
                 type="button"
                 onClick={() => kitchenRush.setBuffer(15)}
                 className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${kitchenRush.bufferMinutes === 15
-                    ? "bg-amber-500 text-black shadow-xs"
-                    : "text-amber-300 hover:text-white"
+                    ? "bg-orange-500 text-black shadow-xs"
+                    : "text-orange-300 hover:text-white"
                   }`}
               >
                 +15 Mins
@@ -1549,7 +1549,7 @@ function MenuPage() {
             <button
               type="button"
               onClick={() => kitchenRush.deactivate()}
-              className="px-3 py-1 rounded-lg border border-amber-500/40 bg-amber-950/80 hover:bg-amber-900 text-amber-200 text-xs font-bold transition cursor-pointer"
+              className="px-3 py-1 rounded-lg border border-orange-500/40 bg-orange-950/80 hover:bg-orange-950 text-orange-200 text-xs font-bold transition cursor-pointer"
             >
               Turn Off Rush
             </button>
@@ -1559,9 +1559,9 @@ function MenuPage() {
 
       {/* Timed Out-of-Stock Status & Automated Inventory Replenishment Banner */}
       {timedOutOfStockItems.length > 0 && (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-300 font-mono">
+        <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs text-orange-300 font-mono">
           <div className="flex items-center gap-2">
-            <Clock className="size-4 shrink-0 text-amber-400" />
+            <Clock className="size-4 shrink-0 text-orange-400" />
             <div>
               <span className="font-bold">
                 {timedOutOfStockItems.length} Timed Out-of-Stock Dish(es) Active
@@ -1575,7 +1575,7 @@ function MenuPage() {
             {timedOutOfStockItems.slice(0, 3).map((it) => (
               <span
                 key={it.id}
-                className="px-2 py-0.5 rounded bg-amber-950/80 border border-amber-700/60 text-[11px]"
+                className="px-2 py-0.5 rounded bg-orange-950/80 border border-orange-700/60 text-[11px]"
               >
                 {it.name}: {formatStockoutRemaining(it.nextAvailableAt)}
               </span>
@@ -1640,7 +1640,7 @@ function MenuPage() {
                   }}
                   className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium transition ${exists
                       ? "border-emerald-500/30 bg-emerald-950/30 text-emerald-700 cursor-default"
-                      : "border-border bg-surface-2 text-gray-700 hover:border-amber-500/50 hover:text-white"
+                      : "border-border bg-surface-2 text-gray-700 hover:border-orange-500/50 hover:text-white"
                     }`}
                 >
                   {exists ? (
@@ -1658,8 +1658,8 @@ function MenuPage() {
       ) : null}
 
       {canAvail && selected.length > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3">
-          <span className="text-xs font-mono font-bold text-amber-300 mr-2">
+        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-orange-500/30 bg-orange-950/20 p-3">
+          <span className="text-xs font-mono font-bold text-orange-300 mr-2">
             {selected.length} Dish(es) Selected:
           </span>
           <Button variant="secondary" size="sm" onClick={() => void bulk("sold_out")}>
@@ -1803,10 +1803,10 @@ function MenuPage() {
                             e.stopPropagation();
                             void handleGeneratePhotoForItem(item);
                           }}
-                          className="h-16 w-20 shrink-0 rounded-lg border border-dashed border-amber-500/50 bg-amber-500/10 hover:bg-amber-500/20 p-1 flex flex-col items-center justify-center gap-0.5 text-amber-400 text-[10px] font-bold text-center transition cursor-pointer"
+                          className="h-16 w-20 shrink-0 rounded-lg border border-dashed border-orange-500/50 bg-orange-500/10 hover:bg-orange-500/20 p-1 flex flex-col items-center justify-center gap-0.5 text-orange-400 text-[10px] font-bold text-center transition cursor-pointer"
                           title="Add Dish Photo"
                         >
-                          <Sparkles className="size-4 text-amber-400" />
+                          <Sparkles className="size-4 text-orange-400" />
                           <span>+ AI Photo</span>
                         </button>
                       ) : null}
@@ -1837,7 +1837,7 @@ function MenuPage() {
                                   <span
                                     key={idx}
                                     className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${isAllergen
-                                        ? "bg-amber-950/40 border border-amber-500/30 text-amber-300 font-mono"
+                                        ? "bg-orange-950/40 border border-orange-500/30 text-orange-300 font-mono"
                                         : "bg-surface-2 border border-border/50 text-muted"
                                       }`}
                                   >
@@ -1941,7 +1941,7 @@ function MenuPage() {
                                     }}
                                     onMouseDown={(e) => e.stopPropagation()}
                                     title="1-Tap Quick Price Edit"
-                                    className="text-gray-500 opacity-60 group-hover:opacity-100 hover:text-amber-400 transition ml-0.5"
+                                    className="text-gray-500 opacity-60 group-hover:opacity-100 hover:text-orange-400 transition ml-0.5"
                                   >
                                     <Pencil className="size-3" />
                                   </button>
@@ -2123,7 +2123,7 @@ function MenuPage() {
             <div className="flex items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-600">
+                  <span className="rounded-md bg-orange-500/15 border border-orange-500/30 px-2 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider text-gray-600">
                     Dish Details
                   </span>
                   <FssaiDietBadge diet={editor.diet} showLabel />
@@ -2153,7 +2153,7 @@ function MenuPage() {
                       <button
                         type="button"
                         onClick={handleAutoFillDishDetails}
-                        className="text-[11px] text-amber-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-[11px] text-orange-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
                         title="Auto-fill Category, Diet, Price & Plate AI Photo"
                       >
                         <Sparkles className="size-3" /> Auto-Fill &amp; AI Photo
@@ -2169,7 +2169,7 @@ function MenuPage() {
                     <div className="mt-1 flex items-center justify-between text-[10px] text-gray-500 font-mono">
                       <span>
                         Taxonomy:{" "}
-                        <strong className="text-amber-300">
+                        <strong className="text-orange-300">
                           {matchDishCulinaryTaxonomy(editor.name).category}
                         </strong>{" "}
                         ·{" "}
@@ -2221,7 +2221,7 @@ function MenuPage() {
                         code: "egg",
                         label: t("menu.egg"),
                         sub: "Amber Dot · Contains Egg",
-                        activeClass: "border-amber-500 bg-amber-950/40 text-amber-200",
+                        activeClass: "border-orange-500 bg-orange-950/40 text-orange-200",
                       },
                     ] as const
                   ).map((opt) => {
@@ -2282,11 +2282,11 @@ function MenuPage() {
                           variants[0] = { ...variants[0], price: recInr };
                           setEditor({ ...editor, variants });
                         }}
-                        className="mt-2 flex items-center justify-between gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-300 hover:bg-amber-500/20 transition cursor-pointer w-full text-left"
+                        className="mt-2 flex items-center justify-between gap-1.5 rounded-lg border border-orange-500/30 bg-orange-500/10 px-2 py-1 text-[11px] text-orange-300 hover:bg-orange-500/20 transition cursor-pointer w-full text-left"
                         title={sparkDrawerPricing.commercialRationale}
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <Sparkles className="size-3 text-amber-400 shrink-0" />
+                          <Sparkles className="size-3 text-orange-400 shrink-0" />
                           <span className="truncate font-semibold">
                             Recommended: ₹{(sparkDrawerPricing.recommendedPricePaise / 100).toFixed(0)}
                             <span className="text-gray-500 font-normal ml-1">
@@ -2294,7 +2294,7 @@ function MenuPage() {
                             </span>
                           </span>
                         </div>
-                        <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300 uppercase tracking-wider shrink-0">
+                        <span className="rounded bg-orange-500/20 px-1.5 py-0.5 text-[10px] font-bold text-orange-300 uppercase tracking-wider shrink-0">
                           Apply
                         </span>
                       </button>
@@ -2310,7 +2310,7 @@ function MenuPage() {
                           type="button"
                           onClick={() => setEditor({ ...editor, prepMinutes: mins })}
                           className={`rounded-lg border py-2 text-xs font-mono font-bold transition ${editor.prepMinutes === mins
-                              ? "border-amber-500 bg-amber-500/20 text-amber-300"
+                              ? "border-orange-500 bg-orange-500/20 text-orange-300"
                               : "border-gray-200 bg-white text-gray-500 hover:text-white"
                             }`}
                         >
@@ -2358,7 +2358,7 @@ function MenuPage() {
                         servingSize: combined.join(" · "),
                       });
                     }}
-                    className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-bold hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1 text-[10px] text-orange-400 font-bold hover:underline cursor-pointer"
                   >
                     <Sparkles className="size-3" /> Auto-Suggest AI Tags &amp; Description
                   </button>
@@ -2381,7 +2381,7 @@ function MenuPage() {
                           setEditor({ ...editor, servingSize: updated.join(" · ") });
                         }}
                         className={`rounded-full border px-2 py-0.5 text-[10px] font-medium transition ${active
-                            ? "border-amber-500/60 bg-amber-500/15 text-amber-300"
+                            ? "border-orange-500/60 bg-orange-500/15 text-orange-300"
                             : "border-gray-200 bg-white text-gray-500 hover:text-white"
                           }`}
                       >
@@ -2415,15 +2415,15 @@ function MenuPage() {
               </div>
 
               {/* 4. Dish Photo Studio & Studio Lighting */}
-              <div className="rounded-xl border border-amber-500/40 bg-white border-gray-200 p-4 space-y-4 shadow-sm">
+              <div className="rounded-xl border border-orange-500/40 bg-white border-gray-200 p-4 space-y-4 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Sparkles className="size-4 text-amber-400 animate-pulse" />
-                      <span className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                      <Sparkles className="size-4 text-orange-400 animate-pulse" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-orange-300">
                         Dish Photo Studio
                       </span>
-                      <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9px] font-mono text-amber-300">
+                      <span className="rounded-md bg-orange-500/15 border border-orange-500/30 px-1.5 py-0.5 text-[9px] font-mono text-orange-300">
                         4:3 Studio Grade
                       </span>
                     </div>
@@ -2441,7 +2441,7 @@ function MenuPage() {
                       onClick={() => void handleEnhanceExistingPhoto()}
                       className="text-xs"
                     >
-                      <SlidersHorizontal className="mr-1.5 size-3.5 text-amber-400" />
+                      <SlidersHorizontal className="mr-1.5 size-3.5 text-orange-400" />
                       {editor.enhancedImageUrl
                         ? "Re-Apply Studio Lighting"
                         : "Apply Studio Lighting & 4:3 Framing"}
@@ -2455,7 +2455,7 @@ function MenuPage() {
                     type="button"
                     disabled={generatingAiPhoto || uploadingImage || !editor.name.trim()}
                     onClick={() => void handleGenerateAiDishPhoto()}
-                    className="bg-gradient-to-r from-amber-500 via-amber-600 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold text-xs shadow-md"
+                    className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-white font-bold text-xs shadow-md"
                   >
                     {generatingAiPhoto ? (
                       <>
@@ -2473,7 +2473,7 @@ function MenuPage() {
                   </Button>
 
                   {!editor.name.trim() && (
-                    <span className="text-[11px] text-amber-400 font-mono">
+                    <span className="text-[11px] text-orange-400 font-mono">
                       (Enter a dish name above to enable 1-tap AI plating)
                     </span>
                   )}
@@ -2482,7 +2482,7 @@ function MenuPage() {
                 {/* 4 Studio Lighting Atmosphere Presets */}
                 <div className="space-y-1.5">
                   <span className="text-[10px] font-mono uppercase text-gray-500 flex items-center gap-1">
-                    <SlidersHorizontal className="size-3 text-amber-400" />
+                    <SlidersHorizontal className="size-3 text-orange-400" />
                     Studio Lighting Atmosphere:
                   </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -2506,12 +2506,12 @@ function MenuPage() {
                             }
                           }}
                           className={`rounded-lg border p-2 text-left transition ${isSelected
-                              ? "border-amber-500 bg-amber-500/20 text-white font-bold shadow-xs"
+                              ? "border-orange-500 bg-orange-500/20 text-white font-bold shadow-xs"
                               : "border-gray-200 bg-white text-gray-500 hover:text-gray-800 hover:border-gray-300"
                             }`}
                         >
                           <div className="text-xs font-semibold">{styleOpt.label}</div>
-                          <div className="text-[10px] text-amber-300/80">{styleOpt.sub}</div>
+                          <div className="text-[10px] text-orange-300/80">{styleOpt.sub}</div>
                         </button>
                       );
                     })}
@@ -2531,7 +2531,7 @@ function MenuPage() {
                           type="button"
                           onClick={() => void handleGenerateAiDishPhoto(editor.name, undefined, angleUrl)}
                           className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-lg border transition ${editor.originalImageUrl === angleUrl || editor.imageUrl === angleUrl
-                              ? "border-amber-400 ring-2 ring-amber-400/30"
+                              ? "border-orange-400 ring-2 ring-orange-400/30"
                               : "border-gray-300 hover:border-gray-400 opacity-80 hover:opacity-100"
                             }`}
                         >
@@ -2540,7 +2540,7 @@ function MenuPage() {
                             alt={`Visual Angle ${idx + 1}`}
                             className="h-full w-full object-cover"
                           />
-                          <span className="absolute bottom-0.5 right-0.5 rounded bg-black/80 px-1 text-[8px] font-mono text-amber-300">
+                          <span className="absolute bottom-0.5 right-0.5 rounded bg-black/80 px-1 text-[8px] font-mono text-orange-300">
                             Angle {idx + 1}
                           </span>
                         </button>
@@ -2565,7 +2565,7 @@ function MenuPage() {
                     className="text-xs file:mr-2 file:rounded-md file:border file:border-gray-300 file:bg-gray-100 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-gray-800 hover:file:bg-gray-200"
                   />
                   {uploadingImage ? (
-                    <span className="text-xs font-mono text-amber-400 animate-pulse">
+                    <span className="text-xs font-mono text-orange-400 animate-pulse">
                       Processing 4:3 studio lighting on canvas...
                     </span>
                   ) : null}
@@ -2689,7 +2689,7 @@ function MenuPage() {
                             })
                           }
                           className={`rounded-lg px-3 py-1 text-xs font-bold transition flex items-center gap-1 ${editor.activePhotoMode === "enhanced"
-                              ? "bg-amber-500/20 text-amber-300 border border-amber-500/50"
+                              ? "bg-orange-500/20 text-orange-300 border border-orange-500/50"
                               : "bg-white text-gray-500 hover:text-white"
                             }`}
                         >
@@ -2699,14 +2699,14 @@ function MenuPage() {
                       </div>
                     ) : null}
 
-                    <div className="relative h-56 w-72 overflow-hidden rounded-xl border border-amber-500/40 bg-black shadow-lg">
+                    <div className="relative h-56 w-72 overflow-hidden rounded-xl border border-orange-500/40 bg-black shadow-lg">
                       <img
                         src={editor.imageUrl}
                         alt={editor.name || "Dish photo preview"}
                         className="h-full w-full object-cover"
                       />
-                      <span className="absolute left-2 bottom-2 rounded-md bg-black/85 border border-amber-500/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase text-amber-300 flex items-center gap-1">
-                        <Sparkles className="size-2.5 text-amber-400" />
+                      <span className="absolute left-2 bottom-2 rounded-md bg-black/85 border border-orange-500/40 px-2 py-0.5 text-[10px] font-mono font-bold uppercase text-orange-300 flex items-center gap-1">
+                        <Sparkles className="size-2.5 text-orange-400" />
                         {editor.aiGenerated ? "Dish Photo · 4:3" : "4:3 Studio Framing"}
                       </span>
                       <button
@@ -2746,7 +2746,7 @@ function MenuPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-amber-500/40 bg-amber-950/25 p-3">
+                    <div className="rounded-xl border border-orange-500/40 bg-orange-950/25 p-3">
                       <label className="flex items-start gap-2.5 cursor-pointer">
                         <input
                           type="checkbox"
@@ -2757,7 +2757,7 @@ function MenuPage() {
                           }
                         />
                         <div className="space-y-1">
-                          <span className="block text-xs font-bold text-amber-300">
+                          <span className="block text-xs font-bold text-orange-300">
                             Menu Presentation Confirmation
                           </span>
                           <span className="block text-xs text-gray-800 leading-relaxed">
@@ -2854,7 +2854,7 @@ function MenuPage() {
                           ],
                         });
                       }}
-                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-amber-500/40 hover:text-white"
+                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-orange-500/40 hover:text-white"
                     >
                       Preset: Half + Full
                     </button>
@@ -2871,7 +2871,7 @@ function MenuPage() {
                           ],
                         });
                       }}
-                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-amber-500/40 hover:text-white"
+                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-[10px] font-mono text-gray-700 hover:border-orange-500/40 hover:text-white"
                     >
                       Preset: Regular / Medium / Family
                     </button>
@@ -2947,7 +2947,7 @@ function MenuPage() {
                             addonIds: (menu.data?.addons ?? []).map((a) => a.id),
                           })
                         }
-                        className="text-amber-400 hover:underline"
+                        className="text-orange-400 hover:underline"
                       >
                         Select All
                       </button>
@@ -2995,7 +2995,7 @@ function MenuPage() {
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-2.5">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Layers className="size-4 text-amber-400" />
+                      <Layers className="size-4 text-orange-400" />
                       <Label className="mb-0 text-sm font-bold text-gray-900">
                         Customization &amp; Modifier Groups
                       </Label>
@@ -3035,7 +3035,7 @@ function MenuPage() {
                         modifierGroups: [...editor.modifierGroups, newGroup],
                       });
                     }}
-                    className="border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold"
+                    className="border-orange-500/30 bg-orange-500/10 text-orange-300 hover:bg-orange-500/20 text-xs font-semibold"
                   >
                     <Plus className="mr-1 size-3.5" />
                     Add Modifier Group
@@ -3138,7 +3138,7 @@ function MenuPage() {
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
                                 className={`rounded px-2 py-0.5 font-medium transition ${group.type === "RADIO"
-                                    ? "bg-amber-500 text-white font-bold"
+                                    ? "bg-orange-500 text-white font-bold"
                                     : "text-gray-500 hover:text-white"
                                   }`}
                               >
@@ -3152,7 +3152,7 @@ function MenuPage() {
                                   setEditor({ ...editor, modifierGroups: updated });
                                 }}
                                 className={`rounded px-2 py-0.5 font-medium transition ${group.type === "CHECKBOX"
-                                    ? "bg-amber-500 text-white font-bold"
+                                    ? "bg-orange-500 text-white font-bold"
                                     : "text-gray-500 hover:text-white"
                                   }`}
                               >
@@ -3222,7 +3222,7 @@ function MenuPage() {
                                 });
                                 setEditor({ ...editor, modifierGroups: updated });
                               }}
-                              className="text-amber-400 hover:underline font-bold"
+                              className="text-orange-400 hover:underline font-bold"
                             >
                               + Add Option
                             </button>
@@ -3326,7 +3326,7 @@ function MenuPage() {
             {/* Sticky Drawer Footer */}
             <div className="border-t border-gray-200 bg-white/95 px-5 py-3.5 space-y-2">
               {editor.photoModified && editor.imageUrl && !editor.photoAttested && !editor.aiGenerated ? (
-                <p className="text-[11px] font-medium text-amber-400">
+                <p className="text-[11px] font-medium text-orange-400">
                   Please check the mandatory FSSAI &amp; Consumer Authenticity Attestation above to enable saving this modified dish image.
                 </p>
               ) : null}
@@ -3522,7 +3522,7 @@ Butter Naan - ₹50"
                 disabled={!rawOcrText.trim() || fileParsing}
                 className="text-xs font-bold border border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-800"
               >
-                <Sparkles className="mr-1.5 size-3.5 text-amber-500" /> Parse &amp; Digitize Dishes
+                <Sparkles className="mr-1.5 size-3.5 text-orange-500" /> Parse &amp; Digitize Dishes
               </Button>
 
               {digitizedCatalog && (

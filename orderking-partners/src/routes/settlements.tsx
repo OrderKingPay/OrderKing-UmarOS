@@ -362,10 +362,10 @@ function SettlementsPage() {
             <div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[#E23744] font-bold uppercase flex items-center gap-1.5">
-                  <Zap className="size-3.5 text-amber-500" />
+                  <Zap className="size-3.5 text-orange-500" />
                   Express Daily Payout
                 </span>
-                <span className="rounded bg-amber-50 border border-amber-200 text-amber-800 px-2 py-0.5 text-[10px] font-bold">
+                <span className="rounded bg-orange-50 border border-orange-200 text-orange-900 px-2 py-0.5 text-[10px] font-bold">
                   T+1 DISBURSEMENT
                 </span>
               </div>
@@ -407,7 +407,7 @@ function SettlementsPage() {
                   "Initiating Transfer..."
                 ) : (
                   <>
-                    <Zap className="mr-1.5 size-4 text-amber-300" />
+                    <Zap className="mr-1.5 size-4 text-orange-300" />
                     Request Express Payout ({formatINR(expressNetDisbursed)})
                   </>
                 )}
@@ -673,8 +673,8 @@ function SettlementsPage() {
                         <td className="py-2 px-2 text-rose-600">
                           −{formatINR(l.gatewayFeePaise + l.gatewayFeeGstPaise)}
                         </td>
-                        <td className="py-2 px-2 text-amber-700">−{formatINR(l.tcsSec52Paise)}</td>
-                        <td className="py-2 px-2 text-amber-700">−{formatINR(l.tdsSec194OPaise)}</td>
+                        <td className="py-2 px-2 text-orange-700">−{formatINR(l.tcsSec52Paise)}</td>
+                        <td className="py-2 px-2 text-orange-700">−{formatINR(l.tdsSec194OPaise)}</td>
                         <td className="py-2 px-2 text-blue-700 font-mono text-[11px]">
                           {formatINR(l.sec9_5GstPaise)}
                         </td>

@@ -794,7 +794,7 @@ export function HomeView() {
                   <CheckCircle2 className="size-3.5" /> Verified
                 </span>
               ) : (
-                <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                <span className="rounded bg-orange-500/10 px-1.5 py-0.5 text-[10px] font-bold text-orange-600 dark:text-orange-400">
                   Required to Go Online
                 </span>
               )}
@@ -895,10 +895,10 @@ export function HomeView() {
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 flex items-center justify-between">
+            <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-amber-500 animate-ping" />
-                <span className="text-xs font-bold text-amber-400">
+                <span className="size-2 rounded-full bg-orange-500 animate-ping" />
+                <span className="text-xs font-bold text-orange-400">
                   On Trip
                 </span>
               </div>
@@ -1214,8 +1214,8 @@ function OfferCard({
             isCritical
               ? "bg-rose-500 animate-pulse"
               : isUrgent
-                ? "bg-amber-500"
-                : "bg-gradient-to-r from-amber-500 via-[#E23744] to-emerald-400"
+                ? "bg-orange-500"
+                : "bg-gradient-to-r from-orange-500 via-[#E23744] to-emerald-400"
           }`}
           style={{ width: `${timerPct}%` }}
         />
@@ -1237,7 +1237,7 @@ function OfferCard({
             </span>
           )}
           {surge.isPeakDinnerActive && (
-            <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+            <span className="rounded-full bg-orange-500/10 px-2 py-0.5 text-[10px] font-bold text-orange-600 dark:text-orange-400">
               {surge.badges.peakDinnerText}
             </span>
           )}
@@ -1265,7 +1265,7 @@ function OfferCard({
               isCritical
                 ? "bg-rose-500/20 text-rose-500 animate-bounce"
                 : isUrgent
-                  ? "bg-amber-500/20 text-amber-500 animate-pulse"
+                  ? "bg-orange-500/20 text-orange-500 animate-pulse"
                   : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
             }`}
           >
@@ -1299,7 +1299,7 @@ function OfferCard({
         <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-              <Store className="size-3.5 text-amber-500" />
+              <Store className="size-3.5 text-orange-500" />
               Pickup · {offer.approxDistanceKm.toFixed(1)} km
             </span>
             <Badge tone="busy" className="text-[10px] font-bold">
@@ -1309,7 +1309,7 @@ function OfferCard({
           <p className="font-display text-sm font-bold text-foreground">{offer.restaurant.name}</p>
           <p className="text-[11px] text-muted-foreground truncate">{offer.restaurant.address || offer.restaurant.area}</p>
           {offer.restaurant.specialPickupInstructions && (
-            <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+            <p className="text-[11px] text-orange-600 dark:text-orange-400 font-medium">
               Note: {offer.restaurant.specialPickupInstructions}
             </p>
           )}

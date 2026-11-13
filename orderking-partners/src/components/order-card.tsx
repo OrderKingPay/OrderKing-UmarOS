@@ -603,13 +603,13 @@ export function OrderCard({
             acceptanceRemainingSec <= 30
               ? "border-rose-500 bg-rose-500/10 text-rose-900 dark:text-rose-200"
               : acceptanceRemainingSec <= 60
-              ? "border-amber-500/60 bg-amber-500/10 text-amber-900 dark:text-amber-200"
+              ? "border-orange-500/60 bg-orange-500/10 text-orange-950 dark:text-orange-200"
               : "border-primary/40 bg-primary/5 text-foreground"
           )}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Clock className={cn("size-4", acceptanceRemainingSec <= 30 ? "text-rose-500 animate-pulse" : "text-amber-500")} />
+              <Clock className={cn("size-4", acceptanceRemainingSec <= 30 ? "text-rose-500 animate-pulse" : "text-orange-500")} />
               <span className="font-bold text-xs uppercase tracking-wider">
                 {acceptanceRemainingSec === 0
                   ? "120s Acceptance SLA Expired!"
@@ -628,7 +628,7 @@ export function OrderCard({
                 acceptanceRemainingSec <= 30
                   ? "bg-rose-600 animate-pulse"
                   : acceptanceRemainingSec <= 60
-                  ? "bg-amber-500"
+                  ? "bg-orange-500"
                   : "bg-emerald-500"
               )}
               style={{ width: `${Math.min(100, (acceptanceRemainingSec / 120) * 100)}%` }}

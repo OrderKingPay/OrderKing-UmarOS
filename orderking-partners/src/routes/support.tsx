@@ -254,9 +254,9 @@ function SupportPage() {
             <div className="text-[10px] uppercase text-gray-400 font-bold">Total Tickets</div>
             <div className="text-sm font-bold text-gray-900 mt-0.5">{tickets.length}</div>
           </div>
-          <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-2.5">
-            <div className="text-[10px] uppercase text-amber-700 font-bold">Open / In Progress</div>
-            <div className="text-sm font-bold text-amber-700 mt-0.5">{openCount}</div>
+          <div className="rounded-xl border border-orange-200 bg-orange-50/50 p-2.5">
+            <div className="text-[10px] uppercase text-orange-700 font-bold">Open / In Progress</div>
+            <div className="text-sm font-bold text-orange-700 mt-0.5">{openCount}</div>
           </div>
           <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-2.5">
             <div className="text-[10px] uppercase text-emerald-700 font-bold">Resolved</div>
@@ -338,18 +338,18 @@ function SupportPage() {
                     </Button>
                   </div>
                 ) : !diag.isOpenByHours ? (
-                  <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 font-medium">
-                    <Clock className="size-4 text-amber-600 shrink-0" />
+                  <div className="flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 p-3 text-xs text-orange-950 font-medium">
+                    <Clock className="size-4 text-orange-600 shrink-0" />
                     <span>
                       <strong>Outside Operating Shift.</strong> Current time is {diag.currentTimeIst}. Today&apos;s shift: {diag.currentShiftLabel}. Orders resume during shift hours.
                     </span>
                   </div>
                 ) : diag.totalItems === 0 ? (
-                  <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 font-medium">
+                  <div className="flex items-center justify-between rounded-xl border border-orange-200 bg-orange-50 p-3 text-xs text-orange-950 font-medium">
                     <span>
                       <strong>No Active Dishes.</strong> All items are inactive. Add dishes in the Menu section to start receiving orders.
                     </span>
-                    <Link to="/menu" className="font-bold underline text-amber-900">
+                    <Link to="/menu" className="font-bold underline text-orange-950">
                       Go to Menu
                     </Link>
                   </div>
@@ -497,7 +497,7 @@ function SupportPage() {
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                             : t.status === "ESCALATED_TO_ADMIN"
                               ? "bg-red-50 text-[#E23744] border border-red-200 font-bold"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                              : "bg-orange-50 text-orange-700 border border-orange-200"
                           }`}
                       >
                         {t.status}
@@ -541,7 +541,7 @@ function SupportPage() {
                           ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                           : selectedTicket.status === "ESCALATED_TO_ADMIN"
                             ? "bg-red-50 text-[#E23744] border border-red-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-orange-50 text-orange-700 border border-orange-200"
                         }`}
                     >
                       {selectedTicket.status}

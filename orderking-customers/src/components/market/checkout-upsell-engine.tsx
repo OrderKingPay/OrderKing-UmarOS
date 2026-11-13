@@ -100,18 +100,18 @@ export function CheckoutUpsellEngine({
   return (
     <section
       aria-label="Recommended Chef Pairings"
-      className="mt-6 rounded-3xl border border-amber-400/40 bg-gradient-to-br from-amber-500/10 via-white to-amber-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-amber-950/20 p-4 sm:p-5 shadow-[0_8px_30px_rgba(245,158,11,0.08)] backdrop-blur-sm"
+      className="mt-6 rounded-3xl border border-orange-400/40 bg-gradient-to-br from-orange-500/10 via-white to-orange-50/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-orange-950/20 p-4 sm:p-5 shadow-[0_8px_30px_rgba(245,158,11,0.08)] backdrop-blur-sm"
     >
       {/* Upsell Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 shadow-md">
+          <div className="flex size-9 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 text-zinc-950 shadow-md">
             <Crown className="size-5" />
           </div>
           <div>
             <h3 className="font-display text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
               Recommended Pairings
-              <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 dark:text-amber-200 uppercase tracking-wider">
+              <span className="rounded-full bg-orange-500/20 border border-orange-500/40 px-2 py-0.5 text-[10px] font-extrabold text-orange-950 dark:text-orange-200 uppercase tracking-wider">
                 Quick Add
               </span>
             </h3>
@@ -123,16 +123,16 @@ export function CheckoutUpsellEngine({
 
         {/* Free delivery progress */}
         {showFreeDeliveryGamification && (
-          <div className="flex flex-col gap-1 rounded-xl bg-amber-500/15 border border-amber-400/40 px-3 py-1.5 text-xs">
-            <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-              <Zap className="size-3.5 text-amber-600 fill-amber-500" />
+          <div className="flex flex-col gap-1 rounded-xl bg-orange-500/15 border border-orange-400/40 px-3 py-1.5 text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-orange-950 dark:text-orange-200">
+              <Zap className="size-3.5 text-orange-600 fill-orange-500" />
               <span>
-                Add <strong className="text-amber-950 dark:text-amber-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for free delivery!
+                Add <strong className="text-orange-950 dark:text-orange-100">{formatPaise(diffToFreeDelivery, { locale })}</strong> for free delivery!
               </span>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-amber-200/60 dark:bg-zinc-700 overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-orange-200/60 dark:bg-zinc-700 overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -172,7 +172,7 @@ export function CheckoutUpsellEngine({
                 className={`group relative flex items-center justify-between rounded-2xl border p-3.5 transition-all duration-200 ${
                   added
                     ? "border-emerald-400/60 bg-emerald-50/40 dark:bg-emerald-950/20 shadow-xs"
-                    : "border-amber-400/25 bg-gradient-to-b from-white via-zinc-50/60 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 hover:border-amber-500/60 hover:shadow-md"
+                    : "border-orange-400/25 bg-gradient-to-b from-white via-zinc-50/60 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 hover:border-orange-500/60 hover:shadow-md"
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0 pr-2">
@@ -192,11 +192,11 @@ export function CheckoutUpsellEngine({
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="truncate text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                      <span className="truncate text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                         {upsell.name}
                       </span>
                       {upsell.badge && (
-                        <span className="shrink-0 rounded-full bg-amber-500/20 border border-amber-400/40 px-1.5 py-0.2 text-[9px] font-extrabold text-amber-900 dark:text-amber-200">
+                        <span className="shrink-0 rounded-full bg-orange-500/20 border border-orange-400/40 px-1.5 py-0.2 text-[9px] font-extrabold text-orange-950 dark:text-orange-200">
                           {upsell.badge}
                         </span>
                       )}
@@ -240,7 +240,7 @@ export function CheckoutUpsellEngine({
                     <button
                       type="button"
                       onClick={() => handleAddUpsell(upsell)}
-                      className="flex h-8 items-center gap-1 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-zinc-950 px-3 text-[11px] font-black uppercase tracking-wider shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95 transition cursor-pointer"
+                      className="flex h-8 items-center gap-1 rounded-xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-500 hover:from-orange-400 hover:to-orange-300 text-zinc-950 px-3 text-[11px] font-black uppercase tracking-wider shadow-[0_4px_12px_rgba(245,158,11,0.35)] active:scale-95 transition cursor-pointer"
                     >
                       <Plus className="size-3.5 stroke-[3]" />
                       <span>ADD</span>
@@ -254,8 +254,8 @@ export function CheckoutUpsellEngine({
       </div>
 
       {/* Trust & Conversion Guarantee Microcopy */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-amber-400/20 pt-3 text-[10px] text-zinc-500 dark:text-zinc-400">
-        <span className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-orange-400/20 pt-3 text-[10px] text-zinc-500 dark:text-zinc-400">
+        <span className="flex items-center gap-1.5 text-orange-700 dark:text-orange-400 font-bold">
           <ShieldCheck className="size-3.5" />
           1-Click Instant Addition • Live Bill Calculation
         </span>

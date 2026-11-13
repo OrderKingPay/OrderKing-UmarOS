@@ -182,7 +182,7 @@ function TutorJobsHistoryPage() {
       <div className="min-h-dvh bg-[#FCFAF7] px-4 py-6 pb-32 text-stone-900">
         <div className="mx-auto max-w-4xl space-y-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-amber-900/10 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-orange-950/10 pb-5">
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-purple-100 border border-purple-300 px-3 py-0.5 text-xs font-bold text-purple-900 mb-2">
                 <Sparkles className="size-3 text-purple-600" />
@@ -291,7 +291,7 @@ function TutorJobsHistoryPage() {
                           <ShieldCheck className="size-3.5 text-emerald-600" />
                           Verified Educator
                         </span>
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 border border-amber-300/60 px-2.5 py-0.5 text-[11px] font-bold text-amber-900">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 border border-orange-300/60 px-2.5 py-0.5 text-[11px] font-bold text-orange-950">
                           <KingPayMark className="size-3" />
                           <span>
                             {cls.escrowStatus === "RELEASED"
@@ -364,8 +364,8 @@ function TutorJobsHistoryPage() {
                           <span className="rounded-md bg-stone-100 px-2 py-0.5 text-[10px] font-bold text-stone-700">
                             {app.category || "Verified Opening"}
                           </span>
-                          <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900 border border-amber-200 flex items-center gap-1">
-                            <Clock className="size-3 text-amber-700" />
+                          <span className="rounded-md bg-orange-100 px-2 py-0.5 text-[10px] font-bold text-orange-950 border border-orange-200 flex items-center gap-1">
+                            <Clock className="size-3 text-orange-700" />
                             {app.status || "Under Review"}
                           </span>
                         </div>

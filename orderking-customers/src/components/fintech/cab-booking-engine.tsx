@@ -207,17 +207,17 @@ export function CabBookingEngine({
   return (
     <div className="space-y-6 text-slate-900">
       {/* Search Bar Card */}
-      <div className="relative overflow-hidden rounded-3xl border border-amber-400/30 bg-gradient-to-br from-[#1C1304] via-[#2A1D07] to-[#120F03] p-5 sm:p-8 shadow-xl text-white">
+      <div className="relative overflow-hidden rounded-3xl border border-orange-400/30 bg-gradient-to-br from-[#1C1304] via-[#2A1D07] to-[#120F03] p-5 sm:p-8 shadow-xl text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-400/30 shadow-md">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-orange-500/20 text-orange-400 border border-orange-400/30 shadow-md">
               <Car className="size-6" />
             </div>
             <div>
               <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
                 On-Demand Airport &amp; City Cabs
               </h2>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-300">
                 Book on OrderKing or compare with Uber &amp; Ola
               </div>
             </div>
@@ -238,7 +238,7 @@ export function CabBookingEngine({
               onClick={() => setCategory(cat)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition ${
                 category === cat
-                  ? "bg-amber-400 text-slate-950 shadow-md"
+                  ? "bg-orange-400 text-slate-950 shadow-md"
                   : "bg-white/10 text-slate-200 hover:bg-white/20 border border-white/10"
               }`}
             >
@@ -249,9 +249,9 @@ export function CabBookingEngine({
 
         {/* Input Fields Grid with Location Swap */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition relative">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-orange-400 transition relative">
             <label htmlFor="cab-search-pickup" className="text-[10px] font-bold text-slate-300 flex items-center justify-between mb-1 uppercase tracking-wider">
-              <span className="flex items-center gap-1.5"><MapPin className="size-3 text-amber-400" /> Pickup Location</span>
+              <span className="flex items-center gap-1.5"><MapPin className="size-3 text-orange-400" /> Pickup Location</span>
             </label>
             <div className="flex items-center gap-1.5">
               <input
@@ -266,16 +266,16 @@ export function CabBookingEngine({
                 type="button"
                 onClick={handleSwapLocations}
                 title="Swap Pickup & Drop"
-                className="size-7 rounded-lg bg-white/10 hover:bg-amber-500/30 text-amber-300 border border-white/10 flex items-center justify-center shrink-0 transition"
+                className="size-7 rounded-lg bg-white/10 hover:bg-orange-500/30 text-orange-300 border border-white/10 flex items-center justify-center shrink-0 transition"
               >
                 <ArrowLeftRight className="size-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-orange-400 transition">
             <label htmlFor="cab-search-drop" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <Navigation className="size-3 text-amber-400" /> Drop Location
+              <Navigation className="size-3 text-orange-400" /> Drop Location
             </label>
             <input
               id="cab-search-drop"
@@ -287,9 +287,9 @@ export function CabBookingEngine({
             />
           </div>
 
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-orange-400 transition">
             <label htmlFor="cab-search-date" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <Calendar className="size-3 text-amber-400" /> Date
+              <Calendar className="size-3 text-orange-400" /> Date
             </label>
             <input
               id="cab-search-date"
@@ -300,9 +300,9 @@ export function CabBookingEngine({
             />
           </div>
 
-          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-amber-400 transition">
+          <div className="bg-white/10 p-3 rounded-2xl border border-white/15 focus-within:border-orange-400 transition">
             <label htmlFor="cab-search-time" className="text-[10px] font-bold text-slate-300 flex items-center gap-1.5 mb-1 uppercase tracking-wider">
-              <Clock className="size-3 text-amber-400" /> Pickup Time
+              <Clock className="size-3 text-orange-400" /> Pickup Time
             </label>
             <input
               id="cab-search-time"
@@ -328,7 +328,7 @@ export function CabBookingEngine({
 
         {quotes.length === 0 && (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center space-y-3">
-            <div className="size-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto">
+            <div className="size-12 rounded-2xl bg-orange-100 text-orange-700 flex items-center justify-center mx-auto">
               <Car className="size-6" />
             </div>
             <h4 className="text-base font-bold text-slate-900">No cabs available for this category right now</h4>
@@ -342,7 +342,7 @@ export function CabBookingEngine({
                 setDrop("Connaught Place, New Delhi");
                 setCategory("Airport Transfer");
               }}
-              className="rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs"
+              className="rounded-xl bg-orange-500 hover:bg-orange-600 text-slate-950 font-bold text-xs"
             >
               <RotateCcw className="size-3.5 mr-1" /> Reset to Airport Transfer
             </Button>
@@ -356,11 +356,11 @@ export function CabBookingEngine({
             return (
               <div
                 key={q.id}
-                className="rounded-3xl border border-slate-200 bg-white p-5 hover:border-amber-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between gap-4"
+                className="rounded-3xl border border-slate-200 bg-white p-5 hover:border-orange-400 hover:shadow-lg transition-all duration-200 flex flex-col justify-between gap-4"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-xs font-black px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-900">
+                    <span className="text-xs font-black px-2.5 py-0.5 rounded-md bg-orange-100 text-orange-950">
                       {q.vehicleType}
                     </span>
                     <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
@@ -411,7 +411,7 @@ export function CabBookingEngine({
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => toast.success(`Opening Ola Cabs dispatch...`)}
-                      className="h-10 px-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs inline-flex items-center gap-1 no-underline transition"
+                      className="h-10 px-3 rounded-xl bg-orange-400 hover:bg-orange-500 text-slate-950 font-black text-xs inline-flex items-center gap-1 no-underline transition"
                     >
                       <span>Ola</span>
                     </a>
@@ -511,7 +511,7 @@ export function CabBookingEngine({
                 onClick={() => setRidePaymentMethod("RAZORPAY_ONLINE")}
                 className={`p-3 rounded-xl border text-left text-xs font-bold flex items-center gap-2 ${
                   ridePaymentMethod === "RAZORPAY_ONLINE"
-                    ? "border-amber-500 bg-amber-50 text-amber-950"
+                    ? "border-orange-500 bg-orange-50 text-orange-950"
                     : "border-slate-200 bg-white text-slate-600"
                 }`}
               >

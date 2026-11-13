@@ -65,18 +65,18 @@ export function FoodUpiCheckoutCard({
     <section
       className={`rounded-3xl border-2 p-5 sm:p-6 transition-all relative overflow-hidden ${
         isDark
-          ? "border-amber-400/50 bg-gradient-to-br from-stone-950 via-zinc-950 to-stone-900 text-white shadow-[0_8px_30px_rgba(245,158,11,0.15)]"
-          : "border-amber-400/60 bg-gradient-to-br from-amber-50/60 via-white to-amber-50/30 text-stone-950 shadow-md"
+          ? "border-orange-400/50 bg-gradient-to-br from-stone-950 via-zinc-950 to-stone-900 text-white shadow-[0_8px_30px_rgba(245,158,11,0.15)]"
+          : "border-orange-400/60 bg-gradient-to-br from-orange-50/60 via-white to-orange-50/30 text-stone-950 shadow-md"
       } ${className}`}
       aria-label="Direct NPCI UPI Checkout"
     >
       {/* Decorative ambient shine */}
-      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-amber-400/10 blur-2xl pointer-events-none" />
+      <div className="absolute -top-12 -right-12 size-36 rounded-full bg-orange-400/10 blur-2xl pointer-events-none" />
 
       <div className="relative z-10 space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black shadow-xs text-sm">
+            <span className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-500 text-zinc-950 font-black shadow-xs text-sm">
               UPI
             </span>
             <div>
@@ -96,10 +96,10 @@ export function FoodUpiCheckoutCard({
         </div>
 
         {hasItems && hasValidTotal ? (
-          <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 p-3.5 flex items-center justify-between">
+          <div className="rounded-2xl border border-orange-400/30 bg-orange-500/10 p-3.5 flex items-center justify-between">
             <div>
               <span className="text-[10px] uppercase font-bold text-muted-foreground">Order Total</span>
-              <div className="font-mono text-xl sm:text-2xl font-black text-amber-500 dark:text-amber-300">
+              <div className="font-mono text-xl sm:text-2xl font-black text-orange-500 dark:text-orange-300">
                 ₹{amountRupees.toFixed(2)}
               </div>
             </div>
@@ -121,7 +121,7 @@ export function FoodUpiCheckoutCard({
           {hasValidTotal && (
             <a
               href={universalIntentUrl}
-              className="w-full h-11 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/25 transition active:scale-95 no-underline"
+              className="w-full h-11 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-400 hover:from-orange-300 hover:to-orange-300 text-zinc-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition active:scale-95 no-underline"
             >
               <Zap className="size-4 fill-zinc-950" />
               <span>Open in UPI App (PhonePe / Paytm / Cred / BHIM / Amazon Pay)</span>
@@ -134,9 +134,9 @@ export function FoodUpiCheckoutCard({
                 type="button"
                 variant="outline"
                 onClick={() => setIsQrModalOpen(true)}
-                className="h-10 rounded-xl border-amber-400/40 text-xs font-bold flex items-center justify-center gap-1.5"
+                className="h-10 rounded-xl border-orange-400/40 text-xs font-bold flex items-center justify-center gap-1.5"
               >
-                <QrCode className="size-3.5 text-amber-500" />
+                <QrCode className="size-3.5 text-orange-500" />
                 <span>Show Live QR Modal</span>
               </Button>
             )}

@@ -105,19 +105,19 @@ export function FssaiExpiryBanner({
         className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-lg border text-xs ${
           isExpired
             ? "bg-rose-950/40 border-rose-500/50 text-rose-200"
-            : "bg-amber-950/40 border-amber-500/50 text-amber-200"
+            : "bg-orange-950/40 border-orange-500/50 text-orange-200"
         }`}
       >
         <div className="flex items-start sm:items-center gap-2">
           {isExpired ? (
             <ShieldAlert className="size-4 text-rose-400 shrink-0 mt-0.5 sm:mt-0 animate-pulse" />
           ) : (
-            <AlertTriangle className="size-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0 animate-pulse" />
+            <AlertTriangle className="size-4 text-orange-400 shrink-0 mt-0.5 sm:mt-0 animate-pulse" />
           )}
           <div className="space-y-0.5">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className={`text-[10px] font-mono font-bold uppercase px-1.5 py-0.2 rounded ${
-                isExpired ? "bg-rose-500 text-black" : "bg-amber-500 text-black"
+                isExpired ? "bg-rose-500 text-black" : "bg-orange-500 text-black"
               }`}>
                 {isExpired ? "FSSAI EXPIRED" : `RENEWAL DUE IN ${licenseInfo.daysRemaining} DAYS`}
               </span>
@@ -141,7 +141,7 @@ export function FssaiExpiryBanner({
             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-bold tracking-wide transition uppercase ${
               isExpired
                 ? "bg-rose-500 hover:bg-rose-400 text-black"
-                : "bg-amber-500 hover:bg-amber-400 text-black"
+                : "bg-orange-500 hover:bg-orange-400 text-black"
             }`}
           >
             <span>FoSCoS Portal</span>
@@ -156,9 +156,9 @@ export function FssaiExpiryBanner({
   // If snoozed, display a compact high-contrast sticky pill instead of full banner
   if (snoozed) {
     return (
-      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono">
+      <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-mono">
         <div className="flex items-center gap-2">
-          <ShieldAlert className="size-3.5 text-amber-500 animate-pulse" />
+          <ShieldAlert className="size-3.5 text-orange-500 animate-pulse" />
           <span>FSSAI Lic #{licenseInfo.licenseNumber}: Renewal Due in {licenseInfo.daysRemaining} Days</span>
         </div>
         <div className="flex items-center gap-2">
@@ -166,7 +166,7 @@ export function FssaiExpiryBanner({
             href="https://foscos.fssai.gov.in"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] underline hover:text-amber-300 flex items-center gap-0.5"
+            className="text-[10px] underline hover:text-orange-300 flex items-center gap-0.5"
           >
             FoSCoS Portal
           </a>
@@ -188,7 +188,7 @@ export function FssaiExpiryBanner({
       className={`relative rounded-xl border p-4 shadow-xl transition-all duration-300 ${
         isExpired 
           ? "bg-rose-950/20 border-rose-500/40 text-rose-200 shadow-rose-950/30" 
-          : "bg-amber-950/20 border-amber-500/40 text-amber-200 shadow-amber-950/30"
+          : "bg-orange-950/20 border-orange-500/40 text-orange-200 shadow-orange-950/30"
       }`}
     >
       {/* Background statutory watermark */}
@@ -201,7 +201,7 @@ export function FssaiExpiryBanner({
         {/* Left: Icon & Statutory Message */}
         <div className="flex items-start gap-3">
           <div className={`p-2.5 rounded-lg shrink-0 ${
-            isExpired ? "bg-rose-500/20 text-rose-400" : "bg-amber-500/20 text-amber-400"
+            isExpired ? "bg-rose-500/20 text-rose-400" : "bg-orange-500/20 text-orange-400"
           }`}>
             {isExpired ? <ShieldAlert className="size-6 animate-bounce" /> : <AlertTriangle className="size-6 animate-pulse" />}
           </div>
@@ -209,7 +209,7 @@ export function FssaiExpiryBanner({
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className={`text-[10px] font-mono font-bold tracking-wider px-2 py-0.5 rounded uppercase ${
-                isExpired ? "bg-rose-500 text-black font-extrabold" : "bg-amber-500 text-black font-extrabold"
+                isExpired ? "bg-rose-500 text-black font-extrabold" : "bg-orange-500 text-black font-extrabold"
               }`}>
                 {isExpired ? "STATUTORY HALT RISK" : "MANDATORY STATUTORY NOTICE"}
               </span>
@@ -252,7 +252,7 @@ export function FssaiExpiryBanner({
               href="https://foscos.fssai.gov.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-md transition-all uppercase tracking-wider"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs shadow-md transition-all uppercase tracking-wider"
             >
               <span>Renew on FoSCoS</span>
               <ExternalLink className="size-3.5" />

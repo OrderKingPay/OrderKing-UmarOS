@@ -96,10 +96,10 @@ export const Route = createRootRoute({
             role="alert"
             className="min-h-screen w-full bg-[#FAF7F2] text-gray-900 flex flex-col items-center justify-center p-6 select-none"
           >
-            <div className="w-full max-w-md rounded-3xl bg-white border border-amber-200/90 p-8 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
+            <div className="w-full max-w-md rounded-3xl bg-white border border-orange-200/90 p-8 text-center shadow-[0_20px_50px_rgba(245,158,11,0.12)] space-y-5">
               <div className="relative mx-auto flex size-16 items-center justify-center">
-                <div className="absolute inset-0 rounded-2xl bg-amber-400/25 blur-md animate-pulse" />
-                <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-amber-600/20 border border-amber-300 text-amber-700 shadow-sm">
+                <div className="absolute inset-0 rounded-2xl bg-orange-400/25 blur-md animate-pulse" />
+                <div className="relative flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500/20 via-orange-500/15 to-orange-600/20 border border-orange-300 text-orange-700 shadow-sm">
                   <AlertCircle className="size-8 stroke-[2.2]" />
                 </div>
               </div>
@@ -129,7 +129,7 @@ export const Route = createRootRoute({
                   onClick={() => {
                     if (typeof window !== "undefined") window.location.reload();
                   }}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-amber-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
                 >
                   <RotateCcw className="size-4 stroke-[2.2]" />
                   Reload OrderKing
@@ -138,7 +138,7 @@ export const Route = createRootRoute({
                 <button
                   type="button"
                   onClick={handleClearCacheAndReload}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-50 hover:bg-amber-100/80 border border-amber-200/70 px-5 py-3 text-sm font-bold text-amber-900 transition-all active:scale-98 cursor-pointer"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-50 hover:bg-orange-100/80 border border-orange-200/70 px-5 py-3 text-sm font-bold text-orange-950 transition-all active:scale-98 cursor-pointer"
                 >
                   <RefreshCw className="size-4 stroke-[2]" />
                   Clear Cache & Refresh
@@ -212,38 +212,38 @@ export function CustomerAppSkeleton() {
       aria-label="Loading OrderKing"
     >
       {/* Header Skeleton */}
-      <div className="sticky top-0 z-30 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] border-b border-amber-900/10 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-30 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#F5EFEB] border-b border-orange-950/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-xl bg-gradient-to-tr from-amber-400/40 via-yellow-300/30 to-amber-500/20 animate-pulse flex items-center justify-center">
-            <span className="text-xs font-bold text-amber-700">OK</span>
+          <div className="size-8 rounded-xl bg-gradient-to-tr from-orange-400/40 via-orange-300/30 to-orange-500/20 animate-pulse flex items-center justify-center">
+            <span className="text-xs font-bold text-orange-700">OK</span>
           </div>
           <div className="space-y-1">
-            <div className="h-4 w-24 bg-amber-200/50 rounded-md animate-pulse" />
-            <div className="h-2 w-14 bg-amber-200/30 rounded-xs animate-pulse" />
+            <div className="h-4 w-24 bg-orange-200/50 rounded-md animate-pulse" />
+            <div className="h-2 w-14 bg-orange-200/30 rounded-xs animate-pulse" />
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="h-7 w-20 bg-amber-200/40 rounded-full animate-pulse" />
-          <div className="size-7 bg-amber-200/40 rounded-full animate-pulse" />
+          <div className="h-7 w-20 bg-orange-200/40 rounded-full animate-pulse" />
+          <div className="size-7 bg-orange-200/40 rounded-full animate-pulse" />
         </div>
       </div>
 
       {/* Main Body Skeleton */}
       <div className="px-4 py-4 space-y-4">
         {/* Search Bar Skeleton */}
-        <div className="h-10 w-full bg-white/80 rounded-xl border border-amber-200/60 shadow-2xs flex items-center px-3 gap-2">
-          <div className="size-4 rounded-full bg-amber-200/50 animate-pulse" />
-          <div className="h-3 w-40 bg-amber-100 rounded animate-pulse" />
+        <div className="h-10 w-full bg-white/80 rounded-xl border border-orange-200/60 shadow-2xs flex items-center px-3 gap-2">
+          <div className="size-4 rounded-full bg-orange-200/50 animate-pulse" />
+          <div className="h-3 w-40 bg-orange-100 rounded animate-pulse" />
         </div>
 
         {/* Categories Circular Skeletons */}
         <div className="flex gap-3 overflow-hidden py-1">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5 shrink-0">
-              <div className="size-16 rounded-full bg-gradient-to-tr from-amber-200/60 to-yellow-100/60 p-0.5 animate-pulse">
+              <div className="size-16 rounded-full bg-gradient-to-tr from-orange-200/60 to-orange-100/60 p-0.5 animate-pulse">
                 <div className="size-full rounded-full bg-white/90" />
               </div>
-              <div className="h-2.5 w-12 bg-amber-200/40 rounded animate-pulse" />
+              <div className="h-2.5 w-12 bg-orange-200/40 rounded animate-pulse" />
             </div>
           ))}
         </div>
@@ -253,15 +253,15 @@ export function CustomerAppSkeleton() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="overflow-hidden rounded-3xl border border-amber-900/10 bg-white shadow-xs flex flex-col"
+              className="overflow-hidden rounded-3xl border border-orange-950/10 bg-white shadow-xs flex flex-col"
             >
-              <div className="aspect-[16/10] w-full bg-gradient-to-r from-amber-100/60 via-amber-50 to-amber-100/60 animate-pulse" />
-              <div className="p-4 space-y-2 bg-gradient-to-b from-white to-amber-50/20">
+              <div className="aspect-[16/10] w-full bg-gradient-to-r from-orange-100/60 via-orange-50 to-orange-100/60 animate-pulse" />
+              <div className="p-4 space-y-2 bg-gradient-to-b from-white to-orange-50/20">
                 <div className="flex justify-between items-center">
-                  <div className="h-4 w-3/5 bg-amber-200/60 rounded animate-pulse" />
-                  <div className="h-4 w-10 bg-amber-200/40 rounded animate-pulse" />
+                  <div className="h-4 w-3/5 bg-orange-200/60 rounded animate-pulse" />
+                  <div className="h-4 w-10 bg-orange-200/40 rounded animate-pulse" />
                 </div>
-                <div className="h-3 w-2/5 bg-amber-100/80 rounded animate-pulse" />
+                <div className="h-3 w-2/5 bg-orange-100/80 rounded animate-pulse" />
               </div>
             </div>
           ))}

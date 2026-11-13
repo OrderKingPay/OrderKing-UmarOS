@@ -364,7 +364,7 @@ export function MetaOmnichannelHub({
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${form.status === "CONNECTED"
                     ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                     : form.status === "DEGRADED"
-                      ? "bg-amber-100 text-amber-800 border border-amber-300"
+                      ? "bg-orange-100 text-orange-900 border border-orange-300"
                       : "bg-slate-100 text-slate-600 border border-slate-200"
                   }`}
               >
@@ -372,7 +372,7 @@ export function MetaOmnichannelHub({
                   className={`h-2 w-2 rounded-full ${form.status === "CONNECTED"
                       ? "bg-emerald-600 animate-pulse"
                       : form.status === "DEGRADED"
-                        ? "bg-amber-500"
+                        ? "bg-orange-500"
                         : "bg-slate-400"
                     }`}
                 />
@@ -1401,7 +1401,7 @@ export function MetaOmnichannelHub({
                   {/* Chat Header */}
                   <div
                     className={`px-3 py-2 flex items-center gap-2 border-b text-white ${previewChannel === "instagram"
-                        ? "bg-gradient-to-r from-rose-600 via-pink-600 to-amber-500"
+                        ? "bg-gradient-to-r from-rose-600 via-pink-600 to-orange-500"
                         : previewChannel === "whatsapp"
                           ? "bg-emerald-700"
                           : "bg-blue-600"
@@ -1526,12 +1526,12 @@ export function MetaOmnichannelHub({
                 <span className="text-[10px] text-emerald-600 block">HTTP 200 Graph API response</span>
               </div>
 
-              <div className="rounded-lg border border-slate-200 bg-amber-50/60 p-3.5 space-y-1">
-                <span className="text-[11px] font-semibold text-amber-700 block">DND Filtered Leads</span>
-                <span className="text-xl font-bold font-mono text-amber-900">
+              <div className="rounded-lg border border-slate-200 bg-orange-50/60 p-3.5 space-y-1">
+                <span className="text-[11px] font-semibold text-orange-700 block">DND Filtered Leads</span>
+                <span className="text-xl font-bold font-mono text-orange-950">
                   {blastReport ? blastReport.telemetry.dndScrubbedCount : calculus.dndScrubbed}
                 </span>
-                <span className="text-[10px] text-amber-600 block">TRAI NDNC compliance guard</span>
+                <span className="text-[10px] text-orange-600 block">TRAI NDNC compliance guard</span>
               </div>
             </div>
 

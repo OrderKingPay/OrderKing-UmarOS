@@ -83,12 +83,12 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
   };
 
   return (
-    <div className="mt-3 pt-2.5 border-t border-amber-900/10">
+    <div className="mt-3 pt-2.5 border-t border-orange-950/10">
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-900 hover:underline cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-950 hover:underline cursor-pointer"
         >
           <MessageSquare className="size-3.5" />
           <span>{open ? "Hide Conversation" : `View & Reply to Founder / Support (${messages.length})`}</span>
@@ -102,7 +102,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
       </div>
 
       {open && (
-        <div className="mt-2.5 space-y-2.5 rounded-xl border border-amber-200/80 bg-amber-50/40 p-3">
+        <div className="mt-2.5 space-y-2.5 rounded-xl border border-orange-200/80 bg-orange-50/40 p-3">
           <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
             {messagesQ.isLoading && messages.length === 0 ? (
               <p className="text-center py-3 text-xs text-stone-500">Loading conversation...</p>
@@ -117,15 +117,15 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
                     className={cn(
                       "flex flex-col max-w-[85%] rounded-2xl p-2.5 text-xs space-y-0.5",
                       isMe
-                        ? "ml-auto bg-amber-600 text-white shadow-xs"
-                        : "mr-auto bg-white border border-amber-200 text-stone-900 shadow-xs"
+                        ? "ml-auto bg-orange-600 text-white shadow-xs"
+                        : "mr-auto bg-white border border-orange-200 text-stone-900 shadow-xs"
                     )}
                   >
                     <div className="flex items-center justify-between gap-2 text-[10px]">
-                      <span className={cn("font-bold", isMe ? "text-amber-100" : "text-amber-800")}>
+                      <span className={cn("font-bold", isMe ? "text-orange-100" : "text-orange-900")}>
                         {m.authorName}
                       </span>
-                      <span className={cn("text-[9px] font-mono", isMe ? "text-amber-200" : "text-stone-400")}>
+                      <span className={cn("text-[9px] font-mono", isMe ? "text-orange-200" : "text-stone-400")}>
                         {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
@@ -136,7 +136,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 pt-2 border-t border-amber-200/60">
+          <div className="flex items-center gap-2 pt-2 border-t border-orange-200/60">
             <input
               type="text"
               value={replyText}
@@ -148,7 +148,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
                 }
               }}
               placeholder="Type message to Founder / Support..."
-              className="flex-1 rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500"
+              className="flex-1 rounded-xl border border-orange-200 bg-white px-3 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-orange-500"
               disabled={isSending}
             />
             <Button
@@ -156,7 +156,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
               size="sm"
               onClick={handleSend}
               disabled={isSending || !replyText.trim()}
-              className="h-8 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
+              className="h-8 px-3 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs"
             >
               {isSending ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -292,7 +292,7 @@ export function SupportPage() {
             <h1 className="font-display text-3xl font-black text-stone-900 tracking-tight">
               {t("support.title")}
             </h1>
-            <p className="mt-0.5 text-xs font-bold text-amber-800">
+            <p className="mt-0.5 text-xs font-bold text-orange-900">
               Quick help for your orders, deliveries, and payments
             </p>
           </div>
@@ -303,10 +303,10 @@ export function SupportPage() {
         </div>
 
         {/* 24x7 Conversational AI Support Assistant */}
-        <div className="rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-white via-amber-50/40 to-yellow-50/20 p-5 sm:p-6 shadow-[0_12px_40px_rgba(245,158,11,0.12)]">
+        <div className="rounded-3xl border-2 border-orange-400/80 bg-gradient-to-br from-white via-orange-50/40 to-orange-50/20 p-5 sm:p-6 shadow-[0_12px_40px_rgba(245,158,11,0.12)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-md shadow-amber-400/30">
+              <div className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-400 text-stone-950 shadow-md shadow-orange-400/30">
                 <Bot className="size-6" />
               </div>
               <div>
@@ -321,13 +321,13 @@ export function SupportPage() {
                 </h2>
               </div>
             </div>
-            <span className="text-xs font-bold text-amber-800 bg-amber-100/70 px-2.5 py-1 rounded-lg">
+            <span className="text-xs font-bold text-orange-900 bg-orange-100/70 px-2.5 py-1 rounded-lg">
               Instant Guidance
             </span>
           </div>
 
           {/* Chat Messages Log */}
-          <div className="mt-4 max-h-80 overflow-y-auto space-y-3 rounded-2xl border border-amber-200/80 bg-white/95 backdrop-blur-md p-4 text-xs shadow-inner no-scrollbar">
+          <div className="mt-4 max-h-80 overflow-y-auto space-y-3 rounded-2xl border border-orange-200/80 bg-white/95 backdrop-blur-md p-4 text-xs shadow-inner no-scrollbar">
             {chatMessages.map((msg, idx) => (
               <div
                 key={idx}
@@ -336,8 +336,8 @@ export function SupportPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl p-3.5 shadow-2xs leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-medium rounded-br-xs shadow-md shadow-orange-500/20"
-                      : "bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950 text-amber-50 border border-amber-400/40 font-medium rounded-bl-xs shadow-md"
+                      ? "bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white font-medium rounded-br-xs shadow-md shadow-orange-500/20"
+                      : "bg-gradient-to-br from-stone-950 via-stone-900 to-orange-950 text-orange-50 border border-orange-400/40 font-medium rounded-bl-xs shadow-md"
                   }`}
                 >
                   <p>{msg.content}</p>
@@ -347,7 +347,7 @@ export function SupportPage() {
                     <div className="mt-2.5 pt-2 border-t border-white/10">
                       <Button
                         size="sm"
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs h-7 px-3 rounded-lg shadow-xs"
+                        className="bg-gradient-to-r from-orange-500 to-orange-500 text-white font-bold text-xs h-7 px-3 rounded-lg shadow-xs"
                         onClick={() => {
                           setIssueType(msg.actionChip!.issueType);
                           void triggerQuickResolve(msg.actionChip!.issueType);
@@ -367,10 +367,10 @@ export function SupportPage() {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-lg bg-amber-500/20 border border-amber-400/40 px-2 py-1 text-[10px] font-bold text-amber-200 hover:text-white"
+                          className="inline-flex items-center gap-1 rounded-lg bg-orange-500/20 border border-orange-400/40 px-2 py-1 text-[10px] font-bold text-orange-200 hover:text-white"
                         >
                           <span>{link.title}</span>
-                          {link.phone && <span className="text-amber-300">({link.phone})</span>}
+                          {link.phone && <span className="text-orange-300">({link.phone})</span>}
                           <ExternalLink className="size-3" />
                         </a>
                       ))}
@@ -381,8 +381,8 @@ export function SupportPage() {
               </div>
             ))}
             {isChatting && (
-              <div className="flex items-center gap-2 text-xs text-amber-800 font-bold">
-                <span className="flex size-2 rounded-full bg-amber-500 animate-ping" />
+              <div className="flex items-center gap-2 text-xs text-orange-900 font-bold">
+                <span className="flex size-2 rounded-full bg-orange-500 animate-ping" />
                 <span>Connecting with support...</span>
               </div>
             )}
@@ -403,7 +403,7 @@ export function SupportPage() {
                 key={promptText}
                 type="button"
                 onClick={() => void handleSendChat(promptText)}
-                className="rounded-full border border-amber-300/80 bg-amber-50/80 hover:bg-amber-100 text-amber-950 font-bold px-3 py-1.5 text-xs shadow-2xs transition-all active:scale-95"
+                className="rounded-full border border-orange-300/80 bg-orange-50/80 hover:bg-orange-100 text-orange-950 font-bold px-3 py-1.5 text-xs shadow-2xs transition-all active:scale-95"
               >
                 {promptText}
               </button>
@@ -420,7 +420,7 @@ export function SupportPage() {
           >
             <input
               type="text"
-              className="w-full rounded-2xl border border-amber-300/80 bg-white px-3.5 py-2.5 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500 shadow-2xs"
+              className="w-full rounded-2xl border border-orange-300/80 bg-white px-3.5 py-2.5 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-orange-500 shadow-2xs"
               placeholder="Ask anything about orders, KingPay, refunds, or ombudsman..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
@@ -430,7 +430,7 @@ export function SupportPage() {
               size="sm"
               type="submit"
               disabled={isChatting || !user || !chatInput.trim()}
-              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-5 rounded-2xl shadow-md shadow-orange-500/25 active:scale-95 transition-all text-xs h-10"
+              className="bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white font-black px-5 rounded-2xl shadow-md shadow-orange-500/25 active:scale-95 transition-all text-xs h-10"
             >
               <span>Send</span> <ArrowRight className="size-3.5 ml-1" />
             </Button>
@@ -438,10 +438,10 @@ export function SupportPage() {
         </div>
 
         {/* Instant Support & Order Diagnostics */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        <div className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-2">
             <span className="flex size-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-2.5 py-0.5 text-xs font-black text-amber-950">
+            <span className="rounded-full bg-orange-400/20 border border-orange-400/40 px-2.5 py-0.5 text-xs font-black text-orange-950">
               Order Help
             </span>
             <h2 className="font-display text-lg font-black text-stone-900">Order Status &amp; Resolution</h2>
@@ -458,7 +458,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
+                className="text-xs h-9 px-3 rounded-xl border-orange-200 bg-orange-50/50 hover:bg-orange-100 text-orange-950 font-bold"
                 onClick={() => {
                   setIssueType("where_order");
                   void triggerQuickResolve("where_order");
@@ -484,7 +484,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
+                className="text-xs h-9 px-3 rounded-xl border-orange-200 bg-orange-50/50 hover:bg-orange-100 text-orange-950 font-bold"
                 onClick={() => {
                   setIssueType("missing_item");
                   void triggerQuickResolve("missing_item");
@@ -497,7 +497,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
+                className="text-xs h-9 px-3 rounded-xl border-orange-200 bg-orange-50/50 hover:bg-orange-100 text-orange-950 font-bold"
                 onClick={() => {
                   setIssueType("food_spilled");
                   void triggerQuickResolve("food_spilled");
@@ -510,7 +510,7 @@ export function SupportPage() {
                 variant="outline"
                 size="sm"
                 disabled={isDiagnosing}
-                className="text-xs h-9 px-3 rounded-xl border-amber-200 bg-amber-50/50 hover:bg-amber-100 text-amber-950 font-bold"
+                className="text-xs h-9 px-3 rounded-xl border-orange-200 bg-orange-50/50 hover:bg-orange-100 text-orange-950 font-bold"
                 onClick={() => {
                   setIssueType("payment_issue");
                   void triggerQuickResolve("payment_issue");
@@ -526,7 +526,7 @@ export function SupportPage() {
               <div>
                 <label className="block text-xs font-bold text-stone-700">Select Recent Order</label>
                 <select
-                  className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
+                  className="mt-1 min-h-11 w-full rounded-2xl border border-orange-200 bg-orange-50/30 px-3 text-xs font-medium text-stone-900"
                   value={selectedOrderId || recentOrders[0]?.id}
                   onChange={(e) => setSelectedOrderId(e.target.value)}
                 >
@@ -541,7 +541,7 @@ export function SupportPage() {
               <div>
                 <label className="block text-xs font-bold text-stone-700">What issue are you facing?</label>
                 <select
-                  className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
+                  className="mt-1 min-h-11 w-full rounded-2xl border border-orange-200 bg-orange-50/30 px-3 text-xs font-medium text-stone-900"
                   value={issueType}
                   onChange={(e) => setIssueType(e.target.value as SupportIssueType)}
                 >
@@ -559,7 +559,7 @@ export function SupportPage() {
                 <input
                   type="text"
                   placeholder="e.g. Missing 1 extra naan, or rider arrived late"
-                  className="mt-1 h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
+                  className="mt-1 h-11 w-full rounded-2xl border border-orange-200 bg-orange-50/30 px-3 text-xs font-medium text-stone-900"
                   value={issueDetails}
                   onChange={(e) => setIssueDetails(e.target.value)}
                 />
@@ -568,7 +568,7 @@ export function SupportPage() {
               <Button
                 onClick={handleInstantResolve}
                 disabled={isDiagnosing}
-                className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
+                className="w-full sm:w-auto bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white font-black px-6 py-3 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
               >
                 {isDiagnosing ? "Diagnosing order..." : (
                   <span className="inline-flex items-center gap-1.5">
@@ -586,10 +586,10 @@ export function SupportPage() {
 
           {/* Resolution Result Banner */}
           {resolution ? (
-            <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50/80 p-4 shadow-xs">
+            <div className="mt-4 rounded-2xl border border-orange-300 bg-orange-50/80 p-4 shadow-xs">
               <div className="flex items-center justify-between">
-                <span className="font-black text-sm text-amber-950">{resolution.title}</span>
-                <span className="rounded-lg bg-amber-200/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-900">
+                <span className="font-black text-sm text-orange-950">{resolution.title}</span>
+                <span className="rounded-lg bg-orange-200/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-orange-950">
                   {resolution.actionTaken}
                 </span>
               </div>
@@ -599,10 +599,10 @@ export function SupportPage() {
         </div>
 
         {/* Official Statutory Grievance & Government Ombudsman Hub */}
-        <div className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        <div className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 text-stone-950 shadow-xs">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 to-orange-400 text-stone-950 shadow-xs">
                 <Landmark className="size-5" />
               </div>
               <div>
@@ -614,25 +614,25 @@ export function SupportPage() {
                 </p>
               </div>
             </div>
-            <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[10px] font-black uppercase text-amber-900">
+            <span className="rounded-full bg-orange-50 border border-orange-200 px-3 py-1 text-[10px] font-black uppercase text-orange-950">
               Official Portals
             </span>
           </div>
 
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {/* National Consumer Helpline */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">National Consumer Helpline (NCH)</span>
-                  <Scale className="size-4 text-amber-700" />
+                  <Scale className="size-4 text-orange-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Dept of Consumer Affairs, Govt of India. Direct consumer grievance resolution.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
-                <a href="tel:1915" className="font-black text-amber-800 hover:underline inline-flex items-center gap-1">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
+                <a href="tel:1915" className="font-black text-orange-900 hover:underline inline-flex items-center gap-1">
                   <Phone className="size-3.5" /> Toll-Free 1915
                 </a>
                 <a
@@ -647,23 +647,23 @@ export function SupportPage() {
             </div>
 
             {/* RBI Banking Ombudsman */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">RBI Banking Ombudsman (CMS)</span>
-                  <Landmark className="size-4 text-amber-700" />
+                  <Landmark className="size-4 text-orange-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Reserve Bank of India Complaint Management System for digital wallet &amp; UPI payment disputes.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
                 <span className="text-stone-400 text-[11px]">Eligibility applies</span>
                 <a
                   href="https://cms.rbi.org.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
+                  className="font-black text-orange-900 hover:underline inline-flex items-center gap-1"
                 >
                   <span>File Complaint</span> <ExternalLink className="size-3" />
                 </a>
@@ -671,7 +671,7 @@ export function SupportPage() {
             </div>
 
             {/* National Cyber Crime Reporting */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">Cyber Crime Reporting (MHA)</span>
@@ -681,7 +681,7 @@ export function SupportPage() {
                   Ministry of Home Affairs. For financial cyber fraud, unauthorized debits, and phishing.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
                 <a href="tel:1930" className="font-black text-rose-700 hover:underline inline-flex items-center gap-1">
                   <Phone className="size-3.5" /> Helpline 1930
                 </a>
@@ -697,7 +697,7 @@ export function SupportPage() {
             </div>
 
             {/* FSSAI National Food Safety */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">FSSAI Food Safety (FoSCoS)</span>
@@ -707,13 +707,13 @@ export function SupportPage() {
                   Food Safety &amp; Standards Authority of India. Official restaurant hygiene grievances.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
                 <span className="text-stone-400 text-[11px]">Food Hygiene</span>
                 <a
                   href="https://foscos.fssai.gov.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
+                  className="font-black text-orange-900 hover:underline inline-flex items-center gap-1"
                 >
                   <span>FSSAI Portal</span> <ExternalLink className="size-3" />
                 </a>
@@ -721,23 +721,23 @@ export function SupportPage() {
             </div>
 
             {/* NPCI UPI Dispute Redressal */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">NPCI UPI Dispute Redressal</span>
-                  <Zap className="size-4 text-amber-700" />
+                  <Zap className="size-4 text-orange-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   National Payments Corporation of India. Information about UPI dispute mechanisms.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
                 <span className="text-stone-400 text-[11px]">UPI &amp; BBPS</span>
                 <a
                   href="https://www.npci.org.in/what-we-do/upi/dispute-redressal-mechanism"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
+                  className="font-black text-orange-900 hover:underline inline-flex items-center gap-1"
                 >
                   <span>NPCI Portal</span> <ExternalLink className="size-3" />
                 </a>
@@ -745,21 +745,21 @@ export function SupportPage() {
             </div>
 
             {/* OrderKing Grievance Officer */}
-            <div className="rounded-2xl border border-amber-900/10 bg-amber-50/30 p-4 flex flex-col justify-between hover:border-amber-300 transition-all shadow-2xs">
+            <div className="rounded-2xl border border-orange-950/10 bg-orange-50/30 p-4 flex flex-col justify-between hover:border-orange-300 transition-all shadow-2xs">
               <div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black text-stone-900">OrderKing Grievance Officer</span>
-                  <ShieldCheck className="size-4 text-amber-700" />
+                  <ShieldCheck className="size-4 text-orange-700" />
                 </div>
                 <p className="mt-1 text-xs text-stone-600">
                   Direct statutory customer redressal under Consumer Protection (E-Commerce) Rules, 2020.
                 </p>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-amber-900/10 text-xs">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-orange-950/10 text-xs">
                 <span className="text-stone-400 text-[11px]">Grievance Desk</span>
                 <a
                   href="#support-request"
-                  className="font-black text-amber-800 hover:underline inline-flex items-center gap-1"
+                  className="font-black text-orange-900 hover:underline inline-flex items-center gap-1"
                 >
                   <span>Support Form</span> <ArrowDown className="size-3" />
                 </a>
@@ -769,9 +769,9 @@ export function SupportPage() {
         </div>
 
         {/* Standard Manual Ticket Submission */}
-        <div id="support-request" className="rounded-3xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
-          <div className="flex items-center gap-2 pb-2 border-b border-amber-900/10">
-            <FileText className="size-4 text-amber-600" />
+        <div id="support-request" className="rounded-3xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 pb-2 border-b border-orange-950/10">
+            <FileText className="size-4 text-orange-600" />
             <h2 className="font-display text-lg font-black text-stone-900">Submit Formal Support Ticket</h2>
           </div>
           <form
@@ -790,7 +790,7 @@ export function SupportPage() {
             <label className="block text-xs font-bold text-stone-700">
               {t("support.topic")}
               <select
-                className="mt-1 min-h-11 w-full rounded-2xl border border-amber-200 bg-amber-50/30 px-3 text-xs font-medium text-stone-900"
+                className="mt-1 min-h-11 w-full rounded-2xl border border-orange-200 bg-orange-50/30 px-3 text-xs font-medium text-stone-900"
                 value={topic}
                 onChange={(e) => setTopic(e.target.value as (typeof TOPICS)[number])}
               >
@@ -804,7 +804,7 @@ export function SupportPage() {
             <label className="block text-xs font-bold text-stone-700">
               {t("support.message")}
               <textarea
-                className="mt-1 min-h-24 w-full rounded-2xl border border-amber-200 bg-amber-50/30 p-3 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-amber-500"
+                className="mt-1 min-h-24 w-full rounded-2xl border border-orange-200 bg-orange-50/30 p-3 text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-orange-500"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Describe your question or feedback in detail..."
@@ -813,7 +813,7 @@ export function SupportPage() {
             </label>
             <Button
               type="submit"
-              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black py-3 px-7 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
+              className="bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 text-white font-black py-3 px-7 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-95 transition-all text-xs"
             >
               <span>{t("support.send")}</span> <ArrowRight className="size-3.5 ml-1" />
             </Button>
@@ -825,18 +825,18 @@ export function SupportPage() {
           <h2 className="font-display text-lg font-black text-stone-900">{t("support.tickets")}</h2>
           <ul className="space-y-2.5">
             {(tickets.data?.tickets ?? []).length === 0 ? (
-              <li className="rounded-2xl border border-amber-200/60 bg-amber-50/30 p-4 text-xs font-medium text-stone-500 text-center">
+              <li className="rounded-2xl border border-orange-200/60 bg-orange-50/30 p-4 text-xs font-medium text-stone-500 text-center">
                 No support tickets raised yet.
               </li>
             ) : (
               (tickets.data?.tickets ?? []).map((tk) => (
                 <li
                   key={tk.id}
-                  className="rounded-2xl border border-amber-900/10 bg-white/95 backdrop-blur-md p-4 shadow-xs"
+                  className="rounded-2xl border border-orange-950/10 bg-white/95 backdrop-blur-md p-4 shadow-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-black text-xs uppercase tracking-wide text-amber-800">{tk.topic}</p>
-                    <span className="rounded-md bg-amber-100/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-amber-900">
+                    <p className="font-black text-xs uppercase tracking-wide text-orange-900">{tk.topic}</p>
+                    <span className="rounded-md bg-orange-100/80 px-2.5 py-0.5 text-[10px] font-black uppercase text-orange-950">
                       {tk.status}
                     </span>
                   </div>

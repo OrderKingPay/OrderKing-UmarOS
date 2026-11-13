@@ -700,13 +700,13 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                   onClick={() => toggleTheme("light")}
                   className={`p-4 text-left border rounded-xl transition cursor-pointer ${
                     !isDark
-                      ? "border-emerald-600 bg-amber-50/40 ring-2 ring-emerald-500/20"
+                      ? "border-emerald-600 bg-orange-50/40 ring-2 ring-emerald-500/20"
                       : "border-slate-200 hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Sun className="h-4 w-4 text-amber-600" />
+                      <Sun className="h-4 w-4 text-orange-600" />
                       <span className="text-xs font-bold text-slate-900">Light Mode (Daytime White)</span>
                     </div>
                     {!isDark && <span className="text-xs font-bold text-emerald-600">Selected</span>}
@@ -1026,7 +1026,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
                                 >
                                   FRESH
                                 </span>
-                                <div className="flex items-center text-[9px] font-bold text-amber-500">
+                                <div className="flex items-center text-[9px] font-bold text-orange-500">
                                   <Star className="h-2.5 w-2.5 fill-current" /> 4.8
                                 </div>
                               </div>

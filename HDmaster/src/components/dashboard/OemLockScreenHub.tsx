@@ -659,7 +659,7 @@ export function OemLockScreenHub({
                             c.status === "ACTIVE"
                               ? "bg-emerald-100 text-emerald-800"
                               : c.status === "PAUSED"
-                              ? "bg-amber-100 text-amber-800"
+                              ? "bg-orange-100 text-orange-900"
                               : "bg-slate-100 text-slate-700"
                           }`}
                         >

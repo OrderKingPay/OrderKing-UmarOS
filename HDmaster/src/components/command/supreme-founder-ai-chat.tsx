@@ -428,7 +428,7 @@ function RadialOrbVisualizer({
       <div className="absolute -bottom-2 text-center pointer-events-none">
         <span
           className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm ${isSpeaking
-            ? "bg-amber-500/20 text-amber-300 border-amber-400/50 animate-pulse"
+            ? "bg-orange-500/20 text-orange-300 border-orange-400/50 animate-pulse"
             : isListening
               ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/50 animate-pulse"
               : "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
@@ -581,7 +581,7 @@ function BlueprintSandbox({ blueprint }: { blueprint: EnterpriseProjectBlueprint
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-lg bg-surface-2 p-3 border border-border space-y-2">
-              <span className="text-[11px] font-bold text-amber-300 block">Deliverable Checklist:</span>
+              <span className="text-[11px] font-bold text-orange-300 block">Deliverable Checklist:</span>
               <ul className="space-y-1 text-[11px] text-slate-300">
                 <li className="flex items-center gap-1.5">
                   <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />
@@ -795,7 +795,7 @@ function PlatformConnectorCard({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-slate-100">{act.label}</span>
-                  <Badge className="bg-amber-500/10 text-amber-300 border-amber-500/30 text-[8px] font-mono">
+                  <Badge className="bg-orange-500/10 text-orange-300 border-orange-500/30 text-[8px] font-mono">
                     {act.safetyLevel}
                   </Badge>
                 </div>
@@ -932,7 +932,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
               <span className="text-xs font-bold text-white tracking-wide">
                 4K Video &amp; Image Studio
               </span>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
+              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[9px] font-bold">
                 WEBCODECS TURBO
               </Badge>
             </div>
@@ -954,7 +954,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
             <Maximize2 className="size-3 text-purple-400" />
             Aspect Ratio &amp; Target Platform:
           </span>
-          <span className="font-mono text-amber-400 font-bold text-[10px]">{aspectRatio}</span>
+          <span className="font-mono text-orange-400 font-bold text-[10px]">{aspectRatio}</span>
         </div>
 
         <div className="grid grid-cols-5 gap-1.5">
@@ -996,7 +996,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 key={d}
                 type="button"
                 onClick={() => setDuration(d)}
-                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition shrink-0 ${duration === d ? "bg-amber-500 text-black" : "bg-surface-2 text-slate-400 hover:text-slate-200"
+                className={`px-2 py-1 rounded text-[10px] font-mono font-bold transition shrink-0 ${duration === d ? "bg-orange-500 text-black" : "bg-surface-2 text-slate-400 hover:text-slate-200"
                   }`}
               >
                 {d}
@@ -1048,7 +1048,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
           {/* Dynamic Karaoke Auto-Subtitles Overlay */}
           {autoSubtitles && (
             <div className="absolute bottom-4 inset-x-3 text-center pointer-events-none">
-              <div className="inline-block bg-black/75 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-black text-amber-300 border border-amber-400/40 shadow-lg tracking-wide">
+              <div className="inline-block bg-black/75 backdrop-blur-sm px-2.5 py-1 rounded-md text-[11px] font-black text-orange-300 border border-orange-400/40 shadow-lg tracking-wide">
                 <span className="text-white">OrderKing:</span> 15-Min Hyperlocal Fleet Active!
               </div>
             </div>
@@ -1116,7 +1116,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
                 onChange={(e) => setAutoSubtitles(e.target.checked)}
                 className="accent-purple-500 size-3"
               />
-              <span className="text-[9px] text-amber-300 font-bold">{autoSubtitles ? "ENABLED" : "OFF"}</span>
+              <span className="text-[9px] text-orange-300 font-bold">{autoSubtitles ? "ENABLED" : "OFF"}</span>
             </label>
           </div>
           <div className="text-[9.5px] text-slate-400">
@@ -1145,7 +1145,7 @@ function VideoEditorStudioCard({ config }: { config: VideoEditorStudioConfig }) 
         <Button
           size="sm"
           onClick={handleDownloadMaster}
-          className="text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black font-black"
+          className="text-xs font-bold bg-orange-500 hover:bg-orange-400 text-black font-black"
         >
           <Download className="size-3 mr-1.5" />
           <span>Download Master</span>
@@ -1191,17 +1191,17 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
   };
 
   return (
-    <div className="rounded-xl border border-amber-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-2xl">
+    <div className="rounded-xl border border-orange-500/40 bg-black/70 p-3.5 space-y-3.5 shadow-2xl">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="size-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+          <div className="size-7 rounded-lg bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-300">
             <Settings className="size-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-white tracking-wide">HDmaster System Settings &amp; Optimizer</span>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
+              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[9px] font-bold">
                 100% MANUAL CONTROL
               </Badge>
             </div>
@@ -1226,7 +1226,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
             size="sm"
             disabled={isRestarting}
             onClick={handleRestart}
-            className="h-7 px-2.5 text-[11px] font-bold bg-amber-500 hover:bg-amber-400 text-black rounded-lg shadow font-black"
+            className="h-7 px-2.5 text-[11px] font-bold bg-orange-500 hover:bg-orange-400 text-black rounded-lg shadow font-black"
           >
             <Zap className={`size-3 mr-1 ${isRestarting ? "animate-spin" : ""}`} />
             <span>{isRestarting ? "Restarting..." : "RESTART / RESTERT"}</span>
@@ -1242,7 +1242,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-300">Active Engine:</span>
-              <span className="font-mono text-amber-400 font-bold">{settings.aiModel}</span>
+              <span className="font-mono text-orange-400 font-bold">{settings.aiModel}</span>
             </div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-slate-300">Thinking Depth:</span>
@@ -1338,7 +1338,7 @@ function SystemSettingsCard({ data }: { data: { settings: SystemSettingsConfig; 
         <Button
           size="sm"
           onClick={handleSave}
-          className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow font-black"
+          className="flex-1 text-xs font-bold bg-orange-500 hover:bg-orange-400 text-black shadow font-black"
         >
           <CheckCircle2 className="size-3 mr-1.5" />
           <span>{hasSaved ? "Configuration Saved" : "Save Manual Customizations"}</span>
@@ -1399,7 +1399,7 @@ function SmartCleanerCard({
           </div>
         </div>
 
-        <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">
+        <Badge className="bg-orange-500/20 text-orange-300 text-[9px] font-mono">
           {(data.freedEstimateBytes / (1024 * 1024)).toFixed(2)} MB Cached
         </Badge>
       </div>
@@ -1408,7 +1408,7 @@ function SmartCleanerCard({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
         <div className="p-2.5 rounded-lg bg-surface-2/70 border border-border/50">
           <span className="text-[10px] text-slate-400 uppercase font-semibold block">Duplicate Media</span>
-          <span className="text-base font-bold text-amber-400 font-mono mt-0.5 block">{data.duplicateCount} Items</span>
+          <span className="text-base font-bold text-orange-400 font-mono mt-0.5 block">{data.duplicateCount} Items</span>
           <span className="text-[10px] text-slate-400">Identical prompts &amp; renders</span>
         </div>
 
@@ -1552,7 +1552,7 @@ function ModuleSeparatorCard({ data }: { data: { modules?: SeparableModule[] } }
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-xs font-bold text-white">{activeModule.name}</h4>
-            <p className="text-[11px] text-amber-300">{activeModule.tagline}</p>
+            <p className="text-[11px] text-orange-300">{activeModule.tagline}</p>
           </div>
           <Badge className="bg-indigo-500/20 text-indigo-300 text-[9px] font-mono">
             {activeModule.bundleSizeKb} KB · {activeModule.filesCount} Files
@@ -1710,13 +1710,13 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
   if (card.type === "model_updates") {
     const report = card.data;
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
+      <div className="rounded-xl border border-orange-500/40 bg-zinc-900/95 p-4 space-y-3.5 shadow-xl text-zinc-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-amber-400" />
+            <Sparkles className="size-4 text-orange-400" />
             <span className="text-sm font-bold text-white">Model Evolution Updates</span>
           </div>
-          <Badge className="bg-amber-500/20 text-amber-300 text-[10px] font-bold">
+          <Badge className="bg-orange-500/20 text-orange-300 text-[10px] font-bold">
             {report.availableUpgrades?.length || 3} Updates Available
           </Badge>
         </div>
@@ -1736,7 +1736,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
               </div>
               <Button
                 size="sm"
-                className="bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shrink-0 shadow-md"
+                className="bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs shrink-0 shadow-md"
                 onClick={() => {
                   toast.success(`Hot-Upgraded Umar OS to ${u.name}! Zero downtime.`);
                 }}
@@ -1773,7 +1773,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
             <span className="text-[11px] text-zinc-400 font-mono block">Zero surge · 15-min delivery</span>
           </div>
           <div className="p-3 rounded-lg bg-zinc-800/80 border border-zinc-700/60 space-y-1">
-            <span className="font-bold text-amber-400 block">Pan-India Outside Zone</span>
+            <span className="font-bold text-orange-400 block">Pan-India Outside Zone</span>
             <p className="text-zinc-300">Food delivery is 100% invisible. Users see ONLY King Pay UPI & soundbox.</p>
             <span className="text-[11px] text-zinc-400 font-mono block">Section 79 IT Act Compliant</span>
           </div>
@@ -1785,11 +1785,11 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
   if (card.type === "lead_pitch") {
     const { lead, invoice } = card.data as { lead: ClientLead; invoice: ClientInvoice };
     return (
-      <div className="rounded-xl border border-amber-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
+      <div className="rounded-xl border border-orange-500/40 bg-black/60 p-3.5 space-y-3 shadow-lg">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-amber-300">Prospect: {lead.businessName}</span>
-            <Badge className="bg-amber-500/20 text-amber-300 text-[10px]">{lead.category.toUpperCase()}</Badge>
+            <span className="text-xs font-bold text-orange-300">Prospect: {lead.businessName}</span>
+            <Badge className="bg-orange-500/20 text-orange-300 text-[10px]">{lead.category.toUpperCase()}</Badge>
           </div>
           <Badge className="bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">Ready to Close</Badge>
         </div>
@@ -1809,14 +1809,14 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
           </div>
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">50% Advance Lock:</span>
-            <span className="font-bold text-amber-400 font-mono">
+            <span className="font-bold text-orange-400 font-mono">
               ₹{invoice.advanceRequiredInr.toLocaleString("en-IN")}
             </span>
           </div>
         </div>
 
         <div className="rounded bg-surface-2/80 p-2.5 text-xs text-slate-300 border border-border/60">
-          <span className="font-bold text-amber-400 block mb-1">Pain Point &amp; High-Margin Pitch:</span>
+          <span className="font-bold text-orange-400 block mb-1">Pain Point &amp; High-Margin Pitch:</span>
           <p className="text-[11px] leading-relaxed">{lead.painPoint}</p>
           <p className="text-[11px] text-emerald-400 font-semibold mt-1">Solution: {lead.suggestedSolution}</p>
         </div>
@@ -1824,7 +1824,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         <div className="flex flex-wrap gap-2 pt-1">
           <Button
             size="sm"
-            className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md"
+            className="flex-1 text-xs font-bold bg-orange-500 hover:bg-orange-400 text-black shadow-md"
             onClick={() => {
               const pitch = `Respected Management at ${lead.businessName},\n\nTired of losing margins to aggregators? OrderKing provides you with a direct ordering app and instant direct UPI settlements.\n\nReview your custom solution and 50% advance invoice (₹${invoice.advanceRequiredInr.toLocaleString("en-IN")}) here:\n${invoice.upiPaymentLink}\n\nLet's schedule a 10-minute setup call today.`;
               void navigator.clipboard?.writeText(pitch);
@@ -2005,7 +2005,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-purple-300">
-              {data.type === "image" ? <ImageIcon className="size-4 inline mr-1 text-amber-400" /> : <Film className="size-4 inline mr-1 text-cyan-400" />}
+              {data.type === "image" ? <ImageIcon className="size-4 inline mr-1 text-orange-400" /> : <Film className="size-4 inline mr-1 text-cyan-400" />}
               Enterprise AI Studio {data.type === "image" ? "Image" : "Video"}
             </span>
           </div>
@@ -2030,7 +2030,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         <div className="flex flex-wrap gap-2 pt-1">
           <Button
             size="sm"
-            className="flex-1 text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow"
+            className="flex-1 text-xs font-bold bg-orange-500 hover:bg-orange-400 text-black shadow"
             onClick={() => {
               if (mediaUrl) window.open(mediaUrl, "_blank");
               playAudioTone("chime");
@@ -2073,7 +2073,7 @@ function ActionCardView({ card }: { card: NonNullable<PremiumAiMessage["actionCa
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Total Cache Footprint:</span>
-            <span className="font-bold text-amber-400 font-mono text-sm">{inspection.formattedTotalSize}</span>
+            <span className="font-bold text-orange-400 font-mono text-sm">{inspection.formattedTotalSize}</span>
           </div>
           <div className="rounded bg-surface-2 p-2">
             <span className="text-muted block text-[10px]">Optimization Score:</span>
@@ -2201,7 +2201,7 @@ function FounderWorkHub({
       id: "task-1",
       category: "revenue" as const,
       badge: "REVENUE TARGET: ₹1,85,000",
-      badgeColor: "border-amber-500/40 text-amber-300 bg-amber-500/10",
+      badgeColor: "border-orange-500/40 text-orange-300 bg-orange-500/10",
       title: "Task 1: High-Margin Restaurant Client Acquisition Machine",
       objective: "Direct pitch to 5 curated restaurants in Sribhumi/Silchar offering 0% aggregator commission.",
       deliverables: [
@@ -2373,7 +2373,7 @@ function FounderWorkHub({
           <div className="rounded-xl bg-[#212121] p-3 border border-white/5">
             <span className="text-[10px] text-slate-400 uppercase font-semibold block">Storage Footprint</span>
             <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-xl font-bold text-amber-400">{inspection.formattedTotalSize}</span>
+              <span className="text-xl font-bold text-orange-400">{inspection.formattedTotalSize}</span>
             </div>
             <span className="text-[10px] text-slate-400 block mt-1">{inspection.itemCount} items in memory</span>
           </div>
@@ -2626,7 +2626,7 @@ function FounderWorkHub({
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>4K Video &amp; Image Creation Studio</span>
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-bold">
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[9px] font-bold">
                     WEBCODECS TURBO
                   </Badge>
                 </h3>
@@ -2745,7 +2745,7 @@ function FounderWorkHub({
                       {mod.bundleSizeKb} KB
                     </Badge>
                   </div>
-                  <span className="text-[10px] text-amber-400 block mt-0.5">{mod.tagline}</span>
+                  <span className="text-[10px] text-orange-400 block mt-0.5">{mod.tagline}</span>
                   <p className="text-[10.5px] text-slate-300 mt-1 line-clamp-2 leading-relaxed">
                     {mod.description}
                   </p>
@@ -2799,16 +2799,16 @@ function FounderWorkHub({
 
       {/* DECK 4: HDmaster System Settings & Glitch Optimizer */}
       {(selectedCategory === "all" || selectedCategory === "settings") && (
-        <div className="rounded-2xl border border-amber-500/20 bg-[#171717] p-5 shadow-xl space-y-4">
+        <div className="rounded-2xl border border-orange-500/20 bg-[#171717] p-5 shadow-xl space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
             <div className="flex items-center gap-2.5">
-              <div className="size-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <div className="size-8 rounded-lg bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400">
                 <Settings className="size-4" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
                   <span>HDmaster System Settings &amp; Glitch-Free Optimizer</span>
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[9px] font-mono">
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[9px] font-mono">
                     ZERO DISCONNECTIONS
                   </Badge>
                 </h3>
@@ -2841,7 +2841,7 @@ function FounderWorkHub({
                   playAudioTone("chime");
                   toast.success(`System Restart complete: ${res.componentsRebooted.length} engines reloaded in ${res.bootDurationMs}ms.`);
                 }}
-                className="h-8 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-black flex items-center gap-1.5"
+                className="h-8 px-3 rounded-lg bg-orange-500 hover:bg-orange-400 text-black text-xs font-black flex items-center gap-1.5"
               >
                 <Zap className="size-3.5" />
                 <span>RESTART / RESTERT</span>
@@ -2854,7 +2854,7 @@ function FounderWorkHub({
               <span className="text-[10px] text-slate-400 uppercase font-semibold block">AI Model &amp; Reasoning</span>
               <div className="flex items-center justify-between text-slate-200">
                 <span>Model Engine:</span>
-                <span className="font-bold text-amber-400 font-mono">Core Ultra</span>
+                <span className="font-bold text-orange-400 font-mono">Core Ultra</span>
               </div>
               <div className="flex items-center justify-between text-slate-200">
                 <span>Reasoning Depth:</span>
@@ -2895,7 +2895,7 @@ function FounderWorkHub({
           <div>
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Non-Negotiable Strict Tasks Matrix</span>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px]">
+              <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[10px]">
                 100% STRICT ACCURACY · NO actual
               </Badge>
             </h3>
@@ -2910,7 +2910,7 @@ function FounderWorkHub({
           {filteredTasks.map((t) => (
             <div
               key={t.id}
-              className="rounded-2xl border border-white/10 bg-[#171717] hover:border-amber-500/30 p-4 transition-all shadow-md flex flex-col justify-between gap-3 group"
+              className="rounded-2xl border border-white/10 bg-[#171717] hover:border-orange-500/30 p-4 transition-all shadow-md flex flex-col justify-between gap-3 group"
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                 <div>
@@ -2922,7 +2922,7 @@ function FounderWorkHub({
                       {t.strictStatus}
                     </Badge>
                   </div>
-                  <h4 className="text-sm font-bold text-slate-100 mt-1.5 group-hover:text-amber-300 transition">
+                  <h4 className="text-sm font-bold text-slate-100 mt-1.5 group-hover:text-orange-300 transition">
                     {t.title}
                   </h4>
                   <p className="text-xs text-slate-300 mt-0.5">{t.objective}</p>
@@ -2931,7 +2931,7 @@ function FounderWorkHub({
                 <Button
                   size="sm"
                   onClick={() => onExecuteTask(t.query)}
-                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black text-xs font-black shrink-0 shadow-md flex items-center gap-1.5 transition active:scale-95"
+                  className="h-9 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-500 text-black text-xs font-black shrink-0 shadow-md flex items-center gap-1.5 transition active:scale-95"
                 >
                   <span>{t.actionLabel}</span>
                   <ArrowRight className="size-3.5" />
@@ -3516,11 +3516,11 @@ export function PremiumFounderAiChat({
           {/* Top Bar: Title, Search & Collapse */}
           <div className="p-3 pb-2 flex items-center justify-between border-b border-zinc-800/80">
             <div className="flex items-center gap-2">
-              <div className="size-6 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold text-xs shadow-sm">
+              <div className="size-6 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold text-xs shadow-sm">
                 <Crown className="size-3.5" />
               </div>
               <span className="font-extrabold text-sm text-white tracking-tight">Umar OS</span>
-              <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">CORE</span>
+              <span className="text-[9px] bg-orange-500/20 text-orange-300 font-bold px-1.5 py-0.5 rounded border border-orange-500/30">CORE</span>
             </div>
             <button
               type="button"
@@ -3540,7 +3540,7 @@ export function PremiumFounderAiChat({
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
                 placeholder="Search chats, models, tasks..."
-                className="w-full bg-zinc-900/90 rounded-lg pl-8 pr-6 py-1.5 text-xs text-zinc-200 border border-zinc-700/80 placeholder:text-zinc-500 focus:outline-none focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/30 transition"
+                className="w-full bg-zinc-900/90 rounded-lg pl-8 pr-6 py-1.5 text-xs text-zinc-200 border border-zinc-700/80 placeholder:text-zinc-500 focus:outline-none focus:border-orange-400/60 focus:ring-1 focus:ring-orange-400/30 transition"
               />
               {searchFilter && (
                 <button
@@ -3567,7 +3567,7 @@ export function PremiumFounderAiChat({
               className="w-full justify-between text-sm bg-[#202123]/70 hover:bg-[#2F2F2F] h-10 px-3 rounded-xl transition-colors text-slate-200 font-semibold group border border-white/5"
             >
               <div className="flex items-center gap-2">
-                <PenSquare className="size-4 text-slate-300 group-hover:text-amber-300 transition" />
+                <PenSquare className="size-4 text-slate-300 group-hover:text-orange-300 transition" />
                 <span>New chat</span>
               </div>
               <span className="text-[10px] text-slate-500 font-mono">⌘K</span>
@@ -3579,16 +3579,16 @@ export function PremiumFounderAiChat({
             <Button
               variant="ghost"
               onClick={() => setIsOrderKingSuiteOpen(true)}
-              className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
+              className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-orange-300 h-9 font-bold bg-orange-500/10 border border-orange-500/20 shadow-sm"
             >
-              <Crown className="size-4 mr-3 text-amber-400 fill-amber-400/20" /> Order King Suite
+              <Crown className="size-4 mr-3 text-orange-400 fill-orange-400/20" /> Order King Suite
             </Button>
             <Button
               variant="ghost"
               onClick={() => setIsBusinessOsOpen(true)}
-              className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-amber-300 h-9 font-bold bg-amber-500/10 border border-amber-500/20 shadow-sm"
+              className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-orange-300 h-9 font-bold bg-orange-500/10 border border-orange-500/20 shadow-sm"
             >
-              <Briefcase className="size-4 mr-3 text-amber-400" /> Business OS Cockpit
+              <Briefcase className="size-4 mr-3 text-orange-400" /> Business OS Cockpit
             </Button>
             <Button
               variant="ghost"
@@ -3621,7 +3621,7 @@ export function PremiumFounderAiChat({
               }}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-slate-300 h-9 font-medium"
             >
-              <Puzzle className="size-4 mr-3 text-amber-400" /> Plugins
+              <Puzzle className="size-4 mr-3 text-orange-400" /> Plugins
             </Button>
             <Button
               variant="ghost"
@@ -3659,7 +3659,7 @@ export function PremiumFounderAiChat({
               onClick={() => setIsSettingsModalOpen(true)}
               className="w-full justify-start text-[13px] hover:bg-[#2F2F2F] text-slate-300 h-9 font-medium"
             >
-              <Settings className="size-4 mr-3 text-amber-400" /> HDmaster Settings
+              <Settings className="size-4 mr-3 text-orange-400" /> HDmaster Settings
             </Button>
 
             {/* Pinned Section matching Screenshot */}
@@ -3677,7 +3677,7 @@ export function PremiumFounderAiChat({
                   className="w-full flex items-center text-left text-[13px] text-slate-300 hover:text-white hover:bg-[#2F2F2F] px-3 py-1.5 rounded-lg transition group truncate"
                   title={pin.title}
                 >
-                  <span className="size-2 rounded-full border border-slate-500 group-hover:border-amber-400 mr-2.5 shrink-0" />
+                  <span className="size-2 rounded-full border border-slate-500 group-hover:border-orange-400 mr-2.5 shrink-0" />
                   <span className="truncate">{pin.title}</span>
                 </button>
               ))}
@@ -3687,12 +3687,12 @@ export function PremiumFounderAiChat({
           {/* Profile Card with 100% Privacy Shield */}
           <div className="p-3 border-t border-zinc-800 bg-[#18181B]">
             <div className="flex items-center gap-2.5 p-2 hover:bg-zinc-800/80 rounded-xl cursor-pointer transition-colors">
-              <div className="size-8 rounded-full bg-amber-500 text-black flex items-center justify-center font-bold text-xs shadow-inner shrink-0">
+              <div className="size-8 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold text-xs shadow-inner shrink-0">
                 US
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-[13px] font-bold text-white truncate">Umar Master Operations</div>
-                <div className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
+                <div className="text-[10px] text-orange-400 font-semibold flex items-center gap-1">
                   <ShieldCheck className="size-3 text-emerald-400" />
                   <span>100% Privacy Shield Active</span>
                 </div>
@@ -3706,7 +3706,7 @@ export function PremiumFounderAiChat({
               disabled={isQuickCleaning}
               className="w-full mt-2 py-1.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-[11px] font-bold text-zinc-200 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm"
             >
-              <Gift className="size-3.5 text-amber-400" />
+              <Gift className="size-3.5 text-orange-400" />
               <span>{isQuickCleaning ? "Purging Bloat..." : "Auto-Clean & Optimize State"}</span>
             </button>
           </div>
@@ -3804,7 +3804,7 @@ export function PremiumFounderAiChat({
                     }}
                     className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border transition shrink-0 ${isConnected
                       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30 cursor-default"
-                      : "bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20 cursor-pointer"
+                      : "bg-orange-500/10 text-orange-300 border-orange-500/30 hover:bg-orange-500/20 cursor-pointer"
                       }`}
                     title={
                       isConnected
@@ -3813,7 +3813,7 @@ export function PremiumFounderAiChat({
                     }
                   >
                     <span
-                      className={`size-1.5 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
+                      className={`size-1.5 rounded-full ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-orange-400"
                         }`}
                     />
                     <span>{isConnected ? "CONNECTED" : "CONFIG REQUIRED"}</span>
@@ -3845,11 +3845,11 @@ export function PremiumFounderAiChat({
                 playAudioTone("ping");
               }}
               className={`px-5 py-1.5 rounded-full text-[13px] font-semibold transition flex items-center gap-1.5 ${activeTab === "work"
-                ? "bg-[#2F2F2F] text-amber-300 shadow-sm"
+                ? "bg-[#2F2F2F] text-orange-300 shadow-sm"
                 : "text-slate-400 hover:text-slate-200"
                 }`}
             >
-              <Plus className="size-3 text-amber-400" />
+              <Plus className="size-3 text-orange-400" />
               <span>Work</span>
               <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </button>
@@ -3860,7 +3860,7 @@ export function PremiumFounderAiChat({
             <Button
               size="sm"
               onClick={() => setIsOrderKingSuiteOpen(true)}
-              className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-black shadow-lg shadow-amber-500/25 border border-amber-400/50 flex items-center gap-1.5 transition active:scale-95 animate-pulse"
+              className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-orange-500 via-orange-500 to-orange-600 hover:from-orange-400 hover:to-orange-400 text-black shadow-lg shadow-orange-500/25 border border-orange-400/50 flex items-center gap-1.5 transition active:scale-95 animate-pulse"
               title="Order King Operations Command Suite (Reports, Riders, Payments, Dispatch, Restaurants, Growth)"
             >
               <Crown className="size-3.5 fill-black" />
@@ -3870,7 +3870,7 @@ export function PremiumFounderAiChat({
             <Button
               size="sm"
               onClick={() => setIsBusinessOsOpen(true)}
-              className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-lg shadow-amber-500/25 border border-amber-400/50 flex items-center gap-1.5 transition active:scale-95"
+              className="h-8 px-3 rounded-full text-[12px] font-black bg-gradient-to-r from-orange-500 to-orange-500 hover:from-orange-400 hover:to-orange-400 text-black shadow-lg shadow-orange-500/25 border border-orange-400/50 flex items-center gap-1.5 transition active:scale-95"
               title="Autonomous Business OS (One Founder Enterprise, Multi-Model Consensus, Approval Gates)"
             >
               <Briefcase className="size-3.5 fill-black" />
@@ -3940,7 +3940,7 @@ export function PremiumFounderAiChat({
                 playAudioTone("ping");
                 toast.info(voiceEnabled ? "Voice output muted" : "Voice output enabled");
               }}
-              className={`size-9 p-0 rounded-full transition-colors ${voiceEnabled ? "text-amber-400 bg-amber-400/10" : "text-slate-400 hover:text-slate-200 hover:bg-[#2F2F2F]"
+              className={`size-9 p-0 rounded-full transition-colors ${voiceEnabled ? "text-orange-400 bg-orange-400/10" : "text-slate-400 hover:text-slate-200 hover:bg-[#2F2F2F]"
                 }`}
               title={voiceEnabled ? "Mute realistic voice" : "Enable realistic voice"}
             >
@@ -4009,10 +4009,10 @@ export function PremiumFounderAiChat({
                     <button
                       type="button"
                       onClick={handleQuickRestart}
-                      className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
+                      className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-orange-500/20 text-orange-300 hover:text-orange-200 border border-orange-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
                       title="RESTERT: Clean runtime reboot with 100% state preserved"
                     >
-                      <Zap className="size-3 text-amber-400" />
+                      <Zap className="size-3 text-orange-400" />
                       <span>RESTERT</span>
                     </button>
                     <button
@@ -4072,10 +4072,10 @@ export function PremiumFounderAiChat({
                     <button
                       type="button"
                       onClick={() => handleSendQuery("Run Ensemble Consensus: Run all active frontier models (OpenAI GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, DeepSeek R1) simultaneously on our current mission and synthesize verified consensus.")}
-                      className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
+                      className="px-3 py-1 rounded-full bg-[#1e1e1e] hover:bg-orange-500/20 text-orange-300 hover:text-orange-200 border border-orange-500/30 text-[11px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm"
                       title="Ensemble Consensus: Run all 6 frontier AI models concurrently for 100% infallible execution"
                     >
-                      <Sparkles className="size-3 text-amber-400" />
+                      <Sparkles className="size-3 text-orange-400" />
                       <span>All Models Consensus</span>
                     </button>
                     <button
@@ -4223,7 +4223,7 @@ export function PremiumFounderAiChat({
                         }}
                         className="flex items-center gap-3 px-3.5 py-2 rounded-xl hover:bg-[#2F2F2F] text-left transition group text-slate-300 hover:text-white"
                       >
-                        <TrendingUp className="size-4 text-slate-500 group-hover:text-amber-400 shrink-0 transition-colors" />
+                        <TrendingUp className="size-4 text-slate-500 group-hover:text-orange-400 shrink-0 transition-colors" />
                         <span className="text-[14px] font-normal tracking-wide">{item.label}</span>
                       </button>
                     ))}
@@ -4240,7 +4240,7 @@ export function PremiumFounderAiChat({
                               {m.attachments.map((att) => (
                                 <div
                                   key={att.id}
-                                  className="group relative rounded-xl overflow-hidden border border-white/10 bg-[#1e1e1e] shadow-md hover:border-amber-500/40 transition"
+                                  className="group relative rounded-xl overflow-hidden border border-white/10 bg-[#1e1e1e] shadow-md hover:border-orange-500/40 transition"
                                 >
                                   {att.type === "image" ? (
                                     <div
@@ -4260,12 +4260,12 @@ export function PremiumFounderAiChat({
                                       onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "video" })}
                                       className="cursor-pointer w-32 h-24 bg-black/60 flex flex-col items-center justify-center text-slate-300 relative group-hover:scale-105 transition-transform"
                                     >
-                                      <Play className="size-6 text-amber-400" />
+                                      <Play className="size-6 text-orange-400" />
                                       <span className="text-[10px] text-slate-400 mt-1 max-w-[100px] truncate">{att.name}</span>
                                     </div>
                                   ) : (
                                     <div className="flex items-center gap-2 p-2.5 min-w-[140px] text-xs text-slate-200">
-                                      <FileIcon className="size-4 text-amber-400 shrink-0" />
+                                      <FileIcon className="size-4 text-orange-400 shrink-0" />
                                       <div className="flex flex-col min-w-0">
                                         <span className="truncate max-w-[100px] font-medium">{att.name}</span>
                                         <span className="text-[10px] text-slate-400">{(att.sizeBytes / 1024).toFixed(1)} KB</span>
@@ -4290,11 +4290,11 @@ export function PremiumFounderAiChat({
                         </div>
                       ) : (
                         <div className="w-full flex items-start gap-4">
-                          <div className="w-8 h-8 rounded-full bg-transparent flex-shrink-0 flex items-center justify-center border border-amber-500/30 text-amber-500 overflow-hidden">
+                          <div className="w-8 h-8 rounded-full bg-transparent flex-shrink-0 flex items-center justify-center border border-orange-500/30 text-orange-500 overflow-hidden">
                             <Crown className="size-4" />
                           </div>
                           <div className="flex-1 min-w-0 flex flex-col items-start pt-1">
-                            <div className="prose prose-invert prose-p:leading-7 prose-a:text-amber-400 max-w-none text-[15px] text-slate-200 w-full">
+                            <div className="prose prose-invert prose-p:leading-7 prose-a:text-orange-400 max-w-none text-[15px] text-slate-200 w-full">
                               {m.text}
                             </div>
 
@@ -4303,7 +4303,7 @@ export function PremiumFounderAiChat({
                                 {m.attachments.map((att) => (
                                   <div
                                     key={att.id}
-                                    className="group relative rounded-xl overflow-hidden border border-white/10 bg-[#171717] shadow-md hover:border-amber-500/40 transition"
+                                    className="group relative rounded-xl overflow-hidden border border-white/10 bg-[#171717] shadow-md hover:border-orange-500/40 transition"
                                   >
                                     {att.type === "image" ? (
                                       <div
@@ -4323,12 +4323,12 @@ export function PremiumFounderAiChat({
                                         onClick={() => setLightboxMedia({ url: att.url, title: att.name, type: "video" })}
                                         className="cursor-pointer w-36 h-28 bg-black/60 flex flex-col items-center justify-center text-slate-300 relative group-hover:scale-105 transition-transform"
                                       >
-                                        <Play className="size-6 text-amber-400" />
+                                        <Play className="size-6 text-orange-400" />
                                         <span className="text-[10px] text-slate-400 mt-1 max-w-[120px] truncate">{att.name}</span>
                                       </div>
                                     ) : (
                                       <div className="flex items-center gap-2 p-2.5 min-w-[150px] text-xs text-slate-200">
-                                        <FileIcon className="size-4 text-amber-400 shrink-0" />
+                                        <FileIcon className="size-4 text-orange-400 shrink-0" />
                                         <div className="flex flex-col min-w-0">
                                           <span className="truncate max-w-[110px] font-medium">{att.name}</span>
                                           <span className="text-[10px] text-slate-400">{(att.sizeBytes / 1024).toFixed(1)} KB</span>
@@ -4432,11 +4432,11 @@ export function PremiumFounderAiChat({
                   ))}
                   {isProcessing && (
                     <div className="flex gap-4">
-                      <div className="w-8 h-8 rounded-full bg-transparent border border-amber-500/30 flex-shrink-0 flex items-center justify-center">
-                        <Crown className="size-4 text-amber-500/50 animate-pulse" />
+                      <div className="w-8 h-8 rounded-full bg-transparent border border-orange-500/30 flex-shrink-0 flex items-center justify-center">
+                        <Crown className="size-4 text-orange-500/50 animate-pulse" />
                       </div>
                       <div className="flex items-center text-sm text-slate-400 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse mr-2" />
+                        <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse mr-2" />
                         Synthesizing optimized output...
                       </div>
                     </div>
@@ -4455,10 +4455,10 @@ export function PremiumFounderAiChat({
                     <button
                       type="button"
                       onClick={handleQuickRestart}
-                      className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
+                      className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-orange-500/20 text-orange-300 hover:text-orange-200 border border-orange-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
                       title="RESTERT: Clean runtime reboot with 100% state preserved"
                     >
-                      <Zap className="size-3 text-amber-400" />
+                      <Zap className="size-3 text-orange-400" />
                       <span>RESTERT</span>
                     </button>
                     <button
@@ -4518,10 +4518,10 @@ export function PremiumFounderAiChat({
                     <button
                       type="button"
                       onClick={() => handleSendQuery("Run Ensemble Consensus: Run all active frontier models (OpenAI GPT-4o, Claude 3.7 Sonnet, Grok 2, Gemini 2.0 Flash, Codex, DeepSeek R1) simultaneously on our current mission and synthesize verified consensus.")}
-                      className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-amber-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
+                      className="px-2.5 py-1 rounded-full bg-[#1e1e1e]/90 hover:bg-orange-500/20 text-orange-300 hover:text-orange-200 border border-orange-500/30 text-[10.5px] font-bold flex items-center gap-1 transition active:scale-95 shadow-sm backdrop-blur-sm"
                       title="Ensemble Consensus: Run all 6 frontier AI models concurrently for 100% infallible execution"
                     >
-                      <Sparkles className="size-3 text-amber-400" />
+                      <Sparkles className="size-3 text-orange-400" />
                       <span>All Models</span>
                     </button>
                     <button
@@ -4816,7 +4816,7 @@ export function PremiumFounderAiChat({
           >
             <div className="w-full flex items-center justify-between p-3.5 border-b border-white/10 bg-black/60">
               <div className="flex items-center gap-2 truncate pr-4">
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] uppercase">
+                <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-[10px] uppercase">
                   {lightboxMedia.type}
                 </Badge>
                 <span className="text-sm font-semibold text-white truncate max-w-md">

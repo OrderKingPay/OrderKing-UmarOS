@@ -112,18 +112,18 @@ export function BusinessOsCommandCenterModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 backdrop-blur-md animate-fadeIn font-sans">
-      <div className="relative w-full max-w-6xl rounded-2xl border-2 border-amber-500/40 bg-[#0c1015] shadow-[0_0_90px_rgba(245,158,11,0.2)] overflow-hidden flex flex-col max-h-[92vh] text-slate-200">
+      <div className="relative w-full max-w-6xl rounded-2xl border-2 border-orange-500/40 bg-[#0c1015] shadow-[0_0_90px_rgba(245,158,11,0.2)] overflow-hidden flex flex-col max-h-[92vh] text-slate-200">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-amber-500/30 bg-black/60 px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-orange-500/30 bg-black/60 px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-black font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-tr from-orange-500 to-orange-500 text-black font-black shadow-[0_0_15px_rgba(245,158,11,0.5)]">
               <Briefcase className="size-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-display font-black text-base text-white flex items-center gap-2">
                   <span>Autonomous Business Operating System</span>
-                  <Badge className="bg-amber-500/20 text-amber-300 border-amber-400/40 text-[9px] font-mono font-bold">
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-400/40 text-[9px] font-mono font-bold">
                     ONE-FOUNDER ENTERPRISE
                   </Badge>
                 </h3>
@@ -167,7 +167,7 @@ export function BusinessOsCommandCenterModal({
                 onClick={() => setActiveTab(t.id)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition whitespace-nowrap ${
                   activeTab === t.id
-                    ? "bg-amber-500 text-black shadow-md font-black"
+                    ? "bg-orange-500 text-black shadow-md font-black"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
@@ -189,10 +189,10 @@ export function BusinessOsCommandCenterModal({
           {activeTab === "overview" && (
             <div className="space-y-5 max-w-4xl mx-auto">
               {/* Radically Simple One-Command Input */}
-              <div className="p-5 rounded-2xl border-2 border-amber-500/30 bg-[#121720] shadow-xl space-y-3">
+              <div className="p-5 rounded-2xl border-2 border-orange-500/30 bg-[#121720] shadow-xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase text-amber-300 tracking-wider flex items-center gap-1.5">
-                    <Zap className="size-4 text-amber-400" />
+                  <span className="text-xs font-black uppercase text-orange-300 tracking-wider flex items-center gap-1.5">
+                    <Zap className="size-4 text-orange-400" />
                     <span>Radically Simple: Founder One-Command Execution</span>
                   </span>
                   <span className="text-[10px] text-slate-400">
@@ -208,12 +208,12 @@ export function BusinessOsCommandCenterModal({
                       if (e.key === "Enter") handleRunCommand(commandInput);
                     }}
                     placeholder="Enter any business command (e.g. 'Audit kitchen SLAs and disburse rider payouts' or 'Discover sales leads')..."
-                    className="h-11 bg-[#070a0e] border-amber-500/30 text-xs text-white rounded-xl focus:border-amber-400"
+                    className="h-11 bg-[#070a0e] border-orange-500/30 text-xs text-white rounded-xl focus:border-orange-400"
                   />
                   <Button
                     onClick={() => handleRunCommand(commandInput)}
                     disabled={isExecuting || !commandInput.trim()}
-                    className="h-11 px-5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black shadow-md flex items-center gap-1.5"
+                    className="h-11 px-5 rounded-xl bg-gradient-to-r from-orange-500 to-orange-500 hover:from-orange-400 hover:to-orange-400 text-black text-xs font-black shadow-md flex items-center gap-1.5"
                   >
                     {isExecuting ? <RefreshCw className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}
                     <span>Execute</span>
@@ -272,7 +272,7 @@ export function BusinessOsCommandCenterModal({
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-amber-400 font-bold">
+                          <span className="text-[10px] font-mono text-orange-400 font-bold">
                             Stage {step.stepIndex}
                           </span>
                           <span className="text-[9px] font-mono text-slate-500">{step.durationMs}ms</span>
@@ -338,7 +338,7 @@ export function BusinessOsCommandCenterModal({
 
                 <div className="p-4 rounded-2xl bg-[#121720] border border-white/5 space-y-2">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold flex items-center gap-1">
-                    <TrendingUp className="size-3.5 text-amber-400" />
+                    <TrendingUp className="size-3.5 text-orange-400" />
                     <span>Sales Pipeline</span>
                   </span>
                   <div className="text-lg font-black text-white font-mono">
@@ -398,7 +398,7 @@ export function BusinessOsCommandCenterModal({
                   </div>
                   <div className="p-2 rounded-lg bg-black/30">
                     <span className="text-[10px] text-slate-400 block">Retained Vault:</span>
-                    <span className="font-mono font-bold text-amber-400">₹{pnl.retainedCapitalVaultInr.toLocaleString("en-IN")}</span>
+                    <span className="font-mono font-bold text-orange-400">₹{pnl.retainedCapitalVaultInr.toLocaleString("en-IN")}</span>
                   </div>
                 </div>
               </div>
@@ -407,10 +407,10 @@ export function BusinessOsCommandCenterModal({
               <div className="p-4 rounded-2xl bg-[#121720] border border-white/5 space-y-3">
                 <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
                   <span className="text-xs font-bold text-white flex items-center gap-2">
-                    <TrendingUp className="size-4 text-amber-400" />
+                    <TrendingUp className="size-4 text-orange-400" />
                     <span>Lawful Opportunity Discovery ({leads.length})</span>
                   </span>
-                  <Badge className="bg-amber-500/20 text-amber-300 text-[9px] font-mono">0% actual</Badge>
+                  <Badge className="bg-orange-500/20 text-orange-300 text-[9px] font-mono">0% actual</Badge>
                 </div>
                 <div className="space-y-1.5 max-h-48 overflow-y-auto">
                   {leads.map((l: any) => (
@@ -487,7 +487,7 @@ export function BusinessOsCommandCenterModal({
                     Executes models concurrently to cross-validate logic, eliminate hallucinations, and enforce budget ceilings.
                   </p>
                 </div>
-                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-xs font-mono">
+                <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/40 text-xs font-mono">
                   Monthly Cap: ₹{budgetStatus.monthlyBudgetCapInr}
                 </Badge>
               </div>
@@ -501,7 +501,7 @@ export function BusinessOsCommandCenterModal({
                         {adapter.isConfigured ? "ACTIVE" : "STANDBY"}
                       </Badge>
                     </div>
-                    <span className="text-[10px] text-amber-400 block font-mono">
+                    <span className="text-[10px] text-orange-400 block font-mono">
                       Vendor: {adapter.vendor} · Context: {(adapter.maxContextTokens / 1000).toFixed(0)}k
                     </span>
                     <div className="flex flex-wrap gap-1 pt-1">
@@ -534,10 +534,10 @@ export function BusinessOsCommandCenterModal({
               ) : (
                 <div className="space-y-3">
                   {pendingApprovals.map((req: any) => (
-                    <div key={req.id} className="p-4 rounded-xl bg-[#141a22] border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div key={req.id} className="p-4 rounded-xl bg-[#141a22] border border-orange-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <Badge className="bg-amber-500/20 text-amber-300 text-[9px] uppercase font-bold">
+                          <Badge className="bg-orange-500/20 text-orange-300 text-[9px] uppercase font-bold">
                             {req.domain}
                           </Badge>
                           <span className="text-xs font-bold text-white">{req.title}</span>

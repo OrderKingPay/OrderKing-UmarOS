@@ -13,7 +13,7 @@ export function DigitalWorkforceTab() {
   if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <Loader2 className="size-6 animate-spin text-amber-500" />
+        <Loader2 className="size-6 animate-spin text-orange-500" />
       </div>
     );
   }
@@ -36,13 +36,13 @@ export function DigitalWorkforceTab() {
       {/* Header Stat Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col gap-1 relative overflow-hidden shadow-xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent pointer-events-none" />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5 z-10">
+            <span className="text-xs font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5 z-10">
               <Bot className="size-4" />
               Active Agents
             </span>
-            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 font-mono text-[9px] z-10">LIVE</Badge>
+            <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 font-mono text-[9px] z-10">LIVE</Badge>
           </div>
           <span className="text-3xl font-black text-white z-10 font-mono">
             {agents.length}
@@ -83,7 +83,7 @@ export function DigitalWorkforceTab() {
       <div className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 overflow-hidden shadow-2xl">
         <div className="px-5 py-4 border-b border-white/10 bg-black/40 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Cpu className="size-4 text-amber-500" />
+            <Cpu className="size-4 text-orange-500" />
             <h3 className="font-bold text-sm text-white">Agent Registry</h3>
           </div>
         </div>
@@ -192,7 +192,7 @@ export function DigitalWorkforceTab() {
                       </span>
                     </div>
                     {task.cost && Number(task.cost) > 0 ? (
-                      <span className="text-[9px] text-amber-400 font-mono font-bold">
+                      <span className="text-[9px] text-orange-400 font-mono font-bold">
                         Cost: ${Number(task.cost).toFixed(4)}
                       </span>
                     ) : null}

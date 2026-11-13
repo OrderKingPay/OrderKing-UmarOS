@@ -80,17 +80,17 @@ function CartPage() {
   if (!isDeliveryActive) {
     return (
       <CustomerShell>
-        <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12 text-center space-y-5 bg-gradient-to-b from-amber-500/10 via-surface to-surface-2/60">
-          <div className="flex size-20 items-center justify-center rounded-3xl bg-amber-500/10 text-amber-600 shadow-sm border border-amber-500/20">
+        <div className="min-h-[70vh] flex flex-col items-center justify-center px-4 py-12 text-center space-y-5 bg-gradient-to-b from-orange-500/10 via-surface to-surface-2/60">
+          <div className="flex size-20 items-center justify-center rounded-3xl bg-orange-500/10 text-[#E85D04] shadow-sm border border-orange-500/20">
             <ShoppingBag className="size-10" />
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-50">
-            OrderKing Foods is not yet active in {location.cityName || "your region"}
+            Food delivery is not yet active in {location.cityName || "your region"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
             Food delivery is currently limited to active operational zones. Use 0% fee UPI and bill payments on KingPay.
           </p>
-          <Button asChild className="bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
+          <Button asChild className="bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
             <Link to="/king-pay">Open KingPay</Link>
           </Button>
         </div>
@@ -105,7 +105,7 @@ function CartPage() {
 
   return (
     <CustomerShell>
-      <div className="min-h-[85vh] bg-gradient-to-b from-amber-500/10 via-white to-amber-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-28 px-3 sm:px-6 py-6">
+      <div className="min-h-[85vh] bg-gradient-to-b from-orange-500/10 via-white to-orange-50/20 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 pb-28 px-3 sm:px-6 py-6">
         <div className="max-w-3xl mx-auto space-y-6">
 
           {/* Top Header */}
@@ -139,22 +139,22 @@ function CartPage() {
           </div>
 
           {/* Dynamic Ecosystem Shift Delivery Availability Banner */}
-          <div className="rounded-2xl border border-amber-400/30 bg-amber-500/10 dark:bg-amber-950/20 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-amber-950 dark:text-amber-200">
+          <div className="rounded-2xl border border-orange-400/30 bg-orange-500/10 dark:bg-orange-950/20 px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-orange-950 dark:text-orange-200">
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <span>
                 {currentShift.type === "DAY" ? "Day Shift" : currentShift.type === "EVENING" ? "Evening Shift" : "Late-Night Shift"}: Dynamic Radius &le; {currentShift.maxRadiusKm} km
               </span>
             </div>
-            <span className="text-[11px] font-medium text-amber-800 dark:text-amber-300">
+            <span className="text-[11px] font-medium text-orange-900 dark:text-orange-300">
               {currentShift.name} ({currentShift.startHour}:00 - {currentShift.endHour}:00 IST)
             </span>
           </div>
 
           {!items.length ? (
             /* EMPTY CART STATE */
-            <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/60 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-850 p-8 sm:p-12 text-center shadow-md space-y-5">
-              <div className="size-20 rounded-3xl bg-gradient-to-br from-amber-400/20 via-yellow-400/15 to-amber-500/10 border border-amber-400/40 flex items-center justify-center text-amber-600 shadow-sm mx-auto">
+            <div className="rounded-3xl border border-orange-400/30 bg-gradient-to-b from-white via-zinc-50/60 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-850 p-8 sm:p-12 text-center shadow-md space-y-5">
+              <div className="size-20 rounded-3xl bg-gradient-to-br from-[#B85D19]/20 via-[#E85D04]/15 to-[#C2410C]/10 border border-orange-400/40 flex items-center justify-center text-[#E85D04] shadow-sm mx-auto">
                 <ShoppingBag className="size-9" />
               </div>
               <div className="space-y-1.5">
@@ -165,7 +165,7 @@ function CartPage() {
                   {t("cart.emptyHint") || "Explore restaurants and add items to your cart."}
                 </p>
               </div>
-              <Button asChild className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-zinc-950 font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition-transform">
+              <Button asChild className="bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition-transform">
                 <Link to="/">
                   <span>{t("cart.browse") || "Browse Restaurants"}</span>
                   <ArrowRight className="ml-2 size-4 stroke-[3]" />
@@ -178,7 +178,7 @@ function CartPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
                   <h2 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <ShoppingBag className="size-4 text-amber-500" />
+                    <ShoppingBag className="size-4 text-[#E85D04]" />
                     <span>Selected Dishes ({items.reduce((acc, it) => acc + it.quantity, 0)})</span>
                   </h2>
                   <button
@@ -202,7 +202,7 @@ function CartPage() {
                     return (
                       <li
                         key={item.key}
-                        className="rounded-3xl border border-amber-400/25 bg-gradient-to-b from-white via-zinc-50/70 to-amber-50/10 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        className="rounded-3xl border border-orange-400/25 bg-gradient-to-b from-white via-zinc-50/70 to-orange-50/10 dark:from-zinc-900 dark:to-zinc-850 p-4 sm:p-5 shadow-[0_4px_16px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                       >
                         <div className="min-w-0 flex-1">
                           <p className="font-display font-extrabold text-base text-zinc-900 dark:text-zinc-50">
@@ -210,7 +210,7 @@ function CartPage() {
                           </p>
 
                           {item.instructions && (
-                            <p className="mt-1 text-xs text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-400/20 px-2 py-0.5 rounded-lg inline-block">
+                            <p className="mt-1 text-xs text-orange-900 dark:text-orange-400 bg-orange-500/10 border border-orange-400/20 px-2 py-0.5 rounded-lg inline-block">
                               {item.instructions}
                             </p>
                           )}
@@ -229,7 +229,7 @@ function CartPage() {
 
                         {/* Quantity Stepper & Remove Action */}
                         <div className="flex items-center justify-between sm:justify-end gap-3 self-end sm:self-auto w-full sm:w-auto pt-2 sm:pt-0 border-t border-zinc-100 dark:border-zinc-800 sm:border-t-0">
-                          <div className="flex items-center gap-1 rounded-2xl bg-amber-500/15 border border-amber-400/40 p-1">
+                          <div className="flex items-center gap-1 rounded-2xl bg-orange-500/15 border border-orange-400/40 p-1">
                             <button
                               type="button"
                               className="size-8 rounded-xl bg-white dark:bg-zinc-800 text-zinc-950 dark:text-zinc-50 font-black shadow-2xs hover:bg-zinc-100 active:scale-90 transition flex items-center justify-center cursor-pointer"
@@ -243,7 +243,7 @@ function CartPage() {
                             </span>
                             <button
                               type="button"
-                              className="size-8 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-zinc-950 font-black shadow-xs hover:from-amber-600 hover:to-yellow-500 active:scale-90 transition flex items-center justify-center cursor-pointer"
+                              className="size-8 rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black shadow-xs hover:brightness-110 active:scale-90 transition flex items-center justify-center cursor-pointer"
                               onClick={() => updateQty(item.key, item.quantity + 1)}
                               aria-label="Increase quantity"
                             >
@@ -336,7 +336,7 @@ function CartPage() {
               )}
 
               {/* BILL SUMMARY WITH CLEAR BREAKDOWN */}
-              <div className="rounded-3xl border border-amber-400/30 bg-gradient-to-b from-white via-zinc-50/50 to-amber-50/15 dark:from-zinc-900 dark:to-zinc-900 p-5 sm:p-6 shadow-md space-y-4">
+              <div className="rounded-3xl border border-orange-400/30 bg-gradient-to-b from-white via-zinc-50/50 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-900 p-5 sm:p-6 shadow-md space-y-4">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                   <h3 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
                     <span>Detailed Bill Summary</span>
@@ -352,7 +352,7 @@ function CartPage() {
                 ) : quote.isError ? (
                   <button
                     type="button"
-                    className="text-sm font-bold text-amber-600 hover:underline"
+                    className="text-sm font-bold text-[#E85D04] hover:underline"
                     onClick={() => void quote.refetch()}
                   >
                     {t("common.retry") || "Failed to calculate bill. Tap to retry."}
@@ -383,24 +383,24 @@ function CartPage() {
               )}
 
               {isMinOrderBlocked && (
-                <div className="rounded-2xl bg-amber-500/15 border border-amber-400/50 p-4 text-xs font-bold text-amber-900 dark:text-amber-200">
+                <div className="rounded-2xl bg-orange-500/15 border border-orange-400/50 p-4 text-xs font-bold text-orange-900 dark:text-orange-200">
                   {t("cart.minOrder", { amount: formatPaise(quote.data?.quote.minOrderPaise ?? 0, { locale }) })}
                 </div>
               )}
 
-              {/* PROCEED TO CHECKOUT BUTTON WITH GOLDEN GRADIENT */}
+              {/* PROCEED TO CHECKOUT BUTTON WITH COPPER & SUNSET ORANGE GRADIENT */}
               <div className="sticky bottom-4 z-40">
                 <button
                   type="button"
                   disabled={!quote.data || isMinOrderBlocked || isRadiusBlocked}
                   onClick={() => void navigate({ to: "/checkout" })}
-                  className="w-full h-16 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 hover:from-amber-300 hover:to-yellow-300 text-zinc-950 font-black shadow-[0_10px_35px_rgba(245,158,11,0.5)] flex items-center justify-between px-6 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+                  className="w-full h-16 rounded-2xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black shadow-[0_10px_35px_rgba(232,93,4,0.45)] flex items-center justify-between px-6 transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
                 >
                   <div className="text-left">
-                    <span className="block text-[10px] uppercase font-black tracking-wider text-zinc-900/70">
+                    <span className="block text-[10px] uppercase font-black tracking-wider text-white/80">
                       Total Payable
                     </span>
-                    <span className="font-display text-xl sm:text-2xl font-black tabular-nums text-zinc-950">
+                    <span className="font-display text-xl sm:text-2xl font-black tabular-nums text-white">
                       {formatPaise(totalPayablePaise, { locale })}
                     </span>
                   </div>
@@ -417,7 +417,7 @@ function CartPage() {
               <div className="pt-2 text-center">
                 <Link
                   to="/"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-amber-600 transition"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-orange-600 transition"
                 >
                   <ArrowLeft className="size-3.5" />
                   <span>Add more dishes from menu</span>

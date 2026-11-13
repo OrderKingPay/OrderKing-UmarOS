@@ -128,7 +128,7 @@ export function TimedStockoutPickerModal({
                         {preset.label}
                       </div>
                       <div className="text-[11px] text-gray-500 mt-0.5">
-                        {preset.sublabel} · <span className="text-amber-400/90 font-medium">{previewText}</span>
+                        {preset.sublabel} · <span className="text-orange-400/90 font-medium">{previewText}</span>
                       </div>
                     </div>
                   </div>
@@ -172,8 +172,8 @@ export function TimedStockoutPickerModal({
         </div>
 
         {/* Auto-Reset Assurance Note */}
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3 flex items-center gap-2.5 text-xs text-amber-300/90">
-          <AlertCircle className="size-4 shrink-0 text-amber-400" />
+        <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3 flex items-center gap-2.5 text-xs text-orange-300/90">
+          <AlertCircle className="size-4 shrink-0 text-orange-400" />
           <span>
             Automated inventory scheduler will restore this dish back to IN STOCK without requiring manual reminder.
           </span>

@@ -150,7 +150,7 @@ export function VoiceSearchDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-amber-200/80 text-center space-y-6">
+      <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-orange-200/80 text-center space-y-6">
         {/* Close Button */}
         <button
           type="button"
@@ -163,16 +163,16 @@ export function VoiceSearchDialog({
 
         {/* Header */}
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-black">
-            <Sparkles className="size-3 text-amber-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-950 text-xs font-black">
+            <Sparkles className="size-3 text-orange-600" />
             <span>OrderKing Voice AI</span>
           </div>
           <h3 className="text-xl font-black text-gray-900 tracking-tight">
             {isListening ? "Listening to your craving..." : "Tap to Speak"}
           </h3>
           <p className="text-xs text-gray-500 font-medium">
-            Try saying <span className="font-bold text-amber-700">&quot;Chicken Biryani&quot;</span> or{" "}
-            <span className="font-bold text-amber-700">&quot;Cold Coffee&quot;</span>
+            Try saying <span className="font-bold text-orange-700">&quot;Chicken Biryani&quot;</span> or{" "}
+            <span className="font-bold text-orange-700">&quot;Cold Coffee&quot;</span>
           </p>
         </div>
 
@@ -188,7 +188,7 @@ export function VoiceSearchDialog({
               className={cn(
                 "flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black transition-all border",
                 selectedLang === lang.code
-                  ? "bg-amber-500 text-white border-amber-600 shadow-sm scale-105"
+                  ? "bg-orange-500 text-white border-orange-600 shadow-sm scale-105"
                   : "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100",
               )}
             >
@@ -205,7 +205,7 @@ export function VoiceSearchDialog({
               {/* Ripple 1 */}
               <span className="absolute inline-flex size-28 rounded-full bg-red-400 opacity-25 animate-ping" />
               {/* Ripple 2 */}
-              <span className="absolute inline-flex size-24 rounded-full bg-amber-400 opacity-40 animate-pulse" />
+              <span className="absolute inline-flex size-24 rounded-full bg-orange-400 opacity-40 animate-pulse" />
             </>
           )}
 
@@ -216,8 +216,8 @@ export function VoiceSearchDialog({
             className={cn(
               "relative z-10 flex size-20 items-center justify-center rounded-full text-white shadow-xl transition-all duration-300 transform active:scale-95",
               isListening
-                ? "bg-gradient-to-tr from-red-600 via-rose-500 to-amber-500 shadow-red-500/40 ring-4 ring-red-300 animate-pulse"
-                : "bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 shadow-orange-500/30 hover:scale-105",
+                ? "bg-gradient-to-tr from-red-600 via-rose-500 to-orange-500 shadow-red-500/40 ring-4 ring-red-300 animate-pulse"
+                : "bg-gradient-to-tr from-orange-500 via-orange-500 to-orange-600 shadow-orange-500/30 hover:scale-105",
             )}
           >
             {isListening ? (
@@ -229,7 +229,7 @@ export function VoiceSearchDialog({
         </div>
 
         {/* Live Transcript Display */}
-        <div className="min-h-14 flex items-center justify-center rounded-2xl bg-amber-50/70 border border-amber-100 px-4 py-2">
+        <div className="min-h-14 flex items-center justify-center rounded-2xl bg-orange-50/70 border border-orange-100 px-4 py-2">
           {transcript ? (
             <p className="text-base font-extrabold text-gray-900 leading-snug">
               &ldquo;{transcript}&rdquo;
@@ -239,7 +239,7 @@ export function VoiceSearchDialog({
               {errorMessage}
             </p>
           ) : isListening ? (
-            <div className="flex items-center gap-2 text-xs font-bold text-amber-800">
+            <div className="flex items-center gap-2 text-xs font-bold text-orange-900">
               <span className="size-2 rounded-full bg-red-500 animate-ping" />
               <span>Listening in {SUPPORTED_LANGUAGES.find((l) => l.code === selectedLang)?.label}...</span>
             </div>

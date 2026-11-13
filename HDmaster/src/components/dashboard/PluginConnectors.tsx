@@ -538,7 +538,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
       return {
         status: "UNSAVED" as const,
         label: "Key Entered — Enable & Click Save",
-        badgeClass: "bg-amber-50 text-amber-800 border-amber-300",
+        badgeClass: "bg-orange-50 text-orange-900 border-orange-300",
       };
     }
 
@@ -1280,7 +1280,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600">
                     <Navigation className="h-5 w-5" />
                   </div>
                   <div>
@@ -1317,7 +1317,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                     disabled={testingService === "mapbox"}
                     className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
                   >
-                    <Zap className="h-3.5 w-3.5 text-amber-600" />
+                    <Zap className="h-3.5 w-3.5 text-orange-600" />
                     {testingService === "mapbox" ? "Testing..." : "Test Key"}
                   </button>
                 </div>
@@ -1701,7 +1701,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600">
                     <Zap className="h-5 w-5" />
                   </div>
                   <div>
@@ -1738,7 +1738,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                     onClick={() => handleTestConnection("xai")}
                     className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/50 px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary disabled:opacity-50"
                   >
-                    <Zap className="h-3.5 w-3.5 text-amber-600" />
+                    <Zap className="h-3.5 w-3.5 text-orange-600" />
                     {testingService === "xai" ? "Validating Grok..." : "Test Connection"}
                   </button>
                 </div>

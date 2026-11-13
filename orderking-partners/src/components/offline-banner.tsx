@@ -52,15 +52,15 @@ export function OfflineBanner({ stale: _stale }: { stale?: boolean }) {
   return (
     <div
       role="status"
-      className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-semibold text-amber-900 shadow-xs"
+      className="sticky top-0 z-50 flex items-center justify-between gap-2 border-b border-orange-200 bg-orange-50 px-4 py-1.5 text-xs font-semibold text-orange-950 shadow-xs"
     >
       <div className="flex items-center gap-2">
-        <AlertTriangle className="size-3.5 text-amber-600 shrink-0" />
+        <AlertTriangle className="size-3.5 text-orange-600 shrink-0" />
         <span>
           Slow Network (2G / EDGE) Detected. Kitchen portal is operating in low-latency cached mode.
         </span>
       </div>
-      <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+      <span className="text-[10px] font-bold text-orange-700 bg-orange-100 px-2 py-0.5 rounded">
         Low-Bandwidth Mode
       </span>
     </div>

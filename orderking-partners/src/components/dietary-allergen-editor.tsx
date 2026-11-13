@@ -146,7 +146,7 @@ export function DietaryAllergenEditor({
               type="button"
               onClick={() => setSpiceLevel(lvl)}
               className={`flex-1 rounded-lg py-1.5 text-xs font-bold border transition ${spiceLevel >= lvl
-                  ? "border-amber-500 bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                  ? "border-orange-500 bg-orange-500/15 text-orange-700 dark:text-orange-400"
                   : "border-border bg-surface-2 text-muted"
                 }`}
             >
@@ -159,7 +159,7 @@ export function DietaryAllergenEditor({
       {/* Allergen Checkbox Matrix */}
       <div>
         <label className="text-xs font-bold text-fg mb-1.5 block flex items-center gap-1.5">
-          <ShieldAlert className="size-3.5 text-amber-500" /> Declared Allergens (FSSAI Compliance)
+          <ShieldAlert className="size-3.5 text-orange-500" /> Declared Allergens (FSSAI Compliance)
         </label>
         <div className="grid grid-cols-2 gap-1.5">
           {ALLERGEN_OPTIONS.map((alg) => {
@@ -170,12 +170,12 @@ export function DietaryAllergenEditor({
                 type="button"
                 onClick={() => toggleAllergen(alg)}
                 className={`flex items-center justify-between rounded-lg border p-2 text-left text-xs transition ${has
-                    ? "border-amber-500/50 bg-amber-500/10 text-amber-900 dark:text-amber-300 font-semibold"
+                    ? "border-orange-500/50 bg-orange-500/10 text-orange-950 dark:text-orange-300 font-semibold"
                     : "border-border bg-surface-2 text-muted hover:text-fg"
                   }`}
               >
                 <span>{alg}</span>
-                {has && <Check className="size-3 text-amber-600 dark:text-amber-400 stroke-[3]" />}
+                {has && <Check className="size-3 text-orange-600 dark:text-orange-400 stroke-[3]" />}
               </button>
             );
           })}

@@ -149,7 +149,7 @@ function RiderAcademyPage() {
           </div>
           <div className="h-2 w-full rounded-full bg-card overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-orange-500 to-emerald-400 transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -168,7 +168,7 @@ function RiderAcademyPage() {
                 onClick={() => setActiveModule(mod.id)}
                 className={`rounded-xl border p-3.5 text-left transition-all ${
                   isSelected
-                    ? "border-primary bg-muted text-white shadow-lg shadow-amber-500/10"
+                    ? "border-primary bg-muted text-white shadow-lg shadow-orange-500/10"
                     : "border-border bg-card text-slate-300 hover:border-slate-700"
                 }`}
               >
@@ -208,7 +208,7 @@ function RiderAcademyPage() {
               className={`rounded-xl text-xs font-bold ${
                 completed[selected.id]
                   ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
-                  : "bg-[#E23744] hover:bg-amber-400 text-black"
+                  : "bg-[#E23744] hover:bg-orange-400 text-black"
               }`}
             >
               {completed[selected.id] ? "Completed" : "Mark as Read"}
@@ -231,14 +231,14 @@ function RiderAcademyPage() {
             </ul>
           </div>
 
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 space-y-2">
-            <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+          <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3.5 space-y-2">
+            <h4 className="text-xs font-bold text-orange-300 flex items-center gap-1.5">
               <ShieldCheck className="size-4 text-primary" />
               <span>Safety &amp; Compliance Rule</span>
             </h4>
             <ul className="space-y-1.5">
               {selected.keyRules.map((rule, idx) => (
-                <li key={idx} className="text-xs text-slate-300 pl-5 relative before:absolute before:left-1.5 before:top-2 before:size-1.5 before:rounded-full before:bg-amber-400">
+                <li key={idx} className="text-xs text-slate-300 pl-5 relative before:absolute before:left-1.5 before:top-2 before:size-1.5 before:rounded-full before:bg-orange-400">
                   {rule}
                 </li>
               ))}

@@ -309,7 +309,7 @@ export function AppFactoryWorkspace() {
                     </div>
                     <div className="bg-black/40 p-2 rounded">
                       <span className="text-muted block text-[10px]">Turnkey Delivery</span>
-                      <span className="font-bold text-amber-400 font-mono">
+                      <span className="font-bold text-orange-400 font-mono">
                         {currentBlueprint.estimatedBuildTime}
                       </span>
                     </div>

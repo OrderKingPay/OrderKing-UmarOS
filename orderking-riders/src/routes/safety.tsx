@@ -164,7 +164,7 @@ function Page() {
         </div>
 
         {/* Dynamic Shift Boundaries & Real-Time Safety Exclusion Zones */}
-        <Card className="space-y-3 border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent">
+        <Card className="space-y-3 border-orange-500/30 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="flex size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -181,7 +181,7 @@ function Page() {
             <span>
               Shift Window: {getCurrentEcosystemShift().startHour}:00 &ndash; {getCurrentEcosystemShift().endHour}:00 IST ({getShiftRemainingMinutes()} mins remaining)
             </span>
-            <span className="font-mono text-[10px] uppercase font-bold text-amber-500">
+            <span className="font-mono text-[10px] uppercase font-bold text-orange-500">
               Safety Status: {getCurrentEcosystemShift().threatLevel === "NORMAL" ? "Normal Operations" : "Caution Advisory"}
             </span>
           </div>
@@ -189,7 +189,7 @@ function Page() {
           {/* Active Canonical Safety Threat & Exclusion Zones */}
           <div className="space-y-2 pt-1 border-t border-border/50">
             <p className="text-xs font-bold text-foreground flex items-center gap-1.5">
-              <AlertTriangle className="size-3.5 text-amber-500" />
+              <AlertTriangle className="size-3.5 text-orange-500" />
               <span>Active Restricted &amp; Safety Advisory Zones (Current Shift)</span>
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -197,7 +197,7 @@ function Page() {
                 <div key={tz.id} className="rounded-xl border border-border/80 bg-muted/40 p-2.5 text-xs space-y-1">
                   <div className="flex items-center justify-between gap-1">
                     <span className="font-bold text-foreground">{tz.name}</span>
-                    <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-extrabold shrink-0 ${tz.threatLevel === "EXCLUSION_CURFEW" ? "bg-destructive/20 text-destructive" : "bg-amber-500/20 text-amber-500"}`}>
+                    <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-extrabold shrink-0 ${tz.threatLevel === "EXCLUSION_CURFEW" ? "bg-destructive/20 text-destructive" : "bg-orange-500/20 text-orange-500"}`}>
                       {tz.threatLevel === "EXCLUSION_CURFEW" ? "Curfew Zone" : "Restricted Area"}
                     </span>
                   </div>
@@ -443,7 +443,7 @@ function Page() {
         <Card className="space-y-3">
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-orange-500/15 text-orange-600 dark:text-orange-400">
                 <AlertTriangle className="size-4" />
               </span>
               <div>

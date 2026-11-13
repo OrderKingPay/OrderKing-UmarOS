@@ -72,7 +72,7 @@ export function CancellationGraceWindow({
   if (isCancelled) {
     return (
       <div
-        className={`rounded-3xl border-2 border-rose-300 bg-gradient-to-br from-rose-50 via-white to-amber-50/30 p-5 shadow-lg ${className}`}
+        className={`rounded-3xl border-2 border-rose-300 bg-gradient-to-br from-rose-50 via-white to-orange-50/30 p-5 shadow-lg ${className}`}
         data-testid="cancelled-refund-banner"
       >
         <div className="flex items-center gap-3">
@@ -136,7 +136,7 @@ export function CancellationGraceWindow({
   // Active 60-Second Grace Window
   return (
     <div
-      className={`relative overflow-hidden rounded-3xl border-2 border-amber-400/80 bg-gradient-to-br from-amber-500/15 via-white to-orange-500/10 p-5 shadow-[0_10px_35px_rgba(245,158,11,0.15)] ${className}`}
+      className={`relative overflow-hidden rounded-3xl border-2 border-orange-400/80 bg-gradient-to-br from-orange-500/15 via-white to-orange-500/10 p-5 shadow-[0_10px_35px_rgba(245,158,11,0.15)] ${className}`}
       data-testid="cancellation-grace-window"
     >
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -148,14 +148,14 @@ export function CancellationGraceWindow({
                 cx="40"
                 cy="40"
                 r={radius}
-                className="stroke-amber-200/80 fill-none"
+                className="stroke-orange-200/80 fill-none"
                 strokeWidth="5"
               />
               <circle
                 cx="40"
                 cy="40"
                 r={radius}
-                className="fill-none stroke-amber-500 transition-all duration-500 ease-linear"
+                className="fill-none stroke-orange-500 transition-all duration-500 ease-linear"
                 strokeWidth="5"
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
@@ -169,7 +169,7 @@ export function CancellationGraceWindow({
               >
                 {countdown.secondsRemaining}s
               </span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-amber-800 mt-0.5">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-orange-900 mt-0.5">
                 Grace
               </span>
             </div>
@@ -177,8 +177,8 @@ export function CancellationGraceWindow({
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-xs font-extrabold text-amber-950 uppercase tracking-wide">
-                <Clock className="size-3.5 text-amber-700" />
+              <span className="inline-flex items-center gap-1 text-xs font-extrabold text-orange-950 uppercase tracking-wide">
+                <Clock className="size-3.5 text-orange-700" />
                 <span>60-Second Order Cancellation Grace Window</span>
               </span>
             </div>
@@ -233,9 +233,9 @@ export function CancellationGraceWindow({
               </div>
             </div>
 
-            <div className="rounded-2xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-950 space-y-1.5">
+            <div className="rounded-2xl bg-orange-50 border border-orange-200 p-3.5 text-xs text-orange-950 space-y-1.5">
               <p className="font-bold flex items-center gap-1.5">
-                <ShieldCheck className="size-4 text-amber-700" />
+                <ShieldCheck className="size-4 text-orange-700" />
                 <span>OrderKing Cancellation Protection</span>
               </p>
               <p className="text-stone-700">

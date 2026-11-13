@@ -167,7 +167,7 @@ export function OneTapStockToggle({
             {loading ? (
               <Loader2 className="size-3.5 animate-spin text-current" />
             ) : isExpired ? (
-              <span className="flex items-center gap-1.5 text-amber-300">
+              <span className="flex items-center gap-1.5 text-orange-300">
                 <RotateCcw className="size-3.5 animate-spin" />
                 <span>RESTORE</span>
               </span>
@@ -200,7 +200,7 @@ export function OneTapStockToggle({
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
                 isExpired
-                  ? "bg-amber-950/80 border-amber-500/80 text-amber-300 animate-pulse"
+                  ? "bg-orange-950/80 border-orange-500/80 text-orange-300 animate-pulse"
                   : "bg-rose-950/60 border-rose-800/60 text-rose-300"
               }`}
               title={formattedRemaining ?? "Turned off indefinitely"}

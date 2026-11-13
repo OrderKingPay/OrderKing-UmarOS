@@ -198,7 +198,7 @@ function ReviewsPage() {
             <Star className="size-4" />
             <span>Ratings &amp; Reviews</span>
             {unansweredReviewsCount > 0 && (
-              <span className="ml-1 rounded-full bg-amber-100 text-amber-800 px-1.5 py-0.2 text-[10px] font-bold">
+              <span className="ml-1 rounded-full bg-orange-100 text-orange-900 px-1.5 py-0.2 text-[10px] font-bold">
                 {unansweredReviewsCount}
               </span>
             )}
@@ -235,10 +235,10 @@ function ReviewsPage() {
                 <div className="text-xl font-black text-emerald-700 mt-1">{zeroDedCount}</div>
                 <div className="text-[10px] text-emerald-600 mt-0.5 font-medium">100% Platform Covered</div>
               </div>
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-3.5 shadow-xs">
-                <div className="text-[10px] uppercase font-bold text-amber-800">Needs Action</div>
-                <div className="text-xl font-black text-amber-700 mt-1">{actionRequiredCount}</div>
-                <div className="text-[10px] text-amber-600 mt-0.5 font-medium">48h Dispute Window</div>
+              <div className="rounded-2xl border border-orange-200 bg-orange-50/50 p-3.5 shadow-xs">
+                <div className="text-[10px] uppercase font-bold text-orange-900">Needs Action</div>
+                <div className="text-xl font-black text-orange-700 mt-1">{actionRequiredCount}</div>
+                <div className="text-[10px] text-orange-600 mt-0.5 font-medium">48h Dispute Window</div>
               </div>
               <div className="rounded-2xl border border-blue-200 bg-blue-50/50 p-3.5 shadow-xs">
                 <div className="text-[10px] uppercase font-bold text-blue-800">Under Review</div>
@@ -294,7 +294,7 @@ function ReviewsPage() {
                   </div>
                   <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="font-bold text-gray-900 flex items-center gap-1.5">
-                      <Scale className="size-3.5 text-amber-600" /> Missing Items
+                      <Scale className="size-3.5 text-orange-600" /> Missing Items
                     </div>
                     <div className="text-[11px] text-gray-500 mt-1">
                       48-hour dispute window to upload packaging CCTV timestamp or KDS packing checklist.
@@ -332,7 +332,7 @@ function ReviewsPage() {
                             <Clock className="size-3" /> Disputed · Under Review
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
                             <AlertTriangle className="size-3" /> Action Required (48h Window)
                           </span>
                         )}
@@ -381,9 +381,9 @@ function ReviewsPage() {
             <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-4">
                 <div className="flex items-center gap-4">
-                  <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-3 text-center">
-                    <div className="font-display text-3xl font-black text-amber-600 tabular flex items-center justify-center gap-1">
-                      {avgRating} <Star className="size-5 fill-amber-500 text-amber-500" />
+                  <div className="rounded-2xl border border-orange-200 bg-orange-50 px-5 py-3 text-center">
+                    <div className="font-display text-3xl font-black text-orange-600 tabular flex items-center justify-center gap-1">
+                      {avgRating} <Star className="size-5 fill-orange-500 text-orange-500" />
                     </div>
                     <div className="text-[11px] font-semibold text-gray-600 mt-0.5">
                       {totalReviewsCount} {totalReviewsCount === 1 ? "Review" : "Reviews"}
@@ -416,11 +416,11 @@ function ReviewsPage() {
                     return (
                       <div key={star} className="flex items-center gap-2">
                         <span className="w-10 text-gray-600 font-semibold inline-flex items-center gap-1">
-                          {star} <Star className="size-3 fill-amber-500 text-amber-500" />
+                          {star} <Star className="size-3 fill-orange-500 text-orange-500" />
                         </span>
                         <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
                           <div
-                            className={`h-full rounded-full ${star >= 4 ? "bg-emerald-500" : star === 3 ? "bg-amber-400" : "bg-rose-500"
+                            className={`h-full rounded-full ${star >= 4 ? "bg-emerald-500" : star === 3 ? "bg-orange-400" : "bg-rose-500"
                               }`}
                             style={{ width: `${pct}%` }}
                           />
@@ -523,7 +523,7 @@ function ReviewsPage() {
                   />
                 </div>
 
-                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
+                <div className="p-3 rounded-xl bg-orange-50 border border-orange-200 text-orange-950 text-[11px] leading-relaxed">
                   <strong>Notice:</strong> Submitting a dispute raises an urgent ticket to Platform Partner Care. If approved, the deduction will be credited back to your next T+1 daily settlement ledger.
                 </div>
 
@@ -609,7 +609,7 @@ function ReviewCard({
             className={`rounded-md px-2 py-0.5 font-bold ${review.rating >= 4
               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
               : review.rating === 3
-                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                ? "bg-orange-50 text-orange-700 border border-orange-200"
                 : "bg-rose-50 text-rose-700 border border-rose-200"
               }`}
           >
