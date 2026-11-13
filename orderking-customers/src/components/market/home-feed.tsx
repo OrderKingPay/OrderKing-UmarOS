@@ -8,7 +8,6 @@ import {
   Clock,
   Star,
   Zap,
-  Percent,
   Coins,
   ArrowRight,
   RotateCcw,
@@ -665,115 +664,6 @@ export function HomeFeed({
               className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-xs font-bold text-white transition shadow-sm no-underline"
             >
               Track Order
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* RECOMMENDED WITH DEALS (1:1 with Zomato Screenshot 1 & 2) */}
-      {!q && !isZeroDeliveryInRadius && filteredRestaurants.length > 0 && (
-        <section aria-label="Recommended with Deals" className="pt-2">
-          <h2 className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-2.5">
-            RECOMMENDED WITH DEALS
-          </h2>
-          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-none">
-            {filteredRestaurants.slice(0, 8).map((r) => {
-              const rating = typeof r.ratingAvg === "number" ? r.ratingAvg : Number(r.ratingAvg || 4.2);
-              const eta = typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 25);
-              return (
-                <Link
-                  key={r.id}
-                  to="/r/$slug"
-                  params={{ slug: r.slug || r.id }}
-                  className="group flex flex-col shrink-0 w-44 sm:w-52 rounded-2xl bg-white border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-orange-500 transition-all no-underline text-left cursor-pointer active:scale-95"
-                >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
-                    <img
-                      src={r.coverImage || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80"}
-                      alt={r.name}
-                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    {/* Top Deal Badge (Authentic offers only, zero fake badges) */}
-                    {r.hasOffer && r.offerLabel && (
-                      <div className="absolute top-2 left-2 bg-black/85 backdrop-blur-xs text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
-                        {r.offerLabel}
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-2.5 space-y-1">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="inline-flex items-center gap-0.5 bg-emerald-800 text-white text-[10.5px] font-black px-1.5 py-0.5 rounded-md">
-                        {rating.toFixed(1)} <Star className="size-2.5 fill-white" />
-                      </span>
-                    </div>
-                    <h3 className="font-bold text-xs sm:text-sm text-stone-900 truncate">
-                      {r.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
-                      <Zap className="size-3 fill-emerald-600 text-emerald-600" />
-                      <span>{eta}-{eta + 5} mins</span>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* 4-TILE EXPLORE MORE SECTION (1:1 with Zomato Screenshot 3) */}
-      {!q && !isZeroDeliveryInRadius && (
-        <section aria-label="Explore More" className="pt-2">
-          <h2 className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-2.5">
-            EXPLORE MORE
-          </h2>
-          <div className="grid grid-cols-4 gap-2 sm:gap-3">
-            <Link
-              to="/search"
-              search={{ q: "offers" }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-blue-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
-            >
-              <div className="size-11 sm:size-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-1.5 group-hover:scale-105 transition-transform">
-                <Percent className="size-5 sm:size-6 text-blue-600 stroke-[2.5]" />
-              </div>
-              <span className="text-xs font-black text-stone-900 leading-tight">Offers</span>
-            </Link>
-
-            <button
-              type="button"
-              onClick={() => setFilterRating(!filterRating)}
-              className={cn(
-                "flex flex-col items-center justify-center p-3 rounded-2xl bg-white border shadow-2xs hover:shadow-xs transition-all group text-center active:scale-95 cursor-pointer",
-                filterRating ? "border-orange-500 ring-1 ring-orange-500" : "border-stone-200/80 hover:border-orange-500"
-              )}
-            >
-              <div className="size-11 sm:size-12 rounded-2xl bg-orange-50 flex items-center justify-center text-[#E85D04] mb-1.5 group-hover:scale-105 transition-transform">
-                <Star className="size-5 sm:size-6 text-[#E85D04] fill-[#E85D04]/40" />
-              </div>
-              <span className="text-xs font-black text-stone-900 leading-tight">Top 10</span>
-            </button>
-
-            <Link
-              to="/travel"
-              search={{ tab: "trains" }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-sky-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
-            >
-              <div className="size-11 sm:size-12 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600 mb-1.5 group-hover:scale-105 transition-transform">
-                <Train className="size-5 sm:size-6 text-sky-600" />
-              </div>
-              <span className="text-xs font-black text-stone-900 leading-tight">Food on train</span>
-            </Link>
-
-            <Link
-              to="/search"
-              search={{ q: "collections" }}
-              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-orange-500 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
-            >
-              <div className="size-11 sm:size-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 mb-1.5 group-hover:scale-105 transition-transform">
-                <Utensils className="size-5 sm:size-6 text-orange-600" />
-              </div>
-              <span className="text-xs font-black text-stone-900 leading-tight">Collections</span>
             </Link>
           </div>
         </section>
