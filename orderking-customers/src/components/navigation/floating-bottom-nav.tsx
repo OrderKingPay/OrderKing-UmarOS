@@ -203,8 +203,6 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
     rightTab,
   ] as const;
 
-  const activeTabs = isSuperApp ? superAppTabs : foodTabs;
-
   return (
     <nav
       aria-label="Primary navigation"
@@ -226,58 +224,136 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
           }}
           aria-label="Ask OrderKing AI"
           title="Ask OrderKing AI"
-          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#B85D19] via-[#E85D04] to-[#F48C06] text-white shadow-[0_6px_20px_rgba(232,93,4,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
+          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#E23744] via-[#E85D04] to-[#B85D19] text-white shadow-[0_6px_20px_rgba(232,93,4,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
         >
           <Sparkles className="size-5 sm:size-6 drop-shadow-xs" />
         </button>
 
-        {/* Floating 3-Tab Glassmorphism Dock */}
-        <ul
-          role="list"
+        {/* Dynamic Navigation Dock Container */}
+        <div
           data-testid="customer-bottom-nav"
-          className="pointer-events-auto grid flex-1 grid-cols-3 gap-1 rounded-[28px] border border-stone-200/90 bg-white/95 dark:bg-[#141721]/95 dark:border-white/10 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-2xl overflow-hidden transform-gpu will-change-transform [contain:paint] min-h-[58px] sm:min-h-[62px]"
+          className="pointer-events-auto flex items-center gap-2 flex-1 max-w-md sm:max-w-lg justify-center transform-gpu will-change-transform [contain:paint]"
         >
-          {activeTabs.map((tab) => {
-            const { id, label, to, icon: Icon } = tab;
-            const selected = "selected" in tab ? Boolean(tab.selected) : id === (inActivity ? "activity" : inAccount ? "account" : "food");
-            return (
-              <li key={id} className="min-w-0">
+          {isSuperApp ? (
+            /* Super-App 3-Tab Grid Dock */
+            <ul
+              role="list"
+              className="grid grid-cols-3 gap-1 w-full rounded-[28px] border border-stone-200/90 bg-white/95 dark:bg-[#141721]/95 dark:border-white/10 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-2xl overflow-hidden min-h-[58px] sm:min-h-[62px]"
+            >
+              {superAppTabs.map((tab) => {
+                const { id, label, to, icon: Icon } = tab;
+                const selected = id === (inActivity ? "activity" : inAccount ? "account" : "food");
+                return (
+                  <li key={id} className="min-w-0">
+                    <Link
+                      to={to as any}
+                      preload="intent"
+                      aria-label={label}
+                      aria-current={selected ? "page" : undefined}
+                      className={cn(
+                        "flex min-h-[50px] sm:min-h-[54px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs",
+                        selected
+                          ? "bg-[#1c1d22] text-white shadow-md dark:bg-white dark:text-black"
+                          : "text-stone-600 hover:bg-stone-100/70 hover:text-stone-900 dark:text-stone-300"
+                      )}
+                    >
+                      <Icon className="size-4.5 sm:size-5 shrink-0" aria-hidden="true" />
+                      <span className="block w-full truncate text-center leading-tight">
+                        <span className="xs:hidden">
+                          {id === "activity" ? "Bookings" : tab.displayLabel || label}
+                        </span>
+                        <span className="hidden xs:inline">
+                          {tab.displayLabel || label}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            /* Zomato 1:1 Live Parity: Center Dark Capsule (Delivery + History) + Right Light Capsule (Dining) */
+            <>
+              {/* Center Dark Capsule: Delivery & History */}
+              <div className="flex-1 flex items-center justify-around rounded-[28px] border border-stone-800/80 bg-[#1c1d22] p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.25)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px] gap-1">
+                {/* 1. Delivery Tab */}
                 <Link
-                  to={to as any}
+                  to="/"
                   preload="intent"
-                  aria-label={label}
-                  aria-current={selected ? "page" : undefined}
+                  aria-label="Delivery"
+                  aria-current={inFood ? "page" : undefined}
                   className={cn(
-                    "flex min-h-[50px] sm:min-h-[54px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:text-xs transform-gpu will-change-transform",
-                    selected
-                      ? "bg-[#1c1d22] text-white shadow-md ring-1 ring-black/10 dark:bg-white dark:text-black"
-                      : "text-stone-600 hover:bg-stone-100/70 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
+                    inFood
+                      ? "bg-gradient-to-r from-red-600/35 via-orange-600/25 to-[#B85D19]/30 text-white shadow-sm ring-1 ring-red-500/40"
+                      : "text-stone-400 hover:text-white hover:bg-white/5"
                   )}
                 >
-                  <Icon
+                  <Home
                     className={cn(
                       "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
-                      selected && id === "delivery" && "text-[#E85D04] fill-[#E85D04]/20",
-                      !selected && id === "dining" && "text-purple-600",
-                      selected && "scale-105"
+                      inFood ? "text-[#E23744] fill-[#E23744]/25 scale-105" : "text-stone-400"
                     )}
                     aria-hidden="true"
                   />
                   <span className="block w-full truncate text-center leading-tight">
-                    <span className="xs:hidden">
-                      {id === "activity"
-                        ? (isSuperApp ? "Bookings" : "Orders")
-                        : (tab as any).displayLabel || label}
-                    </span>
-                    <span className="hidden xs:inline">
-                      {(tab as any).displayLabel || label}
-                    </span>
+                    Delivery
                   </span>
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
+
+                {/* 2. History (Orders) Tab */}
+                <Link
+                  to="/orders"
+                  preload="intent"
+                  aria-label="My Food Orders"
+                  aria-current={inActivity && !isSuperApp ? "page" : undefined}
+                  className={cn(
+                    "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
+                    inActivity && !isSuperApp
+                      ? "bg-white/15 text-white shadow-sm ring-1 ring-white/20"
+                      : "text-stone-400 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <ClipboardList
+                    className={cn(
+                      "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
+                      inActivity && !isSuperApp ? "text-white scale-105" : "text-stone-400"
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span className="block w-full truncate text-center leading-tight">
+                    <span className="xs:hidden">Orders</span>
+                    <span className="hidden xs:inline">History</span>
+                  </span>
+                </Link>
+              </div>
+
+              {/* Right Separate Capsule: Dining */}
+              <div className="flex items-center rounded-[28px] border border-stone-200/90 dark:border-white/10 bg-white/95 dark:bg-[#141721]/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px]">
+                <Link
+                  to="/dining"
+                  preload="intent"
+                  aria-label="Dining"
+                  aria-current={inDining ? "page" : undefined}
+                  className={cn(
+                    "flex min-w-[76px] sm:min-w-[88px] min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-3 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs",
+                    inDining
+                      ? "bg-purple-100 dark:bg-purple-950/40 text-purple-950 dark:text-purple-200 shadow-sm ring-1 ring-purple-400/50"
+                      : "text-stone-700 dark:text-stone-300 hover:bg-stone-100/70 dark:hover:bg-white/10"
+                  )}
+                >
+                  <Utensils
+                    className="size-4.5 sm:size-5 shrink-0 text-purple-600 fill-purple-600/20"
+                    aria-hidden="true"
+                  />
+                  <span className="block w-full truncate text-center leading-tight">
+                    Dining
+                  </span>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );

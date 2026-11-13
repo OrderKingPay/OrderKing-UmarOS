@@ -222,14 +222,6 @@ export function HomeFeed({
   const [filterBudget, setFilterBudget] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
   const [locDialogOpen, setLocDialogOpen] = useState(false);
-  const [activeBanner, setActiveBanner] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveBanner((prev) => (prev + 1) % 2);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
 
   // Past orders for reorder
   const pastOrders = useQuery({
@@ -380,7 +372,7 @@ export function HomeFeed({
         if (filterRating && rating < 4.0) return false;
         if (filterOffers && !r.hasOffer) return false;
         const minOrder = typeof r.minOrderPaise === "number" ? r.minOrderPaise : Number(r.minOrderPaise || 0);
-        if (filterBudget && minOrder > 20000) return false;
+        if (filterBudget && minOrder > 19900) return false;
         const eta = typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 35);
         if (filterFast && eta > 30) return false;
         return true;
@@ -413,64 +405,6 @@ export function HomeFeed({
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
 
-      {/* 0. ROTATING TOP PROMO BANNER (1:1 with Zomato Screenshot 1 & 2) */}
-      {!q && !isZeroDeliveryInRadius && (
-        <section aria-label="Featured Offers" className="pt-0.5">
-          <div className="relative overflow-hidden rounded-3xl transition-all duration-500">
-            {activeBanner === 0 ? (
-              /* Banner 1: Copper Free Delivery Pass */
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#FFF3EC] via-[#FFE5D4] to-[#FCD5BE] border border-orange-400/50 p-5 sm:p-7 shadow-[0_4px_24px_rgba(232,93,4,0.12)] flex flex-col items-center justify-center text-center">
-                <span className="text-xl sm:text-3xl font-black tracking-tight text-orange-950 uppercase drop-shadow-2xs">
-                  FREE DELIVERY
-                </span>
-                <span className="text-xs sm:text-sm font-extrabold text-orange-900/80 mt-0.5 mb-3">
-                  above ₹99
-                </span>
-                <Link
-                  to="/rewards"
-                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white text-xs sm:text-sm font-black shadow-md transition active:scale-95 no-underline cursor-pointer"
-                >
-                  <span>Renew PASS for 3 months at ₹1</span>
-                  <ChevronRight className="size-3.5" />
-                </Link>
-              </div>
-            ) : (
-              /* Banner 2: Items at 50% OFF (Screenshot 2) */
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#E23744] via-[#EB4452] to-[#F04B59] text-white p-5 sm:p-7 shadow-[0_4px_24px_rgba(226,55,68,0.25)] flex flex-col items-center justify-center text-center">
-                <span className="text-xl sm:text-3xl font-black tracking-tight uppercase drop-shadow-sm">
-                  ITEMS AT 50% OFF
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setFilterOffers(true)}
-                  className="mt-3 inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-slate-950 hover:bg-black text-white text-xs sm:text-sm font-black shadow-md transition active:scale-95 cursor-pointer"
-                >
-                  <span>Order now</span>
-                  <ChevronRight className="size-3.5" />
-                </button>
-              </div>
-            )}
-
-            {/* Pagination Dots */}
-            <div className="flex justify-center items-center gap-1.5 mt-2.5">
-              <button
-                type="button"
-                onClick={() => setActiveBanner(0)}
-                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 0 ? "w-5 bg-[#E85D04]" : "bg-stone-300")}
-                aria-label="Banner 1"
-              />
-              <button
-                type="button"
-                onClick={() => setActiveBanner(1)}
-                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 1 ? "w-5 bg-rose-600" : "bg-stone-300")}
-                aria-label="Banner 2"
-              />
-              <span className="size-2 rounded-full bg-stone-200" />
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && !isZeroDeliveryInRadius && (
         <section aria-label="Food Categories" className="pt-0.5">
@@ -487,7 +421,7 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
-            {/* Meals under ₹250 card with Rich Copper & Burnt Orange aesthetic */}
+            {/* Meals under ₹199 card with Rich Copper & Burnt Orange aesthetic */}
             <button
               type="button"
               onClick={() => setFilterBudget(!filterBudget)}
@@ -503,7 +437,7 @@ export function HomeFeed({
                   MEALS UNDER
                 </span>
                 <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
-                  ₹250
+                  ₹199
                 </span>
               </div>
               <span className="inline-flex items-center text-[10px] font-extrabold text-[#C2410C] dark:text-orange-300">
@@ -521,12 +455,17 @@ export function HomeFeed({
                 className={cn(
                   "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr from-[#B85D19] via-[#E85D04] to-rose-500 transition-all duration-300 shadow-sm relative",
                   !selectedCategory
-                    ? "scale-105 ring-3 ring-rose-500 shadow-[0_4px_16px_rgba(244,63,94,0.35)]"
+                    ? "scale-105 ring-3 ring-[#E23744] shadow-[0_4px_16px_rgba(226,55,68,0.35)]"
                     : "group-hover:scale-105 group-hover:shadow-md"
                 )}
               >
                 <div className="size-full rounded-full p-0.5 bg-white flex items-center justify-center overflow-hidden shadow-inner">
-                  <Utensils className="size-7 sm:size-8 text-rose-600" />
+                  <img
+                    src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=240&auto=format&fit=crop&q=80"
+                    alt="All cuisines"
+                    className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
+                  />
                 </div>
               </div>
               <span

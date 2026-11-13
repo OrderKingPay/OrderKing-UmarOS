@@ -281,42 +281,40 @@ export function CustomerShell({
               )}
             </div>
 
-            {/* Row 1 Center: Fork & Spoon "Food" and KingPay Symbol Pill '✈️ 🚆 🎓' */}
-            <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-              {/* Minimal Micro-Pill 1: Food Delivery */}
+            {/* Row 1 Center: Core Navigation (Hidden on mobile for 1:1 clean mobile screen parity, accessible on desktop) */}
+            <nav aria-label="OrderKing Core Navigation" className="hidden md:flex items-center gap-1.5 shrink-0 py-0.5">
               <Link
                 to="/"
                 title="OrderKing Food Delivery"
                 aria-label="OrderKing Food Delivery"
                 className={cn(
-                  "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
+                  "inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-xs active:scale-95 no-underline shrink-0 cursor-pointer",
                   path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
                     ? isDark
-                      ? "border-orange-500 bg-gradient-to-b from-orange-600/30 to-[#B85D19]/25 text-orange-200 ring-1 ring-orange-400/50 shadow-[0_0_12px_rgba(232,93,4,0.25)]"
-                      : "border-orange-500 bg-gradient-to-b from-orange-100 to-orange-50 text-orange-950 ring-1 ring-orange-400 shadow-[0_2px_8px_rgba(232,93,4,0.2)]"
+                      ? "border-orange-500 bg-gradient-to-b from-orange-600/30 to-[#B85D19]/25 text-orange-200 ring-1 ring-orange-400/50"
+                      : "border-orange-500 bg-orange-100/80 text-orange-950 ring-1 ring-orange-400"
                     : isDark
-                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-orange-400/40"
-                      : "border-slate-200 bg-white/90 hover:bg-orange-50/80 text-gray-800 hover:border-orange-400/60"
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200"
+                      : "border-slate-200 bg-white/90 hover:bg-orange-50 text-gray-800"
                 )}
               >
-                <UtensilsCrossed className="size-3.5 sm:size-4 shrink-0" aria-hidden="true" />
-                <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
+                <UtensilsCrossed className="size-3.5 shrink-0" aria-hidden="true" />
+                <span className="text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
-              {/* KingPay Mode: Travel & AI Tutor */}
               <Link
                 to="/travel"
                 title="KingPay Super-App (Flights, Trains, AI Tutor)"
                 aria-label="Flights, Trains, AI Tutor"
                 className={cn(
-                  "inline-flex items-center justify-center px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
+                  "inline-flex items-center justify-center px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-xs active:scale-95 no-underline shrink-0 cursor-pointer",
                   isKingPayDomain || path.startsWith("/tutor")
                     ? isDark
-                      ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
-                      : "border-sky-500 bg-gradient-to-b from-sky-100 to-indigo-100 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
+                      ? "border-sky-400 bg-sky-500/20 text-sky-200 ring-1 ring-sky-400/50"
+                      : "border-sky-500 bg-sky-100 text-sky-950 ring-1 ring-sky-400"
                     : isDark
-                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
-                      : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200"
+                      : "border-slate-200 bg-white/90 hover:bg-sky-50 text-gray-800"
                 )}
               >
                 <span className="inline-flex items-center gap-1.5 leading-none select-none" aria-hidden="true">
@@ -327,45 +325,17 @@ export function CustomerShell({
               </Link>
             </nav>
 
-            {/* Row 1 Right: 1-Tap Language + 1-Tap AI Support + Cart Icon with Counter + User Profile / Sign In */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Language Selector */}
-              <button
-                type="button"
-                onClick={() => setLangOpen(true)}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-1 rounded-xl text-xs font-bold shadow-2xs transition-all active:scale-95 shrink-0 cursor-pointer border",
-                  isDark
-                    ? "bg-white/10 hover:bg-white/20 border-white/15 text-slate-200"
-                    : "bg-white/80 hover:bg-orange-50 border-orange-200/80 text-gray-800 hover:border-orange-300"
-                )}
-                title="Change Language"
-                aria-label="Select language"
-              >
-                <Languages className={cn("size-3.5", isDark ? "text-orange-400" : "text-[#B85D19]")} />
-                <span className={cn("text-[11px] font-black uppercase", isDark ? "text-orange-300" : "text-orange-950")}>
-                  {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
-                </span>
-              </button>
-
-              {/* Copper Pass VIP Pill (Beating Zomato Gold with Luxury Copper & Sunset Orange) */}
-              <Link
-                to="/rewards"
-                className="flex items-center justify-center px-2 sm:px-2.5 py-1 rounded-full border border-orange-500/50 bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white text-[9.5px] font-black uppercase tracking-tight shadow-[0_2px_8px_rgba(232,93,4,0.35)] hover:brightness-110 active:scale-95 no-underline shrink-0 cursor-pointer"
-                title="OrderKing Copper Pass"
-              >
-                <span>COPPER ₹1</span>
-              </Link>
-
+            {/* Row 1 Right: Gold Crown Wallet + Cart Icon with Counter + User Profile / Sign In */}
+            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               {/* Gold Crown Wallet - Direct link to KingPay */}
               <Link
                 to="/kingpay"
-                className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-[#B85D19]/35 via-[#E85D04]/25 to-[#9A3412]/30 border border-orange-500/70 text-orange-200 hover:border-orange-400 shadow-2xs hover:shadow-[0_0_12px_rgba(232,93,4,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
+                className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-950 bg-gradient-to-r from-[#B85D19]/35 via-[#E85D04]/25 to-[#9A3412]/30 border border-orange-500/70 text-orange-200 hover:border-orange-400 shadow-2xs hover:shadow-[0_0_12px_rgba(232,93,4,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
                 title="OrderKing Gold Crown Wallet &amp; KingPay"
                 aria-label="Gold Crown Wallet"
               >
-                <Crown className="size-3.5 text-orange-400 fill-orange-500" />
-                <span className="text-[10.5px] font-black uppercase tracking-tight text-orange-300 hidden xs:inline">
+                <Crown className="size-3.5 text-amber-400 fill-amber-500" />
+                <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
                   Wallet
                 </span>
               </Link>
@@ -489,6 +459,24 @@ export function CustomerShell({
                           <Briefcase className="size-4 text-[#E85D04]" />
                           <span>King Job &amp; Careers</span>
                         </Link>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            setLangOpen(true);
+                          }}
+                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl hover:bg-orange-50 hover:text-orange-950 transition text-left cursor-pointer"
+                          aria-label="Select language"
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Languages className="size-4 text-[#E85D04]" />
+                            <span>Language</span>
+                          </div>
+                          <span className="text-[11px] font-black uppercase text-orange-900 bg-orange-100 px-2 py-0.5 rounded-md">
+                            {lang === "hi" ? "हिन्दी" : lang === "bn" ? "বাংলা" : (lang as string) === "as" ? "অসমীয়া" : "EN"}
+                          </span>
+                        </button>
 
                         <Link
                           to="/settings"
