@@ -73,10 +73,10 @@ const DEFAULT_CUSTOM_BANNERS: CustomAppBanner[] = [
   },
   {
     id: "banner-2",
-    title: "Free Delivery Above ₹399",
-    subtitle: "Add items worth ₹399 or more to unlock free doorstep delivery.",
+    title: "Delivery Fee Waiver Above ₹399",
+    subtitle: "Orders worth ₹399 or more qualify for standard delivery fee waiver.",
     buttonText: "View Menu",
-    linkUrl: "/collections/free-delivery",
+    linkUrl: "/collections/delivery-waiver",
     bgColor: "#0D9488",
     enabled: true,
   },
@@ -181,10 +181,10 @@ const FIELD_DEFINITIONS: FieldDefinition[] = [
   },
   {
     key: "freeDeliveryThresholdNotice",
-    label: "Free Delivery Offer Text",
+    label: "Delivery Fee Waiver Text",
     category: "pricing",
-    description: "Message in the cart reminding customers how to get free delivery.",
-    placeholder: "Free delivery unlocked for orders above ₹399",
+    description: "Message in the cart reminding customers how to qualify for delivery fee waiver.",
+    placeholder: "Delivery fee waived for orders above ₹399",
     customerSurface: "Cart Progress Bar",
   },
   {
@@ -405,8 +405,8 @@ const FIELD_DEFINITIONS: FieldDefinition[] = [
     key: "goldPassMembershipTitle",
     label: "Gold Pass Membership Title",
     category: "growth",
-    description: "Title for the free-delivery and priority dispatch membership card.",
-    placeholder: "Gold Pass: Free Delivery & Priority Rider Dispatch",
+    description: "Title for the delivery fee waiver and priority dispatch membership card.",
+    placeholder: "Gold Pass: Delivery Fee Waived & Priority Rider Dispatch",
     customerSurface: "Membership Card",
   },
   {

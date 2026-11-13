@@ -30,7 +30,7 @@ const DEFAULT_PROMO_CONFIG: PromoCopyConfig = {
   dishName: "Hyderabadi Dum Biryani (Full Handi)",
   kitchenName: "OrderKing Partner Kitchen",
   priceInr: 249,
-  offerText: "Flat ₹50 OFF + Free Delivery",
+  offerText: "Authentic Dum Biryani · Direct Kitchen Pricing",
   deliveryMins: 25,
   dietaryType: "non_veg",
   language: "en",

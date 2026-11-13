@@ -464,15 +464,15 @@ export function HomeFeed({
             >
               <div
                 className={cn(
-                  "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr from-[#B85D19] via-[#E85D04] to-rose-500 transition-all duration-300 shadow-sm relative",
+                  "size-16 sm:size-20 rounded-full p-1 bg-white transition-all duration-300 shadow-[0_4px_14px_rgba(0,0,0,0.08)] border relative",
                   !selectedCategory
-                    ? "scale-105 ring-3 ring-[#E23744] shadow-[0_4px_16px_rgba(226,55,68,0.35)]"
-                    : "group-hover:scale-105 group-hover:shadow-md"
+                    ? "scale-105 ring-2.5 ring-[#E23744] border-[#E23744] shadow-[0_6px_20px_rgba(226,55,68,0.3)]"
+                    : "border-stone-200/90 group-hover:scale-105 group-hover:shadow-md"
                 )}
               >
-                <div className="size-full rounded-full p-0.5 bg-white flex items-center justify-center overflow-hidden shadow-inner">
+                <div className="size-full rounded-full overflow-hidden bg-stone-50">
                   <img
-                    src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=360&h=360&auto=format&fit=crop&crop=center&q=90"
+                    src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=360&h=360&auto=format&fit=crop&crop=center&q=90"
                     alt="All cuisines"
                     className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
@@ -487,7 +487,7 @@ export function HomeFeed({
               >
                 All
                 {!selectedCategory && (
-                  <span className="block mx-auto mt-0.5 w-4 h-0.5 rounded-full bg-[#E23744]" />
+                  <span className="block mx-auto mt-0.5 w-5 h-0.5 rounded-full bg-[#E23744]" />
                 )}
               </span>
             </button>
@@ -501,17 +501,16 @@ export function HomeFeed({
                   onClick={() => setSelectedCategory(isSelected ? null : c.slug)}
                   className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95 cursor-pointer"
                 >
-                  {/* Distinct gradient colored ring around image */}
+                  {/* Distinct luxury circular dish plate */}
                   <div
                     className={cn(
-                      "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
-                      c.gradient,
+                      "size-16 sm:size-20 rounded-full p-1 bg-white transition-all duration-300 shadow-[0_4px_14px_rgba(0,0,0,0.08)] border relative",
                       isSelected
-                        ? "scale-105 ring-3 ring-[#E85D04] shadow-[0_4px_16px_rgba(232,93,4,0.35)]"
-                        : "group-hover:scale-105 group-hover:shadow-md"
+                        ? "scale-105 ring-2.5 ring-[#E23744] border-[#E23744] shadow-[0_6px_20px_rgba(226,55,68,0.3)]"
+                        : "border-stone-200/90 group-hover:scale-105 group-hover:shadow-md"
                     )}
                   >
-                    <div className="size-full rounded-full p-0.5 bg-white overflow-hidden shadow-inner">
+                    <div className="size-full rounded-full overflow-hidden bg-stone-50">
                       <img
                         src={c.imageUrl}
                         alt={c.name}
@@ -525,12 +524,12 @@ export function HomeFeed({
                   <span
                     className={cn(
                       "mt-1.5 text-xs font-black truncate w-full transition-colors leading-tight",
-                      isSelected ? "text-[#E85D04]" : "text-gray-900 group-hover:text-black"
+                      isSelected ? "text-[#E23744]" : "text-gray-900 group-hover:text-black"
                     )}
                   >
                     {c.name}
                     {isSelected && (
-                      <span className="block mx-auto mt-0.5 w-4 h-0.5 rounded-full bg-[#E85D04]" />
+                      <span className="block mx-auto mt-0.5 w-5 h-0.5 rounded-full bg-[#E23744]" />
                     )}
                   </span>
                 </button>

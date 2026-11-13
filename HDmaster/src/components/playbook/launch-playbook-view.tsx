@@ -1069,7 +1069,7 @@ export function LaunchPlaybookView() {
                 <Sparkles className="w-3.5 h-3.5" /> Launch Offer: Code {CUSTOMER_LAUNCH_PLAN.promotionalOffer.couponCode}
               </div>
               <h3 className="text-2xl sm:text-3xl font-black">
-                ₹40 FLAT OFF + Free Delivery on First 2 Orders
+                ₹40 Launch Credit + Delivery Fee Waiver on First 2 Orders
               </h3>
               <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
                 Minimum order value ₹149. Hard capped at the first 100 eligible local orders (₹4,000 launch budget envelope).

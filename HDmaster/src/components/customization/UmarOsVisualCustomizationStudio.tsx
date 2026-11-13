@@ -177,7 +177,7 @@ const DEFAULT_SDUI_SECTIONS: LayoutSection[] = [
   {
     id: "live_deals",
     type: "deal_strip",
-    title: "Hyperlocal Flash Deals & Flat 50% Off",
+    title: "Hyperlocal Chef Specials & Curated Dining",
     order: 5,
     visible: true,
     width: "100%",
@@ -1854,10 +1854,10 @@ export function UmarOsVisualCustomizationStudio({
                           >
                             <div>
                               <span className="text-[9px] font-black uppercase tracking-wider bg-white/20 px-1.5 py-0.5 rounded">
-                                Flash Promo
+                                Curated
                               </span>
-                              <h5 className="text-xs font-bold mt-1">Flat 50% Off Top Restaurants</h5>
-                              <p className="text-[10px] text-white/80">Use Code: UMAROS50</p>
+                              <h5 className="text-xs font-bold mt-1">Chef Specials at Top Restaurants</h5>
+                              <p className="text-[10px] text-white/80">Freshly Prepared Orders</p>
                             </div>
                             <Sparkles className="h-6 w-6 text-amber-300" />
                           </div>
@@ -2376,7 +2376,7 @@ export function UmarOsVisualCustomizationStudio({
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-xs font-bold text-slate-900">Base Customer Delivery Fee</span>
-                      <p className="text-[10px] text-slate-500">Charged to customer unless cart meets free delivery threshold</p>
+                      <p className="text-[10px] text-slate-500">Charged to customer unless cart meets delivery fee waiver threshold</p>
                     </div>
                     <span className="font-mono text-sm font-black text-slate-800">₹{baseDeliveryFeeRupees}</span>
                   </div>
@@ -2391,12 +2391,12 @@ export function UmarOsVisualCustomizationStudio({
                   />
                 </div>
 
-                {/* Free Delivery Cart Threshold */}
+                {/* Delivery Fee Waiver Cart Threshold */}
                 <div className="space-y-1.5 p-3 rounded-lg border border-slate-200 bg-slate-50/50">
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-xs font-bold text-slate-900">Free Delivery Cart Threshold</span>
-                      <p className="text-[10px] text-slate-500">Orders above this amount receive complimentary delivery</p>
+                      <span className="text-xs font-bold text-slate-900">Delivery Fee Waiver Cart Threshold</span>
+                      <p className="text-[10px] text-slate-500">Orders above this amount receive delivery fee waiver (₹0)</p>
                     </div>
                     <span className="font-mono text-sm font-black text-emerald-600">₹{freeDeliveryCartThresholdRupees}</span>
                   </div>

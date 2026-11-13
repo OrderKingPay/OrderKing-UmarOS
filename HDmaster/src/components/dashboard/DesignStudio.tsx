@@ -37,7 +37,7 @@ const DEFAULT_BANNER_CONFIG: BrandBannerConfig = {
   backgroundColor: "#0f172a",
   headline: "OrderKing Direct",
   tagline: "Fresh from local kitchens to your doorstep",
-  promoBadge: "FREE DELIVERY ABOVE ₹399",
+  promoBadge: "DELIVERY FEE WAIVER ABOVE ₹399",
   fssaiText: "100% FSSAI Verified Kitchens",
   selectedIcon: "crown",
 };
@@ -270,7 +270,7 @@ export function DesignStudio() {
               ...p,
               headline: "Weekend Family Combo",
               tagline: "Zero surge fee | Direct kitchen prices",
-              promoBadge: "FREE DELIVERY ABOVE ₹399",
+              promoBadge: "DELIVERY FEE WAIVER ABOVE ₹399",
               primaryColor: "#2563eb",
               accentColor: "#f97316",
               selectedIcon: "utensils",
