@@ -398,7 +398,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
         {
           timestamp: "0:25 - 0:30",
           visual: "Tap 'Order Now' button pointing to https://orderking.in with OrderKing crown logo.",
-          audioScript: "Order like a King. Open orderking.in right now and get free delivery on your first order!",
+          audioScript: "Order fresh food directly from local kitchens on orderking.in.",
         },
       ],
       callToAction: "Click the link below or visit orderking.in to order now!",

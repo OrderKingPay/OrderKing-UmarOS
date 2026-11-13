@@ -10,15 +10,16 @@ export const Route = createFileRoute("/api/ai/chat")({
     handlers: {
       POST: async ({ request }: any) => {
         try {
-          const sessionUser = await getSessionUser();
-          if (!sessionUser?.id) {
-            return new Response(
-              JSON.stringify({ error: "Unauthorized" }),
-              { status: 401, headers: { "content-type": "application/json" } }
-            );
+          let sessionUser = null;
+          try {
+            sessionUser = await getSessionUser();
+          } catch {
+            // Guest visitor browsing publicly
           }
+          const clientIp = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "public-client";
+          const clientIdentifier = sessionUser?.id || `guest_${clientIp.split(",")[0].trim()}`;
 
-          const rateCheck = aiChatLimiter.isAllowed(sessionUser.id);
+          const rateCheck = aiChatLimiter.isAllowed(clientIdentifier);
           if (!rateCheck.allowed) {
             return new Response(
               JSON.stringify({ error: "AI assistant rate limit reached. Please wait a moment." }),

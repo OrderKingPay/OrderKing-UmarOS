@@ -22,6 +22,8 @@ import {
   Plus,
   QrCode,
   Zap,
+  Paperclip,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
@@ -113,10 +115,19 @@ export type ActionPayload = {
   suggestedAddons?: Array<{ id: string; name: string; pricePaise: number }>;
 };
 
+export type ChatAttachment = {
+  name: string;
+  type: string;
+  url?: string;
+  content?: string;
+  size?: number;
+};
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant";
   content: string;
+  attachments?: ChatAttachment[];
   action?: ActionPayload;
   timestamp: string;
 };
@@ -903,7 +914,37 @@ export function CustomerConciergeDrawer({
   const [interimTranscript, setInterimTranscript] = useState("");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [pendingAttachments, setPendingAttachments] = useState<ChatAttachment[]>([]);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`File ${file.name} exceeds 5MB limit.`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        setPendingAttachments((prev) => [
+          ...prev,
+          {
+            name: file.name,
+            type: file.type || "application/octet-stream",
+            content: base64,
+            size: file.size,
+          },
+        ]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  };
 
   // Intent-to-Action Bottom Sheet Pop-Up State
   const [activePopup, setActivePopup] = useState<
@@ -927,7 +968,7 @@ export function CustomerConciergeDrawer({
   const [kingpayAmountRupees, setKingpayAmountRupees] = useState<number>(250);
   const [kingpayTab, setKingpayTab] = useState<"upi" | "qr">("upi");
 
-  // Mind-Reading & Behavioral Sentiment Radar (Zero-Annoyance Invariant)
+  // Behavioral Intent & User Preference Filter
   const [suppressSuggestions, setSuppressSuggestions] = useState(false);
 
   // Extra customizable dishes/items added by voice or text inside checkout sheet
@@ -1123,9 +1164,10 @@ export function CustomerConciergeDrawer({
   }
 
   // Dispatch Message
-  function handleSend(textToSend?: string, wasSpoken: boolean = false) {
+  async function handleSend(textToSend?: string, wasSpoken: boolean = false) {
     const raw = (textToSend ?? question).trim();
-    if (!raw) return;
+    const currentAttachments = [...pendingAttachments];
+    if (!raw && currentAttachments.length === 0) return;
 
     // Detect language / dialect automatically
     const detectedCode = detectLanguage(raw, selectedLang.code);
@@ -1138,42 +1180,82 @@ export function CustomerConciergeDrawer({
       id: `usr-${Date.now()}`,
       role: "user",
       content: raw,
+      attachments: currentAttachments.length > 0 ? currentAttachments : undefined,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
 
-    setMessages((prev) => [...prev, userEntry]);
+    const nextMessages = [...messages, userEntry];
+    setMessages(nextMessages);
     setQuestion("");
     setInterimTranscript("");
+    setPendingAttachments([]);
 
-    // Mind-reading sentiment radar: If user indicates rejection, hurry, or dismissiveness, silence suggestions immediately
+    // Behavioral Intent Check
     const isDismissalOrHurry = /\b(no|nahi|na|nah|stop|don't|dont|just|only|bas|cancel|jaldi|fast|rush|hurry|direct|straight|ruk|chup)\b/i.test(raw);
     const nextSuppress = suppressSuggestions || isDismissalOrHurry;
     if (isDismissalOrHurry) {
       setSuppressSuggestions(true);
     }
 
-    // Sovereign Local Resolution with 0 External Paid APIs (passing outOfStockItems, suppressSuggestions, and area)
-    const { reply, action } = resolveSovereignResponse(raw, matchedDialect, {
+    // Deterministic fallback response & action payload
+    const localResolution = resolveSovereignResponse(raw, matchedDialect, {
       outOfStockItems,
       suppressSuggestions: nextSuppress,
       area,
     });
 
-    setTimeout(() => {
-      const aiEntry: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        role: "assistant",
-        content: reply,
-        action,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      };
-      setMessages((prev) => [...prev, aiEntry]);
+    let finalReply = localResolution.reply;
+    let finalAction = localResolution.action;
 
-      // If user spoke via mic and sound is enabled, speak back automatically
-      if (wasSpoken && soundEnabled) {
-        handleSpeak(aiEntry.id, reply);
+    setIsLoadingAi(true);
+
+    try {
+      const res = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          messages: nextMessages.slice(-8).map((m) => ({
+            role: m.role,
+            content: m.content,
+            attachments: m.attachments,
+          })),
+          modelId: "gemini-2-5-flash",
+          mode: "auto",
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.text && typeof data.text === "string" && data.text.trim()) {
+          finalReply = data.text.trim();
+          if (data.actionCard) {
+            finalAction = data.actionCard;
+          }
+        }
       }
-    }, 150);
+    } catch {
+      // Graceful fallback to verified deterministic response
+    } finally {
+      setIsLoadingAi(false);
+    }
+
+    const aiEntry: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      role: "assistant",
+      content: finalReply,
+      action: finalAction,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+
+    setMessages((prev) => [...prev, aiEntry]);
+
+    // If user spoke via mic and sound is enabled, speak back automatically
+    if (wasSpoken && soundEnabled) {
+      handleSpeak(aiEntry.id, finalReply);
+    }
   }
 
   if (!open) return null;
@@ -1293,7 +1375,28 @@ export function CustomerConciergeDrawer({
                     <span>{isAi ? (area === "kingpay" ? "KingPay Support" : "OrderKing Support") : "You"}</span>
                     <span>{m.timestamp}</span>
                   </div>
-                  <p className="mt-1.5 whitespace-pre-wrap">{m.content}</p>
+                  {m.content && <p className="mt-1.5 whitespace-pre-wrap">{m.content}</p>}
+
+                  {m.attachments && m.attachments.length > 0 && (
+                    <div className="mt-2 space-y-1.5">
+                      {m.attachments.map((att, idx) => (
+                        <div key={idx}>
+                          {att.type.startsWith("image/") ? (
+                            <img
+                              src={att.content || att.url}
+                              alt={att.name}
+                              className="max-h-48 rounded-xl object-cover border border-slate-700 shadow-md"
+                            />
+                          ) : (
+                            <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-900/80 px-2.5 py-1 text-[11px] text-slate-300">
+                              <FileText className="size-3.5 text-amber-400 shrink-0" />
+                              <span className="truncate max-w-[200px]">{att.name}</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
 
                   {isAi && (
                     <div className="mt-2.5 flex items-center justify-between pt-1 border-t border-slate-800">
@@ -1374,6 +1477,12 @@ export function CustomerConciergeDrawer({
               </div>
             );
           })}
+          {isLoadingAi && (
+            <div className="flex items-center gap-2 max-w-[85%] rounded-2xl bg-slate-900/90 border border-slate-800 px-3.5 py-2.5 text-xs text-amber-200 animate-pulse mr-auto">
+              <Loader2 className="size-3.5 animate-spin text-amber-400" />
+              <span className="text-slate-300">Assistant is thinking...</span>
+            </div>
+          )}
           <div ref={bottomRef} />
         </div>
 
@@ -1437,6 +1546,32 @@ export function CustomerConciergeDrawer({
 
         {/* Input & Voice Controls */}
         <div className="border-t border-slate-800 bg-slate-950 p-3 sm:p-3.5">
+          {pendingAttachments.length > 0 && (
+            <div className="flex items-center gap-2 pb-2.5 overflow-x-auto">
+              {pendingAttachments.map((att, idx) => (
+                <div
+                  key={idx}
+                  className="relative group shrink-0 flex items-center gap-2 rounded-xl border border-amber-400/30 bg-slate-900/90 px-2.5 py-1.5 text-xs text-slate-200"
+                >
+                  {att.type.startsWith("image/") ? (
+                    <img src={att.content} alt={att.name} className="size-7 rounded-lg object-cover" />
+                  ) : (
+                    <FileText className="size-4 text-amber-400" />
+                  )}
+                  <span className="max-w-[120px] truncate text-[11px] font-medium">{att.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPendingAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                    className="text-slate-400 hover:text-rose-400 transition cursor-pointer"
+                    aria-label="Remove attachment"
+                  >
+                    <X className="size-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -1444,6 +1579,25 @@ export function CustomerConciergeDrawer({
             }}
             className="flex items-center gap-2"
           >
+            {/* Attachment Button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,.pdf,.txt"
+              multiple
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="rounded-xl p-2.5 bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800 hover:border-amber-400/50 min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+              title="Attach photo or document"
+              aria-label="Attach file"
+            >
+              <Paperclip className="size-4 text-amber-400" />
+            </button>
+
             {/* Voice Microphone with Pulsating Gold Glow Ring */}
             <button
               type="button"
@@ -1481,11 +1635,11 @@ export function CustomerConciergeDrawer({
 
             <button
               type="submit"
-              disabled={!question.trim()}
+              disabled={(!question.trim() && pendingAttachments.length === 0) || isLoadingAi}
               className="rounded-xl bg-amber-400 p-2.5 text-slate-950 font-bold disabled:opacity-40 hover:bg-amber-300 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0 cursor-pointer"
               aria-label="Send question"
             >
-              <Send className="size-4" />
+              {isLoadingAi ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
             </button>
           </form>
 

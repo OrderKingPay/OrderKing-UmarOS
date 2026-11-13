@@ -596,48 +596,42 @@ export const CUSTOMER_LAUNCH_PLAN: CustomerLaunchPlan = {
 
 Ab apne pasandida local restaurants se direct order kijiye fast delivery ke saath!
 
- *EXCLUSIVE LAUNCH OFFER:*
- *₹40 FLAT OFF* on orders above ₹149!
- *FREE DELIVERY* on your first 2 orders!
- Use Promo Code: *LOCAL40*
+ *LAUNCH DETAILS:*
+ ₹40 launch credit on orders above ₹149.
+ Delivery fee waiver on first 2 orders.
+ Code: *LOCAL40*
 
- Applicable at top rated local restaurants within 3km.
-⏳ Limited to first 100 orders only!
+ Applicable at verified local restaurants within delivery radius.
 
  *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
 
-Apne friends aur family ke saath zaroor share karein!
 — Team OrderKing`,
     customerDirectEnglish: `*OrderKing is now LIVE in your neighborhood!*
 
-Order fresh, hot food directly from your favorite local kitchens with rapid delivery!
+Order fresh food directly from verified local kitchens with real-time GPS tracking!
 
- *EXCLUSIVE NEIGHBORHOOD LAUNCH OFFER:*
- *₹40 FLAT OFF* on orders above ₹149!
- *FREE DELIVERY* on your first 2 orders!
- Use Promo Code: *LOCAL40*
+ *LAUNCH DETAILS:*
+ ₹40 launch credit on orders above ₹149.
+ Delivery fee waiver on first 2 orders.
+ Code: *LOCAL40*
 
- Valid at premier neighborhood kitchens within 3km.
-⏳ Limited launch allocation: First 100 orders only!
+ Valid at verified neighborhood kitchens within delivery radius.
 
  *Order Now:* https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
 
-Share the taste with your family and neighbors!
 — Team OrderKing`,
     merchantRiderReferralHinglish: `Bhai, hamare local area mein *OrderKing* food delivery live ho gaya hai.
 
-Nearby best restaurants listed hain aur direct fast delivery ho rahi hai. 
-First order ₹149+ par *₹40 FLAT OFF + FREE DELIVERY* mil raha hai—coupon code: *LOCAL40*.
+Nearby restaurants listed hain aur direct delivery ho rahi hai. 
+First order ₹149+ par ₹40 launch credit aur delivery fee waiver mil raha hai—code: *LOCAL40*.
 
-Ye raha direct link: https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40
-
-Try karke dekho aur feedback zaroor batana! `,
+Direct link: https://orderking.in/app?cluster=blr-hbr-01&promo=LOCAL40`,
   },
   qrTentCardCopy: {
-    tableTentHeadline: "Order Fresh to Your Doorstep · Flat ₹40 OFF + Free Delivery",
-    tableTentBody: "Loved dining here? Enjoy the exact same fresh food delivered to your home in 25-35 minutes directly through OrderKing. Scan the QR code below and use code LOCAL40 at checkout.",
-    counterCallToAction: "Scan to Order on OrderKing & Get ₹40 OFF Instant Welcome Bonus",
-    staff15SecScript: "Bhaiya, yeh hamara official local ordering QR hai. First order par flat ₹40 off aur free delivery mil rahi hai. Scan karke menu dekh lijiye!",
+    tableTentHeadline: "Order Fresh to Your Doorstep · Direct Kitchen Delivery",
+    tableTentBody: "Enjoy fresh food delivered to your home in 25-35 minutes directly through OrderKing. Scan the QR code below to view live menu.",
+    counterCallToAction: "Scan to Order on OrderKing (₹40 OFF with Code LOCAL40)",
+    staff15SecScript: "Yeh hamara official ordering QR hai. Scan karke direct live menu dekh sakte hain.",
   },
   acquisitionChannels: [
     {
