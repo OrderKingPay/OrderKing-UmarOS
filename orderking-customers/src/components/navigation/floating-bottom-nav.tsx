@@ -10,7 +10,9 @@ import {
   Ticket,
   ClipboardList,
   Luggage,
-  LayoutGrid,
+  Sparkles,
+  Utensils,
+  Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -162,18 +164,13 @@ export interface FloatingBottomNavProps {
   onOpenAi?: () => void;
 }
 
-/**
- * Dynamic 5-Tab Floating Bottom Navigation
- * [1: OrderKing | 2: Tutor & Jobs | 3: KingPay | 4: Travel | 5: Dynamic History]
- * Tab 5 automatically shifts its label, destination route, and badge according to the active vertical.
- */
-/** Three bottom destinations. The right-hand tab follows the active ecosystem. */
+/** Three bottom destinations */
 export const THREE_TAB_CUSTOMER_NAV = [
   { id: "food", label: "OrderKing", to: "/", icon: UtensilsCrossed },
   { id: "account", label: "Account", to: "/account", icon: Wallet },
 ] as const;
 
-export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps) {
+export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBottomNavProps) {
   const pathname = (useRouterState({ select: (s) => s?.location?.pathname }) as unknown as string) ?? "/";
   const search = (useRouterState({ select: (s) => (s?.location?.search as any)?.tab }) as unknown as string | undefined) ?? "";
   const inAccount = pathname.startsWith("/account") || pathname.startsWith("/profile") || pathname.startsWith("/settings");
@@ -184,66 +181,104 @@ export function CustomerFloatingBottomNav({ className }: FloatingBottomNavProps)
     pathname.startsWith("/orders") ||
     pathname.startsWith("/kingpay/passbook") ||
     pathname.startsWith("/tutor-jobs/history");
-  const inFood = !isSuperApp && !inActivity;
-  const activeId = inActivity ? "activity" : inAccount ? "account" : inFood ? "food" : isSuperApp ? "account" : null;
+  const inDining = pathname.startsWith("/dining");
+  const inFood = !isSuperApp && !inActivity && !inDining;
 
   // Contextual Dynamic Tab 3: Food Orders vs Travel Bookings & PNRs (Zero layout shift)
   const rightTab = isSuperApp
     ? { id: "activity", label: "My Bookings & PNRs", displayLabel: "My Bookings & PNRs", to: "/travel?tab=trips", icon: Luggage }
-    : { id: "activity", label: "My Food Orders", displayLabel: "My Food Orders", to: "/orders", icon: ClipboardList };
+    : { id: "dining", label: "Dining", displayLabel: "Dining", to: "/dining", icon: UtensilsCrossed };
 
-  const tabs = [
-    { id: "food", label: "OrderKing", displayLabel: "OrderKing", to: "/", icon: UtensilsCrossed },
-    { id: "account", label: "Account", displayLabel: "Account", to: "/account", icon: Wallet },
+  // Food Delivery benchmark tabs matching exact Zomato 3-tab layout: Delivery | History | Dining
+  const foodTabs = [
+    { id: "delivery", label: "Delivery", displayLabel: "Delivery", to: "/", icon: Home, selected: inFood },
+    { id: "activity", label: "My Food Orders", displayLabel: "History", to: "/orders", icon: ClipboardList, selected: inActivity && !isSuperApp },
+    { id: "dining", label: "Dining", displayLabel: "Dining", to: "/dining", icon: Utensils, selected: inDining },
+  ] as const;
+
+  // Super-App benchmark tabs for Travel/Account contexts
+  const superAppTabs = [
+    { id: "food", label: "OrderKing", displayLabel: "OrderKing", to: "/", icon: UtensilsCrossed, selected: inFood },
+    { id: "account", label: "Account", displayLabel: "Account", to: "/account", icon: Wallet, selected: inAccount },
     rightTab,
   ] as const;
+
+  const activeTabs = isSuperApp ? superAppTabs : foodTabs;
 
   return (
     <nav
       aria-label="Primary navigation"
       className={cn(
-        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-2.5 sm:px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:pb-4 transform-gpu will-change-transform [contain:paint]",
+        "pointer-events-none fixed bottom-0 left-0 right-0 z-[70] flex items-center justify-center px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] md:pb-4 transform-gpu will-change-transform [contain:paint]",
         className
       )}
     >
-      <ul
-        role="list"
-        data-testid="customer-bottom-nav"
-        className="pointer-events-auto grid w-full max-w-lg md:max-w-[560px] grid-cols-3 gap-1.5 sm:gap-2 rounded-[24px] border border-amber-400/60 bg-gradient-to-br from-[#0d111b] via-[#201b18] to-[#181312] p-1.5 sm:p-2 shadow-[0_18px_50px_rgba(15,12,10,0.5),0_0_0_1px_rgba(245,158,11,0.2)] backdrop-blur-2xl overflow-hidden transform-gpu"
-      >
-        {tabs.map(({ id, label, to, icon: Icon }) => {
-          const selected = id === activeId;
-          return (
-            <li key={id} className="min-w-0">
-              <Link
-                to={to as any}
-                preload="intent"
-                aria-label={label}
-                aria-current={selected ? "page" : undefined}
-                className={cn(
-                  "flex min-h-[58px] flex-col items-center justify-center gap-1 rounded-2xl px-1.5 py-1.5 text-[11px] font-extrabold tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 sm:min-h-[62px] sm:text-xs transform-gpu will-change-transform",
-                  selected ? "bg-gradient-to-br from-[#ffedaf] via-amber-400 to-amber-500 text-slate-950 shadow-[0_4px_20px_rgba(245,158,11,0.32)]" :
-                  id === "account" ? "border border-amber-400/50 bg-gradient-to-b from-amber-400/20 to-amber-500/10 text-amber-100 hover:bg-amber-400/25" :
-                  "text-stone-200 hover:bg-white/10 hover:text-white",
-                  id === "account" && "-translate-y-1 ring-1 ring-amber-400/35"
-                )}
-              >
-                <Icon className="size-5 shrink-0" aria-hidden="true" />
-                <span className="block w-full truncate text-center leading-tight">
-                  <span className="xs:hidden">
-                    {id === "activity"
-                      ? (isSuperApp ? "Bookings" : "Orders")
-                      : label}
+      <div className="flex items-center gap-2 sm:gap-2.5 w-full max-w-lg md:max-w-[560px] justify-center">
+        {/* Left Floating Pink/Red Gradient AI Concierge FAB (Zomato Parity) */}
+        <button
+          type="button"
+          onClick={() => {
+            if (onOpenAi) {
+              onOpenAi();
+            } else if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("orderking:open-concierge"));
+            }
+          }}
+          aria-label="Ask OrderKing AI"
+          title="Ask OrderKing AI"
+          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF3366] via-[#FF5E7E] to-[#FF8FA3] text-white shadow-[0_6px_20px_rgba(255,51,102,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
+        >
+          <Sparkles className="size-5 sm:size-6 drop-shadow-xs" />
+        </button>
+
+        {/* Floating 3-Tab Glassmorphism Dock */}
+        <ul
+          role="list"
+          data-testid="customer-bottom-nav"
+          className="pointer-events-auto grid flex-1 grid-cols-3 gap-1 rounded-[28px] border border-stone-200/90 bg-white/95 dark:bg-[#141721]/95 dark:border-white/10 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12),0_2px_8px_rgba(0,0,0,0.04)] backdrop-blur-2xl overflow-hidden transform-gpu will-change-transform [contain:paint] min-h-[58px] sm:min-h-[62px]"
+        >
+          {activeTabs.map((tab) => {
+            const { id, label, to, icon: Icon } = tab;
+            const selected = "selected" in tab ? Boolean(tab.selected) : id === (inActivity ? "activity" : inAccount ? "account" : "food");
+            return (
+              <li key={id} className="min-w-0">
+                <Link
+                  to={to as any}
+                  preload="intent"
+                  aria-label={label}
+                  aria-current={selected ? "page" : undefined}
+                  className={cn(
+                    "flex min-h-[50px] sm:min-h-[54px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:text-xs transform-gpu will-change-transform",
+                    selected
+                      ? "bg-[#1c1d22] text-white shadow-md ring-1 ring-black/10 dark:bg-white dark:text-black"
+                      : "text-stone-600 hover:bg-stone-100/70 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-white"
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
+                      selected && id === "delivery" && "text-rose-500 fill-rose-500/20",
+                      !selected && id === "dining" && "text-purple-600",
+                      selected && "scale-105"
+                    )}
+                    aria-hidden="true"
+                  />
+                  <span className="block w-full truncate text-center leading-tight">
+                    <span className="xs:hidden">
+                      {id === "activity"
+                        ? (isSuperApp ? "Bookings" : "Orders")
+                        : (tab as any).displayLabel || label}
+                    </span>
+                    <span className="hidden xs:inline">
+                      {(tab as any).displayLabel || label}
+                    </span>
                   </span>
-                  <span className="hidden xs:inline">
-                    {(tabs.find((t) => t.id === id) as any)?.displayLabel || label}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }

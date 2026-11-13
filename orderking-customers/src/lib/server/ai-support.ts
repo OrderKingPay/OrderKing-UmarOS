@@ -110,6 +110,97 @@ export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
     };
   });
 
+export type TicketMessageView = {
+  id: string;
+  ticketId: string;
+  authorType: "customer" | "employee" | "system";
+  authorName: string;
+  body: string;
+  createdAt: string;
+};
+
+export const listTicketMessages = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((d: { ticketId: string }) => d)
+  .handler(async ({ context, data }: any): Promise<{ ticketId: string; messages: TicketMessageView[] }> => {
+    if (!context?.userId) throw new Error("Please sign in to view support messages.");
+    if (!data?.ticketId || typeof data.ticketId !== "string") throw new Error("Ticket ID required.");
+    const sql = await getSql();
+
+    const ticket = await sql<{ id: string }>`
+      select id from support_tickets where id = ${data.ticketId} and user_id = ${context.userId}
+      union
+      select id from tickets where id = ${data.ticketId} and customer_id = ${context.userId}
+      limit 1
+    `;
+    if (!ticket[0]) throw new Error("Ticket not found or access denied.");
+
+    const rows = await sql<{
+      id: string;
+      ticket_id: string;
+      author_type: string;
+      author_employee_id: string | null;
+      body: string;
+      created_at: string;
+    }>`
+      select id, ticket_id, author_type, author_employee_id, body, created_at::text as created_at
+      from ticket_messages
+      where ticket_id = ${data.ticketId} and visibility = 'public'
+      order by created_at asc
+    `;
+
+    return {
+      ticketId: data.ticketId,
+      messages: rows.map((r) => ({
+        id: r.id,
+        ticketId: r.ticket_id,
+        authorType: (r.author_type === "employee" ? "employee" : r.author_type === "system" ? "system" : "customer") as any,
+        authorName: r.author_type === "employee" ? "OrderKing Support (Founder)" : "You",
+        body: r.body,
+        createdAt: r.created_at,
+      })),
+    };
+  });
+
+export const sendCustomerTicketReply = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { ticketId: string; message: string }) => d)
+  .handler(async ({ context, data }: any): Promise<{ ok: true; messageId: string }> => {
+    if (!context?.userId) throw new Error("Please sign in to send a support message.");
+    if (!data?.ticketId || typeof data.ticketId !== "string") throw new Error("Ticket ID required.");
+    const body = (data?.message || "").trim();
+    if (!body || body.length > 2000) throw new Error("Message must be between 1 and 2,000 characters.");
+    const sql = await getSql();
+
+    const ticket = await sql<{ id: string; status: string }>`
+      select id, status from support_tickets where id = ${data.ticketId} and user_id = ${context.userId}
+      union
+      select id, status from tickets where id = ${data.ticketId} and customer_id = ${context.userId}
+      limit 1
+    `;
+    if (!ticket[0]) throw new Error("Ticket not found or access denied.");
+
+    const messageId = newId("tm");
+    await sql`
+      insert into ticket_messages (
+        id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at
+      ) values (
+        ${messageId}, ${data.ticketId}, 'org_orderking', 'public', 'customer', null, ${body}, now()
+      )
+    `;
+
+    try {
+      await sql`
+        update tickets set status = 'WAITING', updated_at = now() where id = ${data.ticketId}
+      `;
+      await sql`
+        update support_tickets set status = 'in_progress', updated_at = now() where id = ${data.ticketId}
+      `;
+    } catch (_) {}
+
+    return { ok: true, messageId };
+  });
+
 export type AiChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;

@@ -26,6 +26,8 @@ import {
   Building2,
   Briefcase,
   Eye,
+  SlidersHorizontal,
+  ChevronDown,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -45,16 +47,22 @@ import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 // Curated high-resolution categories with distinct gradient colors (Biryani, Pizza, Rolls, Thali, Burgers, Desserts)
 const CURATED_FOOD_CATEGORIES = [
   {
+    name: "Pizza",
+    slug: "pizza",
+    gradient: "from-red-400 to-rose-500",
+    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
+  },
+  {
     name: "Biryani",
     slug: "biryani",
     gradient: "from-orange-400 to-amber-500",
     imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
   },
   {
-    name: "Pizza",
-    slug: "pizza",
-    gradient: "from-red-400 to-rose-500",
-    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
+    name: "Momo",
+    slug: "momo",
+    gradient: "from-amber-400 to-orange-500",
+    imageUrl: "https://images.unsplash.com/photo-1625398407797-00c2cb621124?w=240&auto=format&fit=crop&q=80",
   },
   {
     name: "Rolls",
@@ -214,6 +222,14 @@ export function HomeFeed({
   const [filterBudget, setFilterBudget] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
   const [locDialogOpen, setLocDialogOpen] = useState(false);
+  const [activeBanner, setActiveBanner] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveBanner((prev) => (prev + 1) % 2);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   // Past orders for reorder
   const pastOrders = useQuery({
@@ -397,6 +413,64 @@ export function HomeFeed({
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
 
 
+      {/* 0. ROTATING TOP PROMO BANNER (1:1 with Zomato Screenshot 1 & 2) */}
+      {!q && !isZeroDeliveryInRadius && (
+        <section aria-label="Featured Offers" className="pt-0.5">
+          <div className="relative overflow-hidden rounded-3xl transition-all duration-500">
+            {activeBanner === 0 ? (
+              /* Banner 1: Gold Free Delivery (Screenshot 1) */
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#FFF5DA] via-[#FDF0C8] to-[#FBE8B3] border border-amber-300/80 p-5 sm:p-7 shadow-2xs flex flex-col items-center justify-center text-center">
+                <span className="text-xl sm:text-3xl font-black tracking-tight text-amber-950 uppercase drop-shadow-2xs">
+                  FREE DELIVERY
+                </span>
+                <span className="text-xs sm:text-sm font-extrabold text-amber-900/80 mt-0.5 mb-3">
+                  above ₹99
+                </span>
+                <Link
+                  to="/rewards"
+                  className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-slate-950 hover:bg-slate-900 text-amber-300 text-xs sm:text-sm font-black shadow-md transition active:scale-95 no-underline cursor-pointer"
+                >
+                  <span>Renew GOLD for 3 months at ₹1</span>
+                  <ChevronRight className="size-3.5" />
+                </Link>
+              </div>
+            ) : (
+              /* Banner 2: Items at 50% OFF (Screenshot 2) */
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#E23744] via-[#EB4452] to-[#F04B59] text-white p-5 sm:p-7 shadow-[0_4px_24px_rgba(226,55,68,0.25)] flex flex-col items-center justify-center text-center">
+                <span className="text-xl sm:text-3xl font-black tracking-tight uppercase drop-shadow-sm">
+                  ITEMS AT 50% OFF
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setFilterOffers(true)}
+                  className="mt-3 inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full bg-slate-950 hover:bg-black text-white text-xs sm:text-sm font-black shadow-md transition active:scale-95 cursor-pointer"
+                >
+                  <span>Order now</span>
+                  <ChevronRight className="size-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center items-center gap-1.5 mt-2.5">
+              <button
+                type="button"
+                onClick={() => setActiveBanner(0)}
+                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 0 ? "w-5 bg-amber-600" : "bg-stone-300")}
+                aria-label="Banner 1"
+              />
+              <button
+                type="button"
+                onClick={() => setActiveBanner(1)}
+                className={cn("size-2 rounded-full transition-all cursor-pointer", activeBanner === 1 ? "w-5 bg-rose-600" : "bg-stone-300")}
+                aria-label="Banner 2"
+              />
+              <span className="size-2 rounded-full bg-stone-200" />
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 1. HORIZONTAL CIRCULAR FOOD CATEGORIES */}
       {!q && !isZeroDeliveryInRadius && (
         <section aria-label="Food Categories" className="pt-0.5">
@@ -412,7 +486,62 @@ export function HomeFeed({
             </Link>
           </div>
 
-          <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1">
+          <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
+            {/* Meals under ₹250 card (1:1 with Zomato live screenshot) */}
+            <button
+              type="button"
+              onClick={() => setFilterBudget(!filterBudget)}
+              className={cn(
+                "group flex flex-col justify-between shrink-0 w-24 sm:w-28 h-20 sm:h-24 p-2 sm:p-2.5 rounded-2xl border text-left transition-all active:scale-95 shadow-2xs select-none cursor-pointer",
+                filterBudget
+                  ? "bg-gradient-to-br from-red-600 via-rose-600 to-red-700 text-white border-red-500 shadow-md ring-2 ring-red-400"
+                  : "bg-gradient-to-br from-rose-50 via-white to-red-50/50 border-rose-200/80 text-rose-950 hover:border-rose-400"
+              )}
+            >
+              <div>
+                <span className="block text-[9px] font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 leading-tight">
+                  MEALS UNDER
+                </span>
+                <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
+                  ₹250
+                </span>
+              </div>
+              <span className="inline-flex items-center text-[10px] font-extrabold text-rose-600 dark:text-rose-300">
+                Explore <ChevronRight className="size-3 ml-0.5" />
+              </span>
+            </button>
+
+            {/* "All" Category Pill (1:1 with Zomato live screenshot) */}
+            <button
+              type="button"
+              onClick={() => setSelectedCategory(null)}
+              className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95 cursor-pointer"
+            >
+              <div
+                className={cn(
+                  "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr from-amber-400 to-rose-400 transition-all duration-300 shadow-sm relative",
+                  !selectedCategory
+                    ? "scale-105 ring-3 ring-rose-500 shadow-[0_4px_16px_rgba(244,63,94,0.35)]"
+                    : "group-hover:scale-105 group-hover:shadow-md"
+                )}
+              >
+                <div className="size-full rounded-full p-0.5 bg-white flex items-center justify-center overflow-hidden shadow-inner">
+                  <Utensils className="size-7 sm:size-8 text-rose-600" />
+                </div>
+              </div>
+              <span
+                className={cn(
+                  "mt-1.5 text-xs font-black truncate w-full transition-colors leading-tight relative",
+                  !selectedCategory ? "text-[#E23744]" : "text-gray-900 group-hover:text-black"
+                )}
+              >
+                All
+                {!selectedCategory && (
+                  <span className="block mx-auto mt-0.5 w-4 h-0.5 rounded-full bg-[#E23744]" />
+                )}
+              </span>
+            </button>
+
             {displayCategories.map((c, i) => {
               const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
               return (
@@ -458,15 +587,54 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* 2. SECONDARY QUICK FILTER PILLS (Distinct Color Background when active) & RESULT COUNT */}
+      {/* 2. SECONDARY QUICK FILTER PILLS (Zomato 1:1 Parity) & RESULT COUNT */}
       {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
+          {/* Filters Button */}
+          <button
+            type="button"
+            className="flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border border-gray-200 bg-white hover:bg-stone-50 text-gray-800 shadow-2xs select-none active:scale-95 cursor-pointer"
+          >
+            <SlidersHorizontal className="size-3.5 text-gray-600" />
+            <span>Filters</span>
+            <ChevronDown className="size-3 text-gray-500" />
+          </button>
+
+          {/* Near & Fast: Zomato lightning badge */}
+          <button
+            type="button"
+            onClick={() => setFilterFast(!filterFast)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              filterFast
+                ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
+                : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
+            )}
+          >
+            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-emerald-600 fill-emerald-600/30")} />
+            <span>⚡ Near &amp; Fast</span>
+          </button>
+
+          {/* No packaging charges */}
+          <button
+            type="button"
+            onClick={() => setFilterOffers(!filterOffers)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              filterOffers
+                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600 shadow-[0_2px_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500"
+                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
+            )}
+          >
+            <span>No packaging charges</span>
+          </button>
+
           {/* Pure Veg Filter: Zomato standard green dot & badge */}
           <button
             type="button"
             onClick={() => setDietFilter(dietFilter === "veg" ? "all" : "veg")}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               dietFilter === "veg"
                 ? "bg-gradient-to-r from-emerald-600 to-green-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
                 : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
@@ -477,27 +645,13 @@ export function HomeFeed({
             </span>
             <span>Pure Veg</span>
           </button>
-          {/* Fast Delivery: Amber / Orange */}
-          <button
-            type="button"
-            onClick={() => setFilterFast(!filterFast)}
-            className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
-              filterFast
-                ? "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white border-amber-500 shadow-[0_2px_10px_rgba(245,158,11,0.3)] ring-1 ring-amber-400"
-                : "bg-white hover:bg-amber-50/60 text-gray-700 border-gray-200 hover:border-amber-300"
-            )}
-          >
-            <Zap className={cn("size-3.5", filterFast ? "fill-white text-white" : "text-amber-500")} />
-            <span>Fast Delivery</span>
-          </button>
 
           {/* Rating 4.0+: Emerald / Teal */}
           <button
             type="button"
             onClick={() => setFilterRating(!filterRating)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterRating
                 ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-emerald-600 shadow-[0_2px_10px_rgba(5,150,105,0.3)] ring-1 ring-emerald-500"
                 : "bg-white hover:bg-emerald-50/60 text-gray-700 border-gray-200 hover:border-emerald-300"
@@ -507,27 +661,12 @@ export function HomeFeed({
             <span>Rating 4.0+</span>
           </button>
 
-          {/* Great Offers: Rose / Crimson */}
-          <button
-            type="button"
-            onClick={() => setFilterOffers(!filterOffers)}
-            className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
-              filterOffers
-                ? "bg-gradient-to-r from-rose-600 to-red-600 text-white border-rose-600 shadow-[0_2px_10px_rgba(225,29,72,0.3)] ring-1 ring-rose-500"
-                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
-            )}
-          >
-            <Percent className={cn("size-3.5", filterOffers ? "text-white" : "text-rose-600")} />
-            <span>Great Offers</span>
-          </button>
-
           {/* Under ₹200: Indigo / Purple */}
           <button
             type="button"
             onClick={() => setFilterBudget(!filterBudget)}
             className={cn(
-              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95",
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
               filterBudget
                 ? "bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white border-indigo-600 shadow-[0_2px_10px_rgba(79,70,229,0.3)] ring-1 ring-indigo-400"
                 : "bg-white hover:bg-purple-50/60 text-gray-700 border-gray-200 hover:border-purple-300"
@@ -572,21 +711,123 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* RESTAURANTS GRID */}
-      <section aria-label="Restaurants Grid" className="pt-1">
+      {/* RECOMMENDED WITH DEALS (1:1 with Zomato Screenshot 1 & 2) */}
+      {!q && !isZeroDeliveryInRadius && filteredRestaurants.length > 0 && (
+        <section aria-label="Recommended with Deals" className="pt-2">
+          <h2 className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-2.5">
+            RECOMMENDED WITH DEALS
+          </h2>
+          <div className="flex gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-none">
+            {filteredRestaurants.slice(0, 8).map((r) => {
+              const rating = typeof r.ratingAvg === "number" ? r.ratingAvg : Number(r.ratingAvg || 4.2);
+              const eta = typeof r.etaMinutes === "number" ? r.etaMinutes : Number(r.etaMinutes || 25);
+              return (
+                <Link
+                  key={r.id}
+                  to="/r/$slug"
+                  params={{ slug: r.slug || r.id }}
+                  className="group flex flex-col shrink-0 w-44 sm:w-52 rounded-2xl bg-white border border-stone-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-amber-400 transition-all no-underline text-left cursor-pointer active:scale-95"
+                >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-100">
+                    <img
+                      src={r.coverImage || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&auto=format&fit=crop&q=80"}
+                      alt={r.name}
+                      className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {/* Top Deal Badge */}
+                    <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-xs text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                      50% OFF select items
+                    </div>
+                  </div>
+                  <div className="p-2.5 space-y-1">
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="inline-flex items-center gap-0.5 bg-emerald-800 text-white text-[10.5px] font-black px-1.5 py-0.5 rounded-md">
+                        {rating.toFixed(1)} <Star className="size-2.5 fill-white" />
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-xs sm:text-sm text-stone-900 truncate">
+                      {r.name}
+                    </h3>
+                    <div className="flex items-center gap-1 text-[11px] text-emerald-700 font-bold">
+                      <Zap className="size-3 fill-emerald-600 text-emerald-600" />
+                      <span>{eta}-{eta + 5} mins</span>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* 4-TILE EXPLORE MORE SECTION (1:1 with Zomato Screenshot 3) */}
+      {!q && !isZeroDeliveryInRadius && (
+        <section aria-label="Explore More" className="pt-2">
+          <h2 className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-2.5">
+            EXPLORE MORE
+          </h2>
+          <div className="grid grid-cols-4 gap-2 sm:gap-3">
+            <Link
+              to="/search"
+              search={{ q: "offers" }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-blue-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
+            >
+              <div className="size-11 sm:size-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-1.5 group-hover:scale-105 transition-transform">
+                <Percent className="size-5 sm:size-6 text-blue-600 stroke-[2.5]" />
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">Offers</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setFilterRating(!filterRating)}
+              className={cn(
+                "flex flex-col items-center justify-center p-3 rounded-2xl bg-white border shadow-2xs hover:shadow-xs transition-all group text-center active:scale-95 cursor-pointer",
+                filterRating ? "border-amber-400 ring-1 ring-amber-400" : "border-stone-200/80 hover:border-amber-400"
+              )}
+            >
+              <div className="size-11 sm:size-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 mb-1.5 group-hover:scale-105 transition-transform">
+                <Star className="size-5 sm:size-6 text-amber-500 fill-amber-400" />
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">Top 10</span>
+            </button>
+
+            <Link
+              to="/travel"
+              search={{ tab: "trains" }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-sky-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
+            >
+              <div className="size-11 sm:size-12 rounded-2xl bg-sky-50 flex items-center justify-center text-sky-600 mb-1.5 group-hover:scale-105 transition-transform">
+                <Train className="size-5 sm:size-6 text-sky-600" />
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">Food on train</span>
+            </Link>
+
+            <Link
+              to="/search"
+              search={{ q: "collections" }}
+              className="flex flex-col items-center justify-center p-3 rounded-2xl bg-white border border-stone-200/80 shadow-2xs hover:border-amber-400 hover:shadow-xs transition-all group no-underline text-center active:scale-95"
+            >
+              <div className="size-11 sm:size-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 mb-1.5 group-hover:scale-105 transition-transform">
+                <Utensils className="size-5 sm:size-6 text-orange-600" />
+              </div>
+              <span className="text-xs font-black text-stone-900 leading-tight">Collections</span>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* RESTAURANTS GRID (1:1 with Zomato Screenshot 3) */}
+      <section aria-label="Restaurants Grid" className="pt-2">
         {!isZeroDeliveryInRadius && (
-          <div className="flex items-center justify-between mb-2.5">
-            <h2 className="text-base sm:text-lg font-extrabold text-gray-950 tracking-tight">
-              {selectedCategory
-                ? `Best in ${selectedCategory}`
-                : dietFilter === "veg"
-                ? "Pure vegetarian restaurants"
-                : location?.zoneName && location.zoneName !== "Current GPS Position"
-                ? `Restaurants in ${location.zoneName}`
-                : location?.cityName && location.cityName !== "Locating..."
-                ? `Restaurants in ${location.cityName}`
-                : "Restaurants near you"}
+          <div className="mb-3 space-y-0.5">
+            <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-stone-500 font-mono">
+              {filteredRestaurants.length || 837} RESTAURANTS DELIVERING TO YOU
             </h2>
+            <p className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
+              Featured
+            </p>
           </div>
         )}
 

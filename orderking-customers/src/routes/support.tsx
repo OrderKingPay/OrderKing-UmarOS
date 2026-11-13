@@ -16,7 +16,11 @@ import {
   ExternalLink,
   ArrowRight,
   ArrowDown,
+  MessageSquare,
+  Send,
+  Loader2,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { CustomerShell } from "@/components/market/shell";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/providers";
@@ -26,6 +30,8 @@ import { listMyOrders } from "@/lib/server/orders";
 import {
   diagnoseAndResolveOrder,
   askAiSupportAssistant,
+  listTicketMessages,
+  sendCustomerTicketReply,
   type AiChatMessage,
   type ResolutionResult,
   type SupportIssueType,
@@ -45,6 +51,128 @@ const TOPICS = [
   "delivery",
   "other",
 ] as const;
+
+function TicketConversationView({ ticketId }: { ticketId: string }) {
+  const [open, setOpen] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [isSending, setIsSending] = useState(false);
+
+  const messagesQ = useQuery({
+    queryKey: ["ticket-messages", ticketId],
+    queryFn: () => listTicketMessages({ data: { ticketId } }),
+    enabled: open,
+    refetchInterval: open ? 3000 : false,
+  });
+
+  const messages = messagesQ.data?.messages ?? [];
+
+  const handleSend = async () => {
+    const text = replyText.trim();
+    if (!text || isSending) return;
+    setIsSending(true);
+    try {
+      await sendCustomerTicketReply({ data: { ticketId, message: text } });
+      setReplyText("");
+      toast.success("Message sent to OrderKing Support.");
+      void messagesQ.refetch();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message.");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 pt-2.5 border-t border-amber-900/10">
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-900 hover:underline cursor-pointer"
+        >
+          <MessageSquare className="size-3.5" />
+          <span>{open ? "Hide Conversation" : `View & Reply to Founder / Support (${messages.length})`}</span>
+        </button>
+        {open && (
+          <span className="text-[10px] text-emerald-700 font-mono flex items-center gap-1">
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Live Support
+          </span>
+        )}
+      </div>
+
+      {open && (
+        <div className="mt-2.5 space-y-2.5 rounded-xl border border-amber-200/80 bg-amber-50/40 p-3">
+          <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
+            {messagesQ.isLoading && messages.length === 0 ? (
+              <p className="text-center py-3 text-xs text-stone-500">Loading conversation...</p>
+            ) : messages.length === 0 ? (
+              <p className="text-center py-3 text-xs text-stone-500">No replies yet. OrderKing Support will respond directly here.</p>
+            ) : (
+              messages.map((m) => {
+                const isMe = m.authorType === "customer";
+                return (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      "flex flex-col max-w-[85%] rounded-2xl p-2.5 text-xs space-y-0.5",
+                      isMe
+                        ? "ml-auto bg-amber-600 text-white shadow-xs"
+                        : "mr-auto bg-white border border-amber-200 text-stone-900 shadow-xs"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2 text-[10px]">
+                      <span className={cn("font-bold", isMe ? "text-amber-100" : "text-amber-800")}>
+                        {m.authorName}
+                      </span>
+                      <span className={cn("text-[9px] font-mono", isMe ? "text-amber-200" : "text-stone-400")}>
+                        {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-wrap leading-relaxed">{m.body}</p>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 border-t border-amber-200/60">
+            <input
+              type="text"
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void handleSend();
+                }
+              }}
+              placeholder="Type message to Founder / Support..."
+              className="flex-1 rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500"
+              disabled={isSending}
+            />
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleSend}
+              disabled={isSending || !replyText.trim()}
+              className="h-8 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
+            >
+              {isSending ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <>
+                  <Send className="size-3.5 mr-1" />
+                  Send
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function SupportPage() {
   const { t } = useT();
@@ -714,6 +842,7 @@ export function SupportPage() {
                   </div>
                   <p className="mt-1.5 text-stone-900 font-medium text-xs">{tk.message}</p>
                   <p className="mt-1 text-[10px] text-stone-400 font-mono">{new Date(tk.createdAt).toLocaleString()}</p>
+                  <TicketConversationView ticketId={tk.id} />
                 </li>
               ))
             )}

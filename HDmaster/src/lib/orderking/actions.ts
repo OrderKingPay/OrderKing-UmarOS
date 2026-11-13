@@ -3102,6 +3102,34 @@ export const resolveCustomerDisputeRefundFn = createServerFn({ method: "POST" })
     }
   });
 
+export const loadDisputeMessagesFn = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .validator((input: { ticketId: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { listDisputeMessages } = await import("./server/commercial-dials.server");
+      const res = await listDisputeMessages(ws.ctx, data.ticketId);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
+export const sendDisputeAdminReplyFn = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { ticketId: string; message: string }) => input)
+  .handler(async ({ context, data }) => {
+    try {
+      const ws = await workspace(context.userId);
+      const { sendDisputeAdminReply } = await import("./server/commercial-dials.server");
+      const res = await sendDisputeAdminReply(ws, data);
+      return res;
+    } catch (err) {
+      return fail(err);
+    }
+  });
+
 
 export const loadCommercialBypassDialsFn = createServerFn({ method: "GET" })
   .middleware([authMiddleware])

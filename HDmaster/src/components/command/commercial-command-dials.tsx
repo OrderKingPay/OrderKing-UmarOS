@@ -38,6 +38,9 @@ import {
   Plus,
   Trash2,
   SlidersHorizontal,
+  MessageSquare,
+  Send,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,6 +63,8 @@ import {
   syncTboCredentialsAndTokenFn,
   loadCustomerSupportDisputesFn,
   resolveCustomerDisputeRefundFn,
+  loadDisputeMessagesFn,
+  sendDisputeAdminReplyFn,
   loadGeofencingThreatDialsFn,
   updateGeofencingThreatDialsFn,
   addThreatZoneExclusionFn,
@@ -2373,6 +2378,149 @@ function TravelPartnerGovernanceSection() {
 // 10. CENTRAL CUSTOMER SUPPORT DISPUTE QUEUE & 1-TAP REFUND ENGINE
 // ==========================================================================
 
+function DisputeChatThread({ ticketId, customerName }: { ticketId: string; customerName: string }) {
+  const [open, setOpen] = useState(false);
+  const [reply, setReply] = useState("");
+  const [isSending, setIsSending] = useState(false);
+  const qc = useQueryClient();
+
+  const messagesQ = useQuery({
+    queryKey: ["dispute-messages", ticketId],
+    queryFn: () => loadDisputeMessagesFn({ data: { ticketId } }),
+    enabled: open,
+    refetchInterval: open ? 3000 : false,
+  });
+
+  const messages = messagesQ.data && (messagesQ.data as any).ok ? (messagesQ.data as any).messages : [];
+
+  const handleSend = async () => {
+    const text = reply.trim();
+    if (!text || isSending) return;
+    setIsSending(true);
+    try {
+      const res = await sendDisputeAdminReplyFn({ data: { ticketId, message: text } });
+      if (res && (res as any).ok) {
+        setReply("");
+        toast.success("Reply delivered to customer in real-time.");
+        void qc.invalidateQueries({ queryKey: ["dispute-messages", ticketId] });
+        void qc.invalidateQueries({ queryKey: ["customer-support-disputes"] });
+      } else {
+        toast.error((res as any)?.message || "Failed to send reply");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send message");
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 pt-3 border-t border-border/40">
+      <div className="flex items-center justify-between">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setOpen(!open)}
+          className="h-7 px-2.5 text-xs font-bold border-amber-500/40 text-amber-300 hover:bg-amber-950/40"
+        >
+          <MessageSquare className="size-3.5 mr-1.5" />
+          {open ? "Hide Live Chat" : `Live Chat with ${customerName} (${messages.length})`}
+        </Button>
+        {open && (
+          <span className="text-[10px] text-muted font-mono flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Live PostgreSQL Channel
+          </span>
+        )}
+      </div>
+
+      {open && (
+        <div className="mt-2.5 space-y-2.5 rounded-xl border border-border/50 bg-black/50 p-3">
+          <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+            {messagesQ.isLoading && messages.length === 0 ? (
+              <div className="text-center py-4 text-xs text-muted">
+                Connecting to customer chat thread...
+              </div>
+            ) : messages.length === 0 ? (
+              <div className="text-center py-4 text-xs text-muted">
+                No messages yet. Send a direct message to {customerName}.
+              </div>
+            ) : (
+              messages.map((m: any) => {
+                const isAdmin = m.authorType === "employee";
+                const isSystem = m.authorType === "system";
+                if (isSystem) {
+                  return (
+                    <div key={m.id} className="text-center my-1">
+                      <span className="text-[10px] text-muted italic bg-white/5 px-2 py-0.5 rounded-full">
+                        {m.body}
+                      </span>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      "flex flex-col max-w-[85%] rounded-xl p-2.5 text-xs space-y-1",
+                      isAdmin
+                        ? "ml-auto bg-amber-950/60 border border-amber-500/40 text-amber-100"
+                        : "mr-auto bg-slate-900 border border-slate-700/60 text-slate-100"
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2 text-[10px]">
+                      <span className={cn("font-bold", isAdmin ? "text-amber-300" : "text-emerald-400")}>
+                        {isAdmin ? "Founder / Admin (You)" : customerName}
+                      </span>
+                      <span className="text-muted text-[9px] font-mono">
+                        {new Date(m.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-wrap leading-relaxed">{m.body}</p>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 pt-2 border-t border-border/30">
+            <input
+              type="text"
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  void handleSend();
+                }
+              }}
+              placeholder={`Reply directly to ${customerName}...`}
+              className="flex-1 rounded-lg border border-border/60 bg-black/60 px-3 py-1.5 text-xs text-white placeholder:text-muted focus:border-amber-400 focus:outline-none"
+              disabled={isSending}
+            />
+            <Button
+              size="sm"
+              onClick={handleSend}
+              disabled={isSending || !reply.trim()}
+              className="h-8 px-3 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs"
+            >
+              {isSending ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <>
+                  <Send className="size-3.5 mr-1" />
+                  Send
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CustomerSupportDisputeQueueSection() {
   const qc = useQueryClient();
 
@@ -2606,6 +2754,7 @@ export function CustomerSupportDisputeQueueSection() {
                       </div>
                     )}
                   </div>
+                  <DisputeChatThread ticketId={d.ticketId} customerName={d.customerName} />
                 </div>
               );
             })}

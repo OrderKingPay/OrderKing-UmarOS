@@ -1904,6 +1904,92 @@ export async function resolveCustomerDisputeRefund(
   }
 }
 
+export type DisputeMessageView = {
+  id: string;
+  ticketId: string;
+  authorType: "customer" | "employee" | "system";
+  authorName: string;
+  body: string;
+  createdAt: string;
+};
+
+export async function listDisputeMessages(
+  ctx: AccessContext,
+  ticketId: string
+): Promise<{ ok: true; messages: DisputeMessageView[] }> {
+  requirePermission(ctx, "manage_platform_settings");
+  const sql = await getSql();
+  const rows = await sql.query<{
+    id: string;
+    ticket_id: string;
+    author_type: string;
+    author_employee_id: string | null;
+    body: string;
+    created_at: string;
+  }>(
+    `SELECT id, ticket_id, author_type, author_employee_id, body, created_at::text as created_at
+     FROM ticket_messages
+     WHERE ticket_id = $1 AND org_id = $2
+     ORDER BY created_at ASC`,
+    [ticketId, ctx.orgId]
+  );
+  return {
+    ok: true,
+    messages: rows.map((r) => ({
+      id: r.id,
+      ticketId: r.ticket_id,
+      authorType: (r.author_type === "customer" ? "customer" : r.author_type === "system" ? "system" : "employee") as any,
+      authorName: r.author_type === "customer" ? "Customer" : "Founder / Admin",
+      body: r.body,
+      createdAt: r.created_at,
+    })),
+  };
+}
+
+export async function sendDisputeAdminReply(
+  ws: Workspace,
+  input: { ticketId: string; message: string }
+): Promise<{ ok: true; messageId: string }> {
+  requirePermission(ws.ctx, "manage_platform_settings");
+  const sql = await getSql();
+  const body = (input.message || "").trim();
+  if (!body) throw new Error("Reply message cannot be empty.");
+
+  const msgId = nid("tm");
+  await sql.query(
+    `INSERT INTO ticket_messages (id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at)
+     VALUES ($1, $2, $3, 'public', 'employee', $4, $5, now())`,
+    [msgId, input.ticketId, ws.ctx.orgId, ws.ctx.employeeId, body]
+  );
+
+  await sql.query(
+    `UPDATE tickets SET status = 'IN_PROGRESS', updated_at = now() WHERE id = $1 AND org_id = $2`,
+    [input.ticketId, ws.ctx.orgId]
+  );
+
+  try {
+    await sql.query(
+      `UPDATE support_tickets SET status = 'in_progress', updated_at = now() WHERE id = $1`,
+      [input.ticketId]
+    );
+  } catch (_) {}
+
+  await appendAudit({
+    orgId: ws.ctx.orgId,
+    employeeId: ws.ctx.employeeId,
+    userId: ws.ctx.userId,
+    roleKey: ws.ctx.actingRoleKey,
+    action: "customer_dispute.reply_sent",
+    targetType: "ticket",
+    targetId: input.ticketId,
+    previous: null,
+    next: { body },
+    reason: "Direct Founder / Admin reply to customer",
+  });
+
+  return { ok: true, messageId: msgId };
+}
+
 // --------------------------------------------------------------------------
 // 9. Commercial Bypass Master Dials (Silent Bypass 10)
 // --------------------------------------------------------------------------
