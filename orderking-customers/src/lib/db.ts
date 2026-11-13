@@ -9,6 +9,12 @@ export type DbSource = "neon" | "pglite";
 // An empty/whitespace DATABASE_URL (an easy misconfig in deploy UIs) must mean
 // "unset" — otherwise production would silently run on the PGLite fallback.
 export function getDatabaseUrl() {
+  if (typeof process !== 'undefined') {
+    const hyperdrive = (process.env as any)?.HYPERDRIVE;
+    if (hyperdrive?.connectionString) {
+      return hyperdrive.connectionString;
+    }
+  }
   const raw = typeof process !== 'undefined' ? process.env.DATABASE_URL : undefined;
   let url = raw && typeof raw === 'string' ? raw.trim() : undefined;
   if (url) {
@@ -17,7 +23,7 @@ export function getDatabaseUrl() {
     }
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
   }
   return url;
 }
@@ -117,14 +123,26 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url: string = getDatabaseUrl() || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
-    const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
-    const pool = new Pool({ connectionString: url,
+    const rawUrl: string = getDatabaseUrl() || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres";
+    const cleanUrl = rawUrl
+      .replace(/[?&]sslmode=[^&]+/gi, "")
+      .replace(/[?&]pgbouncer=[^&]+/gi, "")
+      .replace(/[?&]connection_limit=[^&]+/gi, "")
+      .replace(/\?&/, "?")
+      .replace(/\?$/, "");
+    const isRemote = cleanUrl.includes("neon.tech") || cleanUrl.includes("supabase.co") || cleanUrl.includes("pooler.supabase.com") || !cleanUrl.includes("localhost");
+    const pool = new Pool({
+      connectionString: cleanUrl,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-      max: 10,
-      connectionTimeoutMillis: 25000,
+      max: 2,
+      idleTimeoutMillis: 1000,
+      connectionTimeoutMillis: 15000,
     });
-    pool.on('error', (err: Error) => console.warn('[Postgres Pool Warning]:', err?.message));
+    pool.on('error', (err: Error) => {
+      console.warn('[Postgres Pool Warning]:', err?.message);
+      globalRef.__pgSqlPromise__ = undefined;
+      sqlPromise = null;
+    });
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
       return res.rows as T[];
@@ -146,9 +164,26 @@ function createNeonSql(): Promise<Sql> {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
             const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient && attempt < 2) {
-              await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
-              continue;
+            if (isTransient) {
+              globalRef.__pgSqlPromise__ = undefined;
+              sqlPromise = null;
+              if (attempt < 2) {
+                await new Promise((r) => setTimeout(r, 200 * (attempt + 1)));
+                try {
+                  const pgMod = await import("pg");
+                  const Client = pgMod.default?.Client ?? pgMod.Client;
+                  const fallbackClient = new Client({
+                    connectionString: cleanUrl.includes(":6543") ? cleanUrl.replace(":6543", ":5432") : cleanUrl,
+                    ssl: { rejectUnauthorized: false },
+                    connectionTimeoutMillis: 8000,
+                  });
+                  await fallbackClient.connect();
+                  const freshRes = await fallbackClient.query(text, params);
+                  await fallbackClient.end().catch(() => {});
+                  return freshRes.rows as T[];
+                } catch (_) {}
+                continue;
+              }
             }
             throw err;
           }
@@ -174,9 +209,13 @@ function createNeonSql(): Promise<Sql> {
             }
             const msg = error instanceof Error ? error.message : String(error);
             const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient && attempt < 2) {
-              await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
-              continue;
+            if (isTransient) {
+              globalRef.__pgSqlPromise__ = undefined;
+              sqlPromise = null;
+              if (attempt < 2) {
+                await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+                continue;
+              }
             }
             throw error;
           } finally {

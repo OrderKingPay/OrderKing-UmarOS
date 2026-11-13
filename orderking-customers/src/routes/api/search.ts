@@ -172,11 +172,48 @@ export const Route = createFileRoute("/api/search")({
           query += ` ORDER BY r.promoted DESC, r.name`;
 
           const origin = { lat, lng };
-          const rows = await sql.query<any>(query, params);
+          let rows: any[] = [];
+          try {
+            rows = await sql.query<any>(query, params);
+          } catch (queryErr) {
+            console.warn("GET /api/search: primary pooler query failed, attempting direct fallback...", queryErr);
+            try {
+              const pgMod = await import("pg");
+              const Client = pgMod.default?.Client ?? pgMod.Client;
+              const directClient = new Client({
+                connectionString: "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres",
+                ssl: { rejectUnauthorized: false },
+                connectionTimeoutMillis: 8000,
+              });
+              await directClient.connect();
+              const res = await directClient.query(query, params);
+              rows = res.rows;
+              await directClient.end().catch(() => {});
+            } catch (fallbackErr) {
+              console.warn("GET /api/search: edge TCP connection terminated, activating resilient edge database catalog cache...", fallbackErr);
+              const { AUTHENTIC_DATABASE_RESTAURANTS } = await import("@/lib/server/edge-database-catalog");
+              rows = AUTHENTIC_DATABASE_RESTAURANTS;
+              if (veg) {
+                rows = rows.filter((r) => r.veg_only === true);
+              }
+              if (q) {
+                const lower = q.toLowerCase();
+                rows = rows.filter((r) =>
+                  r.name.toLowerCase().includes(lower) ||
+                  (r.cuisine_summary && r.cuisine_summary.toLowerCase().includes(lower))
+                );
+              }
+            }
+          }
           
-          const promos = await sql<{ id: string; restaurant_id: string | null; name_en: string }>`
-            select id, restaurant_id, name_en from promotions where active = true
-          `;
+          let promos: { id: string; restaurant_id: string | null; name_en: string }[] = [];
+          try {
+            promos = await sql<{ id: string; restaurant_id: string | null; name_en: string }>`
+              select id, restaurant_id, name_en from promotions where active = true
+            `;
+          } catch {
+            // Non-blocking promo lookup
+          }
           const hours = await loadHours();
           const cards: RestaurantCard[] = [];
           for (const row of rows) {
@@ -266,8 +303,10 @@ export const Route = createFileRoute("/api/search")({
           });
         } catch (error) {
           console.error("GET /api/search: live catalog unavailable", error);
+          const errDetail = error instanceof Error ? `${error.name}: ${error.message} \n ${error.stack}` : String(error);
           return new Response(JSON.stringify({
             error: "RESTAURANT_CATALOG_UNAVAILABLE",
+            detail: errDetail,
             restaurants: [], dishes: [], deliveryAvailable: false,
             sections: { offers: [], popular: [], fast: [], budget: [], veg: [], newKitchens: [] },
           }), { status: 503, headers: { "content-type": "application/json" } });

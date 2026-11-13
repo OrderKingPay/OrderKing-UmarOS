@@ -7,3 +7,8 @@ compatibility_flags = ["nodejs_compat"]
 [[kv_namespaces]]
 binding = "CORRIDOR_TARIFFS_KV"
 id = "214589fc6e304255b95fc3e172c86c2c"
+
+# Cloudflare Hyperdrive PostgreSQL Accelerator: Zero-Latency Edge Database Connection
+[[hyperdrive]]
+binding = "HYPERDRIVE"
+id = "71bc5bdf1638473cbed7adf45f26e038"

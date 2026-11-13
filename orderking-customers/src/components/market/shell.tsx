@@ -240,27 +240,15 @@ export function CustomerShell({
           <div className="flex items-center justify-between gap-1.5 sm:gap-3">
             {/* Row 1 Left: OrderKing or KingPay Logo (context-aware) + Delivery Address Selector */}
             <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
-              {isKingPayDomain ? (
-                <Link to="/travel" className="flex items-center gap-1.5 no-underline group shrink-0">
-                  <div className="relative">
-                    <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-                  </div>
-                  <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-orange-400" : "text-orange-950")}>
-                    KingPay
-                  </span>
-                </Link>
-              ) : (
-                <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
-                  <div className="relative">
-                    <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
-                    <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-                  </div>
-                  <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-white" : "text-gray-950")}>
-                    OrderKing
-                  </span>
-                </Link>
-              )}
+              <Link to="/" className="flex items-center gap-1.5 no-underline group shrink-0">
+                <div className="relative">
+                  <OrderKingMark className="size-8 sm:size-9 transition-transform duration-300 group-hover:scale-105 drop-shadow-2xs" />
+                  <span className="absolute -top-0.5 -right-0.5 size-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                </div>
+                <span className={cn("text-base sm:text-lg font-black tracking-tight leading-none hidden xs:inline", isDark ? "text-white" : "text-gray-950")}>
+                  OrderKing
+                </span>
+              </Link>
 
               {/* Delivery Address Selector (Location Pin): strictly for food delivery, hidden on KingPay/Travel */}
               {!isKingPayDomain && (
