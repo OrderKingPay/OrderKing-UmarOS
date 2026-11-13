@@ -8,6 +8,7 @@ import {
   Languages,
   UtensilsCrossed,
   Plane,
+  Train,
   GraduationCap,
   Briefcase,
   Sparkles,
@@ -294,7 +295,7 @@ export function CustomerShell({
 
             {/* Row 1 Center: Fork & Spoon "Food" and KingPay Symbol Pill '✈️ 🚆 🎓' */}
             <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-              {/* Minimal Micro-Pill 1: Food Delivery ( 🍔 ) */}
+              {/* Minimal Micro-Pill 1: Food Delivery (UtensilsCrossed) */}
               <Link
                 to="/"
                 title="OrderKing Food Delivery"
@@ -310,7 +311,7 @@ export function CustomerShell({
                       : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
                 )}
               >
-                <span className="text-sm sm:text-base leading-none select-none">🍔</span>
+                <UtensilsCrossed className="size-3.5 text-amber-600 shrink-0" />
                 <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
@@ -344,7 +345,7 @@ export function CustomerShell({
                   title="KingPay Super-App (Flights, Trains, AI Tutor)"
                   aria-label="Flights, Trains, AI Tutor"
                   className={cn(
-                    "inline-flex items-center justify-center px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
+                    "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
                     isKingPayDomain || path.startsWith("/tutor")
                       ? isDark
                         ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
@@ -354,7 +355,9 @@ export function CustomerShell({
                         : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
                   )}
                 >
-                  <span className="text-xs sm:text-sm tracking-wider leading-none select-none">✈️ 🚆 🎓</span>
+                  <Plane className="size-3 text-sky-600" />
+                  <Train className="size-3 text-sky-600" />
+                  <GraduationCap className="size-3 text-sky-600" />
                 </Link>
               )}
             </nav>
@@ -609,8 +612,9 @@ export function CustomerShell({
                   </button>
                 </div>
               </div>
+            </div>
           )}
-            </header>
+        </header>
 
 
         {/* Main Content Area */}
