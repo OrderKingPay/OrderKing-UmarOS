@@ -22,17 +22,17 @@ const CORE_SOUNDBOX_LANGUAGES: {
   native: string;
   sampleAmount: number;
 }[] = [
-  { code: "en", label: "English", native: "English", sampleAmount: 450 },
-  { code: "hi", label: "Hindi", native: "हिन्दी", sampleAmount: 450 },
-  { code: "bn", label: "Bengali", native: "বাংলা", sampleAmount: 450 },
-  { code: "gu", label: "Gujarati", native: "ગુજરાતી", sampleAmount: 450 },
-  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ", sampleAmount: 450 },
-  { code: "ml", label: "Malayalam", native: "മലയാളം", sampleAmount: 450 },
-  { code: "mr", label: "Marathi", native: "मराठी", sampleAmount: 450 },
-  { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ", sampleAmount: 450 },
-  { code: "ta", label: "Tamil", native: "தமிழ்", sampleAmount: 450 },
-  { code: "te", label: "Telugu", native: "తెలుగు", sampleAmount: 450 },
-];
+    { code: "en", label: "English", native: "English", sampleAmount: 450 },
+    { code: "hi", label: "Hindi", native: "हिन्दी", sampleAmount: 450 },
+    { code: "bn", label: "Bengali", native: "বাংলা", sampleAmount: 450 },
+    { code: "gu", label: "Gujarati", native: "ગુજરાતી", sampleAmount: 450 },
+    { code: "kn", label: "Kannada", native: "ಕನ್ನಡ", sampleAmount: 450 },
+    { code: "ml", label: "Malayalam", native: "മലയാളം", sampleAmount: 450 },
+    { code: "mr", label: "Marathi", native: "मराठी", sampleAmount: 450 },
+    { code: "pa", label: "Punjabi", native: "ਪੰਜਾਬੀ", sampleAmount: 450 },
+    { code: "ta", label: "Tamil", native: "தமிழ்", sampleAmount: 450 },
+    { code: "te", label: "Telugu", native: "తెలుగు", sampleAmount: 450 },
+  ];
 
 export function KingpaySoundboxSettingsPanel({
   restaurantId: _restaurantId,
@@ -198,11 +198,10 @@ export function KingpaySoundboxSettingsPanel({
                     key={l.code}
                     type="button"
                     onClick={() => setSelectedLang(l.code)}
-                    className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
-                      isSelected
-                        ? "border-[#E23744] bg-red-50 text-red-900 shadow-xs"
-                        : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
-                    }`}
+                    className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${isSelected
+                      ? "border-[#E23744] bg-red-50 text-red-900 shadow-xs"
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-100"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-xs">{l.native}</span>
@@ -271,11 +270,10 @@ export function KingpaySoundboxSettingsPanel({
                     key={amt}
                     type="button"
                     onClick={() => setTestAmount(amt)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
-                      testAmount === amt
-                        ? "bg-[#E23744] text-white shadow-xs"
-                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                    }`}
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${testAmount === amt
+                      ? "bg-[#E23744] text-white shadow-xs"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                      }`}
                   >
                     ₹{amt}
                   </button>

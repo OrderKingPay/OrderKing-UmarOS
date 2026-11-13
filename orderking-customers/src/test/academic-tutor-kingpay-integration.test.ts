@@ -167,49 +167,6 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
       const { getSql } = await import("../lib/db");
       const sql = await getSql();
 
-      // Ensure tables exist
-      await sql`
-        CREATE TABLE IF NOT EXISTS kingpay_wallets (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL UNIQUE,
-          balance_paise BIGINT NOT NULL DEFAULT 0,
-          king_coins BIGINT NOT NULL DEFAULT 0,
-          created_at TIMESTAMPTZ DEFAULT NOW(),
-          updated_at TIMESTAMPTZ DEFAULT NOW()
-        );
-      `;
-      await sql`
-        CREATE TABLE IF NOT EXISTS kingpay_transactions (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          amount_paise BIGINT NOT NULL,
-          type TEXT NOT NULL,
-          description TEXT NOT NULL,
-          created_at TIMESTAMPTZ DEFAULT NOW()
-        );
-      `;
-      await sql`
-        CREATE TABLE IF NOT EXISTS public.tutor_bookings (
-          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-          user_id TEXT NOT NULL,
-          tutor_id TEXT NOT NULL,
-          tutor_name TEXT NOT NULL,
-          subject TEXT NOT NULL,
-          grade TEXT NOT NULL,
-          board TEXT NOT NULL,
-          scheduled_time TEXT NOT NULL,
-          delivery_mode TEXT NOT NULL,
-          amount_paise BIGINT NOT NULL,
-          escrow_status TEXT NOT NULL DEFAULT 'HELD',
-          meeting_link TEXT,
-          student_name TEXT,
-          student_contact TEXT,
-          notes TEXT,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        );
-      `;
-
       const testUserId = `real-test-student-${Date.now()}`;
       const testEmail = `${testUserId}@orderking.in`;
       const startingPaise = 50000; // ₹500.00

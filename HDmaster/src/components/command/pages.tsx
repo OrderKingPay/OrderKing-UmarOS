@@ -1862,7 +1862,7 @@ function MarketingPage() {
                 <span>Midnight Feast (10 PM - 2 AM)</span>
                 <span className="text-emerald-600 font-mono">+88% Order Lift</span>
               </div>
-              <p className="mt-1 text-muted text-[11px]">Free delivery threshold subsidized by night-owl partner kitchen volume.</p>
+              <p className="mt-1 text-muted text-[11px]">Delivery fee waiver threshold subsidized by night-owl partner kitchen volume.</p>
             </div>
           </div>
         </Panel>

@@ -146,7 +146,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
       try {
         const saved = window.localStorage.getItem("umar_os_command_history_v1");
         if (saved) return JSON.parse(saved);
-      } catch {}
+      } catch { }
     }
     return [];
   });
@@ -167,9 +167,9 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
           setLiveConfig((prev) => {
             const next = { ...prev };
             for (const row of data as UmarOsConfigRow[]) {
-// @ts-ignore
+              // @ts-ignore
               const k = row.config_key || row.key;
-// @ts-ignore
+              // @ts-ignore
               const v = row.config_value || row.value;
               if (k && v) {
                 next[k] = { ...(next[k] || {}), ...v };
@@ -187,11 +187,11 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         "postgres_changes",
         { event: "*", schema: "public", table: "umar_os_config" },
         (payload: any) => {
-// @ts-ignore
+          // @ts-ignore
           const row = payload?.new as UmarOsConfigRow;
-// @ts-ignore
+          // @ts-ignore
           const k = row?.config_key || row?.key;
-// @ts-ignore
+          // @ts-ignore
           const v = row?.config_value || row?.value;
           if (k && v) {
             setLiveConfig((prev) => ({
@@ -232,7 +232,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         if (typeof window !== "undefined") {
           window.localStorage.setItem("umar_os_command_history_v1", JSON.stringify(next));
         }
-      } catch {}
+      } catch { }
       return next;
     });
   }, []);
@@ -293,8 +293,8 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
               typeof parsed.patch.platform_fee_paise === "number"
                 ? parsed.patch.platform_fee_paise
                 : typeof parsed.patch.food_platform_fee === "number"
-                ? Math.round(parsed.patch.food_platform_fee * 100)
-                : undefined,
+                  ? Math.round(parsed.patch.food_platform_fee * 100)
+                  : undefined,
             defaultCommissionPercent: parsed.patch.default_commission_percent,
             surgeMultiplier: parsed.patch.surge_multiplier,
           } as any,
@@ -407,12 +407,12 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
       )}
     >
       {/* Decorative Top Accent Glow */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-emerald-500 to-sky-500" />
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-emerald-500 to-sky-500" />
 
       {/* Header: Title + Live Status */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-orange-500 to-emerald-600 flex items-center justify-center text-slate-950 shadow-md">
+          <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-amber-500 to-emerald-600 flex items-center justify-center text-slate-950 shadow-md">
             <Sparkles className="h-4 w-4 fill-slate-950" />
           </div>
           <div>
@@ -420,7 +420,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
               <h2 className="text-xs sm:text-sm font-black tracking-tight text-white uppercase flex items-center gap-1.5">
                 <span>Umar AI Command</span>
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-orange-500/20 text-orange-300 border border-orange-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 Live
               </span>
             </div>
@@ -437,14 +437,14 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
               "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border transition-colors",
               realtimeConnected
                 ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                : "bg-orange-500/10 text-orange-300 border-orange-500/30"
+                : "bg-amber-500/10 text-amber-300 border-amber-500/30"
             )}
             title="Real-time synchronization status with Supabase `umar_os_config`"
           >
             <span
               className={cn(
                 "h-2 w-2 rounded-full",
-                realtimeConnected ? "bg-emerald-400 animate-pulse" : "bg-orange-400"
+                realtimeConnected ? "bg-emerald-400 animate-pulse" : "bg-amber-400"
               )}
             />
             <span>{realtimeConnected ? "Connected" : "Active"}</span>
@@ -534,7 +534,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
       {/* Preset Directives Chips for 1-Tap Execution */}
       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
-          <Zap className="h-3 w-3 text-orange-400" /> Presets:
+          <Zap className="h-3 w-3 text-amber-400" /> Presets:
         </span>
         {PRESET_DIRECTIVES.map((chip, idx) => (
           <button
@@ -579,9 +579,9 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
           <div className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
             <span>Travel PNR Fee</span>
-            <Plane className="h-3 w-3 text-orange-400" />
+            <Plane className="h-3 w-3 text-amber-400" />
           </div>
-          <div className="text-sm font-black text-orange-400 mt-0.5">
+          <div className="text-sm font-black text-amber-400 mt-0.5">
             ₹{pnrFee}
           </div>
           <div className="text-[9px] text-slate-400">Convenience gate</div>
@@ -612,9 +612,9 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         <div className="bg-slate-900/80 rounded-xl p-2.5 border border-slate-800/80">
           <div className="text-[10px] uppercase font-bold text-slate-400 flex items-center justify-between">
             <span>Surge Rate</span>
-            <Zap className="h-3 w-3 text-orange-400" />
+            <Zap className="h-3 w-3 text-yellow-400" />
           </div>
-          <div className="text-sm font-black text-orange-400 mt-0.5">
+          <div className="text-sm font-black text-yellow-400 mt-0.5">
             {surgeMultiplier}x
           </div>
           <div className="text-[9px] text-slate-400">Realtime surge multiplier</div>
@@ -639,7 +639,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-3 space-y-2 max-h-48 overflow-y-auto">
           <div className="flex items-center justify-between text-xs font-bold text-slate-300 border-b border-slate-800 pb-1.5">
             <span className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-orange-400" />
+              <Clock className="h-3.5 w-3.5 text-amber-400" />
               <span>Founder Directives Audit Log</span>
             </span>
             <button
@@ -648,7 +648,7 @@ export function UmarAiCommandBar({ className, onConfigChange }: UmarAiCommandBar
                 setHistory([]);
                 try {
                   window.localStorage.removeItem("umar_os_command_history_v1");
-                } catch {}
+                } catch { }
               }}
               className="text-[10px] text-slate-400 hover:text-rose-400"
             >

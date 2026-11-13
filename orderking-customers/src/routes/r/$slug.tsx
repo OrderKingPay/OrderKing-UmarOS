@@ -480,7 +480,7 @@ function RestaurantPage() {
                     <span className="block text-[10px] uppercase font-bold text-zinc-400">Delivery Fee</span>
                     <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                       {restaurant.card.deliveryFeePaise === 0
-                        ? "Free Delivery"
+                        ? "₹0 (Waived)"
                         : formatPaise(restaurant.card.deliveryFeePaise, { locale })}
                     </span>
                   </div>

@@ -15,7 +15,7 @@ describe('Universal Superintelligence Engine', () => {
         instruction: 'Get operations summary',
         context: {}
       });
-      
+
       const res = await sql.query(`SELECT state FROM autonomous_tasks WHERE owner = 'test_owner' ORDER BY created_at DESC LIMIT 1`) as any;
       assert.equal(res[0].state, 'COMPLETED');
     } catch (err: any) {
