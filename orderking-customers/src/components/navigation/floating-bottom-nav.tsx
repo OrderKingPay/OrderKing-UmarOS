@@ -224,9 +224,9 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
           }}
           aria-label="Ask OrderKing AI"
           title="Ask OrderKing AI"
-          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#E23744] via-[#E85D04] to-[#B85D19] text-white shadow-[0_6px_20px_rgba(232,93,4,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-white/40 transform-gpu will-change-transform"
+          className="pointer-events-auto flex size-12 sm:size-13 items-center justify-center rounded-full bg-gradient-to-tr from-[#9A3412] via-[#C2410C] to-[#E85D04] text-white shadow-[0_6px_22px_rgba(194,65,12,0.45)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer shrink-0 border border-amber-300/40 transform-gpu will-change-transform"
         >
-          <Sparkles className="size-5 sm:size-6 drop-shadow-xs" />
+          <Sparkles className="size-5 sm:size-6 text-amber-100 drop-shadow-xs" />
         </button>
 
         {/* Dynamic Navigation Dock Container */}
@@ -275,7 +275,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
             /* Zomato 1:1 Live Parity: Center Dark Capsule (Delivery + History) + Right Light Capsule (Dining) */
             <>
               {/* Center Dark Capsule: Delivery & History */}
-              <div className="flex-1 flex items-center justify-around rounded-[28px] border border-stone-800/80 bg-[#1c1d22] p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.25)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px] gap-1">
+              <div className="flex-1 flex items-center justify-around rounded-[28px] border border-stone-800/80 bg-[#15161b] p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.35)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px] gap-1">
                 {/* 1. Delivery Tab */}
                 <Link
                   to="/"
@@ -285,14 +285,14 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   className={cn(
                     "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
                     inFood
-                      ? "bg-gradient-to-r from-red-600/35 via-orange-600/25 to-[#B85D19]/30 text-white shadow-sm ring-1 ring-red-500/40"
+                      ? "bg-gradient-to-r from-[#E23744] via-[#E85D04] to-[#B85D19] text-white shadow-[0_2px_12px_rgba(226,55,68,0.35)] ring-1 ring-red-400/40"
                       : "text-stone-400 hover:text-white hover:bg-white/5"
                   )}
                 >
                   <Home
                     className={cn(
                       "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
-                      inFood ? "text-[#E23744] fill-[#E23744]/25 scale-105" : "text-stone-400"
+                      inFood ? "text-white fill-white/20 scale-105" : "text-stone-400"
                     )}
                     aria-hidden="true"
                   />
@@ -310,14 +310,14 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   className={cn(
                     "flex flex-1 min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs min-w-0",
                     inActivity && !isSuperApp
-                      ? "bg-white/15 text-white shadow-sm ring-1 ring-white/20"
-                      : "text-stone-400 hover:text-white hover:bg-white/5"
+                      ? "bg-gradient-to-r from-[#B85D19]/40 via-[#E85D04]/30 to-[#9A3412]/35 text-amber-200 shadow-sm ring-1 ring-amber-400/50"
+                      : "text-stone-400 hover:text-amber-200 hover:bg-white/5"
                   )}
                 >
                   <ClipboardList
                     className={cn(
                       "size-4.5 sm:size-5 shrink-0 transition-transform duration-200",
-                      inActivity && !isSuperApp ? "text-white scale-105" : "text-stone-400"
+                      inActivity && !isSuperApp ? "text-amber-300 scale-105" : "text-stone-400"
                     )}
                     aria-hidden="true"
                   />
@@ -328,8 +328,8 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 </Link>
               </div>
 
-              {/* Right Separate Capsule: Dining */}
-              <div className="flex items-center rounded-[28px] border border-stone-200/90 dark:border-white/10 bg-white/95 dark:bg-[#141721]/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px]">
+              {/* Right Separate Capsule: Dining (Matching Ultra-Luxury Metallic Copper & Gold) */}
+              <div className="flex items-center rounded-[28px] border border-[#B85D19]/40 bg-[#1a1816]/95 dark:bg-[#141312]/95 p-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.3)] backdrop-blur-2xl min-h-[58px] sm:min-h-[62px]">
                 <Link
                   to="/dining"
                   preload="intent"
@@ -338,12 +338,12 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                   className={cn(
                     "flex min-w-[76px] sm:min-w-[88px] min-h-[48px] sm:min-h-[52px] flex-col items-center justify-center gap-0.5 rounded-2xl px-3 py-1 text-[11px] font-black tracking-tight no-underline transition-all duration-200 sm:text-xs",
                     inDining
-                      ? "bg-purple-100 dark:bg-purple-950/40 text-purple-950 dark:text-purple-200 shadow-sm ring-1 ring-purple-400/50"
-                      : "text-stone-700 dark:text-stone-300 hover:bg-stone-100/70 dark:hover:bg-white/10"
+                      ? "bg-gradient-to-r from-[#B85D19]/40 via-[#E85D04]/30 to-[#9A3412]/35 text-amber-100 shadow-sm ring-1 ring-amber-400/50"
+                      : "text-amber-300/80 hover:text-amber-200 hover:bg-white/5"
                   )}
                 >
                   <Utensils
-                    className="size-4.5 sm:size-5 shrink-0 text-purple-600 fill-purple-600/20"
+                    className="size-4.5 sm:size-5 shrink-0 text-[#E85D04] fill-[#B85D19]/25"
                     aria-hidden="true"
                   />
                   <span className="block w-full truncate text-center leading-tight">

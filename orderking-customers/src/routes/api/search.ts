@@ -143,8 +143,19 @@ export const Route = createFileRoute("/api/search")({
           }
 
           if (category) {
-            params.push(category);
-            query += ` AND EXISTS (SELECT 1 FROM restaurant_categories rc WHERE rc.restaurant_id = r.id AND rc.category_id = $${params.length})`;
+            const cleanCat = category.toLowerCase().replace(/^cat_/, "");
+            params.push(cleanCat);
+            const pos = params.length;
+            query += ` AND (
+              EXISTS (
+                SELECT 1 FROM restaurant_categories rc 
+                LEFT JOIN categories c ON c.id = rc.category_id
+                WHERE rc.restaurant_id = r.id 
+                AND (rc.category_id ILIKE '%' || $${pos} || '%' OR c.slug ILIKE '%' || $${pos} || '%' OR c.name_en ILIKE '%' || $${pos} || '%')
+              ) 
+              OR r.cuisine_summary ILIKE '%' || $${pos} || '%'
+              OR r.name ILIKE '%' || $${pos} || '%'
+            )`;
           }
 
           if (q) {
@@ -195,6 +206,15 @@ export const Route = createFileRoute("/api/search")({
               rows = AUTHENTIC_DATABASE_RESTAURANTS;
               if (veg) {
                 rows = rows.filter((r) => r.veg_only === true);
+              }
+              if (category) {
+                const cleanCat = category.toLowerCase().replace(/^cat_/, "");
+                rows = rows.filter((r) => {
+                  const summary = (r.cuisine_summary || "").toLowerCase();
+                  const name = (r.name || "").toLowerCase();
+                  const slug = (r.slug || "").toLowerCase();
+                  return summary.includes(cleanCat) || name.includes(cleanCat) || slug.includes(cleanCat);
+                });
               }
               if (q) {
                 const lower = q.toLowerCase();

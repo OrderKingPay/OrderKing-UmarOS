@@ -49,70 +49,84 @@ const CURATED_FOOD_CATEGORIES = [
   {
     name: "Pizza",
     slug: "pizza",
-    gradient: "from-red-400 to-rose-500",
-    imageUrl: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-red-500 via-rose-500 to-orange-500",
+    imageUrl: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Biryani",
     slug: "biryani",
-    gradient: "from-orange-400 to-[#E85D04]",
-    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-orange-500 via-[#E85D04] to-[#B85D19]",
+    imageUrl: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Momo",
     slug: "momo",
-    gradient: "from-[#B85D19] to-orange-500",
-    imageUrl: "https://images.unsplash.com/photo-1625398407797-00c2cb621124?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-[#B85D19] via-amber-600 to-orange-500",
+    imageUrl: "https://images.unsplash.com/photo-1625398407797-00c2cb621124?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Rolls",
     slug: "rolls",
-    gradient: "from-teal-400 to-cyan-500",
-    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-amber-500 via-orange-600 to-red-500",
+    imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Thali",
     slug: "thali",
-    gradient: "from-[#B85D19] to-[#E85D04]",
-    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-[#B85D19] via-[#C2410C] to-[#E85D04]",
+    imageUrl: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Burgers",
     slug: "burger",
-    gradient: "from-orange-400 to-[#C2410C]",
-    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-orange-500 via-[#C2410C] to-red-600",
+    imageUrl: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Desserts",
     slug: "desserts",
-    gradient: "from-pink-400 to-rose-500",
-    imageUrl: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-pink-500 via-rose-500 to-amber-500",
+    imageUrl: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Curry",
     slug: "north-indian",
-    gradient: "from-emerald-400 to-green-500",
-    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-emerald-500 via-teal-600 to-amber-600",
+    imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Chinese",
     slug: "chinese",
-    gradient: "from-sky-400 to-blue-500",
-    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-sky-500 via-blue-600 to-indigo-600",
+    imageUrl: "https://images.unsplash.com/photo-1585032226651-759b368d7246?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "South Indian",
     slug: "south-indian",
-    gradient: "from-purple-400 to-violet-500",
-    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-amber-500 via-orange-500 to-amber-600",
+    imageUrl: "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
   {
     name: "Cakes",
     slug: "cake",
-    gradient: "from-fuchsia-400 to-pink-500",
-    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=240&auto=format&fit=crop&q=80",
+    gradient: "from-fuchsia-500 via-rose-500 to-amber-500",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=360&h=360&auto=format&fit=crop&crop=center&q=90",
   },
 ];
+
+export const CATEGORY_MATCH_MAP: Record<string, string[]> = {
+  pizza: ["pizza", "italian", "pasta"],
+  biryani: ["biryani", "dum", "mughlai"],
+  momo: ["momo", "dim sum", "dumpling", "fast food", "street food", "chinese"],
+  rolls: ["roll", "kathi", "wrap", "kebab", "mughlai"],
+  thali: ["thali", "combo", "meal", "pure veg", "north indian", "south indian"],
+  burger: ["burger", "fast food", "sandwich", "deli", "bakery"],
+  desserts: ["dessert", "bakery", "sweet", "pastry", "cake", "gelato", "mithai"],
+  "north-indian": ["north indian", "curry", "mughlai", "dal", "paneer", "tandoori"],
+  chinese: ["chinese", "noodle", "asian", "hakka"],
+  "south-indian": ["south indian", "dosa", "idli", "sambar", "filter coffee"],
+  cake: ["cake", "bakery", "pastry", "dessert"],
+};
 
 export const VERIFIED_AVAILABLE_KITCHENS: RestaurantCard[] = [];
 
@@ -254,16 +268,16 @@ export function HomeFeed({
             return cSlug ? (ccSlug.includes(cSlug) || cSlug.includes(ccSlug)) : false;
           }) || CURATED_FOOD_CATEGORIES[i % CURATED_FOOD_CATEGORIES.length];
         return {
-          id: c.id || `db-cat-${i}`,
-          slug: c.slug || `cat-${i}`,
-          name: c.name || "Category",
+          id: c.slug || curated.slug,
+          slug: c.slug || curated.slug,
+          name: c.name || curated.name,
           gradient: curated.gradient,
-          imageUrl: c.imageUrl || curated.imageUrl,
+          imageUrl: curated.imageUrl,
         };
       });
     }
-    return CURATED_FOOD_CATEGORIES.map((c, i) => ({
-      id: `cat-${i}`,
+    return CURATED_FOOD_CATEGORIES.map((c) => ({
+      id: c.slug,
       slug: c.slug,
       name: c.name,
       gradient: c.gradient,
@@ -355,11 +369,14 @@ export function HomeFeed({
         if (!r) return false;
         if (dietFilter === "veg" && !r.vegOnly) return false;
         if (selectedCategory) {
-          const s = selectedCategory.toLowerCase();
-          const matchCat =
-            (r.cuisineSummary && r.cuisineSummary.toLowerCase().includes(s)) ||
-            r.name.toLowerCase().includes(s) ||
-            r.slug.toLowerCase().includes(s);
+          const s = selectedCategory.toLowerCase().replace(/^cat_/, "");
+          const keywords = CATEGORY_MATCH_MAP[s] || [s, s.replace(/s$/, "")];
+          const summary = (r.cuisineSummary || "").toLowerCase();
+          const rName = r.name.toLowerCase();
+          const rSlug = r.slug.toLowerCase();
+          const matchCat = keywords.some(
+            (kw) => summary.includes(kw) || rName.includes(kw) || rSlug.includes(kw)
+          );
           if (!matchCat) return false;
         }
         if (q) {
@@ -461,7 +478,7 @@ export function HomeFeed({
               >
                 <div className="size-full rounded-full p-0.5 bg-white flex items-center justify-center overflow-hidden shadow-inner">
                   <img
-                    src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=240&auto=format&fit=crop&q=80"
+                    src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=360&h=360&auto=format&fit=crop&crop=center&q=90"
                     alt="All cuisines"
                     className="size-full object-cover rounded-full transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
@@ -482,13 +499,13 @@ export function HomeFeed({
             </button>
 
             {displayCategories.map((c, i) => {
-              const isSelected = selectedCategory === c.id || selectedCategory === c.slug;
+              const isSelected = selectedCategory === c.slug || selectedCategory === c.id;
               return (
                 <button
                   type="button"
-                  key={c.id || c.slug || `cat-${i}`}
-                  onClick={() => setSelectedCategory(isSelected ? null : c.id || c.slug)}
-                  className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95"
+                  key={c.slug || c.id || `cat-${i}`}
+                  onClick={() => setSelectedCategory(isSelected ? null : c.slug)}
+                  className="group flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none focus:outline-none transition-transform active:scale-95 cursor-pointer"
                 >
                   {/* Distinct gradient colored ring around image */}
                   <div
@@ -496,7 +513,7 @@ export function HomeFeed({
                       "size-16 sm:size-20 rounded-full p-[2.5px] bg-gradient-to-tr transition-all duration-300 shadow-sm relative",
                       c.gradient,
                       isSelected
-                        ? "scale-105 ring-3 ring-orange-500 shadow-[0_4px_16px_rgba(232,93,4,0.35)]"
+                        ? "scale-105 ring-3 ring-[#E85D04] shadow-[0_4px_16px_rgba(232,93,4,0.35)]"
                         : "group-hover:scale-105 group-hover:shadow-md"
                     )}
                   >
@@ -514,10 +531,13 @@ export function HomeFeed({
                   <span
                     className={cn(
                       "mt-1.5 text-xs font-black truncate w-full transition-colors leading-tight",
-                      isSelected ? "text-[#E23744]" : "text-gray-900 group-hover:text-black"
+                      isSelected ? "text-[#E85D04]" : "text-gray-900 group-hover:text-black"
                     )}
                   >
                     {c.name}
+                    {isSelected && (
+                      <span className="block mx-auto mt-0.5 w-4 h-0.5 rounded-full bg-[#E85D04]" />
+                    )}
                   </span>
                 </button>
               );
@@ -674,10 +694,12 @@ export function HomeFeed({
                       className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
-                    {/* Top Deal Badge */}
-                    <div className="absolute top-2 left-2 bg-black/80 backdrop-blur-xs text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
-                      50% OFF select items
-                    </div>
+                    {/* Top Deal Badge (Authentic offers only, zero fake badges) */}
+                    {r.hasOffer && r.offerLabel && (
+                      <div className="absolute top-2 left-2 bg-black/85 backdrop-blur-xs text-white text-[9.5px] font-black px-2 py-0.5 rounded-md shadow-xs">
+                        {r.offerLabel}
+                      </div>
+                    )}
                   </div>
                   <div className="p-2.5 space-y-1">
                     <div className="flex items-center justify-between gap-1">
@@ -762,7 +784,7 @@ export function HomeFeed({
         {!isZeroDeliveryInRadius && (
           <div className="mb-3 space-y-0.5">
             <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-stone-500 font-mono">
-              {filteredRestaurants.length || 837} RESTAURANTS DELIVERING TO YOU
+              {filteredRestaurants.length} RESTAURANTS DELIVERING TO YOU
             </h2>
             <p className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
               Featured
