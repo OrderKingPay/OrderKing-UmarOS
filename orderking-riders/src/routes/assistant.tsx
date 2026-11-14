@@ -24,6 +24,8 @@ import {
   Camera,
   CheckCircle2,
   FileText,
+  Mic,
+  MicOff,
   PhoneCall,
   RefreshCw,
   Send,
@@ -32,6 +34,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/assistant")({ component: Page });
 
@@ -82,6 +85,61 @@ function Page() {
   const [pending, setPending] = useState(false);
   const [speakingIdx, setSpeakingIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  const toggleVoiceInput = () => {
+    if (typeof window === "undefined") return;
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("Voice input is not supported in this browser. Please use Chrome or Edge.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = SPEECH_LANG_MAP[locale] || "en-IN";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast.info("Listening...");
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = Array.from(event.results)
+          .map((res: any) => res[0].transcript)
+          .join("");
+        setQ(transcript);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+        toast.error("Could not capture speech. Please check microphone permissions.");
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch {
+      setIsListening(false);
+      toast.error("Failed to start voice recognition.");
+    }
+  };
+
   const [attachment, setAttachment] = useState<{
     name: string;
     type: string;
@@ -556,6 +614,26 @@ function Page() {
               className="size-10 shrink-0 border-border hover:bg-muted"
             >
               <Camera className="size-4 text-muted-foreground" />
+            </Button>
+            <Button
+              type="button"
+              variant={isListening ? "default" : "outline"}
+              size="icon"
+              disabled={pending}
+              onClick={toggleVoiceInput}
+              title={isListening ? "Stop Listening" : "Speak to King Spark"}
+              className={cn(
+                "size-10 shrink-0 border-border transition-all",
+                isListening
+                  ? "bg-amber-500 hover:bg-amber-600 text-black animate-pulse ring-2 ring-amber-400/60"
+                  : "hover:bg-muted text-muted-foreground",
+              )}
+            >
+              {isListening ? (
+                <MicOff className="size-4 text-black animate-bounce" />
+              ) : (
+                <Mic className="size-4 text-muted-foreground" />
+              )}
             </Button>
             <Input
               value={q}
