@@ -80,6 +80,7 @@ const ALLOWED: Record<DeliveryState, ReadonlyArray<DeliveryState>> = {
   ],
   ARRIVED_AT_CUSTOMER: [
     "DELIVERED",
+    "ON_THE_WAY",
     "CUSTOMER_UNAVAILABLE",
     "DELIVERY_FAILED",
     "SUPPORT_ESCALATION",

@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { RiderEngine, rangePreset, enforcePayoutFloor } from "@/lib/rider/engine";
+import { FleetSafetyEngine } from "@/lib/fleet/fleet-safety-engine";
 import { generateOtp, newOtpSecret } from "@/lib/rider/otp";
 import { PgStore } from "@/lib/rider/pg-store";
 import { ensureLiveRiderAssigned, transitionLiveOrder, fetchLiveOffers, respondLiveOffer } from "./hdmaster-order-transition";
@@ -50,7 +51,8 @@ export const getHomeFn = createServerFn({ method: "GET" })
       const e = await engine();
       await e.ensureRider({ id: context.userId });
       let home = await e.home(context.userId);
-      if (process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
+      const isSuspended = FleetSafetyEngine.getInstance().isOrderPingsSuspended(home.rider.id);
+      if (!isSuspended && process.env.HDMASTER_URL && process.env.ORDERKING_SERVICE_TOKEN) {
         try {
           const offers = await fetchLiveOffers(context.userId);
           if (offers && offers.length > 0) {

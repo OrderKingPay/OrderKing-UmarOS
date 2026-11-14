@@ -152,7 +152,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 8000,
+      timeout: 2800, // Sub-3-second timeout for rapid failover
     });
 
     if (resp.data?.return) {
@@ -188,7 +188,7 @@ export async function sendOtpFast2SMS(phone: string, otp: string): Promise<boole
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      timeout: 8000,
+      timeout: 2800, // Sub-3-second timeout for rapid failover
     });
 
     if (qResp.data?.return) {
@@ -260,7 +260,7 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
   try {
     const resp = await axios.get(url, {
       headers: { Accept: 'application/json' },
-      timeout: 8000,
+      timeout: 2800, // Sub-3-second timeout for rapid failover
     });
     return resp.data?.Status === 'Success';
   } catch (err: unknown) {
@@ -271,51 +271,12 @@ export async function sendOtp2Factor(phone: string, otp: string): Promise<boolea
 }
 
 /**
- * 2Factor Official Voice OTP Dispatcher
- * Official Endpoint: https://2factor.in/API/V1/{API_KEY}/VOICE/{PHONE}/{OTP}
+ * 2Factor Official Voice OTP Dispatcher - Zero Robocall Enforcement
+ * Council Mandate 4: Strict carrier SMS only — zero robocalls.
  */
-export async function sendVoiceOtp2Factor(phone: string, otp: string): Promise<boolean> {
-  const _f2sVoiceCheck = (process.env.FAST2SMS_API_KEY || "").trim();
-  const _tfVoiceCheck = (process.env.OTP_2FACTOR_API_KEY || process.env.TWOFACTOR_API_KEY || "").trim();
-  if (!_tfVoiceCheck || _tfVoiceCheck === _f2sVoiceCheck || _tfVoiceCheck.length > 45) {
-    return false;
-  }
-  const apiKey = (
-    process.env.TWOFACTOR_API_KEY ||
-    process.env.TWO_FACTOR_API_KEY ||
-    process.env.OTP_2FACTOR_API_KEY ||
-    ''
-  ).trim().replace(/^["']|["']$/g, '');
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || '').trim().replace(/^["']|["']$/g, '');
-
-  if (!apiKey || apiKey === 'xxx' || apiKey.includes('change-me')) {
-    console.warn('[Telecom Gateway] 2Factor API key not configured for voice OTP dispatch.');
-    return false;
-  }
-
-  if (fast2SmsKey && apiKey === fast2SmsKey) {
-    console.warn('[Telecom Gateway] Skipping 2Factor voice: API key matches Fast2SMS key.');
-    return false;
-  }
-
-  const cleanPhone = sanitizeIndianPhone(phone);
-  if (!isValidIndianPhone(cleanPhone)) return false;
-  const cleanOtp = String(otp || '').replace(/\D/g, '').trim();
-  if (!cleanOtp) return false;
-
-  const voiceUrl = `https://2factor.in/API/V1/${encodeURIComponent(String(apiKey ?? ""))}/VOICE/${cleanPhone}/${encodeURIComponent(String(cleanOtp ?? ""))}`;
-
-  try {
-    const resp = await axios.get(voiceUrl, {
-      headers: { Accept: 'application/json' },
-      timeout: 8000,
-    });
-    return resp.data?.Status === 'Success';
-  } catch (err: unknown) {
-    const errMsg = (err as any)?.response?.data?.Details || (err as any)?.message || String(err);
-    console.error('[Telecom Gateway] 2Factor voice error:', errMsg);
-    return false;
-  }
+export async function sendVoiceOtp2Factor(_phone: string, _otp: string): Promise<boolean> {
+  console.warn('[Telecom Gateway] Automated voice calls and robocalls are strictly disabled per Council Mandate 4. Carrier SMS only.');
+  return false;
 }
 
 /**

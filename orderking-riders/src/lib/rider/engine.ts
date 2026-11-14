@@ -39,6 +39,7 @@ import {
 } from "./discipline.ts";
 import { DEFAULT_DISCIPLINE_CONFIG } from "./config.ts";
 import { executeRiderRazorpayXPayout } from "./banking.ts";
+import { FleetSafetyEngine } from "../fleet/fleet-safety-engine.ts";
 import type { RiderStore } from "./store.ts";
 import {
   RiderError,
@@ -963,6 +964,13 @@ export class RiderEngine {
         rec.attempts += 1;
         if (!ok) {
           await this.store.saveOtp(rec, userId);
+          // Lock delivery completion strictly on 4-digit doorstep delivery OTP:
+          // If the OTP does not match, freeze order state in ON_THE_WAY and disallow rider payout release.
+          if (d.state !== "ON_THE_WAY") {
+            await this.transition(userId, deliveryId, "ON_THE_WAY", "frozen: doorstep otp mismatch", (row) => {
+              row.state = "ON_THE_WAY";
+            });
+          }
           if (rec.attempts >= cfg.otpSuspiciousThreshold) {
             await this.store.insertSignal(
               {
@@ -1340,6 +1348,25 @@ export class RiderEngine {
       }
       throw err;
     }
+    const geofence = FleetSafetyEngine.getInstance().evaluateShiftGeofencePing(
+      rider.id,
+      point,
+      new Date(at),
+    );
+    if (geofence.orderPingsSuspended) {
+      await this.store.insertSignal(
+        {
+          id: nid(),
+          riderId: rider.id,
+          deliveryId,
+          kind: "SHIFT_GEOFENCE_BREACH",
+          detail: geofence.rationale,
+          stage: "SIGNAL",
+          createdAt: at,
+        },
+        userId,
+      );
+    }
     const ping = {
       id: nid(),
       riderId: rider.id,
@@ -1351,7 +1378,7 @@ export class RiderEngine {
     await this.store.insertLocation(ping, userId);
     const keepAfter = new Date(Date.now() - cfg.locationRetentionHours * 3600_000).toISOString();
     await this.store.pruneLocations(userId, keepAfter, cfg.gpsHistoryMaxPings);
-    return { ok: true as const, at: ping.at };
+    return { ok: true as const, at: ping.at, geofence };
   }
 
   async pingLocation(
@@ -1366,8 +1393,9 @@ export class RiderEngine {
   async home(userId: string) {
     const rider = await this.requireRider(userId);
     await this.expireOffers(rider);
-    if (rider.status === "ONLINE") await this.maybeDispatch(rider.id, userId);
-    const offerRaw = await this.store.getOpenOfferForRider(rider.id);
+    const pingsSuspended = FleetSafetyEngine.getInstance().isOrderPingsSuspended(rider.id);
+    if (rider.status === "ONLINE" && !pingsSuspended) await this.maybeDispatch(rider.id, userId);
+    const offerRaw = !pingsSuspended ? await this.store.getOpenOfferForRider(rider.id) : null;
     const offer =
       offerRaw && new Date(offerRaw.expiresAt).getTime() > Date.now()
         ? this.presentOffer(offerRaw)

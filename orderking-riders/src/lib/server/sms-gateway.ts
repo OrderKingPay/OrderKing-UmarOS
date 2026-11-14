@@ -76,12 +76,12 @@ function toBase64(str: string): string {
 }
 
 /**
- * Fetch with strict timeout controller.
+ * Fetch with strict timeout controller (Sub-3-second SLA for rapid failover).
  */
 async function fetchWithTimeout(
   url: string,
   options: RequestInit,
-  timeoutMs = 5000,
+  timeoutMs = 2800,
 ): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -521,7 +521,7 @@ export async function dispatchOtpSms(
   const cleanPhone = sanitizeIndianPhone(params.phone);
   const otp = params.otp.trim();
   const appName = params.appName || "OrderKing";
-  const timeoutMs = params.timeoutMs || 5000;
+  const timeoutMs = params.timeoutMs || 2800; // Sub-3-second failover SLA
   const whatsAppOtpUrl = buildWhatsAppOtpUrl(cleanPhone, otp, appName);
 
   if (!isValidIndianPhone(cleanPhone)) {

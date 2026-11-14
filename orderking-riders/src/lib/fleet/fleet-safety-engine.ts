@@ -347,10 +347,25 @@ export function triggerSosSafetyDialer(
  * FleetSafetyEngine Singleton Class
  * Manages low-battery state, adaptive GPS heartbeat interval, and doorstep security.
  */
+export interface ShiftGeofenceState {
+  riderId: string;
+  anchorPoint: GeoPoint;
+  lastPingPoint: GeoPoint;
+  shiftWindow: ShiftWindow;
+  maxRadiusKm: number;
+  currentDistanceKm: number;
+  withinPerimeter: boolean;
+  orderPingsSuspended: boolean;
+  lastEvaluatedAt: string;
+  rationale: string;
+}
+
 export class FleetSafetyEngine {
   private static instance: FleetSafetyEngine | null = null;
   private powerProfile: FleetPowerProfile;
   private incidentLog: SosDialerResult[] = [];
+  private riderShiftAnchors = new Map<string, GeoPoint>();
+  private riderGeofenceStates = new Map<string, ShiftGeofenceState>();
 
   private constructor() {
     this.powerProfile = computePowerProfile({ level: 1.0, charging: true });
@@ -378,6 +393,83 @@ export class FleetSafetyEngine {
 
   public shouldDisableAnimations(): boolean {
     return this.powerProfile.disableNonEssentialAnimations;
+  }
+
+  public setRiderShiftAnchor(riderId: string, point: GeoPoint): void {
+    this.riderShiftAnchors.set(riderId, point);
+  }
+
+  public getRiderShiftAnchor(riderId: string): GeoPoint | null {
+    return this.riderShiftAnchors.get(riderId) || null;
+  }
+
+  public clearRiderShiftAnchor(riderId: string): void {
+    this.riderShiftAnchors.delete(riderId);
+    this.riderGeofenceStates.delete(riderId);
+  }
+
+  public isOrderPingsSuspended(riderId: string): boolean {
+    const state = this.riderGeofenceStates.get(riderId);
+    return state ? state.orderPingsSuspended : false;
+  }
+
+  public getRiderGeofenceState(riderId: string): ShiftGeofenceState | null {
+    return this.riderGeofenceStates.get(riderId) || null;
+  }
+
+  public resetShiftGeofence(riderId?: string): void {
+    if (riderId) {
+      this.riderShiftAnchors.delete(riderId);
+      this.riderGeofenceStates.delete(riderId);
+    } else {
+      this.riderShiftAnchors.clear();
+      this.riderGeofenceStates.clear();
+    }
+  }
+
+  /**
+   * Driver background location ping listener enforcing shift geofences:
+   * - Day (06:00 - 19:00): 12.0 km
+   * - Evening (19:00 - 23:00): 7.5 km
+   * - Late-Night (23:00 - 06:00): 3.5 km
+   *
+   * If a rider steps outside the radius, automatically suspends incoming order pings.
+   */
+  public evaluateShiftGeofencePing(
+    riderId: string,
+    currentPoint: GeoPoint,
+    dateOrHour: Date | number = new Date(),
+  ): ShiftGeofenceState {
+    let anchor = this.riderShiftAnchors.get(riderId);
+    if (!anchor) {
+      anchor = currentPoint;
+      this.riderShiftAnchors.set(riderId, anchor);
+    }
+
+    const rule = getDynamicShiftRadius(dateOrHour);
+    const distanceKm = haversineKm(anchor, currentPoint);
+    const withinPerimeter = distanceKm <= rule.maxRadiusKm;
+    const orderPingsSuspended = !withinPerimeter;
+
+    const rationale = orderPingsSuspended
+      ? `Rider stepped outside active ${rule.label} shift perimeter (${distanceKm.toFixed(2)}km > ${rule.maxRadiusKm}km). Incoming order pings suspended.`
+      : `Rider within active ${rule.label} shift perimeter (${distanceKm.toFixed(2)}km <= ${rule.maxRadiusKm}km).`;
+
+    const state: ShiftGeofenceState = {
+      riderId,
+      anchorPoint: anchor,
+      lastPingPoint: currentPoint,
+      shiftWindow: rule.shift,
+      maxRadiusKm: rule.maxRadiusKm,
+      currentDistanceKm: Math.round(distanceKm * 100) / 100,
+      withinPerimeter,
+      orderPingsSuspended,
+      lastEvaluatedAt: new Date().toISOString(),
+      rationale,
+    };
+
+    this.riderGeofenceStates.set(riderId, state);
+    return state;
   }
 
   public verifyHandover(params: {
