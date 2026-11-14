@@ -77,7 +77,7 @@ const DEFAULT_FOUNDER_SETTINGS: CustomFounderSettings = {
   minOrderInr: 149,
   deliveryFeeInr: 40,
   rainFeeInr: 20,
-  riderBasePayInr: 30,
+  riderBasePayInr: 35,
   gstPct: 5,
   payoutDay: "Daily (T+1)",
   walletCashbackPct: 2,

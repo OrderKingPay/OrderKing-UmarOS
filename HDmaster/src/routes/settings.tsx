@@ -42,7 +42,6 @@ import {
   Plane,
   UtensilsCrossed,
 } from "lucide-react";
-import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
@@ -3361,7 +3360,7 @@ function SettingsPage() {
                 )}
                 {activeSubsystemTab === "cms" && (
                   <div className="pt-4 border-t border-slate-200">
-                    <EcosystemCMS />
+                    <UmarOsVisualCustomizationStudio />
                   </div>
                 )}
                 {activeSubsystemTab === "connectors" && (

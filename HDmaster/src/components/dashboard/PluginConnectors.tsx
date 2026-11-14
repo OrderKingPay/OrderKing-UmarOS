@@ -12,12 +12,7 @@ import {
   loadEcosystemCmsFn,
   saveEcosystemCmsFn,
 } from "@/lib/orderking/actions";
-import { GeospatialAdHub } from "./GeospatialAdHub";
-import { MetaOmnichannelHub } from "./MetaOmnichannelHub";
 import { AiMediaEngineHub } from "./AiMediaEngineHub";
-import { GlobalAdSyndicateHub } from "./GlobalAdSyndicateHub";
-import { OemLockScreenHub } from "./OemLockScreenHub";
-import { WifiCaptivePortalHub } from "./WifiCaptivePortalHub";
 import {
   Cpu,
   CreditCard,
@@ -2383,40 +2378,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
           )}
 
           {/* Dedicated Sub-Hubs when requested via forcedTab */}
-          {activeTab === "geospatialAdExchange" && (
-            <div className="rounded-xl border border-primary/20 bg-card p-6 shadow-sm space-y-6">
-              <GeospatialAdHub
-                config={config.geospatialAdExchange}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    geospatialAdExchange: { ...prev.geospatialAdExchange, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
-
-          {activeTab === "metaOmnichannel" && (
-            <div className="rounded-xl border border-blue-200 bg-white p-6 shadow-sm space-y-6">
-              <MetaOmnichannelHub
-                config={config.metaOmnichannel}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    metaOmnichannel: { ...prev.metaOmnichannel, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
-
           {activeTab === "aiMediaEngine" && (
             <div className="rounded-xl border border-emerald-500/20 bg-card p-6 shadow-sm space-y-6">
               <AiMediaEngineHub
@@ -2425,57 +2386,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   setConfig((prev) => ({
                     ...prev,
                     aiMediaEngine: { ...prev.aiMediaEngine, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
-
-          {activeTab === "globalAdSyndicate" && (
-            <div className="rounded-xl border border-slate-200 bg-white shadow-sm space-y-6">
-              <GlobalAdSyndicateHub
-                config={config.globalAdSyndicate}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    globalAdSyndicate: { ...prev.globalAdSyndicate, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
-
-          {activeTab === "oemLockScreen" && (
-            <div className="rounded-xl border border-purple-200 bg-white shadow-sm space-y-6">
-              <OemLockScreenHub
-                config={config.oemLockScreen}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    oemLockScreen: { ...prev.oemLockScreen, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
-
-          {activeTab === "wifiCaptivePortal" && (
-            <div className="rounded-xl border border-blue-200 bg-white shadow-sm space-y-6">
-              <WifiCaptivePortalHub
-                config={config.wifiCaptivePortal}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    wifiCaptivePortal: { ...prev.wifiCaptivePortal, ...updates },
                   }))
                 }
                 cmsConfig={cmsConfig}

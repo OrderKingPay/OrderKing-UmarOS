@@ -14,9 +14,9 @@ import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 
 export { WorldSkeleton };
 
-const LazyMasterAITerminal = lazyWithRetry(
-  () => import("@/components/MasterAICommandTerminal"),
-  "MasterAICommandTerminal"
+const LazyUmarAiOmnibar = lazyWithRetry(
+  () => import("@/components/command/UmarAiOmnibar"),
+  "UmarAiOmnibar"
 );
 
 const APP_NAME = "Umar OS";
@@ -226,9 +226,9 @@ function RootDocument() {
               </AdminErrorBoundary>
 
               {/* Localized boundary for AI terminal so terminal faults never affect dashboard */}
-              <AdminErrorBoundary inline sectionName="Master AI Terminal">
+              <AdminErrorBoundary inline sectionName="Umar AI Command Bar">
                 <Suspense fallback={null}>
-                  <LazyMasterAITerminal />
+                  <LazyUmarAiOmnibar />
                 </Suspense>
               </AdminErrorBoundary>
 

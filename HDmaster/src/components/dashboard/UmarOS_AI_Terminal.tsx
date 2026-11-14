@@ -62,10 +62,7 @@ import {
   triggerAutonomousAuditNow,
   executeFounderConsoleCommand,
   type UmarOsTelemetryData,
-  type UmarOsEngineSettings,
-  type FounderCommandResponse
 } from "@/lib/orderking/ai/umaros-supreme";
-import { WorldTechCommandCenter } from "./WorldTechCommandCenter";
 
 export interface AttachedMedia {
   id: string;
@@ -1659,12 +1656,11 @@ export function UmarOS_AI_Terminal() {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* TAB 4: WORLD TECHNOLOGY REGISTRY & COMMAND HUB                            */}
-        {/* ========================================================================= */}
+        {/* TAB 4: SYSTEM REGISTRY & COMMAND HUB */}
         {activeTab === "tech_registry" && (
-          <div className="space-y-4">
-            <WorldTechCommandCenter />
+          <div className="space-y-4 rounded-xl border border-border bg-card p-6 text-xs text-muted-foreground">
+            <h3 className="font-bold text-foreground text-sm">System Operations Registry</h3>
+            <p>Direct autonomous edge dispatch and double-entry financial ledger active.</p>
           </div>
         )}
       </div>

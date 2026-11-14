@@ -50,7 +50,6 @@ import { getSql } from "@/lib/db";
 import { KingPayGlobalSettings } from "@/components/kingpay/KingPayGlobalSettings";
 import { KingPayMasterSwitch } from "@/components/kingpay/KingPayMasterSwitch";
 import { CentralPricingSwitch } from "@/components/pricing/CentralPricingSwitch";
-import { EcosystemCMS } from "@/components/dashboard/EcosystemCMS";
 import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 import { PluginConnectors } from "@/components/dashboard/PluginConnectors";
 import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderProfitDashboard";
@@ -58,9 +57,7 @@ import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSetti
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { B2BFranchiseOnboardingEngine } from "@/components/franchise/B2BFranchiseOnboardingEngine";
 import { B2BSaaSSalesDeckGenerator } from "@/components/franchise/B2BSaaSSalesDeckGenerator";
-import { AppBuilderStudio } from "@/components/dashboard/AppBuilderStudio";
 import { DesignStudio } from "@/components/dashboard/DesignStudio";
-import { MediaProductionStudio } from "@/components/dashboard/MediaProductionStudio";
 import { SocialPublishingStudio } from "@/components/dashboard/SocialPublishingStudio";
 import { MultimodelBenchmarkDashboard } from "@/components/dashboard/MultimodelBenchmarkDashboard";
 import { GigWorkerComplianceCenter } from "@/components/dashboard/GigWorkerComplianceCenter";
@@ -4747,12 +4744,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Ecosystem CMS Home Banners"
-                emoji="CMS"
+                worldTitle="Storefront Design"
+                emoji="UI"
               />
             }
           >
-            <EcosystemCMS />
+            <CustomerAppUiSettings />
           </Suspense>
         )}
 
@@ -4760,12 +4757,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="App Builder Studio"
-                emoji="BLD"
+                worldTitle="Storefront Settings"
+                emoji="UI"
               />
             }
           >
-            <AppBuilderStudio />
+            <CustomerAppUiSettings />
           </Suspense>
         )}
 
@@ -4786,12 +4783,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Media Production Studio"
-                emoji="MED"
+                worldTitle="Design Studio"
+                emoji="UI"
               />
             }
           >
-            <MediaProductionStudio />
+            <DesignStudio />
           </Suspense>
         )}
 

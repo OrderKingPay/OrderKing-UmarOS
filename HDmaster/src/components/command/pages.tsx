@@ -115,7 +115,6 @@ import { lazyWithRetry } from "@/lib/lazy-retry";
 import { AdminErrorBoundary } from "@/components/error-boundary";
 import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 
-const EcosystemCMS = lazyWithRetry(() => import("../dashboard/EcosystemCMS"), "EcosystemCMS");
 const PluginConnectors = lazyWithRetry(() => import("../dashboard/PluginConnectors"), "PluginConnectors");
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
@@ -2340,8 +2339,8 @@ function CmsPage() {
       </div>
 
       {activeTab === "ecosystem" && (
-        <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Loading Ecosystem CMS...</div>}>
-          <EcosystemCMS />
+        <Suspense fallback={<div className="p-8 text-center text-xs text-muted">Loading Plugin Switchboard...</div>}>
+          <PluginConnectors />
         </Suspense>
       )}
 
