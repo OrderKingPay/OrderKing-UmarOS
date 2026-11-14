@@ -1,5 +1,5 @@
 /**
- * MERCHANT SECRET WEAPONS & OPERATIONAL RESILIENCE TEST SUITE
+ * MERCHANT OPERATIONAL RESILIENCE TEST SUITE
  * 
  * Verifies:
  * 1. Structured Rejection Modal & Timed Stockout Link
@@ -37,7 +37,7 @@ import {
 } from "../lib/finance/daily-summary";
 import { formatINR } from "../lib/money";
 
-describe("Merchant Secret Weapons & Operational Resilience Suite", () => {
+describe("Merchant Operational Resilience Suite", () => {
   // ==========================================================================
   // 1. Structured Order Rejection Modal & Timed Stockout Link
   // ==========================================================================

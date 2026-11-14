@@ -15,7 +15,6 @@ import { Route as CustomizationStudioRouteImport } from './routes/customization-
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
-import { Route as ApiMarketDominanceCronRouteImport } from './routes/api/market-dominance-cron'
 import { Route as ApiPingRouteImport } from './routes/api/ping'
 import { Route as ApiTelemetryRouteImport } from './routes/api/telemetry'
 import { Route as AppIndexRouteImport } from './routes/app/index'
@@ -76,11 +75,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiMarketDominanceCronRoute = ApiMarketDominanceCronRouteImport.update({
-  id: '/api/market-dominance-cron',
-  path: '/api/market-dominance-cron',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPingRoute = ApiPingRouteImport.update({
@@ -252,7 +246,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -291,7 +284,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -332,7 +324,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/settings': typeof SettingsRoute
   '/api/health': typeof ApiHealthRoute
-  '/api/market-dominance-cron': typeof ApiMarketDominanceCronRoute
   '/api/ping': typeof ApiPingRoute
   '/api/telemetry': typeof ApiTelemetryRoute
   '/app/$module': typeof AppModuleRouteWithChildren
@@ -374,7 +365,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings'
     | '/api/health'
-    | '/api/market-dominance-cron'
     | '/api/ping'
     | '/api/telemetry'
     | '/app/$module'
@@ -413,7 +403,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings'
     | '/api/health'
-    | '/api/market-dominance-cron'
     | '/api/ping'
     | '/api/telemetry'
     | '/app/$module'
@@ -453,7 +442,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/settings'
     | '/api/health'
-    | '/api/market-dominance-cron'
     | '/api/ping'
     | '/api/telemetry'
     | '/app/$module'
@@ -494,7 +482,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   SettingsRoute: typeof SettingsRoute
   ApiHealthRoute: typeof ApiHealthRoute
-  ApiMarketDominanceCronRoute: typeof ApiMarketDominanceCronRoute
   ApiPingRoute: typeof ApiPingRoute
   ApiTelemetryRoute: typeof ApiTelemetryRoute
   ApiAiChatRoute: typeof ApiAiChatRoute
@@ -564,13 +551,6 @@ declare module '@tanstack/react-router' {
       path: '/api/health'
       fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/market-dominance-cron': {
-      id: '/api/market-dominance-cron'
-      path: '/api/market-dominance-cron'
-      fullPath: '/api/market-dominance-cron'
-      preLoaderRoute: typeof ApiMarketDominanceCronRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/ping': {
@@ -866,7 +846,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   SettingsRoute: SettingsRoute,
   ApiHealthRoute: ApiHealthRoute,
-  ApiMarketDominanceCronRoute: ApiMarketDominanceCronRoute,
   ApiPingRoute: ApiPingRoute,
   ApiTelemetryRoute: ApiTelemetryRoute,
   ApiAiChatRoute: ApiAiChatRoute,

@@ -99,7 +99,7 @@ export interface CityTierPayConfig {
 }
 
 /**
- * Dominant Legacy Aggregator Indian City Tier Payout Matrix:
+ * Standard Delivery Industry Indian City Tier Payout Matrix:
  * - Tier 1 (Metros: Bangalore, Mumbai, Delhi NCR, Hyderabad, Chennai, Kolkata, Pune)
  *   Base Pay: ₹35 (Pickup ₹20 + Drop ₹15) | Floor: ₹35 | Rate: ₹12/km beyond 2km
  * - Tier 2 (Growth Cities: Jaipur, Ahmedabad, Lucknow, Chandigarh, Kochi, Indore, etc.)
@@ -481,7 +481,7 @@ export function calculateDistancePay(
 // ---------------------------------------------------------------------------
 
 /**
- * Dominant Legacy Aggregator Wait-Time Policy:
+ * Standard Delivery Industry Wait-Time Policy:
  * The timer begins when courier marks 'ARRIVED_AT_RESTAURANT'.
  * First 6 minutes are free grace period.
  * Every subsequent minute is compensated at EXACTLY ₹1/minute (100 paise/min).
@@ -759,7 +759,7 @@ export function calculateCustomerTipPassThrough(tipPaise: number): {
 // ---------------------------------------------------------------------------
 
 /**
- * Dominant Legacy Aggregator Stacked / Multi-Order Policy:
+ * Standard Industry Stacked / Multi-Order Policy:
  * Couriers assigned a secondary order in a stacked route earn:
  * - 60% of tier pickup fee (restaurant pickup already coordinated)
  * - 100% of tier drop fee (distinct customer destination)
@@ -861,7 +861,7 @@ export interface Tier1WeeklyCycle {
 }
 
 /**
- * Standardizes Tier-1 dominant legacy aggregator's weekly payout cycle:
+ * Standard weekly payout cycle:
  * - Cycle Window: Monday 00:00:00 to Sunday 23:59:59.
  * - Payout Settlement: Automated Wednesday afternoon settlement following cycle close (Wednesday 2:00 PM IST / 15:00 UTC).
  *
@@ -1117,7 +1117,7 @@ export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput): Tier1P
   });
 
   // 5. Stacked / Multi-Package Order Pay:
-  // Dominant Legacy Aggregator Standard: 60% of tier pickup fee + 100% of tier drop fee per secondary order (~₹22 - ₹27)
+  // Standard Multi-Order Model: 60% of tier pickup fee + 100% of tier drop fee per secondary order (~₹22 - ₹27)
   let secondaryOrderCount = 0;
   if (input.stackedOrderCount !== undefined) {
     secondaryOrderCount = Math.max(0, Math.floor(input.stackedOrderCount));

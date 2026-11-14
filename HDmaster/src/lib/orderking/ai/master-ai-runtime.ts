@@ -1901,7 +1901,7 @@ export async function executeTool(
         };
       });
       return {
-        status: "PLANETARY_MULTI_REPO_WATCHDOG_PASSED",
+        status: "ECOSYSTEM_MULTI_REPO_WATCHDOG_PASSED",
         timestamp: new Date().toISOString(),
         scannedRepositoriesCount: repos.length,
         repositories: repos,

@@ -51,7 +51,7 @@ export const Route = createFileRoute("/join-fleet")({
 export function JoinFleetPage() {
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [city, setCity] = useState("Bengaluru");
+  const [city, setCity] = useState("Karimganj");
   const [vehicleType, setVehicleType] = useState<"EV_SCOOTER" | "PETROL_BIKE" | "CYCLE">("EV_SCOOTER");
   const [idNumber, setIdNumber] = useState("");
   const [upiId, setUpiId] = useState("");
@@ -235,18 +235,12 @@ export function JoinFleetPage() {
                           onChange={(e) => setCity(e.target.value)}
                           className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs text-white outline-none focus:border-emerald-400 transition"
                         >
-                          <option value="Bengaluru">Bengaluru</option>
-                          <option value="Delhi NCR">Delhi NCR</option>
-                          <option value="Mumbai">Mumbai</option>
-                          <option value="Hyderabad">Hyderabad</option>
-                          <option value="Chennai">Chennai</option>
-                          <option value="Kolkata">Kolkata</option>
-                          <option value="Pune">Pune</option>
-                          <option value="Ahmedabad">Ahmedabad</option>
-                          <option value="Jaipur">Jaipur</option>
-                          <option value="Lucknow">Lucknow</option>
-                          <option value="Patna">Patna</option>
-                          <option value="Other Indian City">Other Indian City</option>
+                          <option value="Karimganj">Karimganj (788710)</option>
+                          <option value="Silchar">Silchar (788001)</option>
+                          <option value="Hailakandi">Hailakandi (788151)</option>
+                          <option value="Badarpur">Badarpur (788806)</option>
+                          <option value="Guwahati">Guwahati (781001)</option>
+                          <option value="Other Regional Hub">Other Regional Hub</option>
                         </select>
                       </div>
                     </div>

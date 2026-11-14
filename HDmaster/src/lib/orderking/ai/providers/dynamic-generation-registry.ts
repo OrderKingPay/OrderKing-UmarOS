@@ -3,7 +3,7 @@ import type { AIProvider } from "./provider-interface.ts";
 export interface ModelGenerationMetadata {
   modelId: string;
   name: string;
-  generation: "GEN_1_LEGACY" | "GEN_2_MULTIMODAL" | "GEN_3_FRONTIER_REASONING" | "GEN_4_AUTONOMOUS_AGENTS" | "GEN_5_SOVEREIGN_SUPERINTELLIGENCE";
+  generation: "GEN_1_LEGACY" | "GEN_2_MULTIMODAL" | "GEN_3_FRONTIER_REASONING" | "GEN_4_AUTONOMOUS_AGENTS" | "GEN_5_LOCAL_REASONING" | "GEN_5_SOVEREIGN_SUPERINTELLIGENCE";
   providerId: string;
   supportsExtendedThinking: boolean;
   contextWindow: number;
@@ -82,11 +82,11 @@ export class DynamicGenerationRegistry {
       regionalLanguages: ["en", "hi", "bn", "as", "ta", "te"],
     });
 
-    // Generation 4 / Sovereign: 100% In-Memory Offline Resilient
+    // Generation 5: Local In-Memory Offline Resilient Fallback
     this.registerModel({
       modelId: "sovereign-local-core",
-      name: "Sovereign Local Core",
-      generation: "GEN_5_SOVEREIGN_SUPERINTELLIGENCE",
+      name: "Local Offline Core",
+      generation: "GEN_5_LOCAL_REASONING",
       providerId: "sovereign-local",
       supportsExtendedThinking: true,
       contextWindow: 131072,
