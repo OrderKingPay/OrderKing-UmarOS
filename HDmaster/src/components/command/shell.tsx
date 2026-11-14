@@ -520,8 +520,8 @@ export function CommandShell() {
             <Link to="/app" className="flex items-center gap-2" onClick={() => setNavOpen(false)}>
               <OrderKingMark className="size-8" />
               <div>
-                <p className="font-display text-base leading-none">{appName}</p>
-                <p className="text-[10px] uppercase tracking-widest text-muted">Command</p>
+                <p className="font-display text-base font-bold leading-none">OrderKing Admin</p>
+                <p className="text-[10px] uppercase tracking-wider text-muted">Operations Hub</p>
               </div>
             </Link>
             <button
@@ -647,26 +647,25 @@ export function CommandShell() {
               </div>
             </div>
 
-            {/* Page Settings & Customize Button (Every Page in /app/*) */}
+            {/* Page Settings Button */}
             <button
               type="button"
               onClick={() => setPageSettingsOpen(true)}
-              className="flex h-10 items-center gap-1.5 rounded-[10px] border border-orange-400/50 bg-orange-500/15 px-2.5 text-xs font-bold text-orange-300 hover:bg-orange-500/25 transition"
-              aria-label="Open Page Settings and Customize"
-              title="Customize this page's settings, rules, and layout"
+              className="flex h-10 items-center gap-1.5 rounded-[10px] border border-border bg-elevated px-2.5 text-xs font-semibold text-fg hover:bg-surface transition"
+              aria-label="Open Page Settings"
+              title="Configure view settings"
             >
-              <Settings className="size-4 text-orange-400 shrink-0" />
-              <span className="hidden sm:inline">Page Settings &amp; Customize</span>
-              <span className="sm:hidden">Settings</span>
+              <Settings className="size-4 text-muted shrink-0" />
+              <span className="hidden sm:inline">Settings</span>
             </button>
 
-            {/* 6-Tier Founder Notification & Auto-Remediation Bell */}
+            {/* Platform Alerts & Notifications */}
             <button
               type="button"
               onClick={() => setBellOpen(true)}
               className="relative flex h-10 items-center gap-1.5 rounded-[10px] border border-border bg-elevated px-2.5 text-xs font-semibold text-fg hover:bg-surface transition"
-              aria-label="Open 6-Tier Founder Notification and Auto-Remediation Center"
-              title="6-Tier Founder Notification & Auto-Remediation Center"
+              aria-label="Open Platform Alerts & Notifications"
+              title="Platform Alerts & Notifications"
             >
               <Bell className="size-4 text-orange-400" />
               <span className="hidden lg:inline">Alerts</span>

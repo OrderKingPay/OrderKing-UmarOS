@@ -44,6 +44,7 @@ export const NAV: NavGroup[] = [
     id: "operations",
     i18n: "groups.operations",
     items: [
+      { id: "dashboard", path: "/app", i18n: "Overview", permission: "view_analytics", icon: "layout" },
       { id: "orders", path: "/app/orders", i18n: "Orders", permission: "view_orders", icon: "receipt" },
       { id: "restaurants", path: "/app/restaurants", i18n: "Restaurants", permission: "view_restaurants", icon: "utensils" },
       { id: "riders", path: "/app/riders", i18n: "Riders", permission: "view_riders", icon: "bike" },

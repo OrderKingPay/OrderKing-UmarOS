@@ -215,10 +215,10 @@ function Login() {
         <div className="flex items-center gap-3 mb-6">
           <OrderKingMark className="size-11" />
           <div>
-            <h1 className="font-display text-xl font-black tracking-tight text-white">
-              Umar OS
+            <h1 className="font-display text-xl font-bold tracking-tight text-white">
+              OrderKing Admin
             </h1>
-            <p className="text-xs text-slate-400">Admin</p>
+            <p className="text-xs text-slate-400">Operations &amp; Settlements Portal</p>
           </div>
         </div>
 
@@ -238,7 +238,7 @@ function Login() {
             }`}
           >
             <Phone className="size-3.5" />
-            <span>Mobile SMS OTP</span>
+            <span>Mobile OTP</span>
           </button>
           <button
             type="button"
@@ -305,7 +305,7 @@ function Login() {
                   disabled={busy || !isPhoneValid}
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-orange-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
-                  {busy ? "Dispatching SMS OTP..." : "Send Cellular SMS OTP"}
+                  {busy ? "Sending OTP..." : "Send Verification Code"}
                 </Button>
               </div>
             ) : (
@@ -368,7 +368,7 @@ function Login() {
                   disabled={busy || otp.replace(/\D/g, "").length !== 6}
                   className="w-full h-12 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 font-bold text-black text-sm tracking-wide shadow-lg shadow-orange-500/20 active:scale-[0.98] transition hover:brightness-105"
                 >
-                  {busy ? "Verifying..." : "Verify & Enter Command Center"}
+                  {busy ? "Verifying..." : "Verify & Sign In"}
                 </Button>
 
                 <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
@@ -471,7 +471,7 @@ function Login() {
 
         <div className="mt-6 pt-4 border-t border-[#1E283D] flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>Statutory Integrity · GSTIN 18AFXPH9838M1Z9 · 90-Day Session</span>
+          <span>OrderKing Pay (Assam - 788710) · GSTIN 18AFXPH9838M1Z9</span>
         </div>
       </div>
     </main>
