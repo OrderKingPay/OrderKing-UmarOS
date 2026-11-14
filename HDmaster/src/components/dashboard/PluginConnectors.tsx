@@ -12,7 +12,7 @@ import {
   loadEcosystemCmsFn,
   saveEcosystemCmsFn,
 } from "@/lib/orderking/actions";
-import { AiMediaEngineHub } from "./AiMediaEngineHub";
+
 import {
   Cpu,
   CreditCard,
@@ -2378,22 +2378,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
           )}
 
           {/* Dedicated Sub-Hubs when requested via forcedTab */}
-          {activeTab === "aiMediaEngine" && (
-            <div className="rounded-xl border border-emerald-500/20 bg-card p-6 shadow-sm space-y-6">
-              <AiMediaEngineHub
-                config={config.aiMediaEngine}
-                onUpdate={(updates) =>
-                  setConfig((prev) => ({
-                    ...prev,
-                    aiMediaEngine: { ...prev.aiMediaEngine, ...updates },
-                  }))
-                }
-                cmsConfig={cmsConfig}
-                onSave={handleSave}
-                isSaving={saving}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>

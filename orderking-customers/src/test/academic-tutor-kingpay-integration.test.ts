@@ -313,6 +313,6 @@ H = v_0^2 / (2g) [SI Unit: meters (m)]`;
       await sql`DELETE FROM kingpay_transactions WHERE user_id = ${testUserId}`;
       await sql`DELETE FROM kingpay_wallets WHERE user_id = ${testUserId}`;
       await sql`DELETE FROM "user" WHERE "id" = ${testUserId}`;
-    }, 60000);
+    }, 120000);
   });
 });

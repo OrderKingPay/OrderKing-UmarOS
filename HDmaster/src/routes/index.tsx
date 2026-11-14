@@ -56,10 +56,6 @@ import { LiveFounderProfitDashboard } from "@/components/dashboard/LiveFounderPr
 import { CustomerAppUiSettings } from "@/components/dashboard/CustomerAppUiSettings";
 import { AlgorithmSettings } from "@/components/dashboard/AlgorithmSettings";
 import { B2BFranchiseOnboardingEngine } from "@/components/franchise/B2BFranchiseOnboardingEngine";
-import { B2BSaaSSalesDeckGenerator } from "@/components/franchise/B2BSaaSSalesDeckGenerator";
-import { DesignStudio } from "@/components/dashboard/DesignStudio";
-import { SocialPublishingStudio } from "@/components/dashboard/SocialPublishingStudio";
-import { MultimodelBenchmarkDashboard } from "@/components/dashboard/MultimodelBenchmarkDashboard";
 import { GigWorkerComplianceCenter } from "@/components/dashboard/GigWorkerComplianceCenter";
 import { TravelPage } from "@/components/travel/TravelPage";
 import { lazyWithRetry } from "@/lib/lazy-retry";
@@ -2583,6 +2579,7 @@ function UmarOSDashboard() {
     : "home";
   const currentWorld =
     TEN_WORLDS.find((w) => w.id === safeActiveWorldId) || TEN_WORLDS[0];
+  const CurrentWorldIcon = currentWorld.icon || Home;
   const worldAllowedTabs = SUB_CATEGORY_TABS[safeActiveWorldId] || ["dashboard"];
   const rawTabId = activeTabs[safeActiveWorldId];
   const currentTabId =
@@ -2606,100 +2603,144 @@ function UmarOSDashboard() {
           TOP COMPACT BAR: BRAND + LIVE DB STATUS + BUSINESS DOMAIN SWITCHER
       ===================================================================== */}
       <header className="sticky top-0 z-40 bg-slate-950 text-white border-b border-slate-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-lg font-black text-emerald-300">
-              {currentWorld.emoji}
+            <div className="h-9 w-9 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400">
+              <UtensilsCrossed className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-black text-sm tracking-tight text-white">
-                  Umar OS
+                <span className="font-bold text-sm tracking-tight text-white">
+                  OrderKing Operations
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   {currentWorld.navLabel}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                {loaderData?.restaurants ?? 0} Restaurants ·{" "}
-                {loaderData?.riders ?? 0} Riders · {loaderData?.users ?? 0} Users ·{" "}
-                {loaderData?.todayOrders ?? 0} Orders
+                {loaderData?.restaurants ?? 0} Kitchens ·{" "}
+                {loaderData?.riders ?? 0} Fleet · {loaderData?.users ?? 0} Customers ·{" "}
+                {loaderData?.todayOrders ?? 0} Orders Today
               </p>
             </div>
           </div>
 
-          {/* Explicit Business Separation Bar */}
-          <div className="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold gap-1 overflow-x-auto max-w-full">
+          {/* Core Operations Navigation */}
+          <nav aria-label="Operations Navigation" className="flex items-center bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold gap-1 overflow-x-auto max-w-full">
             <button
               type="button"
-              onClick={() => selectWorld("orderking", "dashboard")}
+              onClick={() => selectWorld("home", "dashboard")}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
-                ["orderking", "home", "design", "b2b"].includes(activeWorldId)
-                  ? "bg-orange-500 text-slate-950 font-black shadow-xs"
+                activeWorldId === "home"
+                  ? "bg-emerald-600 text-white font-bold shadow-xs"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>OK</span>
-              <span>OrderKing Food Delivery</span>
+              <Home className="h-3.5 w-3.5" />
+              <span>Overview</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("orderking", "orders")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "orderking" && currentTabId === "orders"
+                  ? "bg-orange-600 text-white font-bold shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <UtensilsCrossed className="h-3.5 w-3.5" />
+              <span>Live Orders</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("orderking", "restaurants")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "orderking" && currentTabId === "restaurants"
+                  ? "bg-orange-600 text-white font-bold shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Store className="h-3.5 w-3.5" />
+              <span>Restaurants</span>
+              {pendingUnapproved.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-rose-500 text-white font-bold">
+                  {pendingUnapproved.length}
+                </span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("orderking", "riders")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "orderking" && currentTabId === "riders"
+                  ? "bg-orange-600 text-white font-bold shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Bike className="h-3.5 w-3.5" />
+              <span>Delivery Fleet</span>
             </button>
             <button
               type="button"
               onClick={() => selectWorld("kingpay", "dashboard")}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
-                ["kingpay", "travel"].includes(activeWorldId)
-                  ? "bg-emerald-500 text-slate-950 font-black shadow-xs"
+                activeWorldId === "kingpay"
+                  ? "bg-emerald-600 text-white font-bold shadow-xs"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>KP</span>
-              <span>KingPay Fintech & Travel</span>
+              <CreditCard className="h-3.5 w-3.5" />
+              <span>Settlements</span>
             </button>
             <button
               type="button"
-              onClick={() => selectWorld("umarai", "dashboard")}
-              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
-                activeWorldId === "umarai"
-                  ? "bg-sky-500 text-slate-950 font-black shadow-xs"
+              onClick={() => selectWorld("travel", "travel-hub")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "travel"
+                  ? "bg-sky-600 text-white font-bold shadow-xs"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>AI</span>
-              <span>Umar AI</span>
+              <Plane className="h-3.5 w-3.5" />
+              <span>Travel Hub</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => selectWorld("alerts", "action-center")}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "alerts"
+                  ? "bg-amber-600 text-white font-bold shadow-xs"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Bell className="h-3.5 w-3.5" />
+              <span>Alerts</span>
+              {activeUnresolvedAlerts.length > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[9px] bg-rose-500 text-white font-bold">
+                  {activeUnresolvedAlerts.length}
+                </span>
+              )}
             </button>
             <button
               type="button"
               onClick={() => selectWorld("settings", "dashboard")}
-              className={`px-2.5 py-1.5 rounded-lg flex items-center gap-1 transition-colors whitespace-nowrap ${
-                ["connections", "alerts", "settings"].includes(activeWorldId)
-                  ? "bg-slate-700 text-white font-black shadow-xs"
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
+                activeWorldId === "settings"
+                  ? "bg-slate-700 text-white font-bold shadow-xs"
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              <span>SET</span>
+              <Settings className="h-3.5 w-3.5" />
               <span>Settings</span>
             </button>
-          </div>
+          </nav>
 
           <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[11px] font-semibold text-emerald-400">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>PostgreSQL 17.6 Live</span>
+            </div>
             <UserButton />
-            {activeUnresolvedAlerts.length > 0 && (
-              <button
-                type="button"
-                onClick={() => selectWorld("alerts", "action-center")}
-                className="px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-bold flex items-center gap-1.5 transition-colors"
-              >
-                <Bell className="h-3.5 w-3.5 text-rose-400" />
-                <span>{activeUnresolvedAlerts.length} Action Needed</span>
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => selectSubTab("settings")}
-              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors"
-            >
-              <Settings className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Config</span>
-            </button>
           </div>
         </div>
       </header>
@@ -2708,8 +2749,7 @@ function UmarOSDashboard() {
           MAIN ACTIVE WORLD VIEWPORT (ONLY 1 WORLD RENDERS AT A TIME!)
       ===================================================================== */}
       <main className="max-w-7xl mx-auto px-4 pt-5 space-y-5">
-        {/* UMAR AI REAL-TIME NATURAL LANGUAGE COMMAND BAR */}
-        <UmarAiCommandBar />
+        {activeWorldId === "umarai" && <UmarAiCommandBar />}
 
         {/* Save confirmation toast banner */}
         {saveBanner && (
@@ -2730,19 +2770,21 @@ function UmarOSDashboard() {
           </div>
         )}
 
-        {/* WORLD HEADER: Simple Title + 1-Sentence Plain-English Explanation + Customize Button */}
+        {/* SECTION HEADER: Real vector icon + Title + Subtitle */}
         <section className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{currentWorld.emoji}</span>
-                <h1 className="text-lg md:text-xl font-black text-slate-900">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-slate-900 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
+                <CurrentWorldIcon className="h-5 w-5" />
+              </div>
+              <div className="space-y-0.5">
+                <h1 className="text-lg md:text-xl font-bold text-slate-900">
                   {currentWorld.title}
                 </h1>
+                <p className="text-xs text-slate-500">
+                  {currentWorld.explanation}
+                </p>
               </div>
-              <p className="text-xs md:text-sm text-slate-600">
-                {currentWorld.explanation}
-              </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -2760,7 +2802,7 @@ function UmarOSDashboard() {
               <button
                 type="button"
                 onClick={() => selectSubTab("settings")}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1.5 shadow-xs transition-colors"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
               >
                 <span>Settings</span>
               </button>
@@ -2776,9 +2818,9 @@ function UmarOSDashboard() {
                   key={tab.id}
                   type="button"
                   onClick={() => selectSubTab(tab.id)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                     active
-                      ? "bg-emerald-600 text-white shadow-xs"
+                      ? "bg-slate-900 text-white shadow-xs"
                       : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }`}
                 >
@@ -4335,12 +4377,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="B2B SaaS Sales Deck & ROI Generator"
+                worldTitle="Franchise Onboarding Engine"
                 emoji="B2B"
               />
             }
           >
-            <B2BSaaSSalesDeckGenerator />
+            <B2BFranchiseOnboardingEngine />
           </Suspense>
         )}
 
@@ -4715,12 +4757,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Multimodel AI Benchmark Dashboard"
+                worldTitle="Algorithm & AI Model Settings"
                 emoji="AI"
               />
             }
           >
-            <MultimodelBenchmarkDashboard />
+            <AlgorithmSettings />
           </Suspense>
         )}
 
@@ -4770,12 +4812,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Design Studio"
+                worldTitle="Storefront Design & Theme"
                 emoji="UI"
               />
             }
           >
-            <DesignStudio />
+            <CustomerAppUiSettings />
           </Suspense>
         )}
 
@@ -4783,12 +4825,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Design Studio"
+                worldTitle="Storefront Media & Banners"
                 emoji="UI"
               />
             }
           >
-            <DesignStudio />
+            <CustomerAppUiSettings />
           </Suspense>
         )}
 
@@ -4796,12 +4838,12 @@ function UmarOSDashboard() {
           <Suspense
             fallback={
               <WorldSuspenseShield
-                worldTitle="Social Publishing Studio"
+                worldTitle="Storefront Styling & Branding"
                 emoji="SOC"
               />
             }
           >
-            <SocialPublishingStudio />
+            <CustomerAppUiSettings />
           </Suspense>
         )}
 

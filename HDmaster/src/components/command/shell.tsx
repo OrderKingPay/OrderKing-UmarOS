@@ -1018,11 +1018,11 @@ export function CommandShell() {
                 <div className="flex items-center gap-2">
                   <Bell className="size-5 text-orange-400" />
                   <h2 className="text-base font-bold">
-                    6-Tier Founder Notification &amp; Auto-Remediation Desk
+                    Platform Alerts &amp; Notifications
                   </h2>
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
-                  Zero-Harassment Autonomous Diagnostics · 1-Click Auto-Fix &amp; Direct Module Routing
+                  Operational signals and critical system notices
                 </p>
               </div>
               <button

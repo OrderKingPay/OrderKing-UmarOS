@@ -94,10 +94,9 @@ import {
   money,
 } from "./widgets";
 import { useEmployee } from "./shell";
-import { GrowthVaultView } from "./growth-vault";
+
 
 import { FounderEconomics } from "../dashboard/FounderEconomics";
-import { UmarOS_AI_Terminal } from "../dashboard/UmarOS_AI_Terminal";
 import { LiveFounderProfitDashboard } from "../dashboard/LiveFounderProfitDashboard";
 import { CommercialCommandDials, CustomerSupportDisputeQueueSection } from "./commercial-command-dials";
 import { MANDATE_1_SPECIALIST_DEPARTMENTS } from "@/lib/orderking/ai/specialists";
@@ -183,8 +182,6 @@ export function DashboardPage() {
   const t = data?.today;
   return (
     <div className="space-y-6">
-      {/* UMAR OS AI COMMAND CENTER */}
-      <UmarOS_AI_Terminal />
 
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -406,21 +403,12 @@ function CeoPage() {
           >
             Unit Economics
           </Button>
-          <Button
-            size="sm"
-            variant={tab === "terminal" ? "primary" : "ghost"}
-            onClick={() => setTab("terminal")}
-            className="text-xs font-semibold"
-          >
-            AI Command Terminal
-          </Button>
         </div>
       </header>
 
       {tab === "dials" && <CommercialCommandDials />}
       {tab === "profit" && <FounderEconomics />}
       {tab === "economics" && <FounderEconomics />}
-      {tab === "terminal" && <UmarOS_AI_Terminal />}
     </div>
   );
 }
@@ -2577,7 +2565,7 @@ const TIER1_PARITY_ITEMS = [
 ];
 
 export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
-  const [activeTab, setActiveTab] = useState<"console" | "ecosystem" | "backlog" | "governance" | "growth">("console");
+  const [activeTab, setActiveTab] = useState<"console" | "ecosystem" | "backlog" | "governance">("console");
   const [specialistId, setSpecialistId] = useState<string>("architect");
   const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>(
     MANDATE_1_SPECIALIST_DEPARTMENTS[5]?.id ?? "dept_06_b2b_saas_revenue"
@@ -2734,16 +2722,6 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
             )}
           >
             Governance & Audit
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("growth")}
-            className={cn(
-              "rounded-xl px-3 py-1.5 transition-colors flex items-center gap-1.5",
-              activeTab === "growth" ? "bg-orange-500 text-black font-semibold shadow-xs" : "bg-elevated text-muted hover:text-foreground"
-            )}
-          >
-            Growth &amp; Grants Vault
           </button>
         </div>
       </header>
@@ -3405,8 +3383,6 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
           </Panel>
         </div>
       )}
-
-      {activeTab === "growth" && <GrowthVaultView />}
     </div>
   );
 }
