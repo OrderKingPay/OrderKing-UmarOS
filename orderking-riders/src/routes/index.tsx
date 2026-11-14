@@ -61,7 +61,7 @@ const FAQS: FaqItem[] = [
   {
     question: "What is the per-delivery payout rate?",
     answer:
-      "Every delivery guarantees a base floor of ₹35.00 for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time allowance after 10 minutes past arrival.",
+      "Every delivery guarantees a base floor of ₹35.00 for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time allowance after 6 minutes past arrival.",
   },
 ];
 

@@ -844,6 +844,72 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     };
   });
 
+export const verifyTruecallerRiderFn = createServerFn({ method: "POST" })
+  .validator((input: { phone: string; accessToken?: string; requestId?: string }) => input)
+  .handler(async ({ data }) => {
+    const cleanPhone = sanitizeIndianPhone(data.phone || "");
+    if (!isValidIndianPhone(cleanPhone)) {
+      throw new RiderError("INVALID_PHONE", "Please enter a valid 10-digit mobile number.", 400);
+    }
+
+    if (data.accessToken) {
+      try {
+        const tcRes = await fetch("https://profile4.truecaller.com/v1/default", {
+          headers: { Authorization: `Bearer ${data.accessToken}` },
+        });
+        if (tcRes.ok) {
+          const tcData = (await tcRes.json().catch(() => ({}))) as { phoneNumber?: string; name?: string };
+          const tcPhone = sanitizeIndianPhone(tcData.phoneNumber || "");
+          if (tcPhone && tcPhone !== cleanPhone) {
+            throw new RiderError("PHONE_MISMATCH", "Truecaller phone number does not match.", 400);
+          }
+        }
+      } catch (err) {
+        if (err instanceof RiderError) throw err;
+      }
+    }
+
+    const email = `${cleanPhone}@rider.orderking.in`;
+    const credential = `RiderOtp#${cleanPhone}!2026`;
+    let isNewUser = true;
+    let isVerified = true;
+    let partnerName = "Delivery Partner";
+
+    try {
+      const sql = await getSql();
+      const existingUsers = await sql`SELECT id, name, email FROM "user" WHERE email = ${email} LIMIT 1`;
+      if (existingUsers && existingUsers.length > 0) {
+        isNewUser = false;
+        if (existingUsers[0].name) partnerName = existingUsers[0].name as string;
+        const userId = existingUsers[0].id as string;
+        try {
+          const { hashPassword } = await import("better-auth/crypto");
+          const hashedPassword = await hashPassword(credential);
+          await sql`UPDATE "account" SET password = ${hashedPassword}, "updatedAt" = NOW() WHERE "userId" = ${userId} AND "providerId" = 'credential'`;
+        } catch {}
+
+        const riders = await sql`SELECT id, full_name, kyc_status FROM riders WHERE user_id = ${userId} LIMIT 1`;
+        if (riders && riders.length > 0) {
+          const kycStatus = (riders[0].kyc_status as string || "").toUpperCase();
+          if (riders[0].full_name) partnerName = riders[0].full_name as string;
+          isVerified = kycStatus !== "REJECTED" && kycStatus !== "SUSPENDED";
+        }
+      }
+    } catch {}
+
+    const destination = isVerified ? "/" : "/onboarding";
+    return {
+      ok: true,
+      phone: cleanPhone,
+      email,
+      name: partnerName,
+      credential,
+      isNewUser,
+      isVerified,
+      destination,
+    };
+  });
+
 
 
 

@@ -22,10 +22,12 @@ import { Route as KycRouteImport } from './routes/kyc'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PayoutsRouteImport } from './routes/payouts'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SafetyRouteImport } from './routes/safety'
 import { Route as SettlementsRouteImport } from './routes/settlements'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as DeliveryIdRouteImport } from './routes/delivery.$id'
@@ -98,6 +100,11 @@ const PayoutsRoute = PayoutsRouteImport.update({
   path: '/payouts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -116,6 +123,11 @@ const SettlementsRoute = SettlementsRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TripsRoute = TripsRouteImport.update({
@@ -164,10 +176,12 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
@@ -189,10 +203,12 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
@@ -215,10 +231,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/payouts': typeof PayoutsRoute
+  '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/safety': typeof SafetyRoute
   '/settlements': typeof SettlementsRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/trips': typeof TripsRoute
   '/wallet': typeof WalletRoute
   '/delivery/$id': typeof DeliveryIdRoute
@@ -242,10 +260,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/payouts'
+    | '/privacy'
     | '/profile'
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/terms'
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
@@ -267,10 +287,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/payouts'
+    | '/privacy'
     | '/profile'
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/terms'
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
@@ -292,10 +314,12 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/payouts'
+    | '/privacy'
     | '/profile'
     | '/safety'
     | '/settlements'
     | '/support'
+    | '/terms'
     | '/trips'
     | '/wallet'
     | '/delivery/$id'
@@ -318,10 +342,12 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
   PayoutsRoute: typeof PayoutsRoute
+  PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   SafetyRoute: typeof SafetyRoute
   SettlementsRoute: typeof SettlementsRoute
   SupportRoute: typeof SupportRoute
+  TermsRoute: typeof TermsRoute
   TripsRoute: typeof TripsRoute
   WalletRoute: typeof WalletRoute
   DeliveryIdRoute: typeof DeliveryIdRoute
@@ -423,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayoutsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -449,6 +482,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trips': {
@@ -510,10 +550,12 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
   PayoutsRoute: PayoutsRoute,
+  PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   SafetyRoute: SafetyRoute,
   SettlementsRoute: SettlementsRoute,
   SupportRoute: SupportRoute,
+  TermsRoute: TermsRoute,
   TripsRoute: TripsRoute,
   WalletRoute: WalletRoute,
   DeliveryIdRoute: DeliveryIdRoute,

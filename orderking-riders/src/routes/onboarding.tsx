@@ -57,6 +57,10 @@ export function RiderOnboardingPage() {
 
   // Step 5: Profile Selfie & Bag Verification
   const [selfiePhoto, setSelfiePhoto] = useState<string | null>(null);
+  const [tshirtSize, setTshirtSize] = useState<"M" | "L" | "XL" | "XXL">("L");
+  const [emergencyName, setEmergencyName] = useState("");
+  const [emergencyMobile, setEmergencyMobile] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(true);
   const [bagVerified, setBagVerified] = useState(true);
   const selfieInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -163,6 +167,10 @@ export function RiderOnboardingPage() {
       setError("Take live profile selfie");
       return false;
     }
+    if (!termsAccepted) {
+      setError("Please accept the Delivery Partner Agreement and Privacy Policy");
+      return false;
+    }
     return true;
   }
 
@@ -186,7 +194,7 @@ export function RiderOnboardingPage() {
           payoutUpi: upiId.trim(),
           payoutBankLast4: bankLast4,
           preferredZones: [cityZone.trim() || (ZONES?.[0] ?? "Guwahati")],
-          availabilityNotes: `Vehicle: ${vehicleCategory}`,
+          availabilityNotes: `Vehicle: ${vehicleCategory} | KitSize: ${tshirtSize}`,
           cityZone: cityZone.trim(),
           serviceAddress: formattedAddress,
           dlNumber: isExemptVehicle ? "EXEMPT_CMVR_RULE_2U" : dlNumber.trim().toUpperCase(),
@@ -203,8 +211,8 @@ export function RiderOnboardingPage() {
           ifsc: cleanIfsc,
           bankIfsc: cleanIfsc,
           upiId: upiId.trim(),
-          emergencyContactName: fullName.trim(),
-          emergencyContactPhone: cleanPhone,
+          emergencyContactName: (emergencyName || fullName).trim(),
+          emergencyContactPhone: (emergencyMobile || cleanPhone).trim(),
           safetyRulesAccepted: true,
         } as any,
       });
@@ -631,6 +639,87 @@ export function RiderOnboardingPage() {
               <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
                 <span className="text-slate-300">Delivery Bag Ready</span>
                 <span className="text-emerald-400 font-bold">Verified</span>
+              </div>
+
+              {/* T-Shirt Kit Sizing */}
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-300">Partner T-Shirt Kit Size</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {(["M", "L", "XL", "XXL"] as const).map((sz) => (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => setTshirtSize(sz)}
+                      className={`rounded-xl border py-2.5 text-xs font-bold transition ${
+                        tshirtSize === sz
+                          ? "border-primary bg-primary/20 text-primary"
+                          : "border-border bg-background text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {sz}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emergency Contact */}
+              <div className="space-y-2.5 pt-1">
+                <div>
+                  <Label className="text-xs text-slate-300">Emergency Contact Name</Label>
+                  <Input
+                    value={emergencyName}
+                    onChange={(e) => setEmergencyName(e.target.value)}
+                    placeholder="Parent / Spouse / Relative"
+                    className="mt-1 bg-background border-border text-foreground h-10 text-xs"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-slate-300">Emergency Contact Mobile</Label>
+                  <div className="relative mt-1">
+                    <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-mono">+91</span>
+                    <Input
+                      type="tel"
+                      maxLength={10}
+                      value={emergencyMobile}
+                      onChange={(e) => setEmergencyMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                      placeholder="10-digit contact mobile"
+                      className="bg-background border-border text-foreground h-10 pl-11 text-xs font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Statutory Terms & DPDP Agreement */}
+              <div className="rounded-xl border border-border bg-background p-3 text-xs space-y-2">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-0.5 rounded border-slate-700 text-primary focus:ring-0"
+                  />
+                  <span className="text-slate-400 text-[11px] leading-relaxed">
+                    I agree to the{" "}
+                    <a
+                      href="/terms"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-primary underline"
+                    >
+                      Delivery Partner Agreement
+                    </a>{" "}
+                    and grant consent under the{" "}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-primary underline"
+                    >
+                      DPDP Act 2023 Privacy Policy
+                    </a>{" "}
+                    for live GPS telemetry during active shifts and statutory payout processing.
+                  </span>
+                </label>
               </div>
 
               <div className="pt-2 flex items-center justify-between">
