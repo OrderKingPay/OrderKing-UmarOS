@@ -2711,7 +2711,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
               activeTab === "backlog" ? "bg-primary text-primary-foreground font-semibold" : "bg-elevated text-muted hover:text-foreground"
             )}
           >
-            Tier-1 Market-Dominance Backlog
+            Operations Roadmap
           </button>
           <button
             type="button"
@@ -3324,10 +3324,10 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
         </div>
       )}
 
-      {/* Tier-1 Market-Dominance Backlog Tab */}
+      {/* Operations Roadmap Tab */}
       {activeTab === "backlog" && (
         <div className="space-y-4">
-          <Panel title="Order King Tier-1 Market-Dominance Engineering Roadmap">
+          <Panel title="OrderKing Core Operations Roadmap">
             <p className="text-xs text-muted mb-4">
               Canonical engineering milestones tracked by the Master AI. Every item requires verified implementation, automated test passes, and runtime evidence.
             </p>
@@ -4942,7 +4942,7 @@ export function ApprovalsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-base">Intelligent Dispatch Coordinator</h3>
-                      <p className="text-xs text-muted">Role: Fleet Orchestration (Tier-1 Market-Dominance level)</p>
+                      <p className="text-xs text-muted">Role: Fleet Orchestration &amp; Dispatch Optimization</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-purple-500 border-purple-500/30">

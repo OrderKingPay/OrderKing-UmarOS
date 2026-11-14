@@ -1762,9 +1762,9 @@ export async function executeTool(
         },
         academicKeynoteInvitations: [
           { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
-          { institution: "NIT Silchar", topic: "Outperforming Legacy Aggregators: How Localized Tech Beats Multinational Bloatware", honorarium: "₹35,000 + VIP Memento" },
+          { institution: "NIT Silchar", topic: "High-Efficiency Aggregators: How Localized Tech Delivers Fast Operations", honorarium: "₹35,000 + VIP Memento" },
           { institution: "Assam University", topic: "Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
-          { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns", honorarium: "Plaque & Honorarium" },
+          { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Scaling Remote Towns", honorarium: "Plaque & Honorarium" },
           { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Super-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
           { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
           { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with Direct Hyperlocal Logistics", honorarium: "Institutional Mentorship" },
@@ -1830,7 +1830,7 @@ export async function executeTool(
         timestamp: new Date().toISOString(),
         metaMarketingApiPayload: {
           apiVersion: "v21.0",
-          campaignName: "OrderKing_Dominance_Karimganj_Meta_V21",
+          campaignName: "OrderKing_Hyperlocal_Karimganj_Meta_V21",
           dailyBudgetInr: 150,
           targetPostalCodes: ["788710", "788711", "788712", "788701"],
           targetRadiusKm: 5.0,
@@ -1840,7 +1840,7 @@ export async function executeTool(
         },
         googleAdsPMaxPayload: {
           advertisingChannelType: "PERFORMANCE_MAX",
-          campaignName: "OrderKing_Karimganj_Google_PMax_Domination",
+          campaignName: "OrderKing_Karimganj_Google_PMax_Campaign",
           dailyBudgetInr: 200,
           geoTargeting: ["Karimganj", "Barak Valley", "Assam"],
           searchThemes: ["food delivery near me", "best biryani in town", "online food ordering"],
@@ -1852,7 +1852,7 @@ export async function executeTool(
           influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
           googleLocalSeoSchema: "FoodDeliveryService JSON-LD schema deployed for #1 Google Search & Maps ranking",
         },
-        verdict: "Local advertising engine primed. Dominates mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp Status with sub-₹150 daily budget.",
+        verdict: "Local advertising engine active. Reaches mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp with sub-₹150 daily budget.",
       };
     }
 

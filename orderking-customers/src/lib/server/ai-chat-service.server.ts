@@ -217,7 +217,7 @@ async function tryExecuteEngineeringCommand(query: string): Promise<string | nul
   return null;
 }
 
-export function executeLocalSovereignCognitivePass(
+export function executeLocalCognitivePass(
   _query: string,
   _messages: ChatMessage[],
   _founderUpiVpa: string = "9395065587@ybl"
@@ -233,6 +233,7 @@ export function executeLocalSovereignCognitivePass(
     executionSteps: [],
   };
 }
+export const executeLocalSovereignCognitivePass = executeLocalCognitivePass;
 
 export async function executeAutonomousEmployeeTask(taskType: string, payload: any): Promise<any> {
   const startTime = Date.now();

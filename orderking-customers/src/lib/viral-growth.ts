@@ -599,7 +599,7 @@ export const ACADEMIC_INVITATIONS_REGISTRY: AcademicInstitutionInvite[] = [
     institution: "Tezpur Central University",
     cellOrDepartment: "Centre for Innovation, Incubation & Entrepreneurship (CIIE)",
     eventType: "Keynote Speaker on Regional Digital Transformation",
-    topic: "Hyperlocal Logistics in Assam: Conquering Remote Towns with Zero Venture Capital",
+    topic: "Hyperlocal Logistics in Assam: Bootstrapped Logistics in Tier-3 Towns",
     invitationStatus: "READY_FOR_FOUNDER_PITCH",
     perksAndHonorarium: "University citation plaque, guest honorarium, and post-lecture press release.",
   },
@@ -758,7 +758,7 @@ export function generateInstitutionalPitchDossier(
       "22% local merchant sustainability model vs 30%+ corporate inflation",
       "Over ₹3.74 Crore in verified government grant & cloud infrastructure alignment",
     ],
-    founderBio: `${founderName} is a technologist and startup founder from Assam pioneering rural-first hyperlocal logistics and sovereign fintech infrastructure.`,
+    founderBio: `${founderName} is a technologist and startup founder from Assam developing rural-first hyperlocal logistics and digital payment infrastructure.`,
     contactDetails: "Email: founder@orderking.in | Phone: +91 38xxx xxxxx | Web: orderking.in",
   };
 }
@@ -880,7 +880,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "TIDE2_SCALE_GRANT",
       formIdentifier: "MEITY_TIDE_02",
       requiredDocuments: ["DPIIT Certificate", "Technical Whitepaper", "Financial Plan"],
-      pitchSummary: "Autonomous AI dispatch, 0ms low-network resilience, and sovereign payment float management.",
+      pitchSummary: "Automated dispatch, offline network resilience, and payment float management.",
     },
   },
   {
@@ -956,7 +956,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "NSA_FOOD_LOGISTICS",
       formIdentifier: "NSA_NOM_2026",
       requiredDocuments: ["DPIIT Certificate", "Customer Savings Audit", "Employment Metrics"],
-      pitchSummary: "Pioneering sovereign food delivery that beats corporate duopoly on fairness and price.",
+      pitchSummary: "Direct restaurant food delivery with transparent pricing.",
     },
   },
   {
@@ -994,7 +994,7 @@ export const OPPORTUNITY_RADAR_REGISTRY: OpportunityRadarItem[] = [
       categoryCode: "IITG_KEYNOTE_SPEAKER",
       formIdentifier: "IITG_EC_CONCLAVE",
       requiredDocuments: ["Founder Profile", "Lecture Abstract", "Technical Architecture Overview"],
-      pitchSummary: "How sovereign technology and direct menu pricing beat multinational monopolies in Northeast India.",
+      pitchSummary: "Transparent restaurant pricing and local delivery logistics in Northeast India.",
     },
   },
   {
@@ -1185,7 +1185,7 @@ export function generateAutoBookingDossier(
       executiveSummary: opp.autoBookingPayload.pitchSummary,
       statutoryDeclarations: [
         "Applicant confirms entity is incorporated under Indian Companies Act / registered under MSME Udyam.",
-        "Zero foreign corporate control; 100% founder sovereign Indian equity holding.",
+        "100% founder Indian equity holding.",
         "Compliant with Section 194-O Income Tax Act and Section 9(5) CGST Act.",
         "Bank account verified and matched with PAN/GSTIN for direct DBT/RTGS grant credit.",
       ],
@@ -1243,7 +1243,7 @@ export function generateMetaMarketingApiPayload(
 ): MetaMarketingApiPayload {
   return {
     campaign: {
-      name: `OrderKing_Dominance_${townName}_Meta_V21`,
+      name: `OrderKing_Hyperlocal_${townName}_Meta_V21`,
       objective: "OUTCOME_SALES",
       status: "ACTIVE",
       special_ad_categories: [],

@@ -675,3 +675,6 @@ export function calculatePlanetaryRevenueHarvest(options: {
     executionAuditSummary: `Revenue Harvester successfully verified with Owner Consent. Total Monthly Run-Rate: ₹${(totalMonthlyCollectibleYieldPaise / 100).toLocaleString("en-IN")}. Non-Dilutive Grant Capital: ₹${(totalNonDilutiveGrantVaultPaise / 100).toLocaleString("en-IN")}. Double-entry ledger balanced with integer-paise precision.`,
   };
 }
+
+export const calculateRevenueHarvest = calculatePlanetaryRevenueHarvest;
+

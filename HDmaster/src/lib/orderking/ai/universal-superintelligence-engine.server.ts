@@ -246,4 +246,6 @@ Please provide real Database Access or real API keys to fulfill this request.`;
 }
 
 export { UniversalSuperintelligenceEngine as UniversalAdvancedintelligenceEngine };
+export { UniversalSuperintelligenceEngine as UniversalExecutionEngine };
+
 
