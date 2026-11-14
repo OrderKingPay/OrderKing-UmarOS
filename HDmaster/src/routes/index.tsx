@@ -5239,16 +5239,17 @@ function UmarOSDashboard() {
         className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 shadow-2xl"
       >
         <div className="max-w-7xl mx-auto px-2 py-1">
-          <div className="hidden sm:flex items-center justify-between text-[10px] font-extrabold px-2 pb-1 border-b border-slate-800/80 mb-1">
-            <span className="text-orange-400">OrderKing Food Delivery (Home, Food, Design, B2B)</span>
-            <span className="text-emerald-400">KingPay Fintech & Travel (Payouts, Ledger, Travel)</span>
-            <span className="text-slate-400">System (Umar AI, Connectors, Alerts, Settings)</span>
+          <div className="hidden sm:flex items-center justify-between text-[10px] font-bold px-2 pb-1 border-b border-slate-800/80 mb-1">
+            <span className="text-orange-400">OrderKing Delivery</span>
+            <span className="text-emerald-400">KingPay Fintech &amp; Travel</span>
+            <span className="text-slate-400">Platform Management</span>
           </div>
           <div className="grid grid-cols-5 sm:grid-cols-10 gap-1">
             {TEN_WORLDS.map((world) => {
               const isSelected = activeWorldId === world.id;
               const showAlertBadge =
                 world.id === "alerts" && activeUnresolvedAlerts.length > 0;
+              const WorldIcon = world.icon || Home;
               return (
                 <button
                   key={world.id}
@@ -5256,16 +5257,16 @@ function UmarOSDashboard() {
                   onClick={() => selectWorld(world.id, "dashboard")}
                   className={`relative flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition-all ${
                     isSelected
-                      ? "bg-emerald-600 text-white font-black shadow-sm"
-                      : "text-slate-400 hover:text-white hover:bg-slate-900 font-semibold"
+                      ? "bg-emerald-600 text-white font-bold shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900 font-medium"
                   }`}
                 >
-                  <span className="text-base leading-none">{world.emoji}</span>
+                  <WorldIcon className="h-4 w-4" />
                   <span className="text-[10px] mt-1 tracking-tight truncate max-w-full">
                     {world.navLabel}
                   </span>
                   {showAlertBadge && (
-                    <span className="absolute top-1 right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center">
+                    <span className="absolute top-1 right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center">
                       {activeUnresolvedAlerts.length}
                     </span>
                   )}
