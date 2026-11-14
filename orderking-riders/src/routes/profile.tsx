@@ -55,7 +55,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
       },
       {
         heading: "2. Transparent Per-Order Rate Card",
-        body: "Every delivery offer displays the confirmed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 10 minutes past arrival.",
+        body: "Every delivery offer displays the confirmed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 6 minutes past arrival.",
       },
       {
         heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
