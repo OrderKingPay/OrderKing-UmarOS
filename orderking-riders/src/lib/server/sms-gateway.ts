@@ -484,9 +484,15 @@ export function getAvailableSmsProviders(): TelecomProvider[] {
     providers.push("fast2sms");
   }
 
-  const twoFactorKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || process.env.TWO_FACTOR_SMS_KEY || "").trim();
+  const twoFactorKey = (
+    process.env.TWOFACTOR_API_KEY ||
+    process.env.TWO_FACTOR_API_KEY ||
+    process.env.TWO_FACTOR_SMS_KEY ||
+    process.env.OTP_2FACTOR_API_KEY ||
+    ""
+  ).trim();
   const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
-  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey.trim() !== f2sCompare && twoFactorKey.trim().length <= 45) {
+  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey !== f2sCompare && twoFactorKey.length <= 45) {
     providers.push("2factor");
   }
 

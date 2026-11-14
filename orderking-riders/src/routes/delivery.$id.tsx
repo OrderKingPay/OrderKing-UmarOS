@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/db-cloud";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { DeliveryActions } from "@/components/rider/delivery-actions";
 import { MapPane } from "@/components/rider/map-pane";
@@ -17,7 +17,12 @@ import { ArrowLeft, HelpCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
-export const Route = createFileRoute("/delivery/$id")({ component: Page });
+export const Route = createFileRoute("/delivery/$id")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 const TRIP_TICKET_TOPICS: ReadonlyArray<{ topic: TicketTopic; label: string }> = [
   { topic: "RESTAURANT_ISSUE", label: "Kitchen Delay" },

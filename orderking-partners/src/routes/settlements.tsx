@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,12 @@ import {
   Zap,
 } from "lucide-react";
 
-export const Route = createFileRoute("/settlements")({ component: SettlementsPage });
+export const Route = createFileRoute("/settlements")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: SettlementsPage
+});
 
 function SettlementsPage() {
   const t = useT();

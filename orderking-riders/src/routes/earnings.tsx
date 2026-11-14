@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,12 @@ import {
 
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
-export const Route = createFileRoute("/earnings")({ component: Page });
+export const Route = createFileRoute("/earnings")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 type Preset = "today" | "yesterday" | "week" | "month";
 type LineFilter = "ALL" | EarningLine["kind"];

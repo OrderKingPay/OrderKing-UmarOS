@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -31,7 +31,12 @@ import {
   XCircle,
 } from "lucide-react";
 
-export const Route = createFileRoute("/reviews")({ component: ReviewsPage });
+export const Route = createFileRoute("/reviews")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: ReviewsPage
+});
 
 type MainTab = "COMPLAINTS" | "RATINGS";
 type ComplaintFilter = "ALL" | "TRANSIT_DAMAGE" | "MISSING_ITEM" | "ACTION_REQUIRED" | "DISPUTED";

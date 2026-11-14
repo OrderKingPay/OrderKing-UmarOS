@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,12 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/assistant")({ component: Page });
+export const Route = createFileRoute("/assistant")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 const SPEECH_LANG_MAP: Record<string, string> = {
   en: "en-IN",

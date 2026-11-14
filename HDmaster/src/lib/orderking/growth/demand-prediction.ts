@@ -9,7 +9,7 @@ export interface UmarOSPredictionConfig {
   autoPreRouteRiders: boolean;
   autoRestaurantWarnings: boolean;
   surgePreventionActive: boolean;
-  aggressivenessLevel: 'LOW' | 'BALANCED' | 'MAX_DOMINANCE';
+  aggressivenessLevel: 'LOW' | 'BALANCED' | 'MAX_CAPACITY';
   targetRiderIdleTimeMaxMinutes: number;
 }
 
@@ -58,7 +58,7 @@ export class DemandPredictionEngine {
     console.log(`[AI ENGINE] Initiating demand prediction cycle for Zone: ${zoneId}`);
 
     // Compute demand projection from active order rate
-    const predictedOrdersNextHour = currentActiveOrders * (this.config.aggressivenessLevel === 'MAX_DOMINANCE' ? 3.5 : 2.0);
+    const predictedOrdersNextHour = currentActiveOrders * (this.config.aggressivenessLevel === 'MAX_CAPACITY' ? 3.5 : 2.0);
     console.log(`[AI ENGINE] Forecast: ${Math.floor(predictedOrdersNextHour)} orders expected in the next 60 minutes.`);
 
     if (this.config.autoPreRouteRiders) {

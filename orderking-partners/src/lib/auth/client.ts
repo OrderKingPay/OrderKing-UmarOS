@@ -272,6 +272,7 @@ export function setPhoneSession(
     if (!profile) {
       window.localStorage.removeItem(PHONE_SESSION_KEY);
       window.localStorage.removeItem("orderking_user");
+      document.cookie = "orderking_partner_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax; Secure";
     } else {
       const now = new Date().toISOString();
       const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
@@ -299,6 +300,8 @@ export function setPhoneSession(
       };
       window.localStorage.setItem(PHONE_SESSION_KEY, JSON.stringify(sessionPayload));
       window.localStorage.setItem("orderking_user", JSON.stringify(sessionPayload.user));
+      const cookieVal = encodeURIComponent(JSON.stringify(profile));
+      document.cookie = `orderking_partner_session=${cookieVal}; path=/; max-age=2592000; SameSite=Lax; Secure`;
     }
     window.dispatchEvent(new Event("orderking-auth-updated"));
   } catch {}

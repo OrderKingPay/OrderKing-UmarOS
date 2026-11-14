@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -18,7 +18,12 @@ import { kotHardware } from "@/lib/printer/persistent-kot-printer";
 import { BellOff, FileSpreadsheet, Flame, Search, Volume2, VolumeX } from "lucide-react";
 import { useKitchenRushStore, calculateOrderRushEta } from "@/lib/orders/kitchen-rush";
 
-export const Route = createFileRoute("/orders")({ component: OrdersPage });
+export const Route = createFileRoute("/orders")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: OrdersPage
+});
 
 type StateFilter = "ALL" | "NEEDS_ACTION" | "PREPARING" | "READY" | "DELIVERED" | "CANCELLED";
 

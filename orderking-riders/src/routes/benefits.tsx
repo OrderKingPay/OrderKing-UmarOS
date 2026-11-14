@@ -1,11 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { RiderBenefitsHub } from "@/components/rider/rider-benefits-hub";
 import { bootstrapRiderFn, getHomeFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/benefits")({ component: BenefitsPage });
+export const Route = createFileRoute("/benefits")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: BenefitsPage
+});
 
 function BenefitsPage() {
   const [rider, setRider] = useState<RiderProfile | null>(null);

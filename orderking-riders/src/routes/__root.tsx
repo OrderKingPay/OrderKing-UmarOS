@@ -1,4 +1,4 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState, redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
@@ -62,7 +62,15 @@ const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
 });
 
 export const Route = createRootRoute({
-  beforeLoad: async () => ({ sessionUser: await fetchSessionUser() }),
+  beforeLoad: async ({ location }) => {
+    const pathname = location.pathname;
+    const isPublic = pathname === "/login" || pathname === "/terms" || pathname === "/privacy" || pathname.startsWith("/api");
+    const sessionUser = await fetchSessionUser();
+    if (!isPublic && !sessionUser) {
+      throw redirect({ to: "/login" });
+    }
+    return { sessionUser };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -82,7 +90,23 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  component: () => (
+  component: RiderRootLayout,
+});
+
+function RiderRootLayout() {
+  const location = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isPublic = location === "/login" || location === "/terms" || location === "/privacy" || location.startsWith("/api");
+    const hasCookie = document.cookie.includes("orderking_rider_session");
+    const hasStorage = Boolean(window.localStorage.getItem("orderking_rider_session") || window.localStorage.getItem("orderking_user"));
+    if (!isPublic && !hasCookie && !hasStorage) {
+      window.location.replace("/login");
+    }
+  }, [location]);
+
+  return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
@@ -134,5 +158,5 @@ export const Route = createRootRoute({
         />
       </body>
     </html>
-  ),
-});
+  );
+}

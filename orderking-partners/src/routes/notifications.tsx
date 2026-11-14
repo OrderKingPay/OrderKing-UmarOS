@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,12 @@ import { useVendor } from "@/components/use-vendor";
 import { getNotifications, markNotificationsRead } from "@/lib/server/api-more";
 import { Bell, CheckCircle2, ArrowRight, ShieldCheck, IndianRupee, Utensils, Settings } from "lucide-react";
 
-export const Route = createFileRoute("/notifications")({ component: NotificationsPage });
+export const Route = createFileRoute("/notifications")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: NotificationsPage
+});
 
 type NotificationFilter = "ALL" | "ORDERS" | "SETTLEMENTS" | "COMPLIANCE";
 

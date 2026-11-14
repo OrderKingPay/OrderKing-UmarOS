@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { VendorShell, MORE_NAV } from "@/components/vendor-shell";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,12 @@ import {
   VolumeX,
 } from "lucide-react";
 
-export const Route = createFileRoute("/more")({ component: MorePage });
+export const Route = createFileRoute("/more")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: MorePage
+});
 
 const NAV_ITEM_METADATA: Record<
   string,

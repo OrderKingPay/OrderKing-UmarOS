@@ -1403,7 +1403,7 @@ export const testPluginConnectorFn = createServerFn({ method: "POST" })
 
         return {
           ok: true as const,
-          message: `${providerLabel} Handshake Verified. Neural avatar model [${avatarId}] loaded. Voice synthesis profile [${voiceId}] active. Aspect ratio ${ratio} optimized for Meta Direct Messages. Synthetic Media Engine operational for 'Market-Dominance Bounty' mass-rendering.`,
+          message: `${providerLabel} Handshake Verified. Neural avatar model [${avatarId}] loaded. Voice synthesis profile [${voiceId}] active. Aspect ratio ${ratio} optimized for Meta Direct Messages. Synthetic Media Engine operational for merchant training and promotion video generation.`,
         };
       }
 

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,12 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
-export const Route = createFileRoute("/wallet")({ component: WalletPage });
+export const Route = createFileRoute("/wallet")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: WalletPage
+});
 
 type HomeData = Awaited<ReturnType<typeof getHomeFn>>;
 

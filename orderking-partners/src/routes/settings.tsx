@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -61,7 +61,12 @@ import {
   Wrench,
 } from "lucide-react";
 
-export const Route = createFileRoute("/settings")({ component: SettingsPage });
+export const Route = createFileRoute("/settings")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: SettingsPage
+});
 
 export const ALL_INDIAN_LANGUAGES = INDIAN_LANGUAGE_CATALOG;
 

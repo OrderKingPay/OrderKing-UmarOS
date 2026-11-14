@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouterState } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link, useRouterState } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,12 @@ import {
   getIsoDateOffset,
 } from "@/lib/rider/shift-slots";
 
-export const Route = createFileRoute("/history")({ component: Page });
+export const Route = createFileRoute("/history")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 const formatINR = formatPaise;
 

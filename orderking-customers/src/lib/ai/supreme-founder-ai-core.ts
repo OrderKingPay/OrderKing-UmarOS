@@ -2224,7 +2224,7 @@ By routing payments via direct King Pay UPI, we bypass the 2.5% payment gateway 
 #### 1. Why Food Delivery is Strictly Geofenced to Karimganj / Sribhumi
 - **Hyperlocal Radius Discipline**: Delivery timing depends on active local rider density, synced kitchen prep telemetry, and direct route dispatch.
 - **Zero Cash Burn**: Expanding food delivery nationwide without local merchant and rider density causes cold food, 40%+ cancellation rates, and massive operational losses.
-- **Dominance Before Expansion**: We achieve 100% market saturation and profitability in Karimganj before opening adjacent regional hubs (Silchar, Hailakandi).
+- **Saturation Before Expansion**: We achieve 100% market saturation and profitability in Karimganj before opening adjacent regional hubs (Silchar, Hailakandi).
 
 ---
 

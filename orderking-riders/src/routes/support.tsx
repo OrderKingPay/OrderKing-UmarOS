@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -21,7 +21,12 @@ import type { TicketTopic } from "@/lib/rider/types";
 import { Banknote, BarChart3, HeartPulse, MapPin, PhoneOff, Siren, Store, type LucideIcon } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 
-export const Route = createFileRoute("/support")({ component: Page });
+export const Route = createFileRoute("/support")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 const TOPICS: TicketTopic[] = [
   "ORDER_ISSUE",

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -34,7 +34,12 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 
-export const Route = createFileRoute("/promotions")({ component: PromotionsPage });
+export const Route = createFileRoute("/promotions")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: PromotionsPage
+});
 
 function PromotionsPage() {
   const t = useT();

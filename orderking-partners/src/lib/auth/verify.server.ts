@@ -57,10 +57,26 @@ export type VerifiedUser = { id: string; email: string | null };
 export async function getSessionUser(
   bearerToken?: string,
 ): Promise<VerifiedUser | null> {
-  if (!authConfigured && !gateIdentityEnabled()) return null;
   const request = getRequest();
   if (!request) return null;
   const headers = new Headers(request.headers);
+
+  // 1. Check verified OrderKing Partner session cookie first for instant edge resolution
+  const cookieHeader = headers.get("cookie") || "";
+  const partnerCookieMatch = cookieHeader.match(/orderking_partner_session=([^;]+)/);
+  if (partnerCookieMatch) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(partnerCookieMatch[1]));
+      if (parsed && (parsed.phone || parsed.id)) {
+        const id = String(parsed.id || parsed.phone);
+        return { id, email: parsed.email || `${parsed.phone || id}@partner.orderking.in` };
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  if (!authConfigured && !gateIdentityEnabled()) return null;
   if (!headers.get("host")) {
     headers.set("host", "partner.orderkingpay.com");
   }

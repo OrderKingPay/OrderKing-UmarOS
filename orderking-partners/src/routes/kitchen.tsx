@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -34,7 +34,12 @@ import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/kitchen")({ component: KitchenPage });
+export const Route = createFileRoute("/kitchen")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: KitchenPage
+});
 
 const COLS = [
   { state: "PLACED", key: "kitchen.new", label: "New" },

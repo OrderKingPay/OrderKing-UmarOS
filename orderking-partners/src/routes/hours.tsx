@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -11,7 +11,12 @@ import { getOperatingSnapshot, saveHours } from "@/lib/server/api-orders";
 import { hmToMinutes, minutesToHm } from "@/lib/hours";
 import { CalendarOff, CheckCircle2, Clock3, Copy, Flame, Plus, Sparkles, Trash2 } from "lucide-react";
 
-export const Route = createFileRoute("/hours")({ component: HoursPage });
+export const Route = createFileRoute("/hours")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: HoursPage
+});
 
 const DAYS = [
   "hours.day0",

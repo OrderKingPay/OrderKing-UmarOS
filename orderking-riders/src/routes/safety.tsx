@@ -1,5 +1,5 @@
 import { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES } from "@orderking/ui";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,12 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/safety")({ component: Page });
+export const Route = createFileRoute("/safety")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: Page
+});
 
 const KINDS: SafetyKind[] = [
   "UNSAFE_SITUATION",

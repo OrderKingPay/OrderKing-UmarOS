@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -41,7 +41,12 @@ import { tryExecutePartnerAiCommand } from "@/lib/ai/partner-ai-actions";
 import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/assistant")({ component: AssistantPage });
+export const Route = createFileRoute("/assistant")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: AssistantPage
+});
 
 export type IndianLanguageSpec = {
   code: string;

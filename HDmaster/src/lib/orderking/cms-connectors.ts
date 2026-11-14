@@ -1091,7 +1091,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     firstOrderGiftIncentiveInr: 150.0,
     campaignHeadline: "₹150 Fresh Food Credit Just Landed on Your Smartphone!",
     campaignBody: "OrderKing direct from local kitchens. Use your pre-loaded welcome voucher now.",
-    ctaDeepLink: "orderking://order?gift=150&ref=carpet_bombing",
+    ctaDeepLink: "orderking://order?gift=150&ref=direct_welcome",
     adNetworkMode: "commercial_ad_network",
     thirdPartyAdvertiserMonetization: true,
     thirdPartyWholesaleCpmCostInr: 45.0,

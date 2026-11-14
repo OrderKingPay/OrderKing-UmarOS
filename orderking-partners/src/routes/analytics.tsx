@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -13,7 +13,12 @@ import { formatINR } from "@/lib/money";
 import { can } from "@/lib/rbac";
 import { FileSpreadsheet, LineChart, TrendingUp, UtensilsCrossed } from "lucide-react";
 
-export const Route = createFileRoute("/analytics")({ component: AnalyticsPage });
+export const Route = createFileRoute("/analytics")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: AnalyticsPage
+});
 
 function AnalyticsPage() {
   const t = useT();

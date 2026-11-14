@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -42,7 +42,12 @@ import {
   MessageCircle,
 } from "lucide-react";
 
-export const Route = createFileRoute("/support")({ component: SupportPage });
+export const Route = createFileRoute("/support")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: SupportPage
+});
 
 const CATEGORIES: { id: TicketCategory; label: string }[] = [
   { id: "PAYOUT_ISSUE", label: "Payout & Settlements" },

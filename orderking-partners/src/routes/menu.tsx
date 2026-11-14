@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -69,7 +69,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export const Route = createFileRoute("/menu")({ component: MenuPage });
+export const Route = createFileRoute("/menu")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: MenuPage
+});
 
 type MenuFilterType = "ALL" | "IN_STOCK" | "OUT_OF_STOCK" | "VEG_ONLY" | "NONVEG_EGG";
 

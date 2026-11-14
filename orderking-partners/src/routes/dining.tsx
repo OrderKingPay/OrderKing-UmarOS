@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { VendorShell } from "@/components/vendor-shell";
 import {
@@ -30,7 +30,12 @@ import {
 import { cn } from "@/lib/utils";
 import { useCommissionTokens } from "@orderking/ui";
 
-export const Route = createFileRoute("/dining")({ component: DiningPage });
+export const Route = createFileRoute("/dining")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: DiningPage
+});
 
 function DiningPage() {
   const t = useT();

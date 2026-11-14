@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { redirect, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -29,7 +29,12 @@ import {
   Check,
 } from "lucide-react";
 
-export const Route = createFileRoute("/onboarding")({ component: OnboardingPage });
+export const Route = createFileRoute("/onboarding")({
+  beforeLoad: ({ context }) => {
+    if (!context?.sessionUser) throw redirect({ to: "/login" });
+  },
+  component: OnboardingPage
+});
 
 export const ORDERKING_ONBOARDING_DRAFT_KEY = "orderking_partner_onboarding_draft";
 export const ORDERKING_LOCAL_ONLY_KEY = "orderking_partner_onboarding_local_only";

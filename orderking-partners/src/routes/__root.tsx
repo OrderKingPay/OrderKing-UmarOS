@@ -1,4 +1,5 @@
-import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Outlet, Scripts, useRouterState, redirect } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
 import { AnimatePresence, motion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/lib/auth/provider";
@@ -38,7 +39,22 @@ const queryClient = new QueryClient({
   },
 });
 
+const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
+  const { getSessionUser } = await import("@/lib/auth/verify.server");
+  const u = await getSessionUser();
+  return u ? { id: u.id, email: u.email } : null;
+});
+
 export const Route = createRootRoute({
+  beforeLoad: async ({ location }) => {
+    const pathname = location.pathname;
+    const isPublic = pathname === "/login" || pathname === "/privacy" || pathname === "/terms" || pathname.startsWith("/api");
+    const sessionUser = await fetchSessionUser();
+    if (!isPublic && !sessionUser) {
+      throw redirect({ to: "/login" });
+    }
+    return { sessionUser };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -66,6 +82,16 @@ import { supabaseCloud } from "@/lib/db-cloud";
 
 function Root() {
   const location = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const isPublic = location === "/login" || location === "/privacy" || location === "/terms" || location.startsWith("/api");
+    const hasStorage = Boolean(window.localStorage.getItem("orderking_phone_session") || window.localStorage.getItem("orderking_user"));
+    const hasCookie = document.cookie.includes("orderking_partner_session");
+    if (!isPublic && !hasStorage && !hasCookie) {
+      window.location.replace("/login");
+    }
+  }, [location]);
   useEffect(() => {
     registerDefaultTransitionFn(transitionOrderViaHDmaster);
     flushQueue(transitionOrderViaHDmaster);
