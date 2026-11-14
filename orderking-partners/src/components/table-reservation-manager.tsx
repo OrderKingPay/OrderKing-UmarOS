@@ -1179,13 +1179,13 @@ export function TableReservationManager({
       {/* SECTION 3: COVER CHARGE & PRE-BOOKING DEPOSIT FINANCIAL LEDGER */}
       {activeSection === "FINANCIAL_LEDGER" && (
         <div className="space-y-5">
-          {/* Order King 0% Merchant Commission Guarantee Banner */}
+          {/* Order King 0% Merchant Commission Policy Banner */}
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/25 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <ShieldCheck className="size-5 text-emerald-400 shrink-0" />
                 <h4 className="font-bold text-sm text-gray-900">
-                  Order King 0% Merchant Dine-In Commission Guarantee
+                  Order King 0% Merchant Dine-In Commission Policy
                 </h4>
                 <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-300">
                   KEEP 100% OF FOOD SALES
@@ -1565,7 +1565,7 @@ export function TableReservationManager({
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3.5 text-[11px] text-amber-300 space-y-1.5">
                 <div className="font-bold flex items-center gap-1.5 text-amber-200">
                   <ShieldCheck className="size-3.5 text-amber-400" />
-                  Order King 0% Dine-In Commission Guarantee
+                  Order King 0% Dine-In Commission Policy
                 </div>
                 <p className="text-gray-700 leading-relaxed">
                   Every advance table reservation collects a modest cover deposit. Order King proudly operates on <strong className="text-emerald-400">0% merchant commission</strong> for dine-in service. Guests pay a 5% platform convenience fee for instant table hold and automated SMS concierge updates, while 100% of your net deposit (95% of total cover) is credited directly to the guest&apos;s food &amp; beverage bill.

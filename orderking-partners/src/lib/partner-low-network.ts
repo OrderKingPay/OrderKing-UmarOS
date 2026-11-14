@@ -2,7 +2,7 @@
  * Low-Network & 2G Offline-First Cache Layer
  * OrderKing Partner / Kitchen App
  * 
- * Guarantees zero order loss and immediate kitchen responsiveness on 2G, EDGE, or unstable restaurant Wi-Fi:
+ * Provides offline-first order resilience and immediate kitchen responsiveness on 2G, EDGE, or unstable restaurant Wi-Fi:
  * - Aggressive localStorage snapshotting for live orders, KOT state, and settlement balances.
  * - Auto-detects 2G/slow network via Network Information API.
  * - Queues status transitions (ACCEPT, PREPARING, READY) offline and flushes when connection resumes.

@@ -40,6 +40,7 @@ import { listOrders } from "@/lib/server/api-orders";
 import { supabaseCloud } from "@/lib/db-cloud";
 import { PartnerFloatingBottomNav } from "./navigation/partner-bottom-nav";
 import { OutletStatusPill } from "./outlet/outlet-status-pill";
+import { OrderKingSparkModal } from "./ai/order-king-spark-modal";
 import { useMerchantBranding } from "@orderking/ui";
 import type { AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
@@ -54,6 +55,7 @@ export const PRIMARY_NAV = [
 
 export const MORE_NAV = [
   { to: "/dashboard", key: "nav.home", icon: Home, perm: "dashboard.view" as Permission },
+  { to: "/assistant", key: "nav.spark", icon: Sparkles, perm: "dashboard.view" as Permission },
   { to: "/dining", key: "nav.dining", icon: CalendarDays, perm: "orders.view" as Permission },
   { to: "/promotions", key: "nav.promotions", icon: Tag, perm: "promotions.view" as Permission },
   { to: "/analytics", key: "nav.analytics", icon: LineChart, perm: "analytics.view" as Permission },
@@ -82,6 +84,7 @@ export function VendorShell({
   const branding = useMerchantBranding();
   const { user, isPending } = useCurrentUserState();
   const vendor = useVendor();
+  const [sparkOpen, setSparkOpen] = useState(false);
   const qc = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const lang = useClientState((s) => s.lang);
@@ -171,7 +174,7 @@ export function VendorShell({
             </div>
             {more.map((item) => (
               <NavLink key={item.to} to={item.to} active={pathname.startsWith(item.to)} icon={item.icon}>
-                {t(item.key)}
+                {item.key === "nav.spark" ? "King Spark AI" : t(item.key)}
               </NavLink>
             ))}
           </nav>
@@ -290,9 +293,33 @@ export function VendorShell({
         </div>
       </div>
 
+      {/* Floating King Spark AI FAB Button */}
+      <button
+        type="button"
+        onClick={() => setSparkOpen(true)}
+        className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 flex items-center gap-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-4 py-3 text-slate-950 font-black shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 transition-all cursor-pointer border border-amber-300/40"
+        title="Open King Spark AI Kitchen Assistant"
+        aria-label="King Spark AI"
+      >
+        <div className="relative flex size-5 items-center justify-center">
+          <Sparkles className="size-4.5 text-slate-950 fill-amber-300 animate-pulse" />
+        </div>
+        <span className="text-xs font-black uppercase tracking-wider hidden sm:inline text-slate-950">
+          King Spark AI
+        </span>
+      </button>
+
       {/* Docked Mobile Bottom Navigation */}
       <PartnerFloatingBottomNav
         pendingOrdersCount={pendingOrdersCount}
+        onOpenSpark={() => setSparkOpen(true)}
+      />
+
+      {/* King Spark Interactive Assistant Modal */}
+      <OrderKingSparkModal
+        isOpen={sparkOpen}
+        onClose={() => setSparkOpen(false)}
+        restaurantId={vendor.restaurantId ?? undefined}
       />
     </div>
   );

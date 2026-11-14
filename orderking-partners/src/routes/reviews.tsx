@@ -282,7 +282,7 @@ function ReviewsPage() {
                     Your kitchen maintains 100% order accuracy. No unresolved customer claims or packaging disputes exist for your restaurant.
                   </p>
                 </div>
-                {/* Zomato Standard Policy Guarantee */}
+                {/* Standard Operational Policy */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 text-left max-w-2xl mx-auto text-xs">
                   <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
                     <div className="font-bold text-gray-900 flex items-center gap-1.5">
