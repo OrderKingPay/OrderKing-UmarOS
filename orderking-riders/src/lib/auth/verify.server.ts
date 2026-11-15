@@ -49,30 +49,38 @@ export type VerifiedUser = { id: string; email: string | null };
 export async function getSessionUser(
   bearerToken?: string,
 ): Promise<VerifiedUser | null> {
-  const request = getRequest();
-  if (!request) return null;
-  let headers = request.headers;
-
-  // 1. Check verified OrderKing Rider session cookie first for instant edge resolution
-  const cookieHeader = headers.get("cookie") || "";
-  const match = cookieHeader.match(/orderking_rider_session=([^;]+)/);
-  if (match) {
-    try {
-      const parsed = JSON.parse(decodeURIComponent(match[1]));
-      if (parsed && parsed.phone) {
-        return { id: String(parsed.phone), email: parsed.email || `${parsed.phone}@rider.orderking.in` };
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  // 2. Fall back to Better Auth standard session
-  if (bearerToken) {
-    headers = new Headers(request.headers);
-    headers.set("Authorization", `Bearer ${bearerToken}`);
-  }
   try {
+    const request = getRequest();
+    if (!request) return null;
+    let headers = request.headers;
+
+    // 1. Check verified OrderKing Rider session cookie first for instant edge resolution
+    const cookieHeader = headers.get("cookie") || "";
+    const match = cookieHeader.match(/orderking_rider_session=([^;]+)/);
+    if (match) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(match[1]));
+        if (parsed && parsed.phone) {
+          return { id: String(parsed.phone), email: parsed.email || `${parsed.phone}@rider.orderking.in` };
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    if (!authConfigured && !gateIdentityEnabled()) return null;
+    if (!headers.get("host")) {
+      headers.set("host", "rider.orderkingpay.com");
+    }
+    if (!headers.get("x-forwarded-proto")) {
+      headers.set("x-forwarded-proto", "https");
+    }
+
+    // 2. Fall back to Better Auth standard session
+    if (bearerToken) {
+      headers = new Headers(request.headers);
+      headers.set("Authorization", `Bearer ${bearerToken}`);
+    }
     const session = await auth.api.getSession({ headers });
     if (session?.user) {
       return { id: session.user.id, email: session.user.email ?? null };

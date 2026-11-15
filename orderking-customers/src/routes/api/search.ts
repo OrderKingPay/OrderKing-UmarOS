@@ -241,13 +241,15 @@ export const Route = createFileRoute("/api/search")({
           for (const row of rows) {
             const offer = promos.find((p) => !p.restaurant_id || p.restaurant_id === row.id);
             const dist = distanceKm(origin, { lat: row.lat, lng: row.lng });
-            // Contracted operational shift delivery radius enforcement (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)
-            if (dist > activeShift.radiusKm) continue;
+            // Hub radius limit: show restaurants within active zone up to 35km for catalog browsing
+            if (dist > 35.0) continue;
 
             // Destination hazard check
             const destHazard = checkHazardZone({ lat: row.lat, lng: row.lng });
             if (destHazard.inHazardZone && destHazard.deliveryBlocked) continue;
-            const open = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
+            const withinShiftRadius = dist <= activeShift.radiusKm;
+            const baseOpen = row.open_override == null ? isOpenNow(hours.get(row.outlet_id) ?? [], cfg.business.timezone) : row.open_override;
+            const open = baseOpen && withinShiftRadius;
             
             // Set realistic delivery estimate (25-30m+) so users can browse dishes and menus with accurate ETAs
             const prep = row.prep_minutes || 15;

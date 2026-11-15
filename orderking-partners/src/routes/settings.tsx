@@ -73,10 +73,10 @@ export const ALL_INDIAN_LANGUAGES = INDIAN_LANGUAGE_CATALOG;
 const LEGAL_SECTIONS = [
   {
     id: "commercial-terms",
-    title: "1. Culinary Partner Terms & Commercial Standards",
+    title: "1. Restaurant Partner Terms & Commercial Standards",
     badge: "Commercial Standards",
     body: [
-      "Order King Marketplace Role: Order King operates as a premier culinary marketplace platform under Section 79 of the Information Technology Act, 2000. The Restaurant Partner remains the master culinary creator, seller, and packager of all food and beverage creations listed on its digital storefront.",
+      "Order King Marketplace Role: Order King operates as an electronic marketplace platform under Section 79 of the Information Technology Act, 2000. The Restaurant Partner remains the master culinary creator, seller, and packager of all food and beverage creations listed on its digital storefront.",
       "Order Acceptance & Kitchen Preparation: Upon receiving a customer order, the Restaurant Partner acknowledges acceptance within the prep window and prepares items with care within the published preparation time (Standard 20m or Rush 35m).",
       "Menu Pricing Integrity & Packaging: Menu prices and dish packaging fees are configured directly by the Restaurant Partner in integer paise. Unexplained surcharges or off-ledger fees are strictly prohibited.",
       "Fair Refund Attribution: Customer refunds triggered by missing items, packaging spills, or food quality issues are attributed to the Restaurant Partner ledger with a transparent reason code. Transit delays and delivery mishaps are fully protected and borne by the logistics network.",

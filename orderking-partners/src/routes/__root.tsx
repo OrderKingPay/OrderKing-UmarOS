@@ -40,20 +40,34 @@ const queryClient = new QueryClient({
 });
 
 const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
-  const { getSessionUser } = await import("@/lib/auth/verify.server");
-  const u = await getSessionUser();
-  return u ? { id: u.id, email: u.email } : null;
+  try {
+    const { getSessionUser } = await import("@/lib/auth/verify.server");
+    const u = await getSessionUser();
+    return u ? { id: u.id, email: u.email } : null;
+  } catch {
+    return null;
+  }
 });
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     const pathname = location.pathname;
     const isPublic = pathname === "/login" || pathname === "/privacy" || pathname === "/terms" || pathname.startsWith("/api");
-    const sessionUser = await fetchSessionUser();
-    if (!isPublic && !sessionUser) {
+    if (isPublic) {
+      return { sessionUser: null };
+    }
+    try {
+      const sessionUser = await fetchSessionUser();
+      if (!sessionUser) {
+        throw redirect({ to: "/login" });
+      }
+      return { sessionUser };
+    } catch (err) {
+      if ((err as any)?.to || (err as any)?.status === 307 || (err as any)?.status === 302) {
+        throw err;
+      }
       throw redirect({ to: "/login" });
     }
-    return { sessionUser };
   },
   head: () => ({
     meta: [

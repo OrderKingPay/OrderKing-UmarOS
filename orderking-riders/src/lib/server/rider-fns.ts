@@ -754,7 +754,9 @@ export const verifyRiderOtpFn = createServerFn({ method: "POST" })
     }
 
     const record = riderOtpStore.get(cleanPhone);
-    const isMatched = [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), computeRiderStatelessOtp(cleanPhone, -2)].includes(cleanOtp) || Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
+    const isMatched =
+      [computeRiderStatelessOtp(cleanPhone, 0), computeRiderStatelessOtp(cleanPhone, -1), computeRiderStatelessOtp(cleanPhone, -2)].includes(cleanOtp) ||
+      Boolean(record && record.otp === cleanOtp && record.expiresAt > Date.now());
 
     let finalMatched = isMatched;
   if (!finalMatched) {
