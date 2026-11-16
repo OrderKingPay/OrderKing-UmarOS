@@ -371,7 +371,7 @@ function SettingsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-4">
-        {/* Zomato-Benchmark Settings Navigation Tabs */}
+        {/* Restaurant Partner Settings Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto border-b border-gray-200 pb-3">
           {[
             { id: "PROFILE", label: "Outlet Profile & Switcher" },

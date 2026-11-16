@@ -411,7 +411,7 @@ export function RiderOnboardingPage() {
                     <Input
                       value={dlNumber}
                       onChange={(e) => { setDlNumber(e.target.value.toUpperCase()); setError(null); }}
-                      placeholder="AS0120200012345"
+                      placeholder="Enter Driving License Number"
                       className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                     />
                   </div>
@@ -479,7 +479,7 @@ export function RiderOnboardingPage() {
                   <Input
                     value={rcNumber}
                     onChange={(e) => { setRcNumber(e.target.value.toUpperCase()); setError(null); }}
-                    placeholder="AS01AB1234"
+                    placeholder="Enter Vehicle RC Number"
                     className="mt-1 bg-background border-border text-foreground h-11 font-mono uppercase"
                   />
                 </div>

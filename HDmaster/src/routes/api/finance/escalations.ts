@@ -15,12 +15,8 @@ export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
         });
       }
 
-      const sql = await getSql();
-      const roleRows = await sql<{ role: string }>`
-        SELECT role FROM users WHERE id = ${sessionUser.id} LIMIT 1
-      `;
-      const role = String(roleRows[0]?.role ?? '').toUpperCase();
-      if (!ADMIN_ROLES.has(role)) {
+      const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+      if (!(await isAuthorizedAdmin(sessionUser.id, sessionUser.email))) {
         return new Response(JSON.stringify({ error: 'Forbidden: Admin or Founder role required' }), {
           status: 403,
           headers: { 'Content-Type': 'application/json' }
@@ -28,6 +24,7 @@ export const APIRoute = createAPIFileRoute('/api/finance/escalations')({
       }
       
       // Fetch all settlement batches that were escalated during reconciliation.
+      const sql = await getSql();
       const escalated = await sql`
         SELECT 
           batch_id, entity_id, entity_type, 

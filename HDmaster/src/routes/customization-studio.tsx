@@ -1,7 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { UmarOsVisualCustomizationStudio } from "@/components/customization/UmarOsVisualCustomizationStudio";
+import { verifyAdminSessionFn } from "@/lib/auth/server-session";
 
 export const Route = createFileRoute("/customization-studio")({
+  beforeLoad: async () => {
+    try {
+      const res = await verifyAdminSessionFn();
+      if (!res?.ok) throw redirect({ to: "/login" });
+    } catch {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: CustomizationStudioRoutePage,
 });
 

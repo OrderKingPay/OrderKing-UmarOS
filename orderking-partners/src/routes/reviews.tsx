@@ -173,7 +173,7 @@ function ReviewsPage() {
       restaurantName={vendor.selected?.restaurantName}
     >
       <div className="space-y-4 font-sans text-gray-900">
-        {/* Navigation Tabs: Zomato Parity Structure */}
+        {/* Navigation Tabs: Partner Feedback Structure */}
         <div className="flex items-center gap-2 border-b border-gray-200 pb-2">
           <button
             type="button"

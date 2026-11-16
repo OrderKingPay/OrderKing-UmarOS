@@ -174,7 +174,7 @@ export function OneTapStockToggle({
             ) : (
               <span className="flex items-center gap-1.5">
                 <X className="size-3.5 text-rose-400 stroke-[3]" />
-                <span>OUT OF STOCK</span>
+                <span>SOLD OUT FOR TODAY</span>
               </span>
             )}
 

@@ -1176,7 +1176,7 @@ function CheckoutPage() {
                       <Moon className="size-4 text-orange-500 shrink-0 mt-0.5" />
                       <div>
                         <strong className="font-bold block">Late-Night Rider Safety Lockout Active (11:00 PM – 04:00 AM IST)</strong>
-                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-orange-900 dark:text-orange-300">orderking@ybl</strong>) and KingPay Wallet are 100% active.</span>
+                        <span>Cash on Delivery is locked at night to ensure delivery partner physical safety. Direct NPCI UPI (<strong className="font-mono font-bold text-orange-900 dark:text-orange-300">orderking@ybl</strong>) and KingPay Wallet are active and operational.</span>
                       </div>
                     </div>
                   )}
@@ -1211,7 +1211,7 @@ function CheckoutPage() {
                       </div>
                       <p className="mt-1 text-xs text-zinc-500">
                         {isLateNight
-                          ? "Locked for rider safety between 11:00 PM and 4:00 AM IST. Verified NPCI UPI & prepaid rails 100% active."
+                          ? "Locked for rider safety between 11:00 PM and 4:00 AM IST. Verified NPCI UPI & prepaid rails are active."
                           : isCodEligible
                             ? "Pay cash or scan rider's QR code upon delivery"
                             : `Cash on Delivery is unavailable for orders above ${formatPaise(codMaxPaise, { locale })}.`}
@@ -1232,12 +1232,12 @@ function CheckoutPage() {
                       <h3 className="font-display text-base font-black text-zinc-950 dark:text-orange-100">
                         Bill Details
                       </h3>
-                      <p className="text-[11px] text-zinc-500">100% Transparent · Zero Hidden Charges</p>
+                      <p className="text-[11px] text-zinc-500">Itemized Bill Breakdown · Standard Statutory Fees</p>
                     </div>
                   </div>
                   <span className="text-[10px] font-black uppercase tracking-wider rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-emerald-700 dark:text-emerald-300 flex items-center gap-1 shadow-2xs">
                     <ShieldCheck className="size-3" />
-                    GST Sec 9(5) Compliant
+                    GSTIN 18AFXPH9838M1Z9 · Sec 9(5) CGST
                   </span>
                 </div>
 
@@ -1282,7 +1282,7 @@ function CheckoutPage() {
                           <span className="text-zinc-700 dark:text-zinc-300">Kitchen Packaging</span>
                           <BillTooltip
                             title="Tamper-Proof Packaging"
-                            text="Set directly by the kitchen to guarantee spill-proof, food-grade, tamper-evident thermal packaging."
+                            text="Set directly by the kitchen for spill-proof, food-grade, tamper-evident thermal packaging."
                           />
                         </div>
                         <span className="tabular-nums font-semibold text-zinc-800 dark:text-zinc-200">
@@ -1292,7 +1292,7 @@ function CheckoutPage() {
                     )}
 
                     {/* Delivery Fee with Distance Slabs & Dynamic Surge Breakdown */}
-                    <div className="rounded-2xl border border-orange-400/25 dark:border-zinc-800 bg-orange-500/5 dark:bg-zinc-850/60 p-3.5 space-y-2">
+                    <div className="rounded-2xl border border-orange-400/25 dark:border-zinc-800 bg-orange-500/5 dark:bg-zinc-855/60 p-3.5 space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1">
@@ -1313,7 +1313,7 @@ function CheckoutPage() {
                         <span className="tabular-nums font-extrabold text-zinc-950 dark:text-zinc-50">
                           {quote.data.quote.deliveryFeePaise === 0 ? (
                             <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                              FREE
+                              ₹0 (Waived)
                             </span>
                           ) : (
                             formatPaise(quote.data.quote.deliveryFeePaise, { locale })
@@ -1422,7 +1422,7 @@ function CheckoutPage() {
                           <Heart className="size-4 text-rose-500 fill-rose-500" />
                           <span className="text-zinc-800 dark:text-zinc-200">Delivery Partner Tip</span>
                           <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-1.5 py-0.5 rounded-full">
-                            100% to Rider
+                            Direct to Rider
                           </span>
                         </div>
                         <span className="text-[#E85D04] font-extrabold tabular-nums">+{formatPaise(safeTipPaise, { locale })}</span>
@@ -1584,7 +1584,7 @@ function CheckoutPage() {
                   RBI &amp; NPCI Compliant
                 </span>
                 <span>•</span>
-                <span>100% Refund on Kitchen Cancellation</span>
+                <span>Full Refund on Kitchen Cancellation</span>
               </div>
             </>
           )}

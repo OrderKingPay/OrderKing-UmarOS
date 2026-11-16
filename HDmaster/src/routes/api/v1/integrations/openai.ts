@@ -1,44 +1,65 @@
 import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
+import { getSessionUser } from "@/lib/auth/verify.server";
+import { isAuthorizedAdmin } from "@/lib/orderking/server/workspace.server";
+import { OpenAIProvider } from "@/lib/orderking/ai/providers/openai-provider";
 
-// OPENAI API SCAFFOLDING
-// Drop your production API keys in Netlify Environment Variables:
-// VITE_OPENAI_API_KEY
-
-export const APIRoute = createAPIFileRoute('/api/v1/integrations/openai')({
+export const APIRoute = createAPIFileRoute("/api/v1/integrations/openai")({
   POST: async ({ request }: any) => {
-  try {
-    const { prompt } = await request.json();
-    const openAiKey = process.env.VITE_OPENAI_API_KEY;
+    try {
+      const session = await getSessionUser();
+      if (!session?.id) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
 
-    if (!openAiKey) {
-      return new Response(JSON.stringify({ 
-        error: "Missing VITE_OPENAI_API_KEY. System is prepared but waiting for Founder to provide the key in Netlify settings." 
-      }), { status: 500 });
-    }
-    
-    // Real API Call to OpenAI will go here:
-    /*
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openAiKey}`
-      },
-      body: JSON.stringify({
+      const isAuth = await isAuthorizedAdmin(session.id, session.email);
+      if (!isAuth) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Forbidden: Founder or Admin role required" }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY;
+      if (!apiKey) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: "OPENAI_API_KEY is not configured in server environment variables.",
+          }),
+          { status: 503, headers: { "Content-Type": "application/json" } }
+        );
+      }
+
+      const body = await request.json().catch(() => ({}));
+      const prompt = body?.prompt;
+      if (!prompt || typeof prompt !== "string") {
+        return new Response(JSON.stringify({ success: false, error: "prompt string required" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      const provider = new OpenAIProvider(apiKey);
+      const res = await provider.chat({
         model: "gpt-4o",
-        messages: [{ role: "system", content: "You are the top OrderKing AI." }, { role: "user", content: prompt }]
-      })
-    });
-    const data = await res.json();
-    return new Response(JSON.stringify({ success: true, ai_response: data.choices[0].message.content }));
-    */
-    
-    return new Response(JSON.stringify({ success: true, message: "OpenAI API scaffolding ready. Waiting for keys." }), {
-      headers: { "Content-Type": "application/json" }
-    });
+        messages: [{ role: "user", content: prompt }],
+      });
 
-  } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: "Internal Server Error" }), { status: 500 });
-  }
-  }
+      return new Response(JSON.stringify({ success: true, ai_response: res.text }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: error instanceof Error ? error.message : "Internal Server Error",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  },
 });

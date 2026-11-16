@@ -38,6 +38,7 @@ export function DeliveryActions({
   const [reason, setReason] = useState<string>(JUSTIFIED_OPERATIONAL_REASONS[0]);
   const [now, setNow] = useState(Date.now());
   const [billPhoto, setBillPhoto] = useState<string | null>(null);
+  const [podPhoto, setPodPhoto] = useState<string | null>(null);
   const [isCalling, setIsCalling] = useState(false);
   const [sosOpen, setSosOpen] = useState(false);
   const [handoverTab, setHandoverTab] = useState<"OTP" | "QR">("OTP");
@@ -165,20 +166,24 @@ export function DeliveryActions({
     setPending(true);
     try {
       const compressed = await compressImage(file, 180_000);
+      setPodPhoto(compressed.dataUrl);
 
-      // Upload to Supabase Storage
-      const { supabase } = await import("@/lib/db-cloud");
-      const path = `pod/${delivery.id}-${Date.now()}.jpg`;
+      // Attempt upload to Supabase Storage if available
+      let publicUrl: string | undefined;
+      try {
+        const { supabase } = await import("@/lib/db-cloud");
+        const path = `pod/${delivery.id}-${Date.now()}.jpg`;
 
-      const { error: uploadError } = await supabase.storage
-        .from("deliveries")
-        .upload(path, file, { contentType: file.type });
+        const { error: uploadError } = await supabase.storage
+          .from("deliveries")
+          .upload(path, file, { contentType: file.type });
 
-      if (uploadError) {
-        throw new Error("Failed to upload photo to Supabase Storage: " + uploadError.message);
+        if (!uploadError) {
+          publicUrl = supabase.storage.from("deliveries").getPublicUrl(path).data.publicUrl;
+        }
+      } catch (uploadErr) {
+        console.warn("[POD] Supabase storage upload fallback to dataUrl:", uploadErr);
       }
-
-      const publicUrl = supabase.storage.from("deliveries").getPublicUrl(path).data.publicUrl;
 
       await deliveryActionFn({
         data: {
@@ -194,6 +199,7 @@ export function DeliveryActions({
           },
         },
       });
+      toast.success("Doorstep photo proof attached!");
       onChanged();
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
@@ -306,7 +312,7 @@ export function DeliveryActions({
             </span>
             <span>{isCalling ? "Calling..." : "Call"}</span>
             <span className="text-[10px] text-muted-foreground font-mono">
-              •••• {d.customer.contactMasked ? d.customer.contactMasked.replace(/\D/g, "").slice(-4) : "1234"}
+              •••• {d.customer.contactMasked ? d.customer.contactMasked.replace(/\D/g, "").slice(-4) : "••••"}
             </span>
           </button>
         ) : (
@@ -446,7 +452,7 @@ export function DeliveryActions({
 
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">
-              {t("pickupCode")}: <span className="font-mono font-bold tabular-nums text-primary">{d.pickupCode}</span>
+              Pickup Verification OTP: <span className="font-mono font-bold tabular-nums text-primary">{d.pickupCode}</span>
             </p>
             <Button
               size="sm"
@@ -459,12 +465,12 @@ export function DeliveryActions({
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">{t("pickupCode")}</Label>
+            <Label className="text-xs">Pickup Verification OTP (4 Digits)</Label>
             <Input
               inputMode="numeric"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Enter 4-digit pickup code"
+              placeholder="Enter 4-digit pickup OTP"
               className="font-mono text-center text-lg tracking-widest font-bold"
             />
           </div>
@@ -727,15 +733,34 @@ export function DeliveryActions({
             </div>
           )}
 
-          <div>
-            <Label className="block text-xs">{t("photoPod")} (Optional)</Label>
-            <Input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              onChange={(e) => void onPhoto(e.target.files?.[0])}
-              className="mt-1 text-xs"
-            />
+          <div className="rounded-xl border border-border bg-card p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <Camera className="size-3.5 text-primary" />
+                <span>Doorstep Photo Proof (Optional POD)</span>
+              </Label>
+              {podPhoto && (
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Photo Attached
+                </span>
+              )}
+            </div>
+            {podPhoto ? (
+              <div className="relative aspect-16/9 w-full rounded-lg overflow-hidden border border-emerald-500/30">
+                <img src={podPhoto} alt="Doorstep Delivery Proof" className="size-full object-cover" />
+                <div className="absolute inset-x-0 bottom-0 bg-black/60 p-1 text-[10px] text-white font-mono text-center">
+                  Doorstep Photo Proof Attached
+                </div>
+              </div>
+            ) : (
+              <Input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                capture="environment"
+                onChange={(e) => void onPhoto(e.target.files?.[0])}
+                className="text-xs"
+              />
+            )}
           </div>
 
           <SwipeSlider

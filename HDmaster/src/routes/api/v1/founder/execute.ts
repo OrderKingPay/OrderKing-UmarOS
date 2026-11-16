@@ -9,33 +9,13 @@ export const executeConversationalCommand = createServerFn({ method: 'POST' })
   .validator((d: { command: string }) => d)
   .handler(async ({ data }) => {
     const sessionUser = await getSessionUser();
-    let userId: string;
-    let userRole: string = 'USER';
-
-    if (sessionUser?.id) {
-      userId = sessionUser.id;
-      if ((sessionUser as any).role) {
-        userRole = String((sessionUser as any).role).toUpperCase();
-      }
-      try {
-        const sql = await getSql();
-        const rows = await sql`SELECT role FROM "user" WHERE id = ${userId} LIMIT 1`;
-        if (rows.length > 0 && (rows[0] as any).role) {
-          userRole = String((rows[0] as any).role).toUpperCase();
-        }
-      } catch (dbErr) {
-        console.warn('[executeConversationalCommand] User role query fallback:', dbErr);
-      }
-    } else {
-      // In development/test environment without live auth configured, allow local dev fallback
-      const isDev = process.env.NODE_ENV !== 'production' || !authConfigured;
-      if (isDev) {
-        userId = 'dev-founder';
-        userRole = 'FOUNDER';
-      } else {
-        throw new Error('UNAUTHORIZED: Founder authentication required to execute platform administration commands.');
-      }
+    if (!sessionUser?.id) {
+      throw new Error('UNAUTHORIZED: Founder authentication required to execute platform administration commands.');
     }
+
+    const userId = sessionUser.id;
+    const { getAdminRole } = await import('@/lib/orderking/server/workspace.server');
+    const userRole = (await getAdminRole(userId, sessionUser.email)) || 'USER';
 
     if (userRole !== 'FOUNDER' && userRole !== 'SUPER_ADMIN') {
       throw new Error('FORBIDDEN: Insufficient privileges. Founder or Super Admin authority required.');

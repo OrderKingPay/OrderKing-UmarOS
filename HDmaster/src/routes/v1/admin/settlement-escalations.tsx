@@ -1,8 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
-
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
+import { verifyAdminSessionFn } from '@/lib/auth/server-session';
 
 export const Route = createFileRoute('/v1/admin/settlement-escalations')({
+  beforeLoad: async () => {
+    try {
+      const res = await verifyAdminSessionFn();
+      if (!res?.ok) throw redirect({ to: "/login" });
+    } catch {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: SettlementEscalations,
 });
 
@@ -30,8 +38,8 @@ function SettlementEscalations() {
             </h1>
             <p className="text-sm text-rose-400 mt-2 max-w-2xl">
               The AI Settlement Engine has mathematically detected deficits in these weekly payouts. 
-              To protect the Founder's revenue, the funds have been frozen. You must manually resolve 
-              and adjust the deductions with the partner. You will NEVER lose money on these.
+              Settlement amounts exceeding automated dispute or negative balance thresholds have been held 
+              pending administrative verification and statutory reconciliation in accordance with Section 9(5) CGST Act.
             </p>
           </div>
         </header>
@@ -44,8 +52,8 @@ function SettlementEscalations() {
           <div className="grid grid-cols-1 gap-6">
             {!data || data.length === 0 ? (
               <div className="bg-emerald-500/10 border border-emerald-500/30 p-8 rounded-xl text-center">
-                <p className="text-emerald-400 font-bold text-lg">All Clear!</p>
-                <p className="text-slate-400 text-sm mt-1">The AI Engine found 0 mathematical errors this week. All Tier-1 cycle payouts are executing safely.</p>
+                <p className="text-emerald-400 font-bold text-lg">Reconciliation Clear</p>
+                <p className="text-slate-400 text-sm mt-1">No escalated settlement deficits detected in the current reconciliation cycle. All automated batches are processing within statutory thresholds.</p>
               </div>
             ) : (
               data.map((batch: any) => (

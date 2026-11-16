@@ -24,7 +24,7 @@ export function TimedStockoutPickerModal({
   onConfirm,
   loading = false,
 }: TimedStockoutPickerModalProps) {
-  const [selectedOption, setSelectedOption] = useState<TimedStockoutOption>("TURN_OFF_NEXT_MEAL");
+  const [selectedOption, setSelectedOption] = useState<TimedStockoutOption>("TURN_OFF_TOMORROW_8AM");
   const [customHours, setCustomHours] = useState<number>(3);
 
   if (!isOpen) return null;
@@ -49,7 +49,7 @@ export function TimedStockoutPickerModal({
                 Item Stock &amp; Inventory Management
               </span>
             </div>
-            <h2 id="stockout-modal-title" className="text-lg font-bold text-white mt-1">
+            <h2 id="stockout-modal-title" className="text-lg font-bold text-gray-900 mt-1">
               Turn off {itemName}
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
@@ -101,7 +101,7 @@ export function TimedStockoutPickerModal({
                   onClick={() => setSelectedOption(preset.id)}
                   className={`flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition select-none ${
                     isSelected
-                      ? "border-rose-500/80 bg-rose-950/30 ring-1 ring-rose-500/40 text-white"
+                      ? "border-rose-500 bg-rose-50 ring-1 ring-rose-500/40 text-gray-900"
                       : "border-gray-200 bg-gray-50 hover:border-gray-300 text-gray-700"
                   }`}
                 >
@@ -124,7 +124,7 @@ export function TimedStockoutPickerModal({
                       )}
                     </div>
                     <div>
-                      <div className="font-semibold text-sm leading-tight text-white">
+                      <div className="font-semibold text-sm leading-tight text-gray-900">
                         {preset.label}
                       </div>
                       <div className="text-[11px] text-gray-500 mt-0.5">
@@ -186,7 +186,7 @@ export function TimedStockoutPickerModal({
             variant="ghost"
             onClick={onClose}
             disabled={loading}
-            className="text-xs text-gray-700 hover:text-white"
+            className="text-xs text-gray-700 hover:text-gray-900"
           >
             Cancel
           </Button>

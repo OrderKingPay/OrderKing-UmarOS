@@ -359,7 +359,7 @@ function Page() {
                   value={payoutBankLast4}
                   maxLength={4}
                   onChange={(e) => setPayoutBankLast4(e.target.value.replace(/\D/g, ""))}
-                  placeholder="1234"
+                  placeholder="Last 4 digits (e.g. 4821)"
                   className="mt-1 font-mono text-xs"
                 />
               </div>
@@ -368,7 +368,7 @@ function Page() {
                 <Input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+91 98765 43210"
+                  placeholder="Enter 10-digit mobile"
                   className="mt-1 text-xs"
                 />
               </div>
@@ -395,7 +395,7 @@ function Page() {
                 <Input
                   value={emergencyPhone}
                   onChange={(e) => setEmergencyPhone(e.target.value)}
-                  placeholder="+91 98765 00000"
+                  placeholder="Enter emergency mobile"
                   className="mt-1 text-xs"
                 />
                 {emergencyPhone ? (

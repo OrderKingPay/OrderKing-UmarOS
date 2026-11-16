@@ -34,7 +34,6 @@ import {
   Smartphone,
   Tv,
   Flame,
-  Percent,
   ArrowLeft,
   Shield,
   X,
@@ -141,13 +140,13 @@ export function checkVehicleExpiryAlert(vehicle: {
 
 export interface CatalogSearchHit {
   id: string;
-  category: "Flights" | "Trains" | "Tours" | "Sacred" | "Bills" | "Garage" | "Jobs" | "Tutor" | "Wealth";
+  category: "Flights" | "Trains" | "Tours" | "Sacred" | "Bills" | "Garage" | "Jobs" | "Tutor";
   title: string;
   sub: string;
   icon: string;
   keywords: string;
   url?: string;
-  action?: "garage" | "bills" | "wealth" | "pay" | "passbook";
+  action?: "garage" | "bills" | "pay" | "passbook";
 }
 
 export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
@@ -158,9 +157,9 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-fl-4", category: "Flights", title: "Guwahati to Kolkata Daily Air Corridor", sub: "GAU - CCU Non-stop · ₹2,890", icon: "flight", url: "/travel?tab=flights", keywords: "flight guwahati kolkata gau ccu assam bengal" },
 
   // Trains
-  { id: "s-tr-1", category: "Trains", title: "Rajdhani Express (12424)", sub: "KingConfirm Berth Quota · NDLS to DBRT", icon: "train", url: "/travel?tab=trains", keywords: "train rajdhani express 12424 ndls dbrt irctc" },
-  { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast", icon: "train", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
-  { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH to GHY Superfast · Berth Tracking", icon: "train", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati" },
+  { id: "s-tr-1", category: "Trains", title: "Rajdhani Express (12424)", sub: "NDLS to DBRT · Official IRCTC Timetable", icon: "train", url: "/travel?tab=trains", keywords: "train rajdhani express 12424 ndls dbrt irctc timetable" },
+  { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast Express", icon: "train", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
+  { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH to GHY Superfast · Official IRCTC Schedule", icon: "train", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati schedule" },
 
   // Tours & Leisure
   { id: "s-to-1", category: "Tours", title: "Kashmir Valley Paradise (5N/6D)", sub: "Houseboat, Shikara & Gulmarg Gondola · ₹26,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour kashmir srinagar gulmarg dal lake holiday" },
@@ -169,7 +168,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-to-4", category: "Tours", title: "Goa Beachfront & Sun Splash Luxury Resort", sub: "Candolim Beach & Mandovi Cruise · ₹14,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour goa beach candolim resort sun vacation" },
 
   // Sacred Pilgrimages
-  { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Verified Quota · ₹78,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
+  { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Packages · ₹78,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
   { id: "s-sc-2", category: "Sacred", title: "Umrah Makkah Clock Tower 5-Star Hotel", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram hotel stay islamic muslim pilgrimage" },
   { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir Yatra", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
   { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple Yatra", sub: "Nilachal Hills Priority Entry & River Cruise · ₹12,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
@@ -178,7 +177,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
 
   // Utility Bills & BBPS
-  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Instant BBPS Payment & Legal Receipt · 0% Fee", icon: "bill-electric", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
+  { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Assam Electricity Distribution · Fees ₹0 (Waived)", icon: "bill-electric", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
   { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant 1-Tap Prepaid Top-Up", icon: "bill-mobile", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
   { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "garage", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
   { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "bill-tv", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
@@ -186,19 +185,11 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // Vehicles & Garage
   { id: "s-vg-1", category: "Garage", title: "Vehicle Garage & Expiry Shield", sub: "Track RC, PUC, Insurance & 1-Tap Renewal", icon: "garage", action: "garage", keywords: "garage vehicle car bike puc rc insurance challan rto fine" },
 
-  // Jobs & Workforce
-  { id: "s-jb-1", category: "Jobs", title: "Work From Home Data Entry Specialist", sub: "Remote / Pan-India · ₹22,000–₹35,000/mo", icon: "job", url: "/tutor-jobs", keywords: "job remote work from home wfh data entry typing assistant" },
-  { id: "s-jb-2", category: "Jobs", title: "OrderKing Last-Mile Fleet Captain", sub: "Weekly Payouts · Up to ₹35,000/mo", icon: "job-fleet", url: "/tutor-jobs", keywords: "job delivery rider fleet captain orderking biker delivery" },
-  { id: "s-jb-3", category: "Jobs", title: "Virtual Assistant & Content Specialist", sub: "Freelance & Remote · Verified Weekly Escrow", icon: "job", url: "/tutor-jobs", keywords: "job virtual assistant freelance content writing remote" },
-  { id: "s-jb-4", category: "Jobs", title: "Official Govt Career Openings (NCS)", sub: "Ministry of Labour & Employment Verified", icon: "tour", url: "/tutor-jobs", keywords: "job government sarkari ssc rrb upsc ncs public sector" },
+  // Fleet & Jobs
+  { id: "s-jb-2", category: "Jobs", title: "OrderKing Last-Mile Fleet Captain", sub: "Weekly Payouts · Join Delivery Fleet", icon: "job-fleet", url: "/join-fleet", keywords: "job delivery rider fleet captain orderking biker delivery join fleet rider onboarding" },
 
   // AI Academic Tutor
   { id: "s-tu-1", category: "Tutor", title: "King AI Academic Tutor (CBSE / State)", sub: "Step-by-step Math & Science problem solver", icon: "tutor", url: "/tutor", keywords: "tutor study math cbse ncert class 10 physics exam school homework" },
-
-  // Loans & Wealth
-  { id: "s-wl-1", category: "Wealth", title: "Personal Credit Partners (Up to ₹5,00,000)", sub: "Apply online via regulated NBFC partners", icon: "wealth", action: "wealth", keywords: "loan credit line money cash partner finance" },
-  { id: "s-wl-2", category: "Wealth", title: "High-Yield Fixed Deposit (FD) Partners", sub: "Shriram Finance & Bajaj Finance FDs", icon: "wealth", action: "wealth", keywords: "fd fixed deposit interest wealth investment save return" },
-  { id: "s-wl-3", category: "Wealth", title: "24K Digital Gold Accumulator", sub: "24K 99.9% Pure Gold from ₹10", icon: "wealth", action: "wealth", keywords: "gold 24k digital gold wealth savings safe" },
 ];
 
 function CatalogHitIcon({ icon }: { icon: string }) {
@@ -240,7 +231,7 @@ export function SupremeKingPayExperience() {
   const [conciergeOpen, setConciergeOpen] = useState(false);
 
   // Active Dedicated Desk Navigation (Eliminates page-scroll duplication)
-  const [activeDesk, setActiveDesk] = useState<"garage" | "bills" | "wealth" | "pay" | "passbook" | null>(null);
+  const [activeDesk, setActiveDesk] = useState<"garage" | "bills" | "pay" | "passbook" | null>(null);
 
   // DigiLocker RBI Full-KYC State
   const [isKycModalOpen, setIsKycModalOpen] = useState(false);
@@ -413,7 +404,7 @@ export function SupremeKingPayExperience() {
               type="text"
               value={universalSearch}
               onChange={(e) => setUniversalSearch(e.target.value)}
-              placeholder="Search flights, trains, hotels, tours, bills, insurance, jobs..."
+              placeholder="Search flights, trains, hotels, tours, bills, insurance, fleet..."
               className="w-full h-11 sm:h-12 pl-10 pr-9 rounded-2xl border border-slate-800 bg-[#0d111a]/95 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-400/80 shadow-md backdrop-blur-md transition-all"
             />
             {universalSearch.trim().length > 0 && (
@@ -526,6 +517,13 @@ export function SupremeKingPayExperience() {
             <Receipt className="size-3.5 text-orange-400" />
             <span className="hidden xs:inline">Passbook</span>
           </button>
+          <Link
+            to="/join-fleet"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-purple-500/40 bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 text-xs font-bold transition active:scale-95 no-underline"
+          >
+            <Briefcase className="size-3.5 text-purple-400" />
+            <span className="hidden xs:inline">Join Fleet</span>
+          </Link>
         </div>
       </section>
 
@@ -654,7 +652,7 @@ export function SupremeKingPayExperience() {
                   King Jobs
                 </h2>
                 <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                  Hyperlocal Gigs &amp; Direct Apply
+                  Fleet Onboarding &amp; Direct Apply
                 </p>
               </div>
             </Link>
@@ -987,7 +985,7 @@ export function SupremeKingPayExperience() {
                     </span>
                   </h3>
                   <p className="text-[11px] text-slate-400">
-                    APDCL Assam, Mobile (Jio/Airtel/Vi), FASTag, DTH &amp; Gas (Zero Convenience Fee)
+                    APDCL Assam, Mobile (Jio/Airtel/Vi), FASTag, DTH &amp; Gas · Convenience Fee ₹0 (Waived) · BBPS Clearance in Progress
                   </p>
                 </div>
               </div>
@@ -1029,109 +1027,6 @@ export function SupremeKingPayExperience() {
           </section>
         </div>
       )}
-
-      {/* ─── DEDICATED DESK 3: PRE-APPROVED LOANS & WEALTH (OPENED ONLY WHEN TAPPED) ─── */}
-      {activeDesk === "wealth" && (
-        <div className="space-y-4 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <button
-              type="button"
-              onClick={() => setActiveDesk(null)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-300 text-xs font-black transition active:scale-95 border border-slate-700 cursor-pointer"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Back to KingPay</span>
-            </button>
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-              Pre-Approved Loans &amp; 9.1% High-Yield Wealth Desk
-            </span>
-          </div>
-
-          <section
-            id="wealth-desk"
-            aria-label="Pre-Approved Loans and Wealth Desk"
-            className="rounded-[28px] border border-emerald-500/30 bg-gradient-to-br from-[#0a1811]/95 via-[#07110c]/95 to-[#040906]/95 p-4 sm:p-6 shadow-[0_16px_40px_rgba(0,0,0,0.6)] space-y-4"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-emerald-950/60 pb-3.5">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-emerald-400/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shrink-0">
-                  <Percent className="size-5" />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                    <span>Personal Credit &amp; Fixed Deposit Partners</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold uppercase">
-                      RBI Regulated Partners
-                    </span>
-                  </h3>
-                  <p className="text-[11px] text-slate-400">
-                    Compare personal loan partners up to ₹5,00,000 and Fixed Deposits via external partner portals.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              {/* Card A: Personal Loan Partners */}
-              <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-white">Personal Credit Partners</span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                    Up to ₹5,00,000
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Apply digitally on MoneyView or KreditBee. Approval and disbursal depend on lender KYC and eligibility.
-                </p>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-slate-500">External Partner</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      toast.success("Redirecting to MoneyView.");
-                      if (typeof window !== "undefined") {
-                        window.open("https://www.moneyview.in/loans", "_blank", "noopener,noreferrer");
-                      }
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
-                  >
-                    Check Eligibility
-                  </button>
-                </div>
-              </div>
-
-              {/* Card B: Fixed Deposit Partners */}
-              <div className="p-4 rounded-2xl border border-slate-800 bg-[#070b10]/90 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-white">Fixed Deposits (FD)</span>
-                  <span className="text-[10px] font-bold text-orange-400 bg-orange-950/60 px-2 py-0.5 rounded-full border border-orange-500/30">
-                    Shriram &amp; Bajaj
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Explore Fixed Deposit plans from regulated NBFC partners directly on the provider portal.
-                </p>
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-[10px] text-slate-500">Min. Deposit ₹5,000</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      toast.success("Redirecting to Shriram Finance.");
-                      if (typeof window !== "undefined") {
-                        window.open("https://www.shriramfinance.in/fixed-deposit", "_blank", "noopener,noreferrer");
-                      }
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-orange-400 hover:bg-orange-300 text-slate-950 font-black text-xs transition active:scale-95 shadow-sm"
-                  >
-                    Explore FDs
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      )}
-
 
       {/* ─── DEDICATED DESK 4: DIRECT UPI & BHARATQR (OPENED VIA TOP BAR OR SEARCH) ─── */}
       {activeDesk === "pay" && (
@@ -1477,6 +1372,16 @@ export function SupremeKingPayExperience() {
           area="kingpay"
         />
       )}
+
+      {/* Statutory Regulatory Footer */}
+      <footer className="pt-6 pb-2 border-t border-slate-800/80 text-center text-xs text-slate-400 space-y-1">
+        <p className="font-semibold text-slate-300">
+          OrderKing Pay · Direct NPCI UPI (<span className="font-mono text-orange-400">orderking@ybl</span>)
+        </p>
+        <p className="text-[11px] text-slate-400">
+          Statutory Entity: Orderkingpay, Assam - 788710 · GSTIN: <span className="font-mono text-slate-300">18AFXPH9838M1Z9</span> · Convenience Fees ₹0 (Waived)
+        </p>
+      </footer>
     </div>
   );
 }

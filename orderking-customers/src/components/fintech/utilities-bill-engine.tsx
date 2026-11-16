@@ -20,6 +20,9 @@ import {
   Receipt,
   Printer,
   Check,
+  AlertTriangle,
+  ExternalLink,
+  ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -811,11 +814,54 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     sms: "100/Day",
     category: "annual",
     badge: "395 Days Super Annual",
-    perks: "Extra 30 days validity free (1,185 GB total)",
+    perks: "Extra 30 days validity included (1,185 GB total)",
   },
 ];
 
 const PRESET_AMOUNTS = [100, 250, 500, 1000, 2000, 5000];
+
+export function getBillerOfficialPortal(biller: UtilityBiller): string {
+  const portalMap: Record<string, string> = {
+    "apdcl-assam": "https://www.apdcl.org/",
+    "bescom-karnataka": "https://bescom.karnataka.gov.in/",
+    "tsspdcl-telangana": "https://www.tssouthernpower.com/",
+    "tangedco-tamilnadu": "https://www.tnebnet.org/",
+    "msedcl-maharashtra": "https://www.mahadiscom.in/",
+    "tata-power-delhi": "https://www.tatapower-ddl.com/",
+    "bses-rajdhani-delhi": "https://www.bsesdelhi.com/",
+    "bses-yamuna-delhi": "https://www.bsesdelhi.com/",
+    "uppcl-urban": "https://www.upenergy.in/",
+    "wbsedcl-bengal": "https://www.wbsedcl.in/",
+    "pspcl-punjab": "https://pspcl.in/",
+    "jio-telecom": "https://www.jio.com/selfcare/recharge/mobility/",
+    "airtel-telecom": "https://www.airtel.in/recharge-online",
+    "vi-telecom": "https://www.myvi.in/prepaid/online-mobile-recharge",
+    "bsnl-telecom": "https://portal2.bsnl.in/",
+    "airtel-broadband": "https://www.airtel.in/broadband",
+    "jio-fiber": "https://www.jio.com/fiber",
+    "bsnl-broadband": "https://portal2.bsnl.in/",
+    "act-fibernet": "https://www.actcorp.in/",
+    "tata-play-fiber": "https://www.tataplayfiber.com/",
+    "tata-play": "https://www.tataplay.com/quick-recharge",
+    "airtel-dth": "https://www.airtel.in/dth-recharge",
+    "sun-direct": "https://www.sundirect.in/recharge",
+    "dish-tv": "https://www.dishtv.in/",
+    "fastag-icici": "https://ihmcl.co.in/",
+    "fastag-hdfc": "https://ihmcl.co.in/",
+    "fastag-sbi": "https://ihmcl.co.in/",
+    "fastag-axis": "https://ihmcl.co.in/",
+    "fastag-paytm": "https://ihmcl.co.in/",
+    "lpg-indane": "https://cx.indianoil.in/",
+    "lpg-bharat": "https://my.ebharatgas.com/",
+    "lpg-hp": "https://myhpgas.in/",
+    "water-gmc": "https://gmc.assam.gov.in/",
+    "water-djb": "https://djb.gov.in/",
+    "water-bwssb": "https://bwssb.karnataka.gov.in/",
+    "water-bmc": "https://portal.mcgm.gov.in/",
+    "water-cmwssb": "https://chennaimetrowater.tn.gov.in/",
+  };
+  return portalMap[biller.id] || "https://www.bharatbillpay.com/";
+}
 
 // PhonePe-Style Operator Logos
 export function OperatorBadge({
@@ -1122,111 +1168,13 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
   };
 
   const handlePayViaRazorpay = async () => {
-    if (!user) {
-      toast.error("Please sign in to pay utility bills online.");
-      return;
-    }
-    setIsPaying(true);
-    try {
-      const prepared = await prepareUtilityBillRazorpayOrder({
-        data: {
-          billerCode: selectedBiller.code,
-          billerName: selectedBiller.name,
-          category: selectedCategory,
-          accountNumber: accountNumber.trim(),
-          amountRupees: cleanAmount,
-          receipt: txnRef,
-        },
-      });
-      const RazorpayCtor = await ensureRazorpayLoaded();
-      if (!RazorpayCtor) {
-        throw new Error("Razorpay checkout could not load. Please retry.");
-      }
-
-      const rzp = new RazorpayCtor({
-        key: prepared.keyId,
-        amount: prepared.amountPaise,
-        currency: prepared.currency,
-        name: "KingPay Utilities",
-        description: `${selectedBiller.code} · ${accountNumber.trim()}`,
-        order_id: prepared.orderId,
-        handler: async (resp: {
-          razorpay_order_id?: string;
-          razorpay_payment_id?: string;
-          razorpay_signature?: string;
-        }) => {
-          try {
-            const verified = await verifyAndRecordUtilityBillPayment({
-              data: {
-                billerCode: selectedBiller.code,
-                billerName: selectedBiller.name,
-                category: selectedCategory,
-                accountNumber: accountNumber.trim(),
-                amountPaise: prepared.amountPaise,
-                razorpayOrderId: resp.razorpay_order_id || prepared.orderId,
-                razorpayPaymentId: resp.razorpay_payment_id || "",
-                razorpaySignature: resp.razorpay_signature || "",
-              },
-            });
-            setConfirmedRef(verified.transactionRef);
-            setConfirmedGateway(verified.gateway);
-            setCompletedTimestamp(new Date(verified.paidAtIso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
-            setPaymentCompleted(true);
-            await queryClient.invalidateQueries({ queryKey: ["utility_bills_history"] });
-            toast.success("Utility payment verified and recorded.");
-          } catch (verifyErr) {
-            toast.error(verifyErr instanceof Error ? verifyErr.message : "Payment verification failed.");
-          } finally {
-            setIsPaying(false);
-          }
-        },
-        modal: {
-          ondismiss: () => setIsPaying(false),
-        },
-        theme: { color: "#F59E0B" },
-      });
-      rzp.on("payment.failed", (failResp: any) => {
-        toast.error(failResp?.error?.description || "Utility payment failed.");
-        setIsPaying(false);
-      });
-      rzp.open();
-    } catch (err) {
-      setIsPaying(false);
-      toast.error(err instanceof Error ? err.message : "Unable to start online utility checkout.");
-    }
+    toast.info("BBPS utility bill clearing is currently offline awaiting official regulatory certification. Real money payment collection is disabled for customer fund safety.");
+    return;
   };
 
   const handlePayWithWallet = async () => {
-    if (!user) {
-      toast.error("Please sign in to pay with KingPay Wallet.");
-      return;
-    }
-    setIsPaying(true);
-    try {
-      const res = await payUtilityBillWithWallet({
-        data: {
-          billerCode: selectedBiller.code,
-          billerName: selectedBiller.name,
-          category: selectedCategory,
-          accountNumber: accountNumber.trim(),
-          amountRupees: cleanAmount,
-        },
-      });
-      setConfirmedRef(res.transactionRef);
-      setConfirmedGateway(res.gateway);
-      setCompletedTimestamp(new Date(res.paidAtIso).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }));
-      setPaymentCompleted(true);
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["kingpay_balance"] }),
-        queryClient.invalidateQueries({ queryKey: ["kingpay_ledger"] }),
-        queryClient.invalidateQueries({ queryKey: ["utility_bills_history"] }),
-      ]);
-      toast.success("Paid using KingPay Wallet.");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Wallet payment failed.");
-    } finally {
-      setIsPaying(false);
-    }
+    toast.info("BBPS utility bill clearing is currently offline awaiting official regulatory certification. Wallet deductions are disabled for customer fund safety.");
+    return;
   };
 
   const handleCopyUpi = () => {
@@ -1286,6 +1234,24 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             </button>
           )}
         </div>
+      </div>
+
+      {/* ─── BBPS AGGREGATOR OFFLINE CLEARANCE NOTICE ─── */}
+      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 sm:p-5 text-amber-200 space-y-2">
+        <div className="flex items-center gap-2.5">
+          <AlertTriangle className="size-5 text-amber-400 shrink-0" />
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-sm font-black text-white tracking-tight">
+              Bharat BillPay (BBPS) Integration Status: Offline Awaiting Clearing Certification
+            </h3>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/40 uppercase">
+              Regulatory Clearance in Progress
+            </span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-300 leading-relaxed">
+          OrderKing is currently completing regulatory onboarding with authorized BBPS Operating Units (BOU). In adherence to statutory consumer protection standards (Orderkingpay, Assam - 788710, GSTIN: 18AFXPH9838M1Z9), <strong>real-money payment collection for utility bills is strictly disabled</strong> until official clearing rails are certified. Please utilize your biller&apos;s official portal below for direct settlements.
+        </p>
       </div>
 
       {/* ─── Category Selection Grid ─── */}
@@ -1677,10 +1643,11 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                 <button
                   type="button"
                   onClick={handleProceedToPay}
-                  className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-98 transition cursor-pointer"
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:brightness-110 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20 active:scale-98 transition cursor-pointer"
                 >
-                  <span>Pay ₹{cleanAmount.toFixed(2)} via UPI</span>
-                  <ArrowRight className="size-4" />
+                  <AlertTriangle className="size-4" />
+                  <span>View BBPS Status &amp; Official Biller Portal</span>
+                  <ExternalLink className="size-4" />
                 </button>
               </div>
             </div>
@@ -1695,8 +1662,8 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-orange-400/10 text-orange-300 border border-orange-400/30">
-                  {paymentCompleted ? "Payment Confirmed" : "UPI Instant Checkout"}
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/10 text-amber-300 border border-amber-400/30">
+                  {paymentCompleted ? "Payment Confirmed" : "BBPS Status & Official Settlement"}
                 </span>
                 <h3 className="text-base font-black text-white mt-1.5">{selectedBiller.name}</h3>
                 <p className="text-xs text-slate-400">
@@ -1714,117 +1681,68 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
             </div>
 
             {!paymentCompleted ? (
-              /* VIEW 1: ACTIVE PAYMENT ROUTING (PhonePe, GPay, Paytm, QR) */
+              /* VIEW 1: BBPS STATUTORY CLEARANCE ADVISORY & DIRECT OFFICIAL PORTAL LINK */
               <div className="space-y-4">
-                {/* Dynamic QR Presentation */}
-                <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-slate-800 text-center">
-                  <div className="bg-white p-3 rounded-2xl shadow-lg">
-                    <img
-                      src={qrImageUrl}
-                      alt={`UPI Payment for ${selectedBiller.name}`}
-                      loading="lazy"
-                      decoding="async"
-                      className="size-44 sm:size-48 object-contain"
-                    />
+                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 space-y-2">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="size-4.5 text-amber-400 shrink-0" />
+                    <span className="text-xs font-black uppercase tracking-wider text-amber-300">
+                      BBPS Aggregator Clearing In Regulatory Queue
+                    </span>
                   </div>
-                  <span className="text-xs font-mono text-orange-300 font-bold mt-2.5">
-                    Scan with PhonePe, Google Pay, Paytm, or BHIM
-                  </span>
-                  <span className="text-[10px] text-slate-400 mt-0.5 font-mono">
-                    Ref: {activeTxnRef || txnRef} · VPA: 9395065587@ybl
-                  </span>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Direct automated clearing for <strong>{selectedBiller.name}</strong> is temporarily offline awaiting official regulatory certification of our BBPS Operating Unit connection.
+                  </p>
+                  <p className="text-[11px] text-amber-200/90 font-medium">
+                    To safeguard customer funds and prevent un-cleared utility dues, OrderKing does not accept in-app payment collections until BBPS clearing rails are officially certified.
+                  </p>
                 </div>
 
-                {/* Direct App Launch Grid (PhonePe Parity) */}
-                <div className="space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                    Launch Direct UPI App
-                  </span>
-
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {/* PhonePe Direct */}
-                    <a
-                      href={appLinks.phonepe}
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border border-purple-500/40 bg-purple-950/40 hover:bg-purple-900/60 text-purple-200 font-bold transition no-underline cursor-pointer"
-                    >
-                      <div className="size-4 rounded-full bg-[#5f259f] flex items-center justify-center text-[9px] font-black text-white">
-                        पे
-                      </div>
-                      <span>PhonePe</span>
-                    </a>
-
-                    {/* Google Pay Direct */}
-                    <a
-                      href={appLinks.gpay}
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border border-blue-500/40 bg-blue-950/40 hover:bg-blue-900/60 text-blue-200 font-bold transition no-underline cursor-pointer"
-                    >
-                      <div className="size-4 rounded-full bg-white text-blue-600 flex items-center justify-center text-[10px] font-black">
-                        G
-                      </div>
-                      <span>Google Pay</span>
-                    </a>
-
-                    {/* Paytm Direct */}
-                    <a
-                      href={appLinks.paytm}
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border border-sky-500/40 bg-sky-950/40 hover:bg-sky-900/60 text-sky-200 font-bold transition no-underline cursor-pointer"
-                    >
-                      <div className="size-4 rounded-full bg-[#002e6e] text-[#00baf2] flex items-center justify-center text-[9px] font-black">
-                        Pay
-                      </div>
-                      <span>Paytm</span>
-                    </a>
-
-                    {/* Generic / Universal UPI Intent */}
-                    <a
-                      href={appLinks.universal}
-                      className="flex items-center justify-center gap-2 py-3 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold transition no-underline cursor-pointer"
-                    >
-                      <Zap className="size-3.5 text-orange-400" />
-                      <span>Any UPI App</span>
-                    </a>
+                <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2.5 text-xs">
+                  <div className="flex justify-between text-slate-400">
+                    <span>Selected Biller:</span>
+                    <span className="font-bold text-white text-right">{selectedBiller.name}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Account / Mobile:</span>
+                    <span className="font-mono text-orange-300">{accountNumber.trim() || "N/A"}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Indicative Due Amount:</span>
+                    <span className="font-mono font-bold text-white">₹{cleanAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Convenience Fee:</span>
+                    <span className="font-bold text-emerald-400">₹0 (Waived)</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Clearing State:</span>
+                    <span className="font-mono text-amber-400 font-bold">Offline (Awaiting BOU Clearance)</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400 pt-2 border-t border-slate-800">
+                    <span>Statutory Entity:</span>
+                    <span className="font-mono text-slate-300">Orderkingpay (Assam - 788710) · GSTIN 18AFXPH9838M1Z9</span>
                   </div>
                 </div>
 
-                {/* Copy Intent & WhatsApp Sharing */}
-                <div className="flex gap-2 pt-1">
-                  <button
-                    type="button"
-                    onClick={handleCopyUpi}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 transition cursor-pointer"
-                  >
-                    <Copy className="size-3.5" /> Copy Intent
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleShareWhatsApp}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 transition cursor-pointer"
-                  >
-                    <Share2 className="size-3.5" /> WhatsApp
-                  </button>
-                </div>
+                {/* Direct Official Portal Link */}
+                <a
+                  href={getBillerOfficialPortal(selectedBiller)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-12 rounded-xl bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 hover:brightness-110 active:scale-95 text-slate-950 font-black text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2 no-underline"
+                >
+                  <span>Pay on Official {selectedBiller.code} Portal</span>
+                  <ExternalLink className="size-4" />
+                </a>
 
-                {/* Verified Gateway & Wallet Settlement */}
-                <div className="pt-2 border-t border-slate-800 space-y-2">
-                  <button
-                    type="button"
-                    disabled={isPaying}
-                    onClick={handlePayViaRazorpay}
-                    className="w-full h-11 rounded-xl bg-orange-400 hover:bg-orange-300 disabled:opacity-60 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer shadow-lg shadow-orange-500/20"
-                  >
-                    <CreditCard className="size-4" />
-                    <span>{isPaying ? "Processing..." : `Pay ₹${cleanAmount.toFixed(2)} via Razorpay`}</span>
-                  </button>
-                  <button
-                    type="button"
-                    disabled={isPaying}
-                    onClick={handlePayWithWallet}
-                    className="w-full h-11 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition cursor-pointer"
-                  >
-                    <Wallet className="size-4" />
-                    <span>Pay via KingPay Wallet</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCheckoutModalOpen(false)}
+                  className="w-full h-10 rounded-xl border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-bold transition cursor-pointer"
+                >
+                  Close
+                </button>
               </div>
             ) : (
               /* VIEW 2: VERIFIED PAYMENT RECEIPT (ONLY SHOWN AFTER SERVER VERIFICATION) */
@@ -1847,7 +1765,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
                         ORDERKING PAY
                       </span>
                       <span className="text-[10px] text-slate-400 block">
-                        Sribhumi / Karimganj, Assam - 788710
+                        Sribhumi / Karimganj, Assam - 788710 · GSTIN: 18AFXPH9838M1Z9
                       </span>
                     </div>
                     <div className="text-right">

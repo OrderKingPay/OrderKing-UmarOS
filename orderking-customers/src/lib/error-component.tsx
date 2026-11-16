@@ -81,7 +81,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
             {isChunk
               ? "A fresh update was published. Synchronizing your active customer session..."
-              : "We caught a momentary transition hiccup. Your cart, orders, and wallet balance remain 100% secure."}
+              : "We caught a momentary transition hiccup. Your cart, orders, and wallet balance remain secure."}
           </p>
         </div>
 

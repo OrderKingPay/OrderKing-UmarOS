@@ -222,7 +222,7 @@ export async function verifyGSTIN(gstin: string): Promise<GSTINValidationResult>
 
 /**
  * Parses CSV, TSV, or semicolon-delimited tabular menu records into a DigitizedMenuCatalog.
- * Supports OrderKing exports, Zomato/Swiggy partner catalog sheets, POS dumps, and user spreadsheets.
+ * Supports OrderKing exports, partner catalog sheets, POS dumps, and user spreadsheets.
  */
 export function parseMenuFromTabular(rawContent: string): DigitizedMenuCatalog | null {
   const lines = rawContent

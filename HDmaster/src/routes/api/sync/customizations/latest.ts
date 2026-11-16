@@ -22,6 +22,24 @@ export const Route = createFileRoute("/api/sync/customizations/latest")({
       },
       POST: async ({ request }: any) => {
         try {
+          const { getSessionUser } = await import("@/lib/auth/verify.server");
+          const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+          const session = await getSessionUser();
+          const authHeader = request.headers.get("authorization") || "";
+          const cronSecret = process.env.CRON_SECRET?.trim() || "";
+          const umarMasterKey = process.env.UMAR_OS_MASTER_KEY?.trim() || "";
+          const isKeyAuth = Boolean(
+            (cronSecret.length >= 16 && authHeader === `Bearer ${cronSecret}`) ||
+            (umarMasterKey.length >= 16 && authHeader === `Bearer ${umarMasterKey}`)
+          );
+          const isSessionAdmin = session?.id ? await isAuthorizedAdmin(session.id, session.email) : false;
+
+          if (!isKeyAuth && !isSessionAdmin) {
+            return new Response(JSON.stringify({ error: "Unauthorized: Admin session or master token required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" }
+            });
+          }
           return await handleLatestPostRequest(request);
         } catch (err: any) {
           return new Response(

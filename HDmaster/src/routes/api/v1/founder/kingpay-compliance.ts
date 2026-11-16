@@ -14,12 +14,8 @@ async function verifyAdminAccess(): Promise<
     return { ok: false, status: 401, error: "Unauthorized" };
   }
 
-  const sql = await getSql();
-  const rows = await sql<{ role: string }>`
-    SELECT role FROM users WHERE id = ${sessionUser.id} LIMIT 1
-  `;
-  const role = String(rows[0]?.role ?? "").toUpperCase();
-  if (!ADMIN_ROLES.has(role)) {
+  const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+  if (!(await isAuthorizedAdmin(sessionUser.id, sessionUser.email))) {
     return { ok: false, status: 403, error: "Forbidden: Founder or Admin role required" };
   }
 

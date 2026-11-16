@@ -38,7 +38,7 @@ export const TIER1_STOCKOUT_PRESETS: StockoutPresetConfig[] = [
   {
     id: "TURN_OFF_TOMORROW_8AM",
     label: "Turn on Tomorrow 8:00 AM",
-    sublabel: "Standard end-of-day stockout",
+    sublabel: "Sold Out for Today — Resets tomorrow at 8:00 AM",
     icon: "Sunrise",
   },
   {

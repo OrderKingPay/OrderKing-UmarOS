@@ -18,9 +18,8 @@ export const Route = createFileRoute("/api/ai/chat")({
             });
           }
 
-          const sql = await getSql();
-          const rows = await sql`SELECT role FROM users WHERE id = ${session.id}`;
-          const userRole = rows.length > 0 ? String((rows[0] as any).role || "").toUpperCase() : "USER";
+          const { getAdminRole } = await import("@/lib/orderking/server/workspace.server");
+          const userRole = (await getAdminRole(session.id, session.email)) || "USER";
 
           if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(userRole)) {
             return new Response(JSON.stringify({ error: "FORBIDDEN: Requires Founder or Admin privileges" }), {

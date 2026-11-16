@@ -1158,7 +1158,7 @@ export async function getTravelPartnerGovernance(ctx: AccessContext): Promise<Tr
       `SELECT value_json, updated_at, updated_by FROM app_configurations WHERE key = 'travel_partner_governance' LIMIT 1`
     );
     if (res.length > 0 && res[0].value_json) {
-      const v = res[0].value_json;
+      const v = typeof res[0].value_json === "string" ? JSON.parse(res[0].value_json) : res[0].value_json;
       return {
         travelpayoutsActive: v.travelpayoutsActive !== false,
         travelpayoutsMarker: str(v.travelpayoutsMarker) || "794122",
@@ -2128,7 +2128,7 @@ export async function getCommercialBypassDials(ctx: AccessContext): Promise<Comm
       `SELECT value_json, updated_at, updated_by FROM app_configurations WHERE key = 'commercial_bypass_dials' LIMIT 1`
     );
     if (res.length > 0 && res[0].value_json) {
-      const v = res[0].value_json;
+      const v = typeof res[0].value_json === "string" ? JSON.parse(res[0].value_json) : res[0].value_json;
       return {
         // Dial 1
         primaryVpa: ["orderking@ybl", "9395065587@ybl", "custom"].includes(v.primaryVpa) ? v.primaryVpa : "orderking@ybl",

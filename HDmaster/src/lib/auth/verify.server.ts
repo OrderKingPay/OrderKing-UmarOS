@@ -44,6 +44,32 @@ export class UnauthorizedError extends Error {
 
 export type VerifiedUser = { id: string; email: string | null };
 
+async function verifyActiveAdminCandidate(candidateId: string): Promise<VerifiedUser | null> {
+  if (!candidateId) return null;
+  try {
+    const { getSql } = await import("../db");
+    const sql = await getSql();
+    const empRows = await sql.query<{ id: string; email: string | null; status: string; role_key: string }>(
+      `SELECT id, email, status, role_key FROM employees WHERE (user_id = $1 OR id = $1) LIMIT 1`,
+      [candidateId]
+    );
+    if (empRows[0]) {
+      if (empRows[0].status === "SUSPENDED" || empRows[0].status === "INACTIVE") return null;
+      return { id: empRows[0].id, email: empRows[0].email ?? `${empRows[0].id}@admin.orderkingpay.com` };
+    }
+    const userRows = await sql.query<{ id: string; email: string | null }>(
+      `SELECT id, email FROM "user" WHERE id = $1 LIMIT 1`,
+      [candidateId]
+    );
+    if (userRows[0]) {
+      return { id: userRows[0].id, email: userRows[0].email ?? `${userRows[0].id}@admin.orderkingpay.com` };
+    }
+  } catch (err) {
+    console.error("[Auth Gate] DB verification check error:", err);
+  }
+  return null;
+}
+
 /**
  * Resolve the signed-in user from the current request, or `null` when auth isn't
  * configured / nobody is signed in. Safe to call from server functions and SSR
@@ -70,15 +96,16 @@ export async function getSessionUser(
     headers = new Headers(request.headers);
     headers.set("Authorization", `Bearer ${bearerToken}`);
   }
-  if (bearerToken && bearerToken.startsWith("ok_tok_")) {
-    const rawId = bearerToken.replace("ok_tok_", "");
-    return { id: rawId, email: `${rawId}@admin.orderkingpay.com` };
-  }
+
   const authHeader = headers.get("authorization") || headers.get("Authorization") || "";
-  if (authHeader.startsWith("Bearer ok_tok_")) {
-    const rawId = authHeader.replace("Bearer ok_tok_", "").trim();
-    return { id: rawId, email: `${rawId}@admin.orderkingpay.com` };
+  const rawBearerId = (bearerToken?.startsWith("ok_tok_") ? bearerToken.replace("ok_tok_", "") : "") ||
+    (authHeader.startsWith("Bearer ok_tok_") ? authHeader.replace("Bearer ok_tok_", "").trim() : "");
+  if (rawBearerId) {
+    const verified = await verifyActiveAdminCandidate(rawBearerId);
+    if (verified) return verified;
+    return null;
   }
+
   try {
     const session = await auth.api.getSession({ headers });
     if (!session?.user) {
@@ -87,9 +114,11 @@ export async function getSessionUser(
       if (match) {
         try {
           const parsed = JSON.parse(decodeURIComponent(match[1]));
-          if (parsed && (parsed.user || parsed.phone || parsed.id)) {
-            const u = parsed.user || parsed;
-            return { id: String(u.id || u.phone), email: u.email || null };
+          const u = parsed?.user || parsed;
+          const candidateId = String(u?.id || u?.phone || "").trim();
+          if (candidateId) {
+            const verified = await verifyActiveAdminCandidate(candidateId);
+            if (verified) return verified;
           }
         } catch {}
       }
@@ -102,9 +131,11 @@ export async function getSessionUser(
     if (match) {
       try {
         const parsed = JSON.parse(decodeURIComponent(match[1]));
-        if (parsed && (parsed.user || parsed.phone || parsed.id)) {
-          const u = parsed.user || parsed;
-          return { id: String(u.id || u.phone), email: u.email || null };
+        const u = parsed?.user || parsed;
+        const candidateId = String(u?.id || u?.phone || "").trim();
+        if (candidateId) {
+          const verified = await verifyActiveAdminCandidate(candidateId);
+          if (verified) return verified;
         }
       } catch {}
     }

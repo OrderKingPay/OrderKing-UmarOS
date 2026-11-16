@@ -9,7 +9,7 @@ import {
   validateDigitalExecution,
 } from "../lib/merchant-kyc";
 
-describe("Restaurant Onboarding - Direct Activation (Zomato Equivalent)", () => {
+describe("Restaurant Onboarding - Direct Activation (Partner Benchmark)", () => {
   let mockStorage: Record<string, string> = {};
 
   beforeEach(() => {

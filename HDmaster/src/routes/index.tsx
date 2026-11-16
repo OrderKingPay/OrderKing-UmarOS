@@ -335,11 +335,25 @@ export const saveUmarOsSettingsFn = createServerFn({ method: "POST" })
   .validator((d: { worldId: string; settings: Record<string, any> }) => d)
   .handler(async ({ context, data }) => {
     const savedAt = new Date().toISOString();
+    const { ensureWorkspace, appendAudit } = await import("@/lib/orderking/server/workspace.server");
+    const { requirePermission } = await import("@/lib/orderking/rbac");
+    const ws = await ensureWorkspace(context.userId);
+    requirePermission(ws.ctx, "manage_platform_settings");
 
-    try {
-      const sql = await getSql();
-      await savePlatformSettingBag(sql, data.worldId, data.settings);
-    } catch (_e) {}
+    const sql = await getSql();
+    await savePlatformSettingBag(sql, data.worldId, data.settings);
+
+    await appendAudit({
+      orgId: ws.ctx.orgId,
+      employeeId: ws.ctx.employeeId,
+      userId: ws.ctx.userId,
+      roleKey: ws.ctx.actingRoleKey,
+      action: "platform_settings.updated",
+      targetType: "world_settings",
+      targetId: data.worldId,
+      next: data.settings,
+      reason: `Umar OS setting update for world ${data.worldId}`,
+    });
 
     return {
       ok: true,
@@ -353,23 +367,37 @@ export const approveRestaurantFn = createServerFn({ method: "POST" })
   .validator((d: { restaurantId: string }) => d)
   .handler(async ({ context, data }) => {
     const updatedAt = new Date().toISOString();
+    const { ensureWorkspace, appendAudit } = await import("@/lib/orderking/server/workspace.server");
+    const { requirePermission } = await import("@/lib/orderking/rbac");
+    const ws = await ensureWorkspace(context.userId);
+    requirePermission(ws.ctx, "approve_restaurants");
 
-    try {
-      const sql = await getSql();
-      await sql`
-        UPDATE restaurants
-        SET status = 'ACTIVE',
-            verification_status = 'VERIFIED',
-            active = true,
-            data_label = 'REAL'
-        WHERE id = ${data.restaurantId}
-      `;
-      await sql`
-        UPDATE restaurant_outlets
-        SET active = true
-        WHERE restaurant_id = ${data.restaurantId}
-      `;
-    } catch (_e) {}
+    const sql = await getSql();
+    await sql`
+      UPDATE restaurants
+      SET status = 'ACTIVE',
+          verification_status = 'VERIFIED',
+          active = true,
+          data_label = 'REAL'
+      WHERE id = ${data.restaurantId}
+    `;
+    await sql`
+      UPDATE restaurant_outlets
+      SET active = true
+      WHERE restaurant_id = ${data.restaurantId}
+    `;
+
+    await appendAudit({
+      orgId: ws.ctx.orgId,
+      employeeId: ws.ctx.employeeId,
+      userId: ws.ctx.userId,
+      roleKey: ws.ctx.actingRoleKey,
+      action: "restaurant.approved",
+      targetType: "restaurant",
+      targetId: data.restaurantId,
+      reason: "Merchant onboarding approval verified by Umar OS operator",
+      next: { status: "ACTIVE", verification_status: "VERIFIED" },
+    });
 
     return {
       ok: true,

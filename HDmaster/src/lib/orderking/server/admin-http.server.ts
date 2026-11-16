@@ -28,7 +28,8 @@ async function resolveAdminUserId(request: Request): Promise<string> {
   const configuredToken = process.env.ORDERKING_SERVICE_TOKEN?.trim();
   const configuredUserId = process.env.ORDERKING_SERVICE_USER_ID?.trim();
   if (configuredToken && configuredUserId && authorization === `Bearer ${configuredToken}`) return configuredUserId;
-  return requireUserId();
+  const bearer = authorization?.startsWith("Bearer ") ? authorization.slice(7).trim() : undefined;
+  return requireUserId(bearer);
 }
 
 async function transitionRestaurantOrder(
@@ -215,6 +216,7 @@ export async function handleAdminHttp(
     if (method === "GET" && path === "branding") return json({ data: await q.getBranding(ws.ctx) });
     if (method === "GET" && path === "health") return json({ data: await q.systemHealth(ws.ctx) });
     if (method === "GET" && path === "spatial/ecosystem-shift") {
+      requirePermission(ws.ctx, "view_orders");
       const { getCurrentEcosystemShift, getShiftRemainingMinutes, CANONICAL_THREAT_ZONES, getCurrentIstTime } = await import("../../../../../packages/ui/src/ecosystem-shifts.ts");
       const currentShift = getCurrentEcosystemShift();
       const remainingMinutes = getShiftRemainingMinutes();

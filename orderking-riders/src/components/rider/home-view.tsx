@@ -737,7 +737,7 @@ export function HomeView() {
                 {home.rider.fullName || user?.displayName || "Partner"}
               </h1>
               <p className="text-xs text-muted-foreground truncate">
-                {home.rider.vehicleType || "Motorcycle"} · {home.rider.vehicleRegistration || "AS-10-Q-5587"}
+                {home.rider.vehicleType || "Motorcycle"}{home.rider.vehicleRegistration ? ` · ${home.rider.vehicleRegistration}` : ""}
                 {home.rider.preferredZones.length > 0
                   ? ` · ${home.rider.preferredZones.join(", ")}`
                   : ""}
@@ -967,14 +967,6 @@ export function HomeView() {
             onChanged={() => void load()}
           />
         </section>
-      ) : home.offer && remaining > 0 ? (
-        <OfferCard
-          offer={home.offer}
-          remaining={remaining}
-          pending={pending}
-          onAccept={() => void respond("ACCEPT", home.offer!)}
-          onDecline={() => setConfirm("decline")}
-        />
       ) : status === "ONLINE" ? (
         <section className="space-y-3">
           <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
@@ -1035,6 +1027,21 @@ export function HomeView() {
           </div>
         </Card>
       )}
+
+      {/* Incoming Order Dispatch Popup Modal */}
+      {home.offer && remaining > 0 && !home.active ? (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md max-h-[92vh] overflow-y-auto">
+            <OfferCard
+              offer={home.offer}
+              remaining={remaining}
+              pending={pending}
+              onAccept={() => void respond("ACCEPT", home.offer!)}
+              onDecline={() => setConfirm("decline")}
+            />
+          </div>
+        </div>
+      ) : null}
 
       
       
@@ -1285,10 +1292,11 @@ function OfferCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[11px] font-semibold text-muted-foreground">Total Distance</p>
-            <p className="font-mono text-lg font-bold text-foreground">
-              {routeKm.toFixed(1)} km
+            <p className="text-[11px] font-semibold text-muted-foreground">Pickup Distance</p>
+            <p className="font-mono text-lg font-bold text-amber-600 dark:text-amber-400">
+              {offer.approxDistanceKm.toFixed(1)} km
             </p>
+            <p className="text-[10px] text-muted-foreground">Total Route: {routeKm.toFixed(1)} km</p>
           </div>
         </div>
       </div>
@@ -1298,9 +1306,9 @@ function OfferCard({
         {/* Pickup */}
         <div className="rounded-xl border border-border bg-muted/20 p-3 space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <span className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
               <Store className="size-3.5 text-orange-500" />
-              Pickup · {offer.approxDistanceKm.toFixed(1)} km
+              Pickup · {offer.approxDistanceKm.toFixed(1)} km away
             </span>
             <Badge tone="busy" className="text-[10px] font-bold">
               {offer.restaurant.preparationStatus === "READY" ? "Ready" : "Prep ~8-10m"}

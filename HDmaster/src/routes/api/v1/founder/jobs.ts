@@ -12,10 +12,8 @@ export const APIRoute = createAPIFileRoute("/api/v1/founder/jobs")({
           headers: { "Content-Type": "application/json" },
         });
       }
-      const sql = await getSql();
-      const roleRows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
-      const role = roleRows.length > 0 ? String((roleRows[0] as any).role || "").toUpperCase() : "";
-      if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role)) {
+      const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+      if (!(await isAuthorizedAdmin(session.id, session.email))) {
         return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
           status: 403,
           headers: { "Content-Type": "application/json" },

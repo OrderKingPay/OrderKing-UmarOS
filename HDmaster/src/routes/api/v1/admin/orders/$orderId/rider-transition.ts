@@ -15,12 +15,8 @@ export const APIRoute = createAPIFileRoute('/api/v1/admin/orders/$orderId/rider-
         });
       }
 
-      const sql = await getSql();
-      const roleRows = await sql<{ role: string }>`
-        SELECT role FROM users WHERE id = ${sessionUser.id} LIMIT 1
-      `;
-      const role = String(roleRows[0]?.role ?? '').toUpperCase();
-      if (!ADMIN_ROLES.has(role)) {
+      const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+      if (!(await isAuthorizedAdmin(sessionUser.id, sessionUser.email))) {
         return new Response(JSON.stringify({ error: 'Forbidden: Admin or Founder role required' }), {
           status: 403,
           headers: { 'Content-Type': 'application/json' }
@@ -42,6 +38,7 @@ export const APIRoute = createAPIFileRoute('/api/v1/admin/orders/$orderId/rider-
 
       // Ensure the transition is atomic.
       // Update order status where current status matches the expected 'from' status.
+      const sql = await getSql();
       const result = await sql`
         UPDATE orders
         SET status = ${to},

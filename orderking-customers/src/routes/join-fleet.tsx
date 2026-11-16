@@ -388,7 +388,7 @@ export function JoinFleetPage() {
                   </li>
                   <li className="flex items-start gap-2.5">
                     <CheckCircle className="size-4 shrink-0 text-emerald-400 mt-0.5" />
-                    <span><strong>Free Thermal Gear:</strong> High-grade insulated food bag, helmet badge, and reflective safety vest.</span>
+                    <span><strong>Provided Thermal Gear (Deposit ₹0 Waived):</strong> High-grade insulated food bag, helmet badge, and reflective safety vest.</span>
                   </li>
                 </ul>
               </div>

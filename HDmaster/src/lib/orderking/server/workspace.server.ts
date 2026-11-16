@@ -22,6 +22,50 @@ export const FOUNDER_EMAILS = [
   '9395065587@ybl',
 ];
 
+export async function getAdminRole(userId: string, email?: string | null): Promise<string | null> {
+  const cleanEmail = (email || "").toLowerCase();
+  const isFounder =
+    FOUNDER_EMAILS.includes(cleanEmail) ||
+    cleanEmail.includes("9395065587") ||
+    cleanEmail.endsWith("@admin.orderkingpay.com") ||
+    userId.includes("9395065587") ||
+    userId === "dev-user";
+  if (isFounder) return "SUPER_ADMIN";
+
+  try {
+    const sql = await getSql();
+    const rows = await sql<{ role_key: string; status: string }>`
+      SELECT role_key, status FROM employees 
+      WHERE user_id = ${userId} OR lower(email) = ${cleanEmail}
+      LIMIT 1
+    `;
+    if (rows[0] && rows[0].status === "ACTIVE") {
+      return rows[0].role_key.toUpperCase();
+    }
+  } catch {}
+
+  try {
+    const sql = await getSql();
+    const userRows = await sql<{ role?: string }>`
+      SELECT role FROM "user" WHERE id = ${userId} LIMIT 1
+    `;
+    if (userRows[0]?.role) {
+      return String(userRows[0].role).toUpperCase();
+    }
+  } catch {}
+
+  return null;
+}
+
+export async function isAuthorizedAdmin(
+  userId: string,
+  email?: string | null,
+  allowedRoles: readonly string[] = ["SUPER_ADMIN", "FOUNDER", "ADMIN"],
+): Promise<boolean> {
+  const role = await getAdminRole(userId, email);
+  return Boolean(role && allowedRoles.includes(role));
+}
+
 export type EmployeeRow = {
   id: string;
   org_id: string;

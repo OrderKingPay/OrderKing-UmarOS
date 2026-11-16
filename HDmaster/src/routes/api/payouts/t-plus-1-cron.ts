@@ -19,12 +19,8 @@ async function isAuthorizedCronOrAdmin(request: Request): Promise<boolean> {
     return false;
   }
 
-  const sql = await getSql();
-  const rows = await sql<{ role: string }>`
-    SELECT role FROM users WHERE id = ${sessionUser.id} LIMIT 1
-  `;
-  const role = String(rows[0]?.role ?? "").toUpperCase();
-  return ADMIN_ROLES.has(role);
+  const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+  return isAuthorizedAdmin(sessionUser.id, sessionUser.email);
 }
 
 export const Route = createFileRoute("/api/payouts/t-plus-1-cron")({

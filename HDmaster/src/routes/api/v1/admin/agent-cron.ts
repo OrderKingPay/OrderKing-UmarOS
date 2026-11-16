@@ -18,10 +18,8 @@ export const APIRoute = createAPIFileRoute('/api/v1/admin/agent-cron')({
       if (!hasValidCronSecret) {
         const session = await getSessionUser();
         if (session?.id) {
-          const sql = await getSql();
-          const rows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
-          const role = rows.length > 0 ? String((rows[0] as any).role || "").toUpperCase() : "";
-          isVerifiedFounder = ["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role);
+          const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+          isVerifiedFounder = await isAuthorizedAdmin(session.id, session.email);
         }
       }
 

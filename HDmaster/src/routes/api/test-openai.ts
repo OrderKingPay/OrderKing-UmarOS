@@ -19,10 +19,8 @@ export const Route = createAPIFileRoute("/api/test-openai")({
               { status: 401, headers: { "Content-Type": "application/json" } }
             );
           }
-          const sql = await getSql();
-          const roleRows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
-          const role = roleRows.length > 0 ? String((roleRows[0] as any).role || "").toUpperCase() : "";
-          if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role)) {
+          const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+          if (!(await isAuthorizedAdmin(session.id, session.email))) {
             return new Response(
               JSON.stringify({
                 status: "FORBIDDEN",
@@ -36,8 +34,8 @@ export const Route = createAPIFileRoute("/api/test-openai")({
           if (!apiKey) {
             return new Response(JSON.stringify({
               status: "CONFIGURATION_REQUIRED",
-              evidence: "OPENAI_API_KEY is completely missing from Vercel Server-Side environment variables. No actual execution permitted. Please add it to your Vercel Project Settings and redeploy.",
-              actionRequired: "Add OPENAI_API_KEY to Vercel and redeploy HDmaster."
+              evidence: "OPENAI_API_KEY is not configured in server environment variables. No actual execution permitted. Please configure OPENAI_API_KEY.",
+              actionRequired: "Configure OPENAI_API_KEY in environment variables."
             }), { status: 400, headers: { "Content-Type": "application/json" } });
           }
 

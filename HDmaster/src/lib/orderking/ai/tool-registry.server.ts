@@ -19,7 +19,7 @@ export function registerFounderTools() {
     verify: (output: any) => typeof output.users === 'number',
     execute: async () => {
       const sql = await getSql();
-      const users = await sql`SELECT count(*) as count FROM users`;
+      const users = await sql`SELECT count(*) as count FROM "user"`;
       const orders = await sql`SELECT count(*) as count FROM orders WHERE status != 'DELIVERED'`;
       return { 
         users: Number(users[0]?.count || 0),

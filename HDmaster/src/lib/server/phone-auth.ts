@@ -244,18 +244,18 @@ export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
       computeStatelessOtp(cleanPhone, -2),
     ];
     const memEntry = memoryOtpCache.get(`phone:${cleanPhone}`);
-    const isFounderAdmin = cleanPhone === "9395065587";
     const isMatched =
       validWindowOtps.includes(enteredOtp) ||
-      (isFounderAdmin && (enteredOtp === "950655" || enteredOtp === "123456" || enteredOtp === "065587")) ||
       Boolean(memEntry && memEntry.otp === enteredOtp && memEntry.expiresAt > Date.now());
     let isTfValid = isMatched;
     if (!isTfValid) {
       try {
-        var tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "bae2bf50-d3d4-11f1-ac3e-0200cd936042").trim();
-        const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
-        const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
-        if (tfJson.Status === "Success") isTfValid = true;
+        const tfKey = (process.env.TWOFACTOR_API_KEY || process.env.TWO_FACTOR_API_KEY || "").trim();
+        if (tfKey) {
+          const tfRes = await fetch(`https://2factor.in/API/V1/${encodeURIComponent(String(tfKey ?? ""))}/SMS/VERIFY3/+91${cleanPhone}/${enteredOtp}`);
+          const tfJson = (await tfRes.json().catch(() => ({}))) as { Status?: string };
+          if (tfJson.Status === "Success") isTfValid = true;
+        }
       } catch {}
     }
     if (!isTfValid) {
@@ -266,6 +266,18 @@ export const verifyAdminPhoneOtpFn = createServerFn({ method: "POST" })
     const userId = "adm_" + hash.slice(0, 16);
     const syntheticEmail = `${cleanPhone}@admin.orderkingpay.com`;
     const derivedPassword = `OK_${hash.slice(0, 20)}!9A`;
+
+    try {
+      const sql = await getSql();
+      await sql.query(
+        `INSERT INTO employees (id, org_id, user_id, email, name, role_key, department, status, last_active_at)
+         VALUES ($1, 'org_orderking', $1, $2, $3, 'SUPER_ADMIN', 'Founders', 'ACTIVE', now())
+         ON CONFLICT (id) DO UPDATE SET status = 'ACTIVE', last_active_at = now()`,
+        [userId, syntheticEmail, data.name?.trim() || `HDmaster Admin ${cleanPhone.slice(-4)}`]
+      );
+    } catch (dbErr) {
+      console.warn("[Admin Phone Auth] DB employee sync note:", dbErr);
+    }
     return {
       success: true,
       verified: true,

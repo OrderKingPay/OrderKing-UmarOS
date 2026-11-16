@@ -16,10 +16,8 @@ export const Route = createFileRoute("/api/v1/founder/sweep")({
             });
           }
 
-          const sql = await getSql();
-          const roleRows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
-          const role = roleRows.length > 0 ? String((roleRows[0] as any).role || "").toUpperCase() : "";
-          if (!["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role)) {
+          const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+          if (!(await isAuthorizedAdmin(session.id, session.email))) {
             return new Response(JSON.stringify({ success: false, error: "Forbidden" }), {
               status: 403,
               headers: { "Content-Type": "application/json" },
@@ -32,6 +30,7 @@ export const Route = createFileRoute("/api/v1/founder/sweep")({
             return new Response("Too Many Requests", { status: 429 });
           }
 
+          const sql = await getSql();
           const result = await sql`
             SELECT COALESCE(SUM(restaurant_payable_paise), 0) as payable_paise
             FROM orders

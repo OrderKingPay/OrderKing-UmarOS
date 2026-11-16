@@ -11,10 +11,8 @@ async function verifyFounderOrAdminAccess(request?: Request): Promise<boolean> {
   }
   const session = await getSessionUser();
   if (!session?.id) return false;
-  const sql = await getSql();
-  const rows = await sql`SELECT role FROM users WHERE id = ${session.id} LIMIT 1`;
-  const role = rows.length > 0 ? String((rows[0] as any).role || "").toUpperCase() : "";
-  return ["SUPER_ADMIN", "FOUNDER", "ADMIN"].includes(role);
+  const { isAuthorizedAdmin } = await import("@/lib/orderking/server/workspace.server");
+  return isAuthorizedAdmin(session.id, session.email);
 }
 
 

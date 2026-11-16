@@ -1,5 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { verifyAdminSessionFn } from "@/lib/auth/server-session";
 import {
   Save,
   Sparkles,
@@ -70,6 +71,14 @@ import {
 export { CENTRAL_COMMISSION_TIERS, CENTRAL_COMMISSION_TIER_PERCENTAGES, type CentralCommissionTierDef };
 
 export const Route = createFileRoute("/settings")({
+  beforeLoad: async () => {
+    try {
+      const res = await verifyAdminSessionFn();
+      if (!res?.ok) throw redirect({ to: "/login" });
+    } catch {
+      throw redirect({ to: "/login" });
+    }
+  },
   component: SettingsPage,
 });
 

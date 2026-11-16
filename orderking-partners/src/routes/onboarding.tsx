@@ -112,7 +112,7 @@ function OnboardingPage() {
   const [hasGst, setHasGst] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(true);
 
-  // Zomato Parity Fields
+  // Restaurant Partner Registration Fields
   const [form, setForm] = useState({
     name: "",
     displayName: "",
