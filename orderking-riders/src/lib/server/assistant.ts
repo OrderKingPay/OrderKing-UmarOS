@@ -11,9 +11,9 @@ const POLICY = [
   "Address the rider respectfully by their name (e.g. 'Hello <Name> ji', or with appropriate cultural honorific in their language).",
   "Provide natural, human-style conversational intelligence in Bengali (বাংলা), Assamese (অসমীয়া), Hindi (हिन्दी), and English.",
   "Empower riders with autonomous resolution tools (zero founder headache):",
-  "1. Explain exact payout breakdowns: Base floor (₹35 statutory minimum floor covering first 2.0 km), progressive distance slabs (2.0-5.0 km at ₹12/km, beyond 5.0 km at ₹15/km), wait-time pay (₹1/min after 6 mins grace period), and 100% customer tip pass-through with zero platform deductions.",
+  "1. Explain exact payout breakdowns: Base floor (₹35 statutory minimum floor covering first 2.0 km), progressive distance slabs (2.0-5.0 km at ₹12/km, beyond 5.0 km at ₹15/km), wait-time pay (₹1/min after 6 mins grace period), and direct customer tip pass-through with zero platform deductions.",
   "2. Verify wait time at restaurant and auto-credit wait pay if arrival timestamp exceeds 6 mins.",
-  "3. Resolve landmark navigation and customer phone reachability issues (gated entry, 500m geofence tolerance, 3-call doorstep unreachable rule with 100% protected payout).",
+  "3. Resolve landmark navigation and customer phone reachability issues (gated entry, 500m geofence tolerance, 3-call doorstep unreachable rule with full protected payout).",
   "4. Route emergency distress signals immediately to 112 / 108 with live GPS coordinates, while auto-protecting the rider's active shift and milestone progress with zero cancellation penalty.",
   "You may ONLY cite numbers, order codes, earnings, COD balances, and states from the authorized live database snapshot JSON provided.",
   "Never invent earnings, payouts, UTR numbers, addresses, OTPs, customer names, or order states.",
@@ -381,8 +381,8 @@ export const askAssistantFn = createServerFn({ method: "POST" })
           );
           resolutionAction = {
             type: "DOORSTEP_UNREACHABLE_CONFIRMED",
-            title: "10-Minute Doorstep SOP Qualified (100% Pay Protected)",
-            details: `3 call attempts verified for Order #${active?.orderCode ?? "N/A"}. Base & Distance pay guaranteed. Follow hygiene handover or return SOP.`,
+            title: "10-Minute Doorstep SOP Qualified (Full Pay Protected)",
+            details: `3 call attempts verified for Order #${active?.orderCode ?? "N/A"}. Base & Distance pay confirmed. Follow hygiene handover or return SOP.`,
             ticketId: ticket.id,
             orderCode: active?.orderCode,
             badgeTone: "online",
@@ -476,7 +476,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       emergencyBroadcast = {
         dispatched: true,
         coords,
-        emergencyNumbers: ["112 (National Emergency - Police/Fire)", "108 (Free Medical Ambulance)"],
+        emergencyNumbers: ["112 (National Emergency - Police/Fire)", "108 (Government Emergency Medical Ambulance)"],
         insuranceCover: "₹5,00,000 Cashless On-Duty Accident Cover (1800-258-5956)",
       };
     }
@@ -734,20 +734,20 @@ function localHumanMentorAnswer(
       if (lang === "as") {
         return `কল প্ৰচেষ্টা #${attempts}/৩ সফলভাৱে ৰেকৰ্ড কৰা হৈছে। ২-৩ মিনিটৰ পাছত পুনৰ চেষ্টা কৰক। ৩ টা কল সম্পন্ন হ'লে সম্পূৰ্ণ পেআউট সুৰক্ষিত থাকিব।`;
       }
-      return `Call attempt #${attempts}/3 has been officially logged in dispatch. Please wait 2-3 minutes before attempting again. Full Base + Distance payout is guaranteed once the 10-minute 3-call SOP completes.`;
+      return `Call attempt #${attempts}/3 has been officially logged in dispatch. Please wait 2-3 minutes before attempting again. Full Base + Distance payout is confirmed once the 10-minute 3-call SOP completes.`;
     }
 
     if (resolutionAction.type === "DOORSTEP_UNREACHABLE_CONFIRMED") {
       if (lang === "bn") {
-        return `১০ মিনিটের ৩-কল এসওপি সম্পন্ন হয়েছে! অর্ডার #${active?.orderCode}-এর বেস ও দূরত্বের ১০০% পেআউট সম্পূর্ণ সুরক্ষিত। কোনো জরিমানা হবে না। ড্রপ স্ক্রিনে 'Customer Unavailable' নির্বাচন করে ডেলিভারি সম্পন্ন করুন।`;
+        return `১০ মিনিটের ৩-কল এসওপি সম্পন্ন হয়েছে! অর্ডার #${active?.orderCode}-এর বেস ও দূরত্বের পেআউট সম্পূর্ণ সুরক্ষিত। কোনো জরিমানা হবে না। ড্রপ স্ক্রিনে 'Customer Unavailable' নির্বাচন করে ডেলিভারি সম্পন্ন করুন।`;
       }
       if (lang === "hi") {
-        return `10 मिनट की 3-कॉल एसओपी पूरी हो गई है! ऑर्डर #${active?.orderCode} का 100% बेस और दूरी पेआउट सुरक्षित है। कोई पेनल्टी नहीं लगेगी। डिलीवरी स्क्रीन पर 'Customer Unavailable' चुनें।`;
+        return `10 मिनट की 3-कॉल एसओपी पूरी हो गई है! ऑर्डर #${active?.orderCode} का बेस और दूरी पेआउट सुरक्षित है। कोई पेनल्टी नहीं लगेगी। डिलीवरी स्क्रीन पर 'Customer Unavailable' चुनें।`;
       }
       if (lang === "as") {
-        return `১০ মিনিটৰ ৩-কল এছঅ'পি সমাপ্ত হ'ল! অৰ্ডাৰ #${active?.orderCode}-ৰ ১০০% পেআউট সুৰক্ষিত। স্ক্ৰীণত 'Customer Unavailable' নিৰ্বাচন কৰক।`;
+        return `১০ মিনিটৰ ৩-কল এছঅ'পি সমাপ্ত হ'ল! অৰ্ডাৰ #${active?.orderCode}-ৰ পেআউট সুৰক্ষিত। স্ক্ৰীণত 'Customer Unavailable' নিৰ্বাচন কৰক।`;
       }
-      return `The 10-minute 3-call doorstep SOP is complete! 100% of your Base and Distance earnings for Order #${active?.orderCode} are guaranteed with zero rating deduction. Please select 'Customer Unavailable' on your delivery screen.`;
+      return `The 10-minute 3-call doorstep SOP is complete! Your Base and Distance earnings for Order #${active?.orderCode} are confirmed with zero rating deduction. Please select 'Customer Unavailable' on your delivery screen.`;
     }
 
     if (resolutionAction.type === "COD_DISPUTE_LOGGED") {
@@ -815,7 +815,7 @@ function localHumanMentorAnswer(
     return (
       `KING AI EMERGENCY DISTRESS PROTOCOL ACTIVE (Live GPS Synced):\n` +
       `• Your life & safety come before any delivery. Move to a safe location off the roadway.\n` +
-      `• Immediate Emergency Dials: Dial 112 (National SOS - Police/Fire) or 108 (Free Emergency Medical Ambulance).\n` +
+      `• Immediate Emergency Dials: Dial 112 (National SOS - Police/Fire) or 108 (Government Emergency Medical Ambulance).\n` +
       `• Live GPS Coordinates: Lat ${coords.lat.toFixed(6)}, Lng ${coords.lng.toFixed(6)} | Rider: ${fullName} (${home.rider.phone})\n` +
       `• Zero-Penalty Protection: Active order is reassigned with zero cancellation penalty & full milestone credit.\n` +
       `• Cashless Hospitalization: ₹5,00,000 on-duty accidental medical coverage active via 1800-258-5956.`
@@ -968,14 +968,14 @@ function localHumanMentorAnswer(
     }
     if (lang === "hi") {
       return (
-        `ऑर्डरकिंग किचन वेट-टाइम गारंटी:\n` +
+        `ऑर्डरकिंग किचन वेट-टाइम पॉलिसी:\n` +
         `• रियायती अवधि: 'Arrived at Restaurant' मार्क करने पर पहले 6 मिनट बेस पे में शामिल हैं।\n` +
         `• स्वचालित ₹1/मिनट दर: 7वें मिनट से किंग एआई ठीक ₹1.00 प्रति मिनट सीधे आपके खाते में जोड़ता है।\n` +
         `• सड़क पर गति सीमा का पालन करें — आपके समय की पूरी भरपाई ऑर्डरकिंग द्वारा की जाती है।`
       );
     }
     return (
-      `OrderKing Kitchen Wait-Time Guarantee:\n` +
+      `OrderKing Kitchen Wait-Time Policy:\n` +
       `• Grace Period: First 6 minutes upon marking 'Arrived at Restaurant' are covered under base fare.\n` +
       `• Autonomous ₹1/Min Rate: From minute 7 onwards, King AI automatically credits ₹1.00/minute directly into your earnings ledger (up to ₹30 cap).\n` +
       `• Never speed or compromise road safety: your waiting time is fully monetized by OrderKing.`

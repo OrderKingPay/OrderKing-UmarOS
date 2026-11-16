@@ -34,7 +34,7 @@ export const TRUST_TIER_CONFIGS: Record<TrustTier, TrustTierConfig> = {
       "15% EV Rental & Battery Swap Discount",
       "HPCL / IOCL ₹2.50/L Fuel Cashback",
       "₹10 Lakh Social Security Accident Cover",
-      "Free Scheduled Wednesday Settlements",
+      "Scheduled Wednesday Settlements (₹0 Fee)",
     ],
   },
   SILVER: {
@@ -70,7 +70,7 @@ export const TRUST_TIER_CONFIGS: Record<TrustTier, TrustTierConfig> = {
       "50% Off Instant Cashout Fee (Only ₹5)",
       "Enhanced ₹3.00/L Petrocard Cashback",
       "Priority Dispatch Routing Multiplier (1.25x)",
-      "Free Engine Oil Change Voucher quarterly",
+      "Quarterly Engine Oil Change Voucher",
     ],
   },
   DIAMOND: {
@@ -203,7 +203,7 @@ export function getPoliteFloatingCashMessage(params: {
       badgeLabel: "Cash Limit Reached (Tea Break)",
       badgeTone: "busy",
       headline: `Incredible hustle today, ${name}! You've reached your ₹${effectiveLimitInr.toLocaleString("en-IN")} safety limit.`,
-      greetingAndStatus: `You have ₹${balanceInr.toLocaleString("en-IN")} customer cash securely in hand. To keep you and your earnings 100% safe, new COD orders are momentarily paused.`,
+      greetingAndStatus: `You have ₹${balanceInr.toLocaleString("en-IN")} customer cash in hand. Cash orders are temporarily paused until cash deposit.`,
       suggestedAction: `Take a relaxing 2-minute tea break, tap below to deposit ₹${recommendedDepositInr} via PhonePe/GPay/Paytm, and your COD orders will re-activate instantly.`,
       chaiBreakEncouragement:
         "Chai break time! Relax your shoulders, sip some warm tea, and let UPI handle the rest in 30 seconds.",
@@ -211,7 +211,7 @@ export function getPoliteFloatingCashMessage(params: {
       upiIntentUrl,
       qrCodeUrl,
       prepaidOrdersUninterruptedNotice:
-        "Prepaid online deliveries remain 100% active and unpaused without interruption.",
+        "Prepaid online deliveries remain active and unpaused without interruption.",
       trustTierTitle: tierConfig.title,
       holdingLimitInr: effectiveLimitInr,
       balanceInr,
@@ -252,7 +252,7 @@ export function getPoliteFloatingCashMessage(params: {
       greetingAndStatus: `You have ₹${headroomInr} remaining headroom out of your ₹${effectiveLimitInr.toLocaleString("en-IN")} limit.`,
       suggestedAction: `You can let this offset in your Wednesday payout automatically, or clear it mid-shift anytime via 1-tap UPI.`,
       chaiBreakEncouragement:
-        "Keep hydrated! Don't forget free RO water and charging docks at our partner rest points.",
+        "Keep hydrated. RO water and charging docks are available at our partner rest points.",
       recommendedDepositInr,
       upiIntentUrl,
       qrCodeUrl,
@@ -304,7 +304,7 @@ export const RIDER_AFFILIATE_PARTNERS = {
       discount: "15% Rental & Maintenance Waiver",
       promoCode: "OKZYPP15",
       savingsMonthly: "₹1,350/mo savings",
-      description: "Heavy duty carrier bag, dual batteries, free periodic maintenance.",
+      description: "Heavy duty carrier bag, dual batteries, included periodic maintenance.",
       deepLink: "https://zypp.app/orderking-fleet",
     },
     {
@@ -349,8 +349,8 @@ export const RIDER_AFFILIATE_PARTNERS = {
   },
   instantCashout: {
     convenienceFee: "₹10 Flat Fee per Early Withdrawal",
-    founderNetProfit: "100% Founder Retained Profit",
-    scheduledSettlement: "₹0 Free Scheduled Payout Every Wednesday 14:00 IST",
+    founderNetProfit: "Platform Operating Margin",
+    scheduledSettlement: "₹0 Fee Scheduled Payout Every Wednesday 14:00 IST",
     speed: "Instant 60-Second IMPS Transfer to verified UPI / Bank",
   },
   restPoints: [

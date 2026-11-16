@@ -280,7 +280,7 @@ export function CustomizeDialog({
                               </div>
                             </div>
                             <span className="tabular-nums font-mono text-sm font-black text-fg">
-                              {a.pricePaise > 0 ? `+${formatPaise(a.pricePaise, { locale })}` : "Free"}
+                              {a.pricePaise > 0 ? `+${formatPaise(a.pricePaise, { locale })}` : "+₹0 (Included)"}
                             </span>
                           </label>
 
@@ -326,7 +326,7 @@ export function CustomizeDialog({
                                           <span>
                                             {subA.pricePaise > 0
                                               ? `+${formatPaise(subA.pricePaise, { locale })}`
-                                              : "Free"}
+                                              : "+₹0 (Included)"}
                                           </span>
                                         </label>
                                       );

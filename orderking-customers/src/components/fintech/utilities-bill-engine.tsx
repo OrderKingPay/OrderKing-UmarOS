@@ -606,7 +606,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     sms: "100/Day",
     category: "popular",
     badge: "Standard Saver",
-    perks: "Free Hellotunes, Wynk Music",
+    perks: "Hellotunes, Wynk Music (Bundled)",
   },
   {
     id: "airtel-299",
@@ -618,7 +618,7 @@ export const POPULAR_RECHARGE_PLANS: MobileRechargePlan[] = [
     sms: "100/Day",
     category: "popular",
     badge: "Trending",
-    perks: "Wynk Music, Free Hellotunes",
+    perks: "Wynk Music, Hellotunes (Bundled)",
   },
   {
     id: "airtel-349",

@@ -483,7 +483,7 @@ export function calculateDistancePay(
 /**
  * Standard Delivery Industry Wait-Time Policy:
  * The timer begins when courier marks 'ARRIVED_AT_RESTAURANT'.
- * First 6 minutes are free grace period.
+ * First 6 minutes are standard grace period.
  * Every subsequent minute is compensated at EXACTLY ₹1/minute (100 paise/min).
  * Safety Cap: Capped at MAX_BILLABLE_WAIT_MINUTES = 30 (cap at ₹30.00 / 3,000 paise)
  * to strictly eliminate runaway financial liability from errant restaurant operations.
@@ -1328,7 +1328,7 @@ export const OPERATIONAL_TIERS: Record<OperationalTier, OperationalTierInfo> = {
     fuelCashbackPct: 4.0,
     floatingCashLimitPaise: 350000, // ₹3,500 threshold
     priorityDispatch: true,
-    perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Free Oil Change Voucher", "HPCL 4.0% Discount", "₹3,500 COD Float Limit"],
+    perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Quarterly Engine Oil Voucher", "HPCL 4.0% Discount", "₹3,500 COD Float Limit"],
   },
   DIAMOND: {
     tier: "DIAMOND",

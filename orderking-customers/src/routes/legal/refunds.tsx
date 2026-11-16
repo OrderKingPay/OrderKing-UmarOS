@@ -47,9 +47,9 @@ function RefundsPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-zinc-300">
               <li>
-                <strong className="text-white">Prior to Kitchen Acceptance:</strong> Consumers may cancel an order free of cancellation fees
-                prior to the Restaurant Partner accepting and initiating culinary preparation. In this window, 100% of the transaction amount
-                (including item price, delivery charge, taxes, and platform fee) is refunded.
+                <strong className="text-white">Prior to Kitchen Acceptance:</strong> Consumers may cancel an order without cancellation fees (cancellation fee: ₹0)
+                prior to the Restaurant Partner accepting and initiating culinary preparation. In this window, the full transaction amount
+                (100% of item price, delivery charge, taxes, and platform fee) is refunded.
               </li>
               <li>
                 <strong className="text-white">Post Kitchen Acceptance:</strong> Once the Restaurant Partner accepts the order and commences preparation,
@@ -58,7 +58,7 @@ function RefundsPage() {
               </li>
               <li>
                 <strong className="text-white">Platform or Merchant Cancellations:</strong> If an order is cancelled by the Restaurant Partner due to stock
-                unavailability, or by the Company due to severe weather/rider unavailability, a 100% full refund is automatically issued.
+                unavailability, or by the Company due to severe weather/rider unavailability, a full refund (100% of paid amount) is automatically issued.
               </li>
             </ul>
           </section>

@@ -93,7 +93,7 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
 2.4 Multi-Platform Non-Exclusivity: The Delivery Partner is entirely free to provide delivery, transport, or any other commercial services to any other platform, aggregator, restaurant, or business enterprise concurrently, without restriction or platform penalty.
 2.5 Negation of Traditional Employment Benefits: The Delivery Partner expressly acknowledges that as an autonomous gig contractor, they are not entitled to, nor shall claim, benefits under traditional employer-employee legislations, including the Employees' Provident Funds and Miscellaneous Provisions Act, 1952, the Employees' State Insurance Act, 1948, the Payment of Gratuity Act, 1972, or the Industrial Disputes Act, 1947. Their statutory social welfare entitlements are governed exclusively by Chapter IX of the Code on Social Security, 2020.`,
     keyHighlights: [
-      "100% Principal-to-Principal contract with zero employer-employee liability",
+      "Autonomous Principal-to-Principal contract with zero employer-employee liability",
       "Complete autonomy: Partner controls log-in, log-out, and shift duration",
       "Zero mandatory shifts or forced acceptance quotas",
       "Non-exclusive: Partner can work on competing delivery apps simultaneously",
@@ -153,22 +153,22 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
     title: "Consideration, Payout Computation, Settlements & Tax Compliance",
     statutoryBasis: "Income Tax Act, 1961 (Sec 194C/194-O) & CGST Act, 2017",
     summary:
-      "Sets guaranteed floor payout (₹35 base fare), distance pay, wait-time compensation, 100% tip pass-through, T+0/weekly settlements, and TDS withholding.",
+      "Sets statutory floor payout (₹35 base fare), distance pay, wait-time compensation, direct tip pass-through, T+0/weekly settlements, and TDS withholding.",
     fullLegalText: `5.1 Transparent Fare Calculation Matrix: OrderKing compensates the Delivery Partner for each successfully executed delivery in accordance with the transparent platform rate card:
-  (a) Base Floor Fare: A guaranteed minimum floor fare of INR 35 per completed delivery within the base distance threshold;
+  (a) Base Floor Fare: A statutory minimum floor fare of INR 35 per completed delivery within the base distance threshold;
   (b) Distance Tariff: An incremental distance fee of INR 10 per kilometer calculated via true route GPS distance beyond the base threshold;
   (c) Kitchen Wait-Time Compensation: In the event that kitchen food preparation at the Restaurant Partner exceeds five (5) minutes from verified rider arrival, compensation shall accrue at prescribed per-minute rates;
   (d) Peak Surge & Weather Allowances: Dynamic surge bonuses notified in the app during high-volume periods, late-night hours, heavy rainfall, or severe climatic conditions.
-5.2 100% Customer Tip Pass-Through: 100% of any voluntary gratuity or tip added by the customer is transferred directly to the Delivery Partner without any platform commission, deduction, or processing fee.
+5.2 Direct Customer Tip Pass-Through: The entirety of any voluntary gratuity or tip added by the customer is transferred directly to the Delivery Partner without any platform commission, deduction, or processing fee.
 5.3 Settlement Cycle & Direct Banking: Accrued delivery fees are remitted on a weekly scheduled settlement or through on-demand T+0 / T+1 fast-settlement directly into the Partner's registered bank account via NEFT/IMPS/UPI.
 5.4 Taxation and Statutory Withholding:
   (a) OrderKing shall withhold Tax Deducted at Source (TDS) under Section 194C or Section 194-O of the Income Tax Act, 1961 where mandated by law, and furnish quarterly Form 16A certificates;
   (b) The Delivery Partner is solely responsible for declaring their aggregate earnings, filing personal Income Tax returns, and discharging any personal Goods and Services Tax (GST) liability if their aggregate turnover exceeds statutory thresholds under the CGST Act, 2017.`,
     keyHighlights: [
-      "Guaranteed Minimum Base Fare floor: ₹35 per delivery",
+      "Statutory Minimum Base Fare floor: ₹35 per delivery",
       "Distance Pay: ₹10/km beyond base radius",
       "Wait-Time Allowance for kitchen prep delays >5 minutes",
-      "100% pass-through of customer tips with platform payout structure",
+      "Direct pass-through of customer tips with zero platform commission",
       "Automated T+0 / weekly direct bank & UPI settlements",
       "Transparent Section 194-O / 194C TDS compliance with Form 16A",
     ],
@@ -212,7 +212,7 @@ export const ORDERKING_PARTNER_AGREEMENT_SECTIONS: AgreementSection[] = [
 7.3 24x7 Roadside SOS Incident Response:
   (a) The OrderKing Partner App provides a 1-tap SOS feature directly connected to National Emergency Response Support System (112), Medical Ambulance (108), Police Control Room (100), and OrderKing Safety Operations;
   (b) Real-time GPS coordinates are automatically transmitted to incident responders upon SOS triggering.
-7.4 Emergency Order Protection Guarantee: In the event of a roadside mishap, mechanical breakdown, or personal illness during an active order, the Partner may immediately flag an SOS ticket. The active delivery shall be reassigned to the nearest available fleet partner without cancellation charges, rating penalty, or adverse record on the Delivery Partner's profile.`,
+7.4 Emergency Order Protection Protocol: In the event of a roadside mishap, mechanical breakdown, or personal illness during an active order, the Partner may immediately flag an SOS ticket. The active delivery shall be reassigned to the nearest available fleet partner without cancellation charges, rating penalty, or adverse record on the Delivery Partner's profile.`,
     keyHighlights: [
       "INR 10,00,000 Group Accidental Death Insurance cover to nominee",
       "INR 10,00,000 Permanent Total Disability coverage",

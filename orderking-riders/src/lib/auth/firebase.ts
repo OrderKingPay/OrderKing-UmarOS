@@ -66,7 +66,7 @@ export function createInvisibleRecaptcha(containerId: string): RecaptchaVerifier
 
 /**
  * Dispatches an authentic cellular SMS OTP across Indian telecom towers (Jio, Airtel, Vi, BSNL)
- * via Google Firebase Phone Authentication (10,000 monthly free quota).
+ * via Google Firebase Phone Authentication (10,000 monthly telecom allowance).
  */
 export async function sendFirebasePhoneOtp(
   phone10Digits: string,

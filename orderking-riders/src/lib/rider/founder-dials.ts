@@ -318,7 +318,7 @@ export class FounderCommandDials {
           creditPaise,
           penaltyWaived: true,
           resolvedBy: "HDMASTER_AUTONOMOUS_DISPUTE_ENGINE",
-          statutoryBasis: "True Route GPS Mileage Settlement Guarantee",
+          statutoryBasis: "True Route GPS Mileage Settlement Standard",
           timestamp,
         };
       }

@@ -601,7 +601,7 @@ export interface AutonomousOperationsBridgeConfig {
 }
 
 export const ZERO_HUMAN_MIDDLE_MANAGERS_MANIFEST = {
-  dispatchModel: "100% Autonomous Mathematical Execution (Zero Human Middle-Managers)",
+  dispatchModel: "Autonomous Mathematical Dispatch Routing",
   scoringFormula: "40% Proximity + 35% Acceptance Rate + 25% Device Health",
   batchingConstraints: "Max 2 Orders · <= 800m Pickup Kitchen Distance · < 1.5km Corridor Detour",
   payoutSchedule: "Automated Direct NEFT/IMPS/UPI Deposit · Every Wednesday 06:00 IST",

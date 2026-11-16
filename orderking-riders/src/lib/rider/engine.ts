@@ -1044,7 +1044,7 @@ export class RiderEngine {
         orderCode: d.orderCode,
         kind: "TIP",
         amountPaise: tipPaise,
-        note: "Customer tip (100% pass-through)",
+        note: "Customer tip (direct pass-through)",
         at: this.now(),
         dataMode: cfg.dataMode,
       });

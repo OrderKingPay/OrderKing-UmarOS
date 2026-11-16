@@ -15,7 +15,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("Real-Time Quad-Party WebSocket Synchronization (Council Specialist f5a2c465)", () => {
-  // Mock Quad-Party Realtime Event Bus simulating Supabase Realtime WebSocket engine
+  // In-Memory Quad-Party Realtime Event Bus simulating Supabase Realtime WebSocket engine
   type RealtimeListener = (payload: { event: string; new: any; old?: any }) => void;
   const channelRegistry = new Map<string, RealtimeListener[]>();
 

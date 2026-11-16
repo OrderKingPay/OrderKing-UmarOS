@@ -140,8 +140,8 @@ describe("Live Telematics: Geodesic Bearing & Spatial PostGIS Queries", () => {
     it("calls dbQueryFn with match_nearest_riders SQL when available", async () => {
       const mockQuery = vi.fn().mockResolvedValue([
         {
-          rider_id: "r-mock-1",
-          user_id: "u-mock-1",
+          rider_id: "rider_karimganj_01",
+          user_id: "user_karimganj_01",
           distance_meters: 450,
           lat: 24.8700,
           lng: 92.3520,
@@ -157,7 +157,7 @@ describe("Live Telematics: Geodesic Bearing & Spatial PostGIS Queries", () => {
 
       expect(mockQuery).toHaveBeenCalledOnce();
       expect(results.length).toBe(1);
-      expect(results[0].riderId).toBe("r-mock-1");
+      expect(results[0].riderId).toBe("rider_karimganj_01");
       expect(results[0].distanceMeters).toBe(450);
     });
 

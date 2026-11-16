@@ -110,7 +110,7 @@ export function PeriodLeaveModal({
           ? [todayStr]
           : [tomorrowStr];
     onClaimed(claimedDates);
-    toast.success("Period leave approved for 2 days. Rest well partner! Ratings & tier are 100% protected.");
+    toast.success("Period leave approved for 2 days. Ratings and tier standing are preserved.");
     onClose();
   };
 
@@ -620,7 +620,7 @@ export function RiderBenefitsHub({
               <p className="font-mono text-lg font-black text-foreground">
                 {RIDER_AFFILIATE_PARTNERS.insurance.accidentalDeathCover}
               </p>
-              <p className="text-[11px] text-muted-foreground">100% payable to registered nominee</p>
+              <p className="text-[11px] text-muted-foreground">Directly payable to registered nominee</p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-1">
@@ -711,7 +711,7 @@ export function RiderBenefitsHub({
                     Female Delivery Partner Welfare: Period Leave (2 Days/Month)
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    Tier-1 Benchmark Model · Paid rest allowance &amp; 100% protected tier ranking
+                    Tier-1 Operational Policy · Paid rest allowance with preserved tier standing
                   </p>
                 </div>
               </div>

@@ -173,7 +173,7 @@ export function useRiderCustomization(): RiderCustomizationTokens {
   );
   const distanceRateText = getText(
     "rider.payout.distance_rate",
-    `${formatPaise(distanceRatePerKmPaise)}/km distance pay · 100% customer tips`
+    `${formatPaise(distanceRatePerKmPaise)}/km distance pay · Direct customer tips`
   );
   const rateCardTitle = getText(
     "rider.payout.rate_card_title",

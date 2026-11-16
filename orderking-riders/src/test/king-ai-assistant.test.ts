@@ -109,7 +109,7 @@ describe("King AI Fleet Assistant & Autonomous Dispute Resolution Engine", () =>
       testUserId,
       {
         topic: "CUSTOMER_UNAVAILABLE",
-        message: "[3-CALL SOP COMPLETED] Customer unreachable after 3 attempts and 10m doorstep wait for Order #OK-9922. 100% pay protected.",
+        message: "[3-CALL SOP COMPLETED] Customer unreachable after 3 attempts and 10m doorstep wait for Order #OK-9922. Full pay protected.",
         deliveryId: "del_cust_9922",
       },
       "idem_cust_sop_9922",

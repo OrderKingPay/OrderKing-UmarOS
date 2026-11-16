@@ -74,7 +74,7 @@ export function DeliveryPartnerTermsPage() {
               <span>4. Doorstep Delivery 4-Digit OTP Protocol</span>
             </div>
             <p className="mt-2 text-slate-300">
-              To guarantee fulfillment integrity, every delivery completion is strictly gated by the customer's 4-digit doorstep delivery OTP. The Partner must enter and verify this OTP in the application before releasing parcels. Releasing goods without OTP verification freezes order payout and marks the trip disputed under anti-fraud audit protocol.
+              To enforce fulfillment integrity, every delivery completion is strictly gated by the customer's 4-digit doorstep delivery OTP. The Partner must enter and verify this OTP in the application before releasing parcels. Releasing goods without OTP verification freezes order payout and marks the trip disputed under anti-fraud audit protocol.
             </p>
           </div>
 

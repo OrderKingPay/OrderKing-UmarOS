@@ -109,7 +109,7 @@ export const FloatingTripOfferRadar: React.FC<FloatingTripOfferRadarProps> = ({
             )}
             {offer.tipPaise > 0 && (
               <div style={{ display: "flex", justifyContent: "space-between", color: "#10B981" }}>
-                <span>100% Customer Tip:</span>
+                <span>Customer Tip:</span>
                 <span>+₹{(offer.tipPaise / 100).toFixed(0)}</span>
               </div>
             )}

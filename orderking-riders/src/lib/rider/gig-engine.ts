@@ -5,7 +5,7 @@
  * multi-day touchpoint targets (3-day weekend sprints & weekly marathons),
  * streak multipliers, and courier quality scorecards.
  * 
- * Compliant 100% with real-world Indian gig logistics standards (Leading National Tier-1 Fleet model).
+ * Compliant with real-world Indian gig logistics standards (Leading National Tier-1 Fleet model).
  * Uses strictly authentic terminology and integer paise for all bonuses.
  */
 
@@ -115,7 +115,7 @@ export const RIDER_TIERS: Record<RiderTier, TierInfo> = {
     tier: "GOLD",
     title: "Gold Partner",
     minTripsLifetime: 200,
-    perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Free Oil Change Voucher", "HPCL 4.0% Discount"],
+    perks: ["1.25x Surge Multiplier", "Priority Dispatch Queue", "Quarterly Engine Oil Voucher", "HPCL 4.0% Discount"],
     surgeMultiplier: 1.25,
     fuelCashbackPct: 4.0,
     priorityDispatch: true,

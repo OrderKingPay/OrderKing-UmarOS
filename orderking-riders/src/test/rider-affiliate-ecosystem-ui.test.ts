@@ -103,7 +103,7 @@ describe("OrderKing Rider App: Benefits Hub & Polite Dynamic Floating Cash", () 
       expect(msg.suggestedAction).toContain("tea break");
       expect(msg.chaiBreakEncouragement).toContain("Chai break time");
       expect(msg.prepaidOrdersUninterruptedNotice).toContain(
-        "Prepaid online deliveries remain 100% active and unpaused",
+        "Prepaid online deliveries remain active and unpaused",
       );
       expect(msg.upiIntentUrl).toContain("upi://pay");
       expect(msg.qrCodeUrl).toContain("api.qrserver.com");
@@ -166,11 +166,11 @@ describe("OrderKing Rider App: Benefits Hub & Polite Dynamic Floating Cash", () 
     it("specifies Instant Cashout with ₹10 flat fee and scheduled Wednesday payout at ₹0", () => {
       const cashout = RIDER_AFFILIATE_PARTNERS.instantCashout;
       expect(cashout.convenienceFee).toContain("₹10");
-      expect(cashout.scheduledSettlement).toContain("₹0 Free");
+      expect(cashout.scheduledSettlement).toContain("₹0 Fee");
       expect(cashout.scheduledSettlement).toContain("Wednesday 14:00 IST");
     });
 
-    it("lists designated rest points with free purified water and charging docks", () => {
+    it("lists designated rest points with purified water and charging docks", () => {
       const hubs = RIDER_AFFILIATE_PARTNERS.restPoints;
       expect(hubs.length).toBeGreaterThanOrEqual(3);
       for (const hub of hubs) {
