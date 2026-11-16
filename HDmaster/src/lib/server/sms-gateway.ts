@@ -621,7 +621,7 @@ export async function dispatchOtpSms(
     try {
       let result: { success: boolean; messageId: string };
       if (provider === "fast2sms") {
-        const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || AUTHENTIC_FAST2SMS_KEY).trim();
+        const apiKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
         result = await sendViaFast2SMS(cleanPhone, otp, apiKey, appName, timeoutMs);
       } else if (provider === "2factor") {
         const apiKey = (
@@ -629,7 +629,7 @@ export async function dispatchOtpSms(
           process.env.TWO_FACTOR_API_KEY ||
           process.env.TWO_FACTOR_SMS_KEY ||
           process.env.OTP_2FACTOR_API_KEY ||
-          AUTHENTIC_2FACTOR_KEY
+          ""
         ).trim();
         result = await sendVia2Factor(cleanPhone, otp, apiKey, timeoutMs);
       } else if (provider === "msg91") {

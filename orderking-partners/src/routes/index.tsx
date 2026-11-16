@@ -12,15 +12,15 @@ export const Route = createFileRoute("/")({
 });
 
 export function PartnerEntry() {
-  const { user, loading } = useCurrentUserState();
+  const { user, isPending } = useCurrentUserState();
 
   useEffect(() => {
-    if (!loading && !user && typeof window !== "undefined") {
+    if (!isPending && !user && typeof window !== "undefined") {
       window.location.replace("/login");
     }
-  }, [user, loading]);
+  }, [user, isPending]);
 
-  if (loading) {
+  if (isPending) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="size-8 border-4 border-[#E23744]/20 border-t-[#E23744] rounded-full animate-spin" />
