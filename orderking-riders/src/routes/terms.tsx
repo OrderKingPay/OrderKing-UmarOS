@@ -64,7 +64,7 @@ export function DeliveryPartnerTermsPage() {
               <span>3. Cash on Delivery (COD) &amp; Float Limits</span>
             </div>
             <p className="mt-2 text-slate-300">
-              Partners collecting cash on delivery (COD) are held strictly accountable as custodians of platform funds. The maximum outstanding cash float limit is capped at ₹2,500. Cash collected must be deposited daily prior to cutoff via direct NPCI UPI float clearing (<code className="text-primary font-mono font-bold">orderking@ybl</code>). Failure to deposit floating cash above threshold temporarily suspends order dispatching.
+              Partners collecting cash on delivery (COD) are held strictly accountable as custodians of platform funds. The maximum outstanding cash float limit is capped at ₹1,500. Cash collected must be deposited daily prior to cutoff via direct NPCI UPI float clearing (<code className="text-primary font-mono font-bold">orderking@ybl</code>). Failure to deposit floating cash above threshold temporarily suspends order dispatching.
             </p>
           </div>
 

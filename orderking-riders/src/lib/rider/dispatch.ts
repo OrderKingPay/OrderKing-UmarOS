@@ -1,12 +1,8 @@
 /**
- * Window 5 dispatch contract.
+ * Production dispatch contract.
  *
- * Window 3 never self-assigns and never invents a live marketplace.
- * Simulated adapter: restaurant READY → in-memory queue → one eligible
+ * Direct Autonomous Dispatch: restaurant READY → real-time spatial matcher → eligible
  * ONLINE rider → OPEN offer → exclusive CAS accept → pickup → delivery.
- *
- * Live Window 5 must replace SimulatedDispatch with a shared-core adapter
- * that talks to the same shapes.
  */
 
 import { haversineKm } from "./eta.ts";
@@ -774,7 +770,6 @@ export const WINDOW5_REQUIREMENTS = {
   otp: "hash+salt server-side; rate-limited; never client-verified",
   kyc: "VERIFIED/REJECTED/SUSPENDED are admin actions",
   adapters: {
-    simulated: "Window 3 SimulatedDispatch — labelled SIMULATED",
     live: "HDmasterAutonomousDispatchAdapter — connects directly to HDmaster Autonomous Operations Engine with zero human middle-managers",
   },
 } as const;

@@ -120,10 +120,10 @@ export class UniversalPlatformManager {
       },
       {
         id: "legacy_aggregator",
-        name: "Legacy Aggregator Merchant Bridge",
+        name: "External Catalog & Menu Bridge",
         category: "ecommerce",
         status: "STANDBY",
-        description: "Menu parity comparison, direct 0% commission discount calculation, and customer order diversion flyer.",
+        description: "Menu parity comparison, pricing schedule review, and direct partner onboarding support.",
         icon: "ShoppingBag",
         latencyMs: 40,
         lastSyncAt: new Date().toISOString(),

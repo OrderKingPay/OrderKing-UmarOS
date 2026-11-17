@@ -87,7 +87,7 @@ export const TRUST_TIER_CONFIGS: Record<TrustTier, TrustTierConfig> = {
       "₹5,000 Maximum Cash Holding Limit",
       "Instant IMPS Cashouts via RazorpayX",
       "Maximum ₹3.50/L Petrocard Cashback",
-      "Top-Tier VIP Dispatch Priority (1.5x)",
+      "Priority Dispatch Multiplier (1.5x)",
       "Family Health OPD Card Access",
     ],
   },

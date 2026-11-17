@@ -223,7 +223,7 @@ export function CustomerShell({
           {t("a11y.skip")}
         </a>
 
-        {/* Pristine Ultra-Luxury Header */}
+        {/* Header */}
         <header
           className={cn(
             "sticky top-0 z-40 backdrop-blur-md px-3 sm:px-4 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2.5 space-y-2 transition-all duration-300 transform-gpu will-change-[transform,background-color] [contain:paint]",
@@ -315,7 +315,7 @@ export function CustomerShell({
                 <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
               </Link>
 
-              {/* Super-App Link (Flights, Trains, AI Tutor) - Instant direct access to connected sovereign travel & academic services */}
+              {/* Super-App Link (Flights, Trains, AI Tutor) */}
               <Link
                 to="/travel"
                 title="KingPay Super-App (Flights, Trains, AI Tutor)"

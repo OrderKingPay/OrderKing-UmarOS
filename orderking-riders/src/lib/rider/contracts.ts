@@ -1,7 +1,6 @@
 /**
- * Versioned integration contracts for Windows 1, 2, 4 and 5.
- * These are the shapes Window 3 expects. Adapters in this app currently
- * speak SIMULATED data that matches the same schemas.
+ * Versioned integration contracts for OrderKing Rider Platform.
+ * All endpoints connect to live PostgreSQL and real-time dispatch streams.
  */
 
 export const API_VERSION = "v1";

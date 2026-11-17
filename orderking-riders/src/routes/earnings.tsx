@@ -59,7 +59,7 @@ function Page() {
   const [disputeRef, setDisputeRef] = useState<string | null>(null);
   const [instantPayoutBusy, setInstantPayoutBusy] = useState(false);
 
-  const handleInstantCashoutRequest = async () => {
+  const handleInstantPayoutRequest = async () => {
     if (!rider?.payoutUpi?.trim()) {
       setInstantPayoutNotice(
         "Please register your UPI ID (VPA) in your Profile / KYC to receive instant 1-tap payouts directly to your bank account."
@@ -89,7 +89,7 @@ function Page() {
       const s = await getSettlementsFn();
       setSettlements(s);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Instant cashout failed";
+      const msg = err instanceof Error ? err.message : "Instant payout failed";
       toast.error(msg);
       setInstantPayoutNotice(`Payout issue: ${msg}`);
     } finally {
@@ -445,12 +445,12 @@ function Page() {
             </div>
             <Button
               size="sm"
-              onClick={handleInstantCashoutRequest}
+              onClick={handleInstantPayoutRequest}
               disabled={instantPayoutBusy}
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Dispatched..." : "Instant Cashout"}
+              {instantPayoutBusy ? "Dispatched..." : "Instant Payout"}
             </Button>
           </div>
 

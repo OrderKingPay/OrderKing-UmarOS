@@ -95,7 +95,7 @@ export const Route = createRootRoute({
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
                   {isChunk
                     ? "A newer control build was deployed. Auto-syncing enterprise command modules..."
-                    : "The system intercepted a lifecycle condition. Database credentials and state are 100% secure."}
+                    : "The system intercepted a lifecycle condition. Reconnecting..."}
                 </p>
               </div>
 
@@ -139,7 +139,7 @@ export const Route = createRootRoute({
 
               <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 pt-1">
                 <ShieldCheck className="size-4 stroke-[2.2]" />
-                <span>Umar OS Zero-White-Screen Architecture</span>
+                <span>Umar OS SafeShield</span>
               </div>
             </div>
           </main>

@@ -262,9 +262,9 @@ Greetings from Karimganj.
 
 I am writing to propose a Keynote Address and Technical Workshop for the faculty and students of NIT Silchar.
 
-As a homegrown tech venture originating right here in Barak Valley, OrderKing (https://orderking.in) has built a world-class, ultra-fast delivery and micro-payments platform that is outperforming national legacy apps in local delivery speed, driver retention, and merchant profitability.
+As a technology venture originating in Barak Valley, OrderKing (https://orderking.in) has developed an edge delivery and micro-payments platform focused on local delivery efficiency, driver retention, and merchant profitability.
 
-Topic: "Overthrowing Bloatware: How Localized Tech Beats Multinational Monopolies in Tier-2/3 Markets"
+Topic: "Engineering Edge Architectures: Building High-Performance Hyperlocal Platforms in Tier-2/3 Markets"
 Key Takeaways for Students:
 - How to design sub-100ms distributed architectures using TypeScript, Nitro, and edge databases.
 - Solving the "cold start" logistics problem with algorithmic proximity dispatch.
@@ -309,7 +309,7 @@ https://orderking.in`,
 ];
 
 // ============================================================================
-// 3. META MARKETING API v21.0 & GOOGLE PMAX DOMINATION PAYLOADS
+// 3. META MARKETING API v21.0 & GOOGLE PMAX CAMPAIGN PAYLOADS
 // ============================================================================
 export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   metaMarketingApiJson: {
@@ -351,7 +351,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     },
   },
   googlePMaxAssetGroup: {
-    campaign_name: "OrderKing_Google_PMax_Local_Domination",
+    campaign_name: "OrderKing_Google_PMax_Local_Reach",
     advertising_channel_type: "PERFORMANCE_MAX",
     daily_budget_micros: "200000000", // ₹200.00 INR/day
     location_ids: ["1007787"], // Assam, India
@@ -375,7 +375,7 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   },
   viralReelsScripts: [
     {
-      title: "Reel 1: The 'Legacy Aggregator Price Trap' Revelation (Bengali / English)",
+      title: "Reel 1: Direct Kitchen Pricing & Menu Transparency (Bengali / English)",
       hook: "Did you know you are paying ₹100 extra on every single food order in Karimganj?",
       durationSeconds: 30,
       language: "Bengali & English",

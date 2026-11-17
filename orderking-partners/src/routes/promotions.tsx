@@ -228,18 +228,18 @@ function PromotionsPage() {
                 }`}
             >
               <Tag className="size-3.5" />
-              <span>Digital Promotions &amp; AI Playbook</span>
+              <span>Digital Promotions</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveMarketingSection("in_store_qr")}
               className={`rounded-xl px-4 py-2 text-xs font-bold transition flex items-center gap-2 ${activeMarketingSection === "in_store_qr"
-                  ? "bg-[#E23744] text-gray-900 shadow-sm"
+                  ? "bg-[#E23744] text-white font-bold shadow-sm"
                   : "bg-white border border-gray-200 text-gray-500 hover:text-gray-900"
                 }`}
             >
               <UtensilsCrossed className="size-3.5" />
-              <span>Table QR Dine-In Ordering &amp; Viral Marketing Kit</span>
+              <span>Table QR Dine-In Ordering Kit</span>
               <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-mono text-emerald-300">
                 Dine-In Desk
               </span>
@@ -313,7 +313,7 @@ function PromotionsPage() {
                   <div className="flex items-center gap-2">
                     <Clock className="size-4 text-orange-400" />
                     <h3 className="font-display text-sm font-bold text-gray-900">
-                      1. Meal-Period Gap Strategy (Daypart Demand Playbook)
+                      1. Meal-Period Demand Strategy
                     </h3>
                   </div>
                   <span className="text-[11px] text-gray-500">
@@ -680,7 +680,7 @@ function PromotionsPage() {
                   <div>
                     <Label className="text-xs text-gray-700">{t("menu.name")}</Label>
                     <Input
-                      placeholder="e.g. Lunch Combo Saver (12:00–15:00)"
+                      placeholder="Enter promotion name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="mt-1 h-9 text-xs bg-white border-gray-200"
@@ -697,7 +697,7 @@ function PromotionsPage() {
                       <option value="percent">Percentage Off (%)</option>
                       <option value="fixed">Flat Amount Off (₹)</option>
                       <option value="bogo">Buy 1 Get 1 (BOGO)</option>
-                      <option value="free_delivery">fast delivery Offer</option>
+                      <option value="free_delivery">Free Delivery Offer</option>
                     </select>
                   </div>
 
@@ -750,7 +750,7 @@ function PromotionsPage() {
 
                 <Button
                   size="sm"
-                  className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
+                  className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs"
                   onClick={() =>
                     void savePromotion({
                       data: {
@@ -843,7 +843,7 @@ function PromotionsPage() {
                         type="button"
                         onClick={() => setAdBudgetRupees(amt)}
                         className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${adBudgetRupees === amt
-                            ? "bg-[#E23744] text-gray-900"
+                            ? "bg-[#E23744] text-white font-bold"
                             : "border border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                           }`}
                       >
@@ -872,11 +872,8 @@ function PromotionsPage() {
               ) : null}
             </Card>
 
-            {/* Viral Dine-In Table QR & Customer Acquisition Kit */}
-            <InStoreMarketingKit
-              restaurantId={vendor.restaurantId}
-              restaurantName={vendor.selected?.restaurantName}
-            />
+
+
 
             {/* Active Offers & Discounts Grid */}
             <div className="grid gap-4 md:grid-cols-2">

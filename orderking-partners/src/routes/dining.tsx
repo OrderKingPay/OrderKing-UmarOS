@@ -164,7 +164,7 @@ function DiningPage() {
               <Button
                 size="sm"
                 onClick={() => setWalkInModalOpen(true)}
-                className="gap-1.5 text-xs bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 font-bold shadow-md shadow-emerald-600/20"
+                className="gap-1.5 text-xs bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold shadow-md shadow-emerald-600/20"
               >
                 <UserPlus className="size-3.5" />
                 Add Walk-In Guest
@@ -413,7 +413,7 @@ function DiningPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 font-bold text-xs"
+                    className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs"
                   >
                     Seat Guest Now
                   </Button>

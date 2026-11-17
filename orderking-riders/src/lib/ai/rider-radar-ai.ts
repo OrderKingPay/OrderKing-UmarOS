@@ -21,12 +21,12 @@ export interface EarningsOptimalGuidance {
   nextMilestoneRemainingTrips: number;
   nextMilestoneBonusPaise: number;
   pendingCodFloatPaise: number;
-  codHeadroomRemainingPaise: number; // ₹2,500 statutory limit
+  codHeadroomRemainingPaise: number; // ₹1,500 statutory limit
   payoutAdvice: string;
 }
 
 export class RiderRadarAiEngine {
-  private static readonly COD_LIMIT_PAISE = 250_000; // ₹2,500 limit
+  private static readonly COD_LIMIT_PAISE = 150_000; // ₹1,500 limit
 
   /**
    * 1. Voice-assisted dispatch instructions based on active delivery state

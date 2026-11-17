@@ -56,7 +56,7 @@ describe("Founder Private Cash Vault & Retained Float Engine", () => {
     assert.ok(result.gstItcOffsetAndArbitrage.retainedGstWorkingCapitalPaise > 0);
     assert.ok(result.gstItcOffsetAndArbitrage.section95GstEscrowFloatYieldPaise > 0);
 
-    // 8. Tier-1 Legacy Market Leader vs OrderKing Comparative Savings
+    // 8. Standard 25% Benchmark vs OrderKing Comparative Savings
     // Net Food = 380,000,000 paise. 25% Tier-1 vs 15% OrderKing = 10% savings = 3,800,000 paise (₹38,000)
     assert.equal(result.competitiveTier1Comparison.tier1AverageCommissionBps, 2500);
     assert.equal(result.competitiveTier1Comparison.restaurantSavingsVsTier1Paise, 3_800_000);

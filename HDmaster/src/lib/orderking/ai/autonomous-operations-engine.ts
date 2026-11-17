@@ -31,8 +31,7 @@ export class AutonomousOperationsEngine {
   private currentDailyLossInr = 0;
 
   /**
-   * Dominant Legacy Aggregator-level autonomous dispute resolution. No human support needed.
-   * Employs strict fraud checks and legal boundaries.
+   * Automated dispute resolution under strict fraud checks and legal boundaries.
    */
   public resolveDispute(
     userId: string,
@@ -55,7 +54,7 @@ export class AutonomousOperationsEngine {
       };
     }
 
-    // Dynamic SLA Logic (Dominant Legacy Aggregator-Style)
+    // Dynamic SLA Logic
     if (disputeType === "LATE_DELIVERY" && delayMinutes > 45) {
       const compensation = Math.min(orderValueInr, 50); // Max ₹50 late penalty
       

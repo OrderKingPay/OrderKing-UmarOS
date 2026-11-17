@@ -2,7 +2,7 @@ import test, { describe } from "node:test";
 import assert from "node:assert/strict";
 import { runAdAuction, calculateQualityScore, type AdCandidate } from "./ad-auction-engine.ts";
 
-describe("Dominant Legacy Aggregator-Grade Generalized Second-Price Ad Auction Engine", () => {
+describe("Generalized Second-Price Ad Auction Engine", () => {
   test("calculates quality score based on rating, CTR, and distance", () => {
     const highQuality = calculateQualityScore({
       rating: 4.8,

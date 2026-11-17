@@ -18,7 +18,7 @@ export const UMAROS_PLATFORM_DIRECTORY: PlatformModuleGuide[] = [
   {
     id: "maps_geo",
     name: "Live Maps, OpenStreetMap & Geofencing",
-    navigationPath: "UmarOS Top Nav -> Live Radar (GodEye Map) & Zone Geofence",
+    navigationPath: "UmarOS Top Nav -> Live Radar & Zone Geofence",
     description: "Provides keyless OpenStreetMap street tiles + Nominatim address search & GPS reverse-geocoding, plus optional Mapbox GL vector rendering.",
     editableFields: ["Default Hub Coordinates (Guwahati 26.1445, 91.7362)", "Delivery Radius (km)", "Base Delivery Fee (₹)", "Per-Km Rider Payout (₹)", "VITE_MAPBOX_ACCESS_TOKEN"],
     troubleshooting: "OpenStreetMap + Nominatim works immediately with zero API key. Use the GPS crosshairs button on any map to jump to your live coordinates."

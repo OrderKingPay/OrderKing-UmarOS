@@ -350,7 +350,26 @@ export function TpaHealthCardModal({
         <div className="flex gap-2">
           <Button
             onClick={() => {
-              toast.success("TPA Cashless Card saved to downloads!");
+              const cardData = `ORDERKING DELIVERY PARTNER — TPA CASHLESS HEALTH CARD
+Statutory Entity: Orderkingpay (GSTIN: 18AFXPH9838M1Z9)
+Insurer: New India Assurance · Medi Assist TPA
+Policy Number: OK-TPA-2026-94821
+TPA Member ID: MA-TPA-882941
+Partner Name: ${riderName || "Delivery Partner"}
+Cashless Hospital Cover: ₹2,00,000 Cashless + ₹10,00,000 Personal Accident
+Valid Period: 2026 – 2027 (Pan-India)
+TPA Emergency Desk: 1800-425-4033
+Hospital Procedure: Present this ID at the network hospital TPA / Insurance desk for 30-min cashless pre-authorization.`;
+              const blob = new Blob([cardData], { type: "text/plain;charset=utf-8" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `OrderKing_TPA_Health_Card_${(riderName || "Partner").replace(/\\s+/g, "_")}.txt`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+              toast.success("TPA Cashless Card downloaded successfully.");
             }}
             variant="outline"
             className="w-1/2 text-xs font-semibold gap-1.5"
@@ -457,7 +476,7 @@ export function RiderBenefitsHub({
             { id: "FUEL", label: "Fuel Cashback" },
             { id: "INSURANCE", label: "TPA Cashless & Health" },
             { id: "FEMALE_WELFARE", label: "Female Partner Welfare" },
-            { id: "CASHOUT", label: "Instant Cashout" },
+            { id: "CASHOUT", label: "On-Demand Payout" },
             { id: "REST_POINTS", label: "Rest Points" },
           ].map((cat) => (
             <button
@@ -483,7 +502,7 @@ export function RiderBenefitsHub({
               <Zap className="size-4 text-emerald-600" />
               <span>EV Rental &amp; Battery Swapping Partners (15% Corporate Discount)</span>
             </h3>
-            <Badge tone="online" className="text-[10.5px]">Save ₹15,000+/yr</Badge>
+            <Badge tone="online" className="text-[10.5px]">Fleet Program</Badge>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -551,9 +570,9 @@ export function RiderBenefitsHub({
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
               <Fuel className="size-4 text-orange-500" />
-              <span>Fuel Cashback &amp; Fleet Petrocard Integration</span>
+              <span>Fuel Fleet Petrocard Integration</span>
             </h3>
-            <Badge tone="online" className="text-[10.5px]">₹2.50/L Cashback</Badge>
+            <Badge tone="online" className="text-[10.5px]">PetroCard Tariff</Badge>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -753,7 +772,7 @@ export function RiderBenefitsHub({
             <div className="flex items-center gap-2">
               <CreditCard className="size-4 text-primary" />
               <CardTitle className="text-sm font-bold">
-                Instant Mid-Shift Cashout vs Scheduled Weekly Settlement
+                On-Demand Mid-Shift Payout vs Scheduled Weekly Settlement
               </CardTitle>
             </div>
             <Badge tone="online">NPCI IMPS Rail</Badge>
@@ -771,10 +790,10 @@ export function RiderBenefitsHub({
 
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-1">
               <span className="font-bold text-foreground">
-                2. Instant Mid-Shift Cashout (On-Demand)
+                2. On-Demand Mid-Shift Payout
               </span>
               <p className="text-muted-foreground">
-                Need cash right now before Wednesday? Withdraw instantly for a flat convenience fee of ₹10. Funds arrive in under 60 seconds.
+                Withdraw accrued earnings on-demand before Wednesday for a flat convenience fee of ₹10 via NPCI IMPS rail.
               </p>
             </div>
           </div>

@@ -125,7 +125,7 @@ export function EmergencySosButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label="OrderKing SOS Safety Emergency Panic Shield"
+      aria-label="OrderKing SOS Emergency Safety Call"
       className={`group relative flex items-center justify-center gap-1.5 rounded-xl border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-black text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${isSm
           ? "px-2.5 py-1 text-xs"
           : isLg

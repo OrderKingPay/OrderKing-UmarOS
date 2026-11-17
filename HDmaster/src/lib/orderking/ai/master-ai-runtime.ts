@@ -1724,7 +1724,7 @@ export async function executeTool(
           assamYouthIconAward: "Nomination ready under Barak Valley Technologist of the Year (CII North-East)",
           tieNorthEastTrailblazer: "Keynote presentation & TiE Emerge 50 award pathway",
           pressReleaseBlueprint: {
-            headline: "Barak Valley Technologist Launches OrderKing: Outperforming Legacy Aggregators With Zero Food Inflation & Instant 24K Gold",
+            headline: "Barak Valley Technologist Launches OrderKing: Direct Kitchen Pricing With Instant Digital Rewards",
             syndicationWires: ["ANI News", "Press Trust of India (PTI)", "Barak Bulletin", "Dainik Jugasankha", "YourStory"],
           },
         },

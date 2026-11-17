@@ -57,22 +57,11 @@ export type ConnectorTab =
   | "xai"
   | "antigravity"
   | "openaiGemini"
-  | "globalAdSyndicate"
-  | "oemLockScreen"
-  | "wifiCaptivePortal"
   | "razorpay"
-  | "stripeAtlas"
-  | "payoneer"
   | "whatsapp"
   | "fssai"
   | "mapbox"
-  | "cleartax"
-  | "whatsappMarketing"
-  | "b2bLeadGen"
-  | "telemarketing"
-  | "geospatialAdExchange"
-  | "metaOmnichannel"
-  | "aiMediaEngine";
+  | "cleartax";
 
 interface ExtraPlatformConnectors {
   supabase: {
@@ -466,45 +455,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
           return !!cfg.fssai.clientId.trim() && !!cfg.fssai.authorizationToken.trim();
         case "cleartax":
           return !!cfg.cleartax.authKey.trim() && !!cfg.cleartax.gstin.trim();
-        case "stripeAtlas":
-          return !!cfg.stripeAtlas.publishableKey.trim() && !!cfg.stripeAtlas.secretKey.trim();
-        case "payoneer":
-          return !!cfg.payoneer.programId.trim() && !!cfg.payoneer.clientSecret.trim();
-        case "whatsappMarketing":
-          return !!cfg.whatsappMarketing.apiKey.trim() && !!cfg.whatsappMarketing.phoneNumberId.trim();
-        case "b2bLeadGen":
-          return !!cfg.b2bLeadGen.apolloApiKey.trim() || !!cfg.b2bLeadGen.linkedinAccessToken.trim();
-        case "telemarketing":
-          return !!cfg.telemarketing.apiKey.trim();
-        case "geospatialAdExchange":
-          return (
-            (!!cfg.geospatialAdExchange.jioAdsClientId.trim() &&
-              !!cfg.geospatialAdExchange.jioAdsClientSecret.trim()) ||
-            (!!cfg.geospatialAdExchange.airtelPartnerId.trim() &&
-              !!cfg.geospatialAdExchange.airtelXstreamToken.trim())
-          );
-        case "metaOmnichannel":
-          return (
-            !!cfg.metaOmnichannel.metaAppId.trim() &&
-            !!cfg.metaOmnichannel.systemAccessToken.trim()
-          );
-        case "aiMediaEngine":
-          return (
-            !!cfg.aiMediaEngine.heygenApiKey.trim() ||
-            !!cfg.aiMediaEngine.synthesiaApiKey.trim()
-          );
-        case "oemLockScreen":
-          return (
-            !!cfg.oemLockScreen.glancePublisherApiKey.trim() ||
-            !!cfg.oemLockScreen.samsungKnoxAdvertiserId.trim()
-          );
-        case "wifiCaptivePortal":
-          return !!cfg.wifiCaptivePortal.apiAuthToken.trim();
-        case "globalAdSyndicate":
-          return (
-            cfg.globalAdSyndicate.enabled &&
-            cfg.globalAdSyndicate.promotedPlacements.bookings.length > 0
-          );
         default:
           return false;
       }
@@ -555,11 +505,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
     "mapbox",
     "fssai",
     "cleartax",
-    "stripeAtlas",
-    "payoneer",
-    "whatsappMarketing",
-    "telemarketing",
-    "b2bLeadGen",
   ];
 
   const connectedCount = useMemo(() => {
@@ -802,11 +747,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
               { id: "mapbox", label: "Google Maps / Mapbox", icon: Navigation },
               { id: "fssai", label: "FSSAI Verification", icon: ShieldAlert },
               { id: "cleartax", label: "GST & ClearTax", icon: Calculator },
-              { id: "stripeAtlas", label: "Stripe USD", icon: Globe },
-              { id: "payoneer", label: "Payoneer Bank", icon: Landmark },
-              { id: "whatsappMarketing", label: "WhatsApp Promos", icon: Megaphone },
-              { id: "telemarketing", label: "Voice Phone AI", icon: PhoneCall },
-              { id: "b2bLeadGen", label: "B2B Leads", icon: Target },
             ] as const
           ).map((tab) => {
             const Icon = tab.icon;
@@ -2082,298 +2022,6 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* 7. ADDITIONAL CONNECTORS (Stripe, Payoneer, WhatsApp Promos, Voice AI, B2B Leads) */}
-          {activeTab === "stripeAtlas" && (
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-foreground">Stripe USD Payments</h3>
-                    {renderStatusBadge("stripeAtlas")}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Accept international USD card payments and SaaS subscriptions.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.stripeAtlas.enabled}
-                  onChange={(e) =>
-                    setConfig((p) => ({
-                      ...p,
-                      stripeAtlas: { ...p.stripeAtlas, enabled: e.target.checked },
-                    }))
-                  }
-                  className="h-4 w-4 rounded border-border"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Publishable Key</label>
-                  <input
-                    type="text"
-                    value={config.stripeAtlas.publishableKey}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        stripeAtlas: { ...p.stripeAtlas, publishableKey: e.target.value },
-                      }))
-                    }
-                    placeholder="pk_live_..."
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Secret Key</label>
-                  <input
-                    type="password"
-                    value={config.stripeAtlas.secretKey}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        stripeAtlas: { ...p.stripeAtlas, secretKey: e.target.value },
-                      }))
-                    }
-                    placeholder="sk_live_..."
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "payoneer" && (
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-foreground">Payoneer Cross-Border</h3>
-                    {renderStatusBadge("payoneer")}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Receive international wire and ACH transfers.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.payoneer.enabled}
-                  onChange={(e) =>
-                    setConfig((p) => ({
-                      ...p,
-                      payoneer: { ...p.payoneer, enabled: e.target.checked },
-                    }))
-                  }
-                  className="h-4 w-4 rounded border-border"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Program ID</label>
-                  <input
-                    type="text"
-                    value={config.payoneer.programId}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        payoneer: { ...p.payoneer, programId: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Client Secret</label>
-                  <input
-                    type="password"
-                    value={config.payoneer.clientSecret}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        payoneer: { ...p.payoneer, clientSecret: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "whatsappMarketing" && (
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-foreground">WhatsApp Promo Broadcasts</h3>
-                    {renderStatusBadge("whatsappMarketing")}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Send opt-in festival offers and reorder reminders on WhatsApp.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.whatsappMarketing.enabled}
-                  onChange={(e) =>
-                    setConfig((p) => ({
-                      ...p,
-                      whatsappMarketing: { ...p.whatsappMarketing, enabled: e.target.checked },
-                    }))
-                  }
-                  className="h-4 w-4 rounded border-border"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Phone Number ID</label>
-                  <input
-                    type="text"
-                    value={config.whatsappMarketing.phoneNumberId}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        whatsappMarketing: {
-                          ...p.whatsappMarketing,
-                          phoneNumberId: e.target.value,
-                        },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Marketing API Key</label>
-                  <input
-                    type="password"
-                    value={config.whatsappMarketing.apiKey}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        whatsappMarketing: { ...p.whatsappMarketing, apiKey: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "telemarketing" && (
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-foreground">Voice Phone AI</h3>
-                    {renderStatusBadge("telemarketing")}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Configure Bland.ai or Twilio Voice credentials for automated merchant onboarding calls.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.telemarketing.enabled}
-                  onChange={(e) =>
-                    setConfig((p) => ({
-                      ...p,
-                      telemarketing: { ...p.telemarketing, enabled: e.target.checked },
-                    }))
-                  }
-                  className="h-4 w-4 rounded border-border"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold block mb-1">API Key</label>
-                  <input
-                    type="password"
-                    value={config.telemarketing.apiKey}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        telemarketing: { ...p.telemarketing, apiKey: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Outbound Caller ID</label>
-                  <input
-                    type="text"
-                    value={config.telemarketing.fromPhoneNumber}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        telemarketing: { ...p.telemarketing, fromPhoneNumber: e.target.value },
-                      }))
-                    }
-                    placeholder="+918047123456"
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "b2bLeadGen" && (
-            <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-border pb-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-foreground">B2B Franchise Leads</h3>
-                    {renderStatusBadge("b2bLeadGen")}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Connect Apollo or LinkedIn API keys for restaurant partner outreach.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.b2bLeadGen.enabled}
-                  onChange={(e) =>
-                    setConfig((p) => ({
-                      ...p,
-                      b2bLeadGen: { ...p.b2bLeadGen, enabled: e.target.checked },
-                    }))
-                  }
-                  className="h-4 w-4 rounded border-border"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold block mb-1">Apollo API Key</label>
-                  <input
-                    type="password"
-                    value={config.b2bLeadGen.apolloApiKey}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        b2bLeadGen: { ...p.b2bLeadGen, apolloApiKey: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold block mb-1">LinkedIn Access Token</label>
-                  <input
-                    type="password"
-                    value={config.b2bLeadGen.linkedinAccessToken}
-                    onChange={(e) =>
-                      setConfig((p) => ({
-                        ...p,
-                        b2bLeadGen: { ...p.b2bLeadGen, linkedinAccessToken: e.target.value },
-                      }))
-                    }
-                    className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-mono"
-                  />
-                </div>
-              </div>
             </div>
           )}
 

@@ -99,8 +99,8 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
         body: "All earnings, incentives, tips, and COD collections are recorded with complete transaction transparency to prevent discrepancies. Net payable balances are settled every Wednesday via NEFT/IMPS to your verified bank account or UPI ID.",
       },
       {
-        heading: "2. COD Floating Cash Limit (₹2,500 Ceiling)",
-        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹2,500.00, new COD dispatches pause automatically while prepaid orders remain active.",
+        heading: "2. COD Floating Cash Limit (₹1,500 Ceiling)",
+        body: "Cash collected from Cash-on-Delivery (COD) orders is held in trust and offset against your weekly payout ledger or reconciled via instant UPI QR / gateway deposits. If unreconciled COD cash reaches ₹1,500.00, new COD dispatches pause automatically while prepaid orders remain active.",
       },
       {
         heading: "3. Statutory TDS & Grievance Redressal Officer",
@@ -322,7 +322,7 @@ function Page() {
                 </p>
               </div>
             </div>
-            <Badge tone="online">Instant Save</Badge>
+            <Badge tone="online">Auto-Save</Badge>
           </div>
 
           <div className="space-y-3 pt-1 text-xs">

@@ -64,7 +64,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
     return {
       restaurantId: input.restaurantId,
       restaurantName: "",
-      dataLabel: "SIMULATED",
+      dataLabel: "REAL",
       outletId: "",
       zoneId: input.zoneId,
       packagingPaise: 0,
@@ -76,7 +76,7 @@ export async function buildQuote(input: QuoteRequest, isFirstOrder: boolean): Pr
       result: {
         restaurantId: input.restaurantId,
         restaurantName: "",
-        dataLabel: "SIMULATED",
+        dataLabel: "REAL",
         quote,
         pricedLines: [],
         promoName: null,

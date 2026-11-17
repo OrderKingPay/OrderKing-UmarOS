@@ -80,7 +80,7 @@ const LazyGlobalGodEyeMap = lazyWithRetry(
   "GlobalGodEyeMap"
 );
 
-function GodEyeMapSkeleton() {
+function LiveMapSkeleton() {
   return (
     <div className="w-full rounded-2xl bg-slate-900 border border-slate-800 p-8 flex flex-col items-center justify-center text-center animate-pulse min-h-[360px]">
       <div className="h-9 w-9 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3" />
@@ -1929,7 +1929,7 @@ function UmarOSDashboard() {
   const [newLeadContact, setNewLeadContact] = useState("");
   const [newLeadStage, setNewLeadStage] = useState(CRM_15_STAGES[0]);
 
-  // UMAR AI Supreme Intelligence & Voice State
+  // UMAR AI Executive Assistant & Voice State
   const [aiInput, setAiInput] = useState("");
   const [aiExecuting, setAiExecuting] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -1949,7 +1949,7 @@ function UmarOSDashboard() {
     return Array.isArray(saved) ? saved : [];
   });
 
-  // World 4: Saved Travel Itineraries & Trips State (Persisted in localStorage)
+  // World 4: Saved Travel Itineraries & Trips State (Persisted in PostgreSQL + localStorage)
   const [savedTrips, setSavedTrips] = useState<
     Array<{
       id: string;
@@ -1960,6 +1960,8 @@ function UmarOSDashboard() {
       route: string;
     }>
   >(() => {
+    const fromDb = loaderData.savedSettings?.world_travel_trips?.items;
+    if (Array.isArray(fromDb)) return fromDb;
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("orderking_saved_trips_v1");
@@ -1973,7 +1975,7 @@ function UmarOSDashboard() {
   const [newTripPassenger, setNewTripPassenger] = useState("");
   const [newTripRoute, setNewTripRoute] = useState("");
 
-  // World 4: Local Kitchen & Rider Jobs Board State
+  // World 4: Local Kitchen & Rider Jobs Board State (Persisted in PostgreSQL + localStorage)
   const [localJobs, setLocalJobs] = useState<
     Array<{
       id: string;
@@ -1984,6 +1986,8 @@ function UmarOSDashboard() {
       postedDate: string;
     }>
   >(() => {
+    const fromDb = loaderData.savedSettings?.world_local_jobs?.items;
+    if (Array.isArray(fromDb)) return fromDb;
     if (typeof window !== "undefined") {
       try {
         const raw = localStorage.getItem("orderking_local_jobs_v1");
@@ -2001,12 +2005,6 @@ function UmarOSDashboard() {
   const [selectedTutorLang, setSelectedTutorLang] = useState("English");
   const [speakingLessonId, setSpeakingLessonId] = useState<string | null>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-
-  // World 8: API Keys Verification & Test Ping State
-  const [testedServices, setTestedServices] = useState<
-    Record<string, { status: "OK" | "NOT_CONFIGURED"; latencyMs: number }>
-  >({});
-  const [testingService, setTestingService] = useState<string | null>(null);
 
   // Activity Log
   const [activityLog, setActivityLog] = useState<
@@ -2520,6 +2518,12 @@ function UmarOSDashboard() {
     try {
       localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
     } catch (_e) {}
+    void saveUmarOsSettingsFn({
+      data: {
+        worldId: "world_travel_trips",
+        settings: { items: next },
+      },
+    }).catch(() => {});
     recordLog(`Saved travel booking reference: ${trip.pnr} (${trip.mode})`);
   };
 
@@ -2529,6 +2533,12 @@ function UmarOSDashboard() {
     try {
       localStorage.setItem("orderking_saved_trips_v1", JSON.stringify(next));
     } catch (_e) {}
+    void saveUmarOsSettingsFn({
+      data: {
+        worldId: "world_travel_trips",
+        settings: { items: next },
+      },
+    }).catch(() => {});
   };
 
   // World 4: Post New Local Job
@@ -2550,6 +2560,12 @@ function UmarOSDashboard() {
     try {
       localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
     } catch (_e) {}
+    void saveUmarOsSettingsFn({
+      data: {
+        worldId: "world_local_jobs",
+        settings: { items: next },
+      },
+    }).catch(() => {});
     recordLog(`Posted new hiring opening: ${job.title} (${job.city})`);
   };
 
@@ -2559,6 +2575,12 @@ function UmarOSDashboard() {
     try {
       localStorage.setItem("orderking_local_jobs_v1", JSON.stringify(next));
     } catch (_e) {}
+    void saveUmarOsSettingsFn({
+      data: {
+        worldId: "world_local_jobs",
+        settings: { items: next },
+      },
+    }).catch(() => {});
     recordLog("Removed job opening from board");
   };
 
@@ -2586,20 +2608,6 @@ function UmarOSDashboard() {
         ? prev.filter((id) => id !== lessonId)
         : [...prev, lessonId]
     );
-  };
-
-  // World 8: Test Plugin / Service Connection
-  const handleTestServiceConnection = async (serviceName: string) => {
-    setTestingService(serviceName);
-    const start = Date.now();
-    await new Promise((r) => setTimeout(r, 400));
-    const latencyMs = Date.now() - start;
-    setTestedServices((prev) => ({
-      ...prev,
-      [serviceName]: { status: "OK", latencyMs },
-    }));
-    setTestingService(null);
-    recordLog(`Tested connection for ${serviceName}: OK (${latencyMs}ms)`);
   };
 
   const safeActiveWorldId: WorldId = TEN_WORLDS.some((w) => w.id === activeWorldId)
@@ -4893,7 +4901,7 @@ function UmarOSDashboard() {
 
         {activeWorldId === "connections" && currentTabId === "map-zones" && (
           <AdminErrorBoundary inline sectionName="Live Zone Map">
-            <Suspense fallback={<GodEyeMapSkeleton />}>
+            <Suspense fallback={<LiveMapSkeleton />}>
               <LazyGlobalGodEyeMap />
             </Suspense>
           </AdminErrorBoundary>
@@ -5229,7 +5237,7 @@ function UmarOSDashboard() {
           </section>
         )}
 
-        {/* Safety Fallback Card: Guaranteed explicit dashboard view if tab is ever unmatched */}
+        {/* Fallback Card: Default view if tab is unmatched */}
             {(!currentWorld.tabs.some((t) => t.id === currentTabId) ||
               !worldAllowedTabs.includes(currentTabId)) && (
               <section className="bg-white rounded-2xl border border-slate-200 p-8 shadow-xs text-center space-y-4">

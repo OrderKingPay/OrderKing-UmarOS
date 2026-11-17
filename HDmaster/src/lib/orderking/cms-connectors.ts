@@ -169,7 +169,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   kingPayWalletBalanceLabel: "Available Sovereign Balance",
   kingPayInstantCheckoutCta: "Pay with KingPay (1-Tap Instant Checkout)",
   kingPayCashbackPromoText: "Earn instant cash rewards deposited directly into your verified wallet on every meal order.",
-  kingPayLaterNotice: "0% Interest 15-Day Flexible Credit Line powered by RBI-regulated banking partners.",
+  kingPayLaterNotice: "Direct NPCI UPI (orderking@ybl, 9395065587@ybl) and Nodal Escrow digital settlement rails.",
   kingPaySecurityGuaranteeText: "PCI-DSS Level 1 v4.0 & RBI Compliant End-to-End Encrypted Settlement Vault",
 
   // 4. Cart, Checkout & Order Fulfillment Lifecycle
@@ -224,68 +224,68 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   connectorWhatsappMarketingPolicyNotice: "Ensures all automated promotional broadcasts respect 10:00 AM - 09:00 PM regulatory delivery windows and honour instant opt-out requests without exception.",
   connectorWhatsappMarketingOptInNotice: "Automatic Unsubscribe Handler: Customers replying STOP or UNSUBSCRIBE are instantly purged from promotional broadcast audiences.",
 
-  // 8. B2B Franchise Lead Generation (Apollo / LinkedIn API)
-  connectorB2bLeadGenTitle: "B2B Franchise Lead Generation (Apollo / LinkedIn API)",
-  connectorB2bLeadGenSubtitle: "Enterprise B2B prospecting rail. Automatically query Apollo.io and LinkedIn Sales Navigator to identify multi-unit restaurant operators and franchise owners across Saudi Arabia and the United States to sell the SaaS engine directly.",
-  connectorB2bLeadGenToggleLabel: "Lead Gen Engine Active",
-  connectorB2bLeadGenTestBtnText: "Verify Prospecting Handshake",
-  connectorB2bLeadGenPolicyTitle: "High-Ticket Enterprise Outreach & Compliance Guard",
-  connectorB2bLeadGenPolicyNotice: "Automated prospecting strictly targeting enterprise Multi-Unit Franchisees & C-Suite restaurant groups. Compliant with US CAN-SPAM and Saudi CITC electronic communications frameworks.",
-  connectorB2bLeadGenWebhookNotice: "Apollo & LinkedIn Lead Enrichment Ingestion Webhook: Receives enriched franchise profiles, verified direct dials, and corporate emails.",
+  // 8. B2B Enterprise Restaurant Partner Network
+  connectorB2bLeadGenTitle: "B2B Partner Kitchen Network",
+  connectorB2bLeadGenSubtitle: "Enterprise onboarding and commercial agreement terms for multi-outlet restaurant partners.",
+  connectorB2bLeadGenToggleLabel: "Enterprise Onboarding Active",
+  connectorB2bLeadGenTestBtnText: "Verify Partner Network Rail",
+  connectorB2bLeadGenPolicyTitle: "Statutory Onboarding & Agreement Verification",
+  connectorB2bLeadGenPolicyNotice: "Enforces 14-digit FoSCoS FSSAI license, verified bank account, and GSTIN registration for all merchant partners.",
+  connectorB2bLeadGenWebhookNotice: "Enterprise partner onboarding webhook and menu sync notifications.",
 
-  // 9. Global USD Payment Router (Stripe Atlas Delaware C-Corp)
-  connectorStripeAtlasTitle: "Stripe Atlas (USD B2B SaaS)",
-  connectorStripeAtlasSubtitle: "Delaware C-Corp global USD merchant rail. Powers recurring B2B SaaS licensing, monthly franchise subscriptions, automated W-8BEN/W-9 invoices, and Stripe Billing across US and overseas operators.",
-  connectorStripeAtlasToggleLabel: "Stripe Atlas Router Active",
-  connectorStripeAtlasTestBtnText: "Verify Stripe Atlas Handshake",
-  connectorStripeAtlasPolicyTitle: "Delaware C-Corp B2B SaaS Invoicing & US Compliance",
-  connectorStripeAtlasPolicyNotice: "Collects direct USD revenue into US corporate accounts, generating qualifying institutional business revenue for US entity expansion and visa compliance.",
-  connectorStripeAtlasWebhookNotice: "Stripe Subscriptions & Invoice Webhook: Synchronizes recurring SaaS collections, payment intents, and customer lifecycle.",
+  // 9. Nodal Escrow Banking Engine
+  connectorStripeAtlasTitle: "Nodal Escrow Banking Engine",
+  connectorStripeAtlasSubtitle: "Segregated institutional escrow account governance for RBI PA/PG compliant order settlement.",
+  connectorStripeAtlasToggleLabel: "Escrow Banking Engine Active",
+  connectorStripeAtlasTestBtnText: "Verify Escrow Banking Handshake",
+  connectorStripeAtlasPolicyTitle: "RBI Nodal Escrow & Settlement Integrity",
+  connectorStripeAtlasPolicyNotice: "Guarantees zero diversion of participant funds and enforces double-entry balancing prior to payout releases.",
+  connectorStripeAtlasWebhookNotice: "Nodal escrow reconciliation webhook and automated bank settlement status callbacks.",
 
-  // 10. Global Cross-Border Routing (Payoneer Multi-Currency Virtual Routing)
-  connectorPayoneerTitle: "Payoneer Cross-Border Routing",
-  connectorPayoneerSubtitle: "Institutional cross-border ACH & wire clearing network. Provides US Virtual Fedwire/ABA routing numbers and multi-currency receiving accounts for Saudi Arabia (SAR/USD) and GCC restaurant franchise royalties.",
-  connectorPayoneerToggleLabel: "Payoneer Cross-Border Active",
-  connectorPayoneerTestBtnText: "Verify Payoneer ACH Rail",
-  connectorPayoneerPolicyTitle: "Global Cross-Border Liquidity & Commercial ACH Routing",
-  connectorPayoneerPolicyNotice: "Enables direct collection of international franchise royalty fees from Saudi Arabia and North America without high intermediary bank conversion friction.",
-  connectorPayoneerWebhookNotice: "Payoneer Global Payment Service Ingestion Webhook: Receives inbound wire clearing events and instant treasury deposits.",
+  // 10. Direct Clearing & NEFT / RTGS Payout Rails
+  connectorPayoneerTitle: "Institutional Payout Rails (NEFT / RTGS)",
+  connectorPayoneerSubtitle: "T+1 automated merchant settlement and instant digital driver ledger disbursements.",
+  connectorPayoneerToggleLabel: "Payout Rails Active",
+  connectorPayoneerTestBtnText: "Verify Payout Clearing Rail",
+  connectorPayoneerPolicyTitle: "Direct Bank Clearing Governance",
+  connectorPayoneerPolicyNotice: "Executes verified T+1 settlement batches with bank reference reconciliation under Section 52 TCS.",
+  connectorPayoneerWebhookNotice: "Bank settlement clearing webhook and automated UTR acknowledgement tracking.",
 
-  // 11. AI Telemarketing Connector (Bland.ai / Twilio Voice Autonomous Restaurant Pitching)
-  connectorTelemarketingTitle: "Bland.ai / Twilio Voice (Autonomous Restaurant Pitching)",
-  connectorTelemarketingSubtitle: "Autonomous AI sales force that dials Indian restaurant owners, pitches the direct ordering platform, handles common aggregator objections, and books onboarding walkthroughs without human sales reps.",
-  connectorTelemarketingToggleLabel: "AI Sales Engine Active",
-  connectorTelemarketingTestBtnText: "Test AI Voice Dial Probe",
-  connectorTelemarketingPolicyTitle: "TRAI Telemarketing & DND Regulatory Compliance Guard",
-  connectorTelemarketingPolicyNotice: "Commercial communications strictly scrubbed against the National Do-Not-Call (NDNC) registry. Calling windows enforced between 10:30 AM and 05:00 PM to avoid kitchen rush periods.",
-  connectorTelemarketingWebhookNotice: "Autonomous Call Webhook: Streams real-time call transcripts, audio recordings, owner sentiment scores, and auto-dispatches WhatsApp onboarding links upon hangup.",
+  // 11. Transactional Telecom & Order Handshake
+  connectorTelemarketingTitle: "Transactional Telecom & Dispatch Voice Alerts",
+  connectorTelemarketingSubtitle: "Automated phone alerts for high-priority kitchen delays, rider arrival, and SOS crisis response.",
+  connectorTelemarketingToggleLabel: "Dispatch Telecom Active",
+  connectorTelemarketingTestBtnText: "Test Dispatch Telephony Probe",
+  connectorTelemarketingPolicyTitle: "TRAI Telecommunications & Emergency Compliance",
+  connectorTelemarketingPolicyNotice: "Strictly limited to transactional delivery handshakes and 112/108 emergency SOS dispatches.",
+  connectorTelemarketingWebhookNotice: "Telecom gateway status webhook and delivery receipt acknowledgements.",
 
-  // 12. UmarOS Broad_Reach Ad Exchange & Telecom DSP (JioAds / Airtel / InMobi)
-  connectorGeospatialAdTitle: "UmarOS Broad_Reach Ad Exchange (Telecom & DSP)",
-  connectorGeospatialAdSubtitle: "Geospatial programmatic ad network. Forcefully reaches every smartphone in an exact geographic polygon through JioAds cell-tower triangulation, Airtel Xstream geofences, and InMobi OpenRTB 2.5 DSP rails. Enables the Founder to operate an autonomous ad network and monetize third-party placement.",
-  connectorGeospatialAdToggleLabel: "Geospatial Ad Exchange Active",
-  connectorGeospatialAdTestBtnText: "Verify Telecom & DSP Handshake",
-  connectorGeospatialAdPolicyTitle: "TRAI TCCCPR 2018 & Indian Telegraph Act Geofence Compliance",
-  connectorGeospatialAdPolicyNotice: "Commercial communications strictly bound to TRAI DLT Principal Entity headers. Geofence radius sweeps verified via authorized Telecom LBS APIs with automated DND scrubbing and consent-governed instant incentive delivery.",
-  connectorGeospatialAdWebhookNotice: "Telecom LBS & OpenRTB Bid Stream Ingestion Webhook: Receives real-time cell-tower ping responses, win notifications, and conversion tracking.",
+  // 12. Geospatial Zone Matrix & Routing
+  connectorGeospatialAdTitle: "Geospatial Zone Matrix & Dispatch Corridors",
+  connectorGeospatialAdSubtitle: "Real-time delivery polygon geofencing, polygon serviceability radii, and weather surge buffer rules.",
+  connectorGeospatialAdToggleLabel: "Geospatial Dispatch Matrix Active",
+  connectorGeospatialAdTestBtnText: "Verify Geospatial Matrix Handshake",
+  connectorGeospatialAdPolicyTitle: "Geofence Serviceability & Polygon Governance",
+  connectorGeospatialAdPolicyNotice: "Dynamic polygon serviceability verified via GPS vectors with automated rain buffer and dinner peak adjustments.",
+  connectorGeospatialAdWebhookNotice: "Geospatial routing matrix webhook and polygon status updates.",
 
-  // 13. Meta Omnichannel Geo-Blast Engine (Meta Graph API v21.0 & WhatsApp Cloud API)
+  // 13. Omnichannel Customer Support & Grievance Desk
   connectorMetaOmnichannelTitle: "Official Meta Graph API & WhatsApp Cloud API Engine",
-  connectorMetaOmnichannelSubtitle: "Omnichannel automated restaurant acquisition radar. Direct Messaged geo-blasts across Instagram Direct, Facebook Messenger, and WhatsApp Cloud API to onboard kitchens with direct ordering propositions.",
-  connectorMetaOmnichannelToggleLabel: "Meta Omnichannel Geo-Blast Active",
-  connectorMetaOmnichannelTestBtnText: "Verify Meta Graph API Handshake",
-  connectorMetaOmnichannelPolicyTitle: "Meta Platform Terms & Commercial Business Messaging Compliance",
-  connectorMetaOmnichannelPolicyNotice: "Complies with Meta Business Policy, Instagram Messaging API Policies, and WhatsApp Business Messaging rate tiers. Dynamic 24-hour customer window management with verified template fallbacks.",
-  connectorMetaOmnichannelWebhookNotice: "Meta Graph API Webhook (/api/v1/meta/webhook): Listens for incoming Direct Messages, story mentions, WhatsApp status callbacks, and quick-reply payload handshakes.",
+  connectorMetaOmnichannelSubtitle: "Customer care ticket resolution, 1-tap refunds, and WhatsApp transactional updates.",
+  connectorMetaOmnichannelToggleLabel: "Support Redressal Active",
+  connectorMetaOmnichannelTestBtnText: "Verify Grievance Desk Handshake",
+  connectorMetaOmnichannelPolicyTitle: "Consumer Protection (E-Commerce) Rules Compliance",
+  connectorMetaOmnichannelPolicyNotice: "Enforces 24-hour statutory ticket acknowledgment and 15-minute SLA breach refund processing.",
+  connectorMetaOmnichannelWebhookNotice: "Support ticket webhook and automated resolution notifications.",
 
-  // 14. AI Video Generation Engine (Synthesia / HeyGen API)
-  connectorAiMediaEngineTitle: "AI Video Media Engine (Synthesia / HeyGen API)",
-  connectorAiMediaEngineSubtitle: "Media production generator. Scripts, voices, and renders video presentations for social channels, announcements, and partner onboarding.",
-  connectorAiMediaEngineToggleLabel: "AI Media Engine Active",
-  connectorAiMediaEngineTestBtnText: "Verify Synthesia / HeyGen Handshake",
-  connectorAiMediaEnginePolicyTitle: "Autonomous Synthetic Media & Regulatory Transparency Guard",
-  connectorAiMediaEnginePolicyNotice: "All AI-generated video outputs strictly observe synthetic media transparency standards and IT Rules 2021 labeling while executing high-conversion viral customer acquisition and restaurant partner onboarding.",
-  connectorAiMediaEngineWebhookNotice: "Synthesia / HeyGen Video Render Webhook (/api/v1/media/render-webhook): Receives real-time video rendering completion events, Cloudflare Stream / AWS S3 MP4 download URLs, and triggers immediate geospatial DM blasting.",
+  // 14. Kitchen Order Ticket (KOT) Spooler & Hardware
+  connectorAiMediaEngineTitle: "KOT Spooler & Hardware Infrastructure",
+  connectorAiMediaEngineSubtitle: "WebUSB/Bluetooth raw byte ESC/POS 58mm/80mm thermal receipt printing and Soundbox terminals.",
+  connectorAiMediaEngineToggleLabel: "Hardware Infrastructure Active",
+  connectorAiMediaEngineTestBtnText: "Verify Thermal Printer Handshake",
+  connectorAiMediaEnginePolicyTitle: "Hardware Spooler & POS Receipt Governance",
+  connectorAiMediaEnginePolicyNotice: "Ensures tamper-evident receipt generation, kitchen prep order ticketing, and voice payment confirmations.",
+  connectorAiMediaEngineWebhookNotice: "POS printer status webhook and audio terminal alert telemetry.",
 };
 
 export interface GeospatialAdExchangeConnector {

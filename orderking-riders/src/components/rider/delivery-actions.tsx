@@ -17,7 +17,7 @@ import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
 import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
-import { verifyDoorstepDelivery, generateDynamicDeliveryQr, evaluateThreatZoneRisk } from "@/lib/fleet/fleet-safety-engine";
+import { verifyDoorstepDelivery, evaluateThreatZoneRisk } from "@/lib/fleet/fleet-safety-engine";
 
 export function DeliveryActions({
   delivery,
@@ -44,6 +44,7 @@ export function DeliveryActions({
   const [handoverTab, setHandoverTab] = useState<"OTP" | "QR">("OTP");
   const [qrVerified, setQrVerified] = useState(false);
   const [showBharatQr, setShowBharatQr] = useState(false);
+  const [scannedQr, setScannedQr] = useState("");
   const billFileInputRef = useRef<HTMLInputElement | null>(null);
 
   function getMaskedContactLabel(contactMasked: string | null | undefined): string {
@@ -811,7 +812,7 @@ export function DeliveryActions({
               <div className="flex items-center justify-between">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <QrCode className="size-4 text-primary" />
-                  <span>Scan Customer QR</span>
+                  <span>Customer Dynamic Handover QR</span>
                 </span>
                 {qrVerified && (
                   <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-400">
@@ -819,36 +820,48 @@ export function DeliveryActions({
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">Scan customer QR code to verify doorstep delivery.</p>
+              <p className="text-[11px] text-muted-foreground">Scan customer QR or enter customer app QR code payload.</p>
 
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                className="w-full text-xs font-semibold gap-1.5"
-                onClick={() => {
-                  if (otp.length === 4) {
-                    const qrData = generateDynamicDeliveryQr(d.id, otp);
-                    const result = verifyDoorstepDelivery({
-                      orderId: d.id,
-                      qrPayload: qrData,
-                      expectedOtp: otp,
-                    });
-
-                    if (result.success) {
-                      setQrVerified(true);
-                      toast.success("Customer Delivery Handover QR Verified.");
-                    } else {
-                      toast.error(result.error || "QR verification failed");
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Paste scanned customer QR payload"
+                  value={scannedQr}
+                  onChange={(e) => setScannedQr(e.target.value)}
+                  className="font-mono text-xs h-9"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  className="shrink-0 text-xs font-semibold"
+                  onClick={() => {
+                    if (!scannedQr.trim()) {
+                      toast.error("Please enter or scan customer QR payload");
+                      return;
                     }
-                  } else {
-                    toast.error("Please enter customer's 4-digit PIN first or scan customer QR code");
-                  }
-                }}
-              >
-                <QrCode className="size-3.5" />
-                <span>{qrVerified ? "QR Code Verified (Active)" : "Verify Customer QR Code"}</span>
-              </Button>
+                    try {
+                      const parsed = JSON.parse(scannedQr.trim());
+                      const extractedOtp = parsed.otp || "";
+                      const result = verifyDoorstepDelivery({
+                        orderId: d.id,
+                        qrPayload: scannedQr.trim(),
+                        expectedOtp: extractedOtp,
+                      });
+                      if (result.success) {
+                        setQrVerified(true);
+                        setOtp(extractedOtp);
+                        toast.success("Customer Handover QR verified successfully.");
+                      } else {
+                        toast.error(result.error || "QR verification failed");
+                      }
+                    } catch {
+                      toast.error("Invalid QR format. Ask customer to display 4-digit PIN.");
+                    }
+                  }}
+                >
+                  Verify
+                </Button>
+              </div>
             </div>
           )}
 

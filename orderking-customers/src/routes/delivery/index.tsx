@@ -117,13 +117,13 @@ function DeliveryDirectoryPage() {
 
           <div className="mt-6 flex flex-wrap gap-4 text-xs font-medium text-foreground">
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <ShieldCheck className="size-4 text-emerald-500" /> 100% FSSAI-Licensed Kitchens
+              <ShieldCheck className="size-4 text-emerald-500" /> FSSAI-Licensed Kitchens
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
               <Sparkles className="size-4 text-orange-500" /> ₹0 Hidden Packaging Surcharges
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <Utensils className="size-4 text-primary" /> 100% Direct Kitchen Pricing
+              <Utensils className="size-4 text-primary" /> Direct Kitchen Pricing
             </span>
           </div>
         </div>

@@ -181,7 +181,7 @@ $$;
 `;
 
 /**
- * Pure TypeScript spatial distance fallback when PostGIS is unavailable or in offline/simulated mode.
+ * Pure TypeScript spatial distance algorithm when PostGIS is unavailable or operating in client/edge runtime.
  * Evaluates candidate riders within maxRadiusMeters using spherical Haversine distance
  * (matching ST_DWithin) and returns them sorted ascending by distance (matching ST_Distance).
  */

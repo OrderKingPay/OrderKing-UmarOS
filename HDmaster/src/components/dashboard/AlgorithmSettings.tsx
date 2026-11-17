@@ -179,7 +179,6 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer dev_founder_secret",
           },
           body: JSON.stringify({
             algorithm: settings,
@@ -221,18 +220,18 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
     setSaveMessage(null);
   };
 
-  // Simple, honest math for a sample 3 km order
-  const sampleMath = useMemo(() => {
-    const sampleDistanceKm = 3;
+  // Live deterministic formula preview for a 3 km order
+  const previewMath = useMemo(() => {
+    const previewDistanceKm = 3;
     const customerDeliveryFee =
-      settings.baseDeliveryFeeInr + sampleDistanceKm * settings.perKmRateInr;
+      settings.baseDeliveryFeeInr + previewDistanceKm * settings.perKmRateInr;
     const maxBusyHourFee = Math.round(customerDeliveryFee * settings.surgeMultiplierCap);
     const riderPayFor10MinWait =
       settings.riderBasePayoutInr +
       Math.max(0, 10 - settings.riderFreeWaitMinutes) * settings.riderWaitPayPerMinInr;
 
     return {
-      sampleDistanceKm,
+      previewDistanceKm,
       customerDeliveryFee,
       maxBusyHourFee,
       riderPayFor10MinWait,
@@ -1002,7 +1001,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               2. Normal 3 km Fee
             </div>
             <div className="text-sm font-bold text-emerald-700 mt-0.5">
-              ₹{sampleMath.customerDeliveryFee}
+              ₹{previewMath.customerDeliveryFee}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
               ₹{settings.baseDeliveryFeeInr} base + (3 km × ₹{settings.perKmRateInr}/km).
@@ -1014,7 +1013,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               3. Max Busy-Hour Fee
             </div>
             <div className="text-sm font-bold text-orange-700 mt-0.5">
-              ₹{sampleMath.maxBusyHourFee} ({settings.surgeMultiplierCap.toFixed(1)}x cap)
+              ₹{previewMath.maxBusyHourFee} ({settings.surgeMultiplierCap.toFixed(1)}x cap)
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
               Never exceeds {settings.surgeMultiplierCap.toFixed(1)}x even in peak rain.
@@ -1026,7 +1025,7 @@ export function AlgorithmSettings({ onSaveSuccess, compact = false }: AlgorithmS
               4. Rider Pay (10m Wait)
             </div>
             <div className="text-sm font-bold text-purple-700 mt-0.5">
-              ₹{sampleMath.riderPayFor10MinWait}
+              ₹{previewMath.riderPayFor10MinWait}
             </div>
             <div className="text-[11px] text-slate-500 mt-0.5">
               ₹{settings.riderBasePayoutInr} base + wait pay at ₹{settings.riderWaitPayPerMinInr}/min.

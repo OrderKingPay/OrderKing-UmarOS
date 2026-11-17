@@ -151,15 +151,10 @@ export interface CatalogSearchHit {
 
 export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   // Flights
-  { id: "s-fl-1", category: "Flights", title: "IndiGo 6E-2051 (DEL - BOM)", sub: "Non-Stop · 2h 15m · From ₹4,199", icon: "flight", url: "/travel?tab=flights", keywords: "flight delhi mumbai indigo 6e 2051 air ticket" },
-  { id: "s-fl-2", category: "Flights", title: "Air India AI-887 (DEL - BOM)", sub: "Boeing 777 · Hot Meal Included · ₹4,850", icon: "flight", url: "/travel?tab=flights", keywords: "flight air india ai 887 delhi mumbai" },
-  { id: "s-fl-3", category: "Flights", title: "Akasa Air QP-1102 (DEL - BOM)", sub: "Boeing 737 MAX 8 · From ₹3,890", icon: "flight", url: "/travel?tab=flights", keywords: "flight akasa qp 1102 delhi mumbai" },
-  { id: "s-fl-4", category: "Flights", title: "Guwahati to Kolkata Daily Air Corridor", sub: "GAU - CCU Non-stop · ₹2,890", icon: "flight", url: "/travel?tab=flights", keywords: "flight guwahati kolkata gau ccu assam bengal" },
+  { id: "s-fl-1", category: "Flights", title: "Live Flight Booking & Fare Comparison", sub: "Domestic & international carriers · Real-time live fares", icon: "flight", url: "/travel?tab=flights", keywords: "flight airline ticket live fares travelpayouts search delhi mumbai kolkata guwahati" },
 
   // Trains
-  { id: "s-tr-1", category: "Trains", title: "Rajdhani Express (12424)", sub: "NDLS to DBRT · Official IRCTC Timetable", icon: "train", url: "/travel?tab=trains", keywords: "train rajdhani express 12424 ndls dbrt irctc timetable" },
-  { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast Express", icon: "train", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
-  { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH to GHY Superfast · Official IRCTC Schedule", icon: "train", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati schedule" },
+  { id: "s-tr-1", category: "Trains", title: "IRCTC Train Search & PNR Status", sub: "Official Indian Railways timetable & PNR tracking", icon: "train", url: "/travel?tab=trains", keywords: "train irctc pnr status timetable berth seat availability rajdhani vande bharat" },
 
   // Tours & Custom Itineraries
   { id: "s-to-1", category: "Tours", title: "Custom Holiday Tours & Itineraries", sub: "Domestic & international travel inquiries · Itemized carrier pricing", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour kashmir dubai shillong goa holiday package travel" },
@@ -518,7 +513,7 @@ export function SupremeKingPayExperience() {
         </div>
       </section>
 
-      {/* ─── 2. THE 9 ULTRA-LUXURY 3D POWER TILES (3x3 HIGH-DENSITY GRID) ─── */}
+      {/* ─── 2. POWER TILES (3x3 GRID) ─── */}
       {activeDesk === null && (
         <section aria-label="Core Super-App Services" className="space-y-3">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3.5">

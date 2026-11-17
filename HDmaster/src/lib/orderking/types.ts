@@ -217,7 +217,7 @@ export const DEFAULT_RIDER_DISCIPLINE_SETTINGS: RiderDisciplineSettings = {
 };
 
 export const DEFAULT_SETTINGS: PlatformSettings = {
-  commissionBps: 2200, // 22% standard Dominant Legacy Aggregator matching
+  commissionBps: 2200, // 22% standard merchant commission tier
   townCommissionBps: 2200, // 22% town
   longDistanceCommissionBps: 2800, // 28% long distance (Nilambazar/Fakirabazar/Highway)
   paymentFeeBps: 180,

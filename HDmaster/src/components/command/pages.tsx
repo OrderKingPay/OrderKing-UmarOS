@@ -115,6 +115,20 @@ import { AdminErrorBoundary } from "@/components/error-boundary";
 import { WorldSkeleton } from "@/components/skeletons/world-skeleton";
 
 const PluginConnectors = lazyWithRetry(() => import("../dashboard/PluginConnectors"), "PluginConnectors");
+import {
+  RefundsDeskPage,
+  CatalogManagementPage,
+  ShiftsManagementPage,
+  ReconciliationPage,
+  TaxDeskPage,
+  IncidentsPage,
+  RbiComplianceHubPage,
+  FintechConnectorsPage,
+  TravelDeskPage,
+  EducationDeskPage,
+  JobsDeskPage,
+  PosTerminalsDeskPage,
+} from "./extended-pages";
 
 export function ModuleView({ module, id }: { module: string; id?: string }) {
   const emp = useEmployee();
@@ -142,16 +156,16 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "finance") return <FinancePage />;
   if (module === "settlements") return <SettlementsPage />;
   if (module === "economics") return <EconomicsPage />;
-  if (module === "promotions") return <PromosPage />;
+  if (module === "promotions" || module === "promos") return <PromosPage />;
   if (module === "loyalty") return <LoyaltyPage />;
   if (module === "marketing") return <MarketingPage />;
   if (module === "cms") return <CmsPage />;
   if (module === "analytics") return <AnalyticsPage />;
   if (module === "reports") return <ReportsPage />;
-  if (module === "risk") return <RiskPage />;
+  if (module === "risk" || module === "fraud") return <RiskPage />;
   if (module === "ai") return <AiPage mode="ops" />;
-  if (module === "employees") return <EmployeesPage />;
-  if (module === "branding") return <BrandingPage />;
+  if (module === "employees" || module === "roles") return <EmployeesPage />;
+  if (module === "branding" || module === "brand") return <BrandingPage />;
   if (module === "customization-studio" || module === "visual-studio") return <UmarOsVisualCustomizationStudio />;
   if (module === "flags") return <FlagsPage />;
   if (module === "settings") return <SettingsPage />;
@@ -159,11 +173,19 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
   if (module === "notifications") return <NotificationsPage />;
   if (module === "audit") return <AuditPage />;
   if (module === "health") return <HealthPage />;
+  if (module === "refunds") return <RefundsDeskPage />;
+  if (module === "catalog") return <CatalogManagementPage />;
+  if (module === "shifts") return <ShiftsManagementPage />;
+  if (module === "reconciliation") return <ReconciliationPage />;
+  if (module === "tax") return <TaxDeskPage />;
+  if (module === "incidents") return <IncidentsPage />;
+  if (module === "rbi-compliance-hub") return <RbiComplianceHubPage />;
+  if (module === "fintech-connectors") return <FintechConnectorsPage />;
+  if (module === "travel") return <TravelDeskPage />;
+  if (module === "education") return <EducationDeskPage />;
+  if (module === "jobs") return <JobsDeskPage />;
+  if (module === "pos-terminals") return <PosTerminalsDeskPage />;
   if (module === "tech-registry" || module === "world-tech") return <AdminErrorBoundary inline sectionName="World Tech Command"><Suspense fallback={<WorldSkeleton world="tech" />}><PluginConnectors /></Suspense></AdminErrorBoundary>;
-      if (module === "jio-airtel") return <AdminErrorBoundary inline sectionName="Jio Airtel Connector"><Suspense fallback={<WorldSkeleton world="growth" />}><PluginConnectors forcedTab="globalAdSyndicate" /></Suspense></AdminErrorBoundary>;
-  if (module === "meta-dm") return <AdminErrorBoundary inline sectionName="Meta Omnichannel"><Suspense fallback={<WorldSkeleton world="omnichannel" />}><PluginConnectors forcedTab="metaOmnichannel" /></Suspense></AdminErrorBoundary>;
-  if (module === "wifi-portal" || module === "captive-portal") return <AdminErrorBoundary inline sectionName="WiFi Captive Portal"><Suspense fallback={<WorldSkeleton world="captive" />}><PluginConnectors forcedTab="wifiCaptivePortal" /></Suspense></AdminErrorBoundary>;
-  if (module === "oem-lockscreen") return <AdminErrorBoundary inline sectionName="OEM LockScreen"><Suspense fallback={<WorldSkeleton world="oem" />}><PluginConnectors forcedTab="oemLockScreen" /></Suspense></AdminErrorBoundary>;
     return <DashboardPage />;
 }
 
@@ -1434,7 +1456,7 @@ function PromosPage() {
                 setIsPostBookingCashback(false);
               }}
             >
-              Zomato Standard (10% Capped / +₹12)
+              Market Benchmark Standard (10% Capped / +₹12)
             </Button>
             <Button
               type="button"
@@ -1802,12 +1824,12 @@ function MarketingPage() {
         </div>
       </header>
 
-      {/* Strategic Growth Metrics & Zero-Loss Guardrail */}
+      {/* Strategic Growth Metrics */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="Customer CAC" value="₹38" hint="Blended Acquisition Cost (Paid + Viral)" tone="success" />
         <MetricCard label="Customer LTV (6M)" value="₹840" hint="22.1x LTV/CAC Ratio" tone="success" />
         <MetricCard label="Viral Referral Share" value="48.2%" hint="Organic word-of-mouth orders" tone="success" />
-        <MetricCard label="Zero-Loss Guardrail" value="100% PASS" hint="All campaigns have positive contribution" tone="success" />
+        <MetricCard label="Loss Guardrail" value="PASS" hint="All campaigns have positive contribution" tone="success" />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -1878,7 +1900,7 @@ function MarketingPage() {
             <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3">
               <span className="text-muted">Meta Geofenced Reach:</span>
               <p className="mt-1 font-mono text-xl font-bold text-blue-600 dark:text-blue-300">3,200/day @ ₹150</p>
-              <p className="mt-0.5 text-[11px] text-muted">Pins 788710, 788711, 788712 (100% Focused)</p>
+              <p className="mt-0.5 text-[11px] text-muted">Pins 788710, 788711, 788712 (Active)</p>
             </div>
           </div>
 
@@ -2176,7 +2198,7 @@ function MarketingPage() {
             <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">Meta &amp; Google Local Ad Engine</h4>
-                <span className="text-[10px] font-bold uppercase text-blue-600">100% Geofenced</span>
+                <span className="text-[10px] font-bold uppercase text-blue-600">Geofenced</span>
               </div>
               <div className="space-y-1.5 text-muted">
                 <p><strong>Target Pin Codes:</strong> <span className="font-mono text-primary font-bold">788710, 788711, 788712</span> (Karimganj &amp; Barak Valley Core)</p>
@@ -2194,12 +2216,12 @@ function MarketingPage() {
                       void navigator.clipboard.writeText(
                         JSON.stringify(
                           {
-                            campaign_name: "OrderKing_Karimganj_Town_Domination_V1",
+                            campaign_name: "OrderKing_Karimganj_Town_Local_Reach_V1",
                             objective: "OUTCOME_APP_PROMOTION",
                             daily_budget_inr: 150,
                             geo_locations: { postal_codes: ["788710", "788711", "788712"], country: "IN" },
                             target_age: { min: 18, max: 45 },
-                            ad_headline: "Karimganj's #1 Food App - Save ₹50 Every Order",
+                            ad_headline: "OrderKing - Food Delivery Across Karimganj",
                           },
                           null,
                           2

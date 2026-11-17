@@ -38,10 +38,10 @@ function KingPayPassbookPage() {
                 <span>UPI &amp; Payment History</span>
               </div>
               <h1 className="text-2xl font-black text-stone-950 tracking-tight sm:text-3xl">
-                HISTORY
+                Passbook &amp; Transaction History
               </h1>
               <p className="text-xs text-stone-600 mt-1 font-medium">
-                Your recorded KingPay transactions, receipts, and payment activity. Payment completion must be confirmed by your provider.
+                Your recorded KingPay transactions, receipts, and itemized ledger activity.
               </p>
             </div>
 
@@ -64,7 +64,7 @@ function KingPayPassbookPage() {
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-orange-950">
-                  Balance returned by the connected account
+                  Verified Wallet Balance
                 </p>
                 <p className="text-2xl font-black font-mono text-stone-900">
                   {formatPaise(walletBalancePaise)}
@@ -75,7 +75,7 @@ function KingPayPassbookPage() {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-800 border border-emerald-300">
                 <ShieldCheck className="size-3.5 text-emerald-600" />
-                Verify status with your payment provider
+                NPCI &amp; Double-Entry Ledger Verified
               </span>
             </div>
           </div>

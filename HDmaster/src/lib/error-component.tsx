@@ -131,7 +131,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
 
         <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 pt-1">
           <ShieldCheck className="size-4 stroke-[2.2]" />
-          <span>Umar OS Zero-White-Screen SafeShield</span>
+          <span>Umar OS SafeShield</span>
         </div>
       </div>
     </main>

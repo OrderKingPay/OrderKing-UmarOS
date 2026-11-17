@@ -1012,8 +1012,8 @@ export interface Tier1PayoutBreakdown {
 }
 
 /**
- * Calculates complete, end-to-end rider payout conforming 100% to Tier-1 dominant legacy aggregator Indian payout matrix.
- * Guaranteed strictly integer paise calculations throughout.
+ * Calculates complete, end-to-end rider payout conforming to standard delivery partner payout matrix.
+ * Strictly integer paise calculations throughout.
  */
 export function calculateTier1AlgorithmicPayout(input: Tier1PayoutInput): Tier1PayoutBreakdown {
   const dynPricing: DynamicPricingConfig | undefined = input.dynamicConfig
@@ -1338,7 +1338,7 @@ export const OPERATIONAL_TIERS: Record<OperationalTier, OperationalTierInfo> = {
     fuelCashbackPct: 5.0,
     floatingCashLimitPaise: 500000, // ₹5,000 threshold
     priorityDispatch: true,
-    perks: ["1.5x Surge Multiplier", "Top Priority VIP Dispatch", "Zero Cashout Fees", "Comprehensive Health Cover", "₹5,000 COD Float Limit"],
+    perks: ["1.5x Surge Multiplier", "Priority Dispatch", "Zero Payout Fees", "Comprehensive Health Cover", "₹5,000 COD Float Limit"],
   },
 };
 
@@ -1377,7 +1377,7 @@ export interface CodPocketBalanceCalculation {
 
 /**
  * Calculates real-time COD Floating Cash ("Pocket Balance") and evaluates threshold caps.
- * Strictly maintains 100% SafeInteger paise arithmetic.
+ * Strictly maintains SafeInteger paise arithmetic.
  *
  * @param collectedPaise Total cash physically collected by the courier from COD deliveries (in paise)
  * @param reconciledPaise Total cash reconciled via Wednesday payout offset or direct UPI / gateway deposit (in paise)

@@ -1,7 +1,7 @@
 /**
  * OrderKing Resilient Dead-Letter Queue (DLQ) Manager
  *
- * Provides guaranteed durability and exponential backoff retry semantics
+ * Provides durability and exponential backoff retry semantics
  * for failed realtime events, telematics streams, and order dispatch signals.
  */
 

@@ -213,7 +213,7 @@ export function OrderKingPassbookReceipts({
         </div>
       )}
 
-      {/* Transactions List or Pristine Empty State */}
+      {/* Transactions List or Empty State */}
       <div className="space-y-3">
         <h3
           className={`text-xs font-black uppercase tracking-wider flex items-center justify-between ${

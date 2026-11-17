@@ -205,7 +205,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           riderPhone={riderProfile?.phone}
         />
 
-        {/* ULTRA-LUXURIOUS DOCKED BOTTOM NAVIGATION (All 5 Benchmark Tabs) */}
+        {/* Docked Bottom Navigation (All 5 Benchmark Tabs) */}
         <RiderFloatingBottomNav isDutyOnline={online && geoOk} />
       </div>
     </div>

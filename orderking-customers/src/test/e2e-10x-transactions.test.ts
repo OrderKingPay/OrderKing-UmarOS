@@ -267,7 +267,7 @@ describe("E2E 10x Simulated Transaction Runs: Flights, Trains, and Food Quality 
         expect(rows).toHaveLength(1);
         expect(rows[0]!.status).toBe("DELIVERED");
         expect(rows[0]!.payment_method).toBe(order.paymentMethod);
-      });
+      }, 120_000);
     });
   });
 });

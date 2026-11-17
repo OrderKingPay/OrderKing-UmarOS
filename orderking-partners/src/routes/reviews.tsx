@@ -238,7 +238,7 @@ function ReviewsPage() {
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-3.5 shadow-xs">
                 <div className="text-[10px] uppercase font-bold text-emerald-800">Transit Damage (₹0 Ded)</div>
                 <div className="text-xl font-black text-emerald-700 mt-1">{zeroDedCount}</div>
-                <div className="text-[10px] text-emerald-600 mt-0.5 font-medium">100% Platform Covered</div>
+                <div className="text-[10px] text-emerald-600 mt-0.5 font-medium">Platform Covered</div>
               </div>
               <div className="rounded-2xl border border-orange-200 bg-orange-50/50 p-3.5 shadow-xs">
                 <div className="text-[10px] uppercase font-bold text-orange-900">Needs Action</div>

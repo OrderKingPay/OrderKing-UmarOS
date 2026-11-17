@@ -1,10 +1,9 @@
-import type { LocaleCode } from "./types.ts";
+﻿import type { LocaleCode } from "./types.ts";
 
 const EN_BASE = {
   brandTag: "Partner",
-  simulated: "VERIFIED",
-  simulatedBadge: "VERIFIED",
-  simulatedBanner:
+  verifiedBadge: "VERIFIED",
+  verifiedBanner:
     "Verified Delivery Partner Network — Statutory Payout Protection",
   signIn: "Sign in",
   signUp: "Create account",
@@ -189,9 +188,7 @@ const EN_BASE = {
   stayOnline: "Stay online",
   declineConfirm: "Decline this offer?",
   reasonRequired: "Please choose a reason",
-  simOtpHint:
-    "Customer Handover OTP — Collect this 4-digit verification code from the customer at doorstep handover.",
-  otpSimulatedHint:
+  otpHint:
     "Customer Handover OTP — Collect this 4-digit verification code from the customer at doorstep handover.",
   cashMustMatch: "Collect exactly this amount. Do not edit it.",
   idempotentOk: "Already recorded.",
@@ -204,9 +201,8 @@ const EN_BASE = {
 const HI_BASE = {
   ...EN_BASE,
   brandTag: "पार्टनर",
-  simulated: "सत्यापित",
-  simulatedBadge: "सत्यापित",
-  simulatedBanner:
+  verifiedBadge: "सत्यापित",
+  verifiedBanner:
     "सत्यापित डिलीवरी पार्टनर नेटवर्क — वैधानिक पेआउट सुरक्षा",
   signIn: "साइन इन",
   signUp: "अकाउंट बनाएं",
@@ -389,9 +385,7 @@ const HI_BASE = {
   stayOnline: "ऑनलाइन रहें",
   declineConfirm: "क्या यह ऑफर अस्वीकार करना चाहते हैं?",
   reasonRequired: "कृपया एक कारण चुनें",
-  simOtpHint:
-    "ग्राहक हैंडओवर OTP — डिलीवरी देते समय ग्राहक से यह 4-अंकीय सत्यापन कोड प्राप्त करें।",
-  otpSimulatedHint:
+  otpHint:
     "ग्राहक हैंडओवर OTP — डिलीवरी देते समय ग्राहक से यह 4-अंकीय सत्यापन कोड प्राप्त करें।",
   cashMustMatch: "ठीक यही नकद राशि लें। इसमें बदलाव न करें।",
   idempotentOk: "पहले से दर्ज है।",
@@ -407,9 +401,8 @@ export const STRINGS: Record<string, Record<string, string>> = {
   bn: {
     ...EN_BASE,
     brandTag: "পার্টনার",
-    simulated: "যাচাইকৃত",
-    simulatedBadge: "যাচাইকৃত",
-    simulatedBanner:
+    verifiedBadge: "যাচাইকৃত",
+    verifiedBanner:
       "যাচাইকৃত ডেলিভারি পার্টনার নেটওয়ার্ক — বিধিবদ্ধ পেআউট সুরক্ষা",
     signIn: "সাইন ইন",
     signUp: "অ্যাকাউন্ট তৈরি",
@@ -592,9 +585,7 @@ export const STRINGS: Record<string, Record<string, string>> = {
     stayOnline: "অনলাইনে থাকুন",
     declineConfirm: "এই অফার প্রত্যাখ্যান করবেন?",
     reasonRequired: "একটি কারণ বেছে নিন",
-    simOtpHint:
-      "গ্রাহক হ্যান্ডওভার OTP — ডেলিভারি হস্তান্তরের সময় গ্রাহকের কাছ থেকে এই ৪-সংখ্যার কোডটি নিন।",
-    otpSimulatedHint:
+    otpHint:
       "গ্রাহক হ্যান্ডওভার OTP — ডেলিভারি হস্তান্তরের সময় গ্রাহকের কাছ থেকে এই ৪-সংখ্যার কোডটি নিন।",
     cashMustMatch: "ঠিক এই পরিমাণ নিন। পরিবর্তন করবেন না।",
     idempotentOk: "আগেই রেকর্ড হয়েছে।",
@@ -606,9 +597,8 @@ export const STRINGS: Record<string, Record<string, string>> = {
   as: {
     ...EN_BASE,
     brandTag: "পাৰ্টনাৰ",
-    simulated: "যাচাইকৃত",
-    simulatedBadge: "যাচাইকৃত",
-    simulatedBanner:
+    verifiedBadge: "যাচাইকৃত",
+    verifiedBanner:
       "যাচাইকৃত ডেলিভাৰী পাৰ্টনাৰ নেটৱৰ্ক — বিধিবদ্ধ পেআউট সুৰক্ষা",
     signIn: "ছাইন ইন",
     signUp: "একোউণ্ট সৃষ্টি কৰক",
@@ -671,9 +661,7 @@ export const STRINGS: Record<string, Record<string, string>> = {
       "প্ৰামাণিক ডেলিভাৰী ডিচপেচ — লাইভ অৰ্ডাৰ পাবলৈ KYC সত্যাপন সম্পূৰ্ণ কৰক।",
     kycHint:
       "লাইভ অৰ্ডাৰ ডিচপেচ আৰু সাপ্তাহিক ছেটলমেণ্ট পাবলৈ বিধিবদ্ধ KYC সম্পূৰ্ণ কৰক।",
-    simOtpHint:
-      "গ্ৰাহক হেণ্ডঅভাৰ OTP — ডেলিভাৰী হস্তান্তৰৰ সময়ত গ্ৰাহকৰ পৰা এই ৪-ডিজিট কোড লওক।",
-    otpSimulatedHint:
+    otpHint:
       "গ্ৰাহক হেণ্ডঅভাৰ OTP — ডেলিভাৰী হস্তান্তৰৰ সময়ত গ্ৰাহকৰ পৰা এই ৪-ডিজিট কোড লওক।",
     cashMustMatch: "ঠিক এই পৰিমাণ লওক। সালসলনি নকৰিব।",
     idempotentOk: "আগতেই সংৰক্ষণ কৰা হ'ল।",
@@ -685,9 +673,8 @@ export const STRINGS: Record<string, Record<string, string>> = {
   ta: {
     ...EN_BASE,
     brandTag: "பார்ட்னர்",
-    simulated: "சரிபார்க்கப்பட்டது",
-    simulatedBadge: "சரிபார்க்கப்பட்டது",
-    simulatedBanner:
+    verifiedBadge: "சரிபார்க்கப்பட்டது",
+    verifiedBanner:
       "சரிபார்க்கப்பட்ட டெலிவரி பார்ட்னர் நெட்வொர்க் — சட்டப்பூர்வ ஊதியப் பாதுகாப்பு",
     signIn: "உள்நுழைய",
     signUp: "கணக்கை உருவாக்கு",
@@ -724,17 +711,14 @@ export const STRINGS: Record<string, Record<string, string>> = {
       "நிலையான டெலிவரி டிஸ்பாட்ச் — நேரடி ஆர்டர்களைப் பெற KYC சரிபார்ப்பை நிறைவு செய்யவும்.",
     kycHint:
       "நேரடி ஆர்டர் டிஸ்பாட்ச் மற்றும் வாராந்திர செட்டில்மென்ட்களைப் பெற KYC சரிபார்ப்பை முடிக்கவும்.",
-    simOtpHint:
-      "வாடிக்கையாளர் ஒப்படைப்பு OTP — ஆர்டரை ஒப்படைக்கும்போது வாடிக்கையாளரிடமிருந்து இந்த 4 இலக்க குறியீட்டைப் பெறவும்.",
-    otpSimulatedHint:
+    otpHint:
       "வாடிக்கையாளர் ஒப்படைப்பு OTP — ஆர்டரை ஒப்படைக்கும்போது வாடிக்கையாளரிடமிருந்து இந்த 4 இலக்க குறியீட்டைப் பெறவும்.",
   },
   te: {
     ...EN_BASE,
     brandTag: "పార్ట్‌నర్",
-    simulated: "ధృవీకరించబడింది",
-    simulatedBadge: "ధృవీకరించబడింది",
-    simulatedBanner:
+    verifiedBadge: "ధృవీకరించబడింది",
+    verifiedBanner:
       "ధృవీకరించబడిన డెలివరీ పార్ట్‌నర్ నెట్‌వర్క్ — చట్టబద్ధమైన పేఅవుట్ రక్షణ",
     signIn: "సైన్ ఇన్",
     signUp: "ఖాతా సృష్టించండి",
@@ -771,9 +755,7 @@ export const STRINGS: Record<string, Record<string, string>> = {
       "ప్రామాణిక డెలివరీ డిస్పాచ్ — లైవ్ ఆర్డర్‌లను పొందడానికి KYC ధృవీకరణను పూర్తి చేయండి.",
     kycHint:
       "లైవ్ ఆర్డర్ డిస్పాచ్ మరియు వారపు సెటిల్‌మెంట్‌లను పొందడానికి చట్టబద్ధమైన KYC ధృవీకరణను పూర్తి చేయండి.",
-    simOtpHint:
-      "కస్టమర్ హ్యాండోవర్ OTP — డెలివరీ అందించేటప్పుడు కస్టమర్ నుండి ఈ 4-అంకెల కోడ్‌ను సేకరించండి.",
-    otpSimulatedHint:
+    otpHint:
       "కస్టమర్ హ్యాండోవర్ OTP — డెలివరీ అందించేటప్పుడు కస్టమర్ నుండి ఈ 4-అంకెల కోడ్‌ను సేకరించండి.",
   },
   mr: {

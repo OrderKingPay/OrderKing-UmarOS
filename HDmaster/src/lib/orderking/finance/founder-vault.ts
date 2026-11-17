@@ -132,8 +132,8 @@ export function calculateFounderRetainedCashVault(input: FounderVaultInput): Fou
     retainedPlatformFloat - statutoryTaxReserve + retainedGstWorkingCapital + section95FloatYield,
   );
 
-  // 7. Tier-1 Legacy Aggregator vs OrderKing Comparative Savings Metrics
-  const tier1Commission = Math.round((netFoodSales * 2500) / 10000); // 25% Tier-1 take-rate
+  // 7. Standard 25% Benchmark Comparative Savings Metrics
+  const tier1Commission = Math.round((netFoodSales * 2500) / 10000); // 25% benchmark take-rate
   const restaurantSavingsVsTier1 = Math.max(0, tier1Commission - commission);
 
   const marginPct =

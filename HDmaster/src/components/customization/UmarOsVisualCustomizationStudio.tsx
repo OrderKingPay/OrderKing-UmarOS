@@ -1810,7 +1810,7 @@ export function UmarOsVisualCustomizationStudio({
                 <div className="mb-4 flex items-center justify-between w-full text-slate-300 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-mono">Viewport Simulation: {previewDevice.toUpperCase()}</span>
+                    <span className="font-mono">Viewport Preview: {previewDevice.toUpperCase()}</span>
                   </div>
                   <span className="text-[11px] text-slate-400">
                     Visible Sections: {visibleSections.length} of {sortedSections.length}
@@ -2748,12 +2748,12 @@ export function UmarOsVisualCustomizationStudio({
               </div>
             </div>
 
-            {/* REAL-TIME ORDER SETTLEMENT SIMULATION STATEMENT */}
+            {/* REAL-TIME ORDER SETTLEMENT CALCULATOR STATEMENT */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
                   <TrendingUp className="h-4 w-4 text-emerald-600" />
-                  Statutory Order Settlement Simulation (Live ₹500 Food Order Flow)
+                  Statutory Order Settlement Calculator (Live ₹500 Food Order Flow)
                 </h3>
                 <div className="flex items-center gap-2">
                   <Badge tone={marketplaceSimulation.platformNetMargin >= 0 ? "success" : "danger"} className="text-[10px]">

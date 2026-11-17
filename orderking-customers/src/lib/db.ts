@@ -136,12 +136,12 @@ function createNeonSql(): Promise<Sql> {
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
       max: 10,
       idleTimeoutMillis: 30000,
-      connectionTimeoutMillis: 20000,
+      connectionTimeoutMillis: 30000,
+      keepAlive: true,
+      keepAliveInitialDelayMillis: 10000,
     });
     pool.on('error', (err: Error) => {
       console.warn('[Postgres Pool Warning]:', err?.message);
-      globalRef.__pgSqlPromise__ = undefined;
-      sqlPromise = null;
     });
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
@@ -156,7 +156,7 @@ function createNeonSql(): Promise<Sql> {
     return toSql(
       async <T>(text: string, params: unknown[]) => {
         let lastErr;
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 5; attempt++) {
           try {
             const res = await pool.query(text, params);
             return res.rows as T[];
@@ -164,26 +164,9 @@ function createNeonSql(): Promise<Sql> {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
             const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient) {
-              globalRef.__pgSqlPromise__ = undefined;
-              sqlPromise = null;
-              if (attempt < 2) {
-                await new Promise((r) => setTimeout(r, 200 * (attempt + 1)));
-                try {
-                  const pgMod = await import("pg");
-                  const Client = pgMod.default?.Client ?? pgMod.Client;
-                  const fallbackClient = new Client({
-                    connectionString: cleanUrl,
-                    ssl: { rejectUnauthorized: false },
-                    connectionTimeoutMillis: 10000,
-                  });
-                  await fallbackClient.connect();
-                  const freshRes = await fallbackClient.query(text, params);
-                  await fallbackClient.end().catch(() => {});
-                  return freshRes.rows as T[];
-                } catch (_) {}
-                continue;
-              }
+            if (isTransient && attempt < 4) {
+              await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+              continue;
             }
             throw err;
           }
@@ -192,7 +175,7 @@ function createNeonSql(): Promise<Sql> {
       },
       async <T>(fn: (tx: Sql) => Promise<T>) => {
         let lastErr;
-        for (let attempt = 0; attempt < 3; attempt++) {
+        for (let attempt = 0; attempt < 5; attempt++) {
           let client;
           try {
             client = await pool.connect();
@@ -209,34 +192,9 @@ function createNeonSql(): Promise<Sql> {
             }
             const msg = error instanceof Error ? error.message : String(error);
             const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient) {
-              globalRef.__pgSqlPromise__ = undefined;
-              sqlPromise = null;
-              if (attempt < 2) {
-                await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
-                try {
-                  const pgMod = await import("pg");
-                  const Client = pgMod.default?.Client ?? pgMod.Client;
-                  const fallbackClient = new Client({
-                    connectionString: cleanUrl,
-                    ssl: { rejectUnauthorized: false },
-                    connectionTimeoutMillis: 15000,
-                  });
-                  await fallbackClient.connect();
-                  try {
-                    await fallbackClient.query("BEGIN ISOLATION LEVEL READ COMMITTED");
-                    const res = await fn(makeClientSql(fallbackClient));
-                    await fallbackClient.query("COMMIT");
-                    return res;
-                  } catch (txErr) {
-                    try { await fallbackClient.query("ROLLBACK"); } catch (_) {}
-                    throw txErr;
-                  } finally {
-                    await fallbackClient.end().catch(() => {});
-                  }
-                } catch (_) {}
-                continue;
-              }
+            if (isTransient && attempt < 4) {
+              await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+              continue;
             }
             throw error;
           } finally {

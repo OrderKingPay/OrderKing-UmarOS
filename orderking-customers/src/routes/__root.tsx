@@ -155,7 +155,7 @@ export const Route = createRootRoute({
 
               <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-700 pt-1">
                 <ShieldCheck className="size-4 text-emerald-600 stroke-[2.2]" />
-                <span>OrderKing Zero-White-Screen SafeShield</span>
+                <span>OrderKing SafeShield</span>
               </div>
             </div>
           </main>

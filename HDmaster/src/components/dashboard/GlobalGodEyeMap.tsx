@@ -578,7 +578,6 @@ export function GlobalGodEyeMap() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer dev_founder_secret",
         },
         body: JSON.stringify({ cityZones: cities }),
       });

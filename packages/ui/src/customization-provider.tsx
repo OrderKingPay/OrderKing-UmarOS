@@ -446,7 +446,7 @@ export const DEFAULT_CUSTOMIZATION_STATE: DynamicCustomizationState = {
     appName: "Order King Partner",
     shortAppName: "Order King",
     restaurantFacingBrandName: "Order King Partner",
-    tagline: "Your kitchen. Your orders. Your settlement.",
+    tagline: "Restaurant Partner Operations & Real-Time KDS Billing",
     logo: "/brand/logo.svg",
     darkLogo: "/brand/logo-dark.svg",
     lightLogo: "/brand/logo-light.svg",

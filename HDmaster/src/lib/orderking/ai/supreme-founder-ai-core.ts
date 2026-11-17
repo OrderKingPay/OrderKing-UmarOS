@@ -565,7 +565,7 @@ You can download or copy the image link below.`;
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 5, label: "Scanning Market Radar", status: "COMPLETED", detail: "Scanned 14 local food brands in Karimganj & Silchar" },
-      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, Loss: 28% to legacy aggregators)` },
+      { stepNumber: 2, totalSteps: 5, label: "Isolating High-Margin Lead", status: "COMPLETED", detail: `Identified ${lead.businessName} (GMV: ₹18.5L/mo, 28% standard commission baseline)` },
       { stepNumber: 3, totalSteps: 5, label: "Compiling Turnkey Pitch", status: "COMPLETED", detail: "Generated 0% Commission & Price Parity ROI calculation" },
       { stepNumber: 4, totalSteps: 5, label: "Minting Advance Invoice", status: "COMPLETED", detail: `50% Advance Lock: ₹${invoice.advanceRequiredInr.toLocaleString("en-IN")} via King Pay UPI` },
       { stepNumber: 5, totalSteps: 5, label: "Deploying Edge Preview", status: "COMPLETED", detail: "Client sandbox ready at https://royal-darbar.orderking.in" },

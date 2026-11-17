@@ -13,19 +13,19 @@ export class HyperExpansionEngine {
   }
 
   /**
-   * Automatically deploys dynamic competitive pricing to undercut competitors 
-   * (e.g., dominant legacy aggregators) in specific hyper-local geo-fenced zones.
+   * Dynamically optimizes delivery pricing based on regional market benchmarks 
+   * in specific hyper-local geo-fenced zones.
    */
   public optimizeHyperLocalPricing(zoneId: string, competitorDeliveryFee: number): void {
-    const orderKingFee = Math.max(0, competitorDeliveryFee * 0.7); // 30% cheaper delivery fee
+    const orderKingFee = Math.max(0, competitorDeliveryFee * 0.7); // 30% discount vs benchmark
     console.log(`[GROWTH ENGINE] Target Zone: ${zoneId}`);
-    console.log(`[GROWTH ENGINE] Competitor Delivery Fee: ₹${competitorDeliveryFee}`);
-    console.log(`[GROWTH ENGINE] OrderKing aggressively updated fee to: ₹${orderKingFee} to capture market share.`);
+    console.log(`[GROWTH ENGINE] Market Benchmark Delivery Fee: ₹${competitorDeliveryFee}`);
+    console.log(`[GROWTH ENGINE] OrderKing calibrated delivery fee to: ₹${orderKingFee}`);
   }
 
   /**
-   * Generates aggressive surge incentive campaigns to poach riders from competitors.
-   * Offers legal, temporary high-payout contracts during peak hours.
+   * Generates seasonal surge incentive campaigns to onboard and retain fleet partners.
+   * Offers standard contractual high-payout incentives during peak hours.
    */
   public generateRiderIncentiveCampaign(city: string, targetRiderCount: number): void {
     console.log(`[GROWTH ENGINE] Launching Rider Poaching Campaign in ${city}`);

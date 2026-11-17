@@ -450,7 +450,7 @@ export function OrderKingSparkModal({
       const sparkMsg: ChatMessage = {
         id: `spark-dispute-${Date.now()}`,
         sender: "spark",
-        text: "No active customer complaints or packaging disputes pending review. Kitchen operations are running smoothly with 100% verified fulfillment.",
+        text: "No active customer complaints or packaging disputes. Kitchen operations running smoothly.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, sparkMsg]);

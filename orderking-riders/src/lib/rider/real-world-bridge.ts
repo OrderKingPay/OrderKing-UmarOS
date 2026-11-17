@@ -5,7 +5,7 @@
  * 1. Native Two-Wheeler Navigation (`openNativeTwoWheelerNavigation`) with Android intent
  *    (`google.navigation:q=lat,lng&mode=b`), iOS deep links, and Google Maps web fallback.
  * 2. Dual-Mode Cloud Telephony Bridge (`initiateCustomerCall`) with Exotel & Twilio support,
- *    and guaranteed automatic fallback to direct `tel:+91...` + 1-tap WhatsApp deep link.
+ *    and automatic fallback to direct `tel:+91...` + 1-tap WhatsApp deep link.
  */
 
 export interface NavigationOptions {
@@ -183,7 +183,7 @@ export function openNativeTwoWheelerNavigation(
 }
 
 /**
- * Dual-Mode Cloud Telephony Bridge (Exotel + Twilio) with guaranteed automatic fallback
+ * Dual-Mode Cloud Telephony Bridge (Exotel + Twilio) with automatic fallback
  * to direct `tel:+91...` and 1-tap WhatsApp deep link.
  */
 export async function initiateCustomerCall(

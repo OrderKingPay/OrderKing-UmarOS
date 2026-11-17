@@ -118,7 +118,7 @@ export type ProfitEngineSummary = {
   totalOperatingCostsPaise: number;
   founderNetFreeCashFlowPaise: number;
   founderEbitdaMarginPercentage: string;
-  competitorBurnMultiplier: string; // e.g. "85x Higher Free Cash Flow than Tier-1 Legacy Market Leader (which loses on corporate bloat)"
+  competitorBurnMultiplier: string; // Lean overhead efficiency metric
   revenueStreams: RevenueStreamBreakdown[];
   participantBenefits: ParticipantBenefitAudit[];
   statutoryComplianceChecklist: {
@@ -142,7 +142,7 @@ export type ProfitEngineSummary = {
 };
 
 export function calculateMasterProfitEngine(input: ProfitEngineInput): ProfitEngineSummary {
-  // --- STREAM 1: Core Food Delivery Take-Rate (15% flat vs 25% on Tier-1 Legacy Market Leader) ---
+  // --- STREAM 1: Core Food Delivery Take-Rate (15% standard rate) ---
   const coreCommissionPaise = Math.round(
     (input.grossMerchandiseValuePaise * input.platformCommissionBps) / 10000,
   );

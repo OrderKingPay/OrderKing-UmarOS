@@ -79,7 +79,7 @@ interface EmergencyBroadcastResult {
   insuranceCover: string;
 }
 
-const COD_FLOAT_LIMIT_PAISE = 250_000; // ₹2,500 statutory COD hand-float ceiling
+const COD_FLOAT_LIMIT_PAISE = 150_000; // ₹1,500 statutory COD hand-float ceiling
 
 type SupportedLang = "bn" | "as" | "hi" | "en";
 
@@ -374,7 +374,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
             context.userId,
             {
               topic: "CUSTOMER_UNAVAILABLE",
-              message: `[3-CALL SOP COMPLETED] Customer unreachable after ${nextAttempts} call attempts and doorstep wait for Order #${active?.orderCode ?? "N/A"}. 100% Base + Distance pay protected.`,
+              message: `[3-CALL SOP COMPLETED] Customer unreachable after ${nextAttempts} call attempts and doorstep wait for Order #${active?.orderCode ?? "N/A"}. Base + Distance pay protected.`,
               deliveryId: active?.id ?? null,
             },
             idempotencyKey,
@@ -715,21 +715,21 @@ function localHumanMentorAnswer(
         return `নমস্কার ${firstName} দা! রেস্তোরাঁর এই সমস্যাটি আমি টিকিট #${resolutionAction.ticketId?.slice(0, 8)} হিসেবে রেকর্ড করে রেস্তোরাঁ ও অর্ডারকিং অপারেশনস অ্যাডমিনকে জানিয়েছি। সক্রিয় অর্ডার #${active?.orderCode ?? "N/A"}-এর জন্য আপনার পেআউট ও রেটিং সম্পূর্ণ সুরক্ষিত রয়েছে। কোনো পেনাল্টি নেই।`;
       }
       if (lang === "hi") {
-        return `नमस्ते ${firstName} जी! रेस्तरां की इस समस्या को मैंने टिकट #${resolutionAction.ticketId?.slice(0, 8)} के तहत सीधे मर्चेंट ऑपरेशंस और एडमिन को भेज दिया है। ऑर्डर #${active?.orderCode ?? "N/A"} के लिए आपका पेआउट और रेटिंग 100% सुरक्षित है। चिंता न करें।`;
+        return `नमस्ते ${firstName} जी! रेस्तरां की इस समस्या को मैंने टिकट #${resolutionAction.ticketId?.slice(0, 8)} के तहत सीधे मर्चेंट ऑपरेशंस और एडमिन को भेज दिया है। ऑर्डर #${active?.orderCode ?? "N/A"} के लिए आपका पेआउट और रेटिंग सुरक्षित है। चिंता न करें।`;
       }
       if (lang === "as") {
         return `নমস্কাৰ ${firstName} ডাঙৰীয়া! ৰেষ্টুৰেণ্টৰ এই সমস্যাটো টিকট #${resolutionAction.ticketId?.slice(0, 8)} যোগে অপাৰেচনলৈ প্ৰেৰণ কৰা হৈছে। অৰ্ডাৰ #${active?.orderCode ?? "N/A"}-ৰ বাবে আপোনাৰ পেআউট সুৰক্ষিত।`;
       }
-      return `Hello ${firstName}! I have logged this restaurant issue under Ticket #${resolutionAction.ticketId?.slice(0, 8)} and alerted both the restaurant manager and Admin Operations. Your payout and delivery rating for Order #${active?.orderCode ?? "N/A"} are 100% protected.`;
+      return `Hello ${firstName}! I have logged this restaurant issue under Ticket #${resolutionAction.ticketId?.slice(0, 8)} and alerted both the restaurant manager and Admin Operations. Your payout and delivery rating for Order #${active?.orderCode ?? "N/A"} are protected under standard platform policy.`;
     }
 
     if (resolutionAction.type === "CUSTOMER_CALL_LOGGED") {
       const attempts = active?.contactAttempts ?? 1;
       if (lang === "bn") {
-        return `কল প্রচেষ্টা #${attempts}/৩ সফলভাবে সিস্টেমে রেকর্ড করা হয়েছে। অনুগ্রহ করে ২-৩ মিনিট অপেক্ষা করে পুনরায় চেষ্টা করুন। ৩টি কল ও ১০ মিনিট পার হলে ১০০% পেআউট সুরক্ষিত থাকবে।`;
+        return `কল প্রচেষ্টা #${attempts}/৩ সফলভাবে সিস্টেমে রেকর্ড করা হয়েছে। অনুগ্রহ করে ২-৩ মিনিট অপেক্ষা করে পুনরায় চেষ্টা করুন। ৩টি কল ও ১০ মিনিট পার হলে সম্পূর্ণ পেআউট সুরক্ষিত থাকবে।`;
       }
       if (lang === "hi") {
-        return `कॉल प्रयास #${attempts}/3 सफलतापूर्वक सिस्टम में दर्ज कर लिया गया है। कृपया 2-3 मिनट प्रतीक्षा करके पुनः प्रयास करें। 3 कॉल और 10 मिनट के बाद 100% पेआउट सुरक्षित रहता है।`;
+        return `कॉल प्रयास #${attempts}/3 सफलतापूर्वक सिस्टम में दर्ज कर लिया गया है। कृपया 2-3 मिनट प्रतीक्षा करके पुनः प्रयास करें। 3 कॉल और 10 मिनट के बाद पूरा पेआउट सुरक्षित रहता है।`;
       }
       if (lang === "as") {
         return `কল প্ৰচেষ্টা #${attempts}/৩ সফলভাৱে ৰেকৰ্ড কৰা হৈছে। ২-৩ মিনিটৰ পাছত পুনৰ চেষ্টা কৰক। ৩ টা কল সম্পন্ন হ'লে সম্পূৰ্ণ পেআউট সুৰক্ষিত থাকিব।`;
@@ -1021,22 +1021,22 @@ function localHumanMentorAnswer(
     }
     if (lang === "hi") {
       return (
-        `किंग एआई ग्राहक अनुपलब्ध एसओपी (100% सुरक्षित पेआउट):\n` +
+        `किंग एआई ग्राहक अनुपलब्ध एसओपी (सुरक्षित पेआउट एसओपी):\n` +
         `• वर्तमान स्थिति: सक्रिय ऑर्डर #${active ? active.orderCode : "N/A"} के लिए ${attempts}/3 कॉल प्रयास दर्ज किए गए हैं।\n` +
         `• चरण 1: ग्राहक के पते पर पहुंचकर 'Arrived at Customer' पर टैप करें।\n` +
         `• चरण 2: ग्राहक को कॉल करें और 10 मिनट के अंतराल में कम से कम 3 बार 'Record Call Attempt' दर्ज करें।\n` +
-        `• चरण 3: 3 कॉल और 10 मिनट बीत जाने के बाद 'Customer Unavailable' चुनें। किंग एआई आपका 100% बेस और दूरी पेआउट सुरक्षित रखेगा — शून्य जुर्माना और शून्य रेटिंग कटौती!`
+        `• चरण 3: 3 कॉल और 10 मिनट बीत जाने के बाद 'Customer Unavailable' चुनें। किंग एआई आपका बेस और दूरी पेआउट सुरक्षित रखेगा — शून्य जुर्माना और शून्य रेटिंग कटौती!`
       );
     }
     const attemptStatus = active
       ? `For active order #${active.orderCode} (${active.customer.area}), you have logged ${attempts}/3 required call attempts.`
       : "When a customer is unreachable at the doorstep:";
     return (
-      `KING AI CUSTOMER UNREACHABLE SOP (100% Payout Protected):\n` +
+      `KING AI CUSTOMER UNREACHABLE SOP (Payout Protected):\n` +
       `• Current Progress: ${attemptStatus}\n` +
       `• Step 1: Tap 'Arrived at Customer' at the destination GPS pin.\n` +
       `• Step 2: Call the customer and tap 'Record Call Attempt' at least 3 times spaced over 10 minutes.\n` +
-      `• Step 3: Once 3 attempts and the 10-minute doorstep timer elapse, tap 'Customer Unavailable'. King AI protects 100% of your Base + Distance payout with zero rating deduction!`
+      `• Step 3: Once 3 attempts and the 10-minute doorstep timer elapse, tap 'Customer Unavailable'. King AI protects your Base + Distance payout with zero rating deduction!`
     );
   }
 
@@ -1087,7 +1087,7 @@ function localHumanMentorAnswer(
           `• ১-টেপ গুগল মেপছ জিপিএছ: ${mapsUrl}\n` +
           `• গেট প্ৰৱেশ এছঅ'পি: নিৰাপত্তাৰক্ষীক কওক 'অৰ্ডাৰকিং ডেলিভাৰী অৰ্ডাৰ #${active.orderCode}'।\n` +
           `• ৫০০ মিটাৰ জিঅ'ফেন্স শ্বিল্ড: ম'বাইল নেটৱৰ্ক দুৰ্বল হ'লেও ৫০০ মিটাৰৰ ভিতৰত উপস্থিতি চিনাক্ত হয়।\n` +
-          `• গ্ৰাহকৰ ফোন নোপোৱা অৱস্থাত: ১০ মিনিটৰ ভিতৰত ৩ বাৰ কল ৰেকৰ্ড কৰক — পেআউট ১০০% সুৰক্ষিত থাকিব!`
+          `• গ্ৰাহকৰ ফোন নোপোৱা অৱস্থাত: ১০ মিনিটৰ ভিতৰত ৩ বাৰ কল ৰেকৰ্ড কৰক — পেআউট সুৰক্ষিত থাকিব!`
         );
       }
       if (lang === "hi") {
@@ -1098,7 +1098,7 @@ function localHumanMentorAnswer(
           `• 1-टैप लाइव जीपीएस नेविगेशन: ${mapsUrl}\n` +
           `• गेटेड सोसाइटी एसओपी: सिक्योरिटी गार्ड को बताएं 'ऑर्डरकिंग डिलीवरी ऑर्डर #${active.orderCode}'।\n` +
           `• 500 मीटर जियोफेंस शील्ड: मोबाइल नेटवर्क कमजोर होने पर भी 500 मीटर के दायरे में आगमन मान्य होता है।\n` +
-          `• ग्राहक से संपर्क न होने पर: 10 मिनट में 3 कॉल रिकॉर्ड करें — 100% पेआउट सुरक्षित रहेगा!`
+          `• ग्राहक से संपर्क न होने पर: 10 मिनट में 3 कॉल रिकॉर्ड करें — पेआउट सुरक्षित रहेगा!`
         );
       }
       return (
@@ -1108,7 +1108,7 @@ function localHumanMentorAnswer(
         `• 1-Tap Live GPS Navigation: ${mapsUrl}\n` +
         `• Gated Entry & Landmark SOP: If security asks, state 'OrderKing Delivery for #${active.orderCode}'.\n` +
         `• Geofence Proximity Shield: OrderKing dispatch verifies arrival within 500 meters of the pin even if cellular GPS drifts.\n` +
-        `• Customer Unreachable: If gate or resident is unreachable, log 3 call attempts spaced over 10 mins to unlock 100% protected payout.`
+        `• Customer Unreachable: If gate or resident is unreachable, log 3 call attempts spaced over 10 mins to unlock protected payout.`
       );
     }
 
@@ -1265,7 +1265,7 @@ function localHumanMentorAnswer(
         `किंग एआई साप्ताहिक सेटलमेंट व सीओडी ब्रीफिंग:\n` +
         `• हर बुधवार पेआउट: सोमवार से रविवार की शुद्ध कमाई हर बुधवार दोपहर 2:00 बजे तक स्वतः NEFT/IMPS द्वारा ${payoutDest} में ट्रांसफर होती है।\n` +
         `• लेजर स्थिति: ${settlementLine}\n` +
-        `• लाइव सीओडी कैश फ्लोट: आपके पास ${formatPaise(home.pendingCashPaise)} नकद है (₹2,500 की सीमा में से ${formatPaise(codRemainingPaise)} शेष)।\n` +
+        `• लाइव सीओडी कैश फ्लोट: आपके पास ${formatPaise(home.pendingCashPaise)} नकद है (₹1,500 की सीमा में से ${formatPaise(codRemainingPaise)} शेष)।\n` +
         `• सलाह: लगातार नए ऑर्डर पाने के लिए होम स्क्रीन पर यूपीआई द्वारा एकत्र नकद जमा करें।`
       );
     }
@@ -1273,7 +1273,7 @@ function localHumanMentorAnswer(
       `King AI Weekly Settlement & COD Float Briefing:\n` +
       `• Weekly Wednesday Payout: Net earnings from Monday–Sunday transfer automatically every Wednesday by 2:00 PM IST via NEFT/IMPS to ${payoutDest}.\n` +
       `• Ledger Status: ${settlementLine}\n` +
-      `• Live COD Cash Float: You hold ${formatPaise(home.pendingCashPaise)} out of ₹2,500 limit (${formatPaise(codRemainingPaise)} headroom remaining).\n` +
+      `• Live COD Cash Float: You hold ${formatPaise(home.pendingCashPaise)} out of ₹1,500 limit (${formatPaise(codRemainingPaise)} headroom remaining).\n` +
       `• Advice: Deposit collected cash via UPI on the Home screen to keep your COD dispatch uninterrupted.`
     );
   }
@@ -1388,7 +1388,7 @@ function localHumanMentorAnswer(
       `• ड्यूटी व केवाईसी स्थिति: ${home.rider.status} (${home.rider.kycStatus}) | आज की कमाई: ${formatPaise(s.todayEarningsPaise)} (${s.completedToday} डिलीवरी पूरी)\n` +
       `• माइलस्टोन कोच: ${milestone.remaining > 0 ? `केवल ${milestone.remaining} और डिलीवरी पर पाएं +${formatPaise(milestone.bonusPaise)} (${milestone.tierName})` : `${milestone.tierName} अनलॉक!`}\n` +
       `• सक्रिय ऑर्डर: ${active ? `#${active.orderCode} (${active.restaurant.name} to ${active.customer.area})` : "वर्तमान में कोई सक्रिय डिलीवरी नहीं"}\n` +
-      `• सीओडी नकद फ्लोट: हाथ में ${formatPaise(home.pendingCashPaise)} (₹2,500 की सीमा में से ${formatPaise(codRemainingPaise)} शेष)\n` +
+      `• सीओडी नकद फ्लोट: हाथ में ${formatPaise(home.pendingCashPaise)} (₹1,500 की सीमा में से ${formatPaise(codRemainingPaise)} शेष)\n` +
       `पेआउट ब्रेकडाउन, रेस्तरां में 6 मिनट बाद वेट-पे ऑटो-क्रेडिट, लैंडमार्क नेविगेशन, या 112/108 आपातकालीन एसओएस के बारे में कुछ भी पूछें!`
     );
   }
@@ -1397,7 +1397,7 @@ function localHumanMentorAnswer(
     `• Duty & KYC Status: ${home.rider.status} (${home.rider.kycStatus}) | Today's Earnings: ${formatPaise(s.todayEarningsPaise)} (${s.completedToday} trips)\n` +
     `• Milestone Coach: ${milestone.remaining > 0 ? `${milestone.remaining} more trips to unlock +${formatPaise(milestone.bonusPaise)} (${milestone.tierName})` : `${milestone.tierName} unlocked!`}\n` +
     `• Active Order: ${active ? `#${active.orderCode} (${active.restaurant.name} to ${active.customer.area})` : "None right now"}\n` +
-    `• COD Cash Float: ${formatPaise(home.pendingCashPaise)} in hand (${formatPaise(codRemainingPaise)} remaining before ₹2,500 limit)\n` +
+    `• COD Cash Float: ${formatPaise(home.pendingCashPaise)} in hand (${formatPaise(codRemainingPaise)} remaining before ₹1,500 limit)\n` +
     `Ask me anything about your exact payout breakdown, kitchen wait pay auto-credit (>6 mins), landmark navigation, or emergency SOS routing!`
   );
 }

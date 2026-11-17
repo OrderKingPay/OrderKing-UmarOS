@@ -668,7 +668,7 @@ export function ResilientLiveMap({
             </span>
             <span className="text-[11px] font-black uppercase tracking-wider text-orange-400 flex items-center gap-1">
               <span>Live Telemetry</span>
-              <span className="text-[9px] font-normal text-stone-400">(Zero API Keys)</span>
+              <span className="text-[9px] font-normal text-stone-400">(No API Key Required)</span>
             </span>
           </div>
 

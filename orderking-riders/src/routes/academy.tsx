@@ -92,7 +92,7 @@ const ACADEMY_MODULES: ReadonlyArray<AcademyModule> = [
     category: "Finance & Deposits",
     points: [
       "Count and verify currency notes in the customer's presence.",
-      "Floating cash limit is capped at ₹2,500 for safety and zero liability.",
+      "Floating cash limit is capped at ₹1,500 for safety and statutory float compliance.",
       "Deposit collected cash immediately via 1-tap UPI to orderking@ybl.",
     ],
     keyRules: [
@@ -102,9 +102,22 @@ const ACADEMY_MODULES: ReadonlyArray<AcademyModule> = [
   },
 ];
 
+const ACADEMY_STORAGE_KEY = "orderking_rider_academy_progress";
+
 function RiderAcademyPage() {
-  const [completed, setCompleted] = useState<Record<string, boolean>>({
-    "food-hygiene": true,
+  const [completed, setCompleted] = useState<Record<string, boolean>>(() => {
+    try {
+      if (typeof window !== "undefined") {
+        const raw = window.localStorage.getItem(ACADEMY_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === "object") return parsed;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+    return { "food-hygiene": true };
   });
   const [activeModule, setActiveModule] = useState<string>("food-hygiene");
 
@@ -115,6 +128,13 @@ function RiderAcademyPage() {
   function toggleComplete(id: string) {
     setCompleted((prev) => {
       const next = { ...prev, [id]: !prev[id] };
+      try {
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(ACADEMY_STORAGE_KEY, JSON.stringify(next));
+        }
+      } catch {
+        // Fallback
+      }
       if (!prev[id]) {
         toast.success(`Completed "${ACADEMY_MODULES.find((m) => m.id === id)?.title}"!`);
       }
@@ -208,7 +228,7 @@ function RiderAcademyPage() {
               className={`rounded-xl text-xs font-bold ${
                 completed[selected.id]
                   ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
-                  : "bg-[#E23744] hover:bg-orange-400 text-black"
+                  : "bg-[#E23744] hover:bg-[#c92d39] text-white"
               }`}
             >
               {completed[selected.id] ? "Completed" : "Mark as Read"}

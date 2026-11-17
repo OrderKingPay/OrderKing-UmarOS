@@ -4,7 +4,7 @@
  * Principal Financial Architecture for Indian E-Commerce Commerce:
  * - Negotiated restaurant commission agreements (custom rates from 8% to 35% / 800 to 3500 bps).
  * - Volume-based commission tier discounts with strict 8% floor protection.
- * - Dominant Legacy Aggregator-grade weekly settlement cycle (Monday 00:00:00 to Sunday 23:59:59 IST, Wednesday payout).
+ * - Standard statutory weekly settlement cycle (Monday 00:00:00 to Sunday 23:59:59 IST, Wednesday payout).
  * - Statutory Indian tax calculation on merchant statements:
  *   * 5% GST on food orders (collected and remitted by platform under Section 9(5) CGST Act 2017).
  *   * 18% GST on platform commission fee (SAC 9985 / Section 9(1) CGST Act 2017).
@@ -218,7 +218,7 @@ function formatCalendarDate(date: Date): string {
 }
 
 /**
- * Dominant Legacy Aggregator-Grade Weekly Settlement Cycle Period
+ * Standard Weekly Settlement Cycle Period
  * Cycle: Monday 00:00:00 to Sunday 23:59:59 IST
  * Payout: Wednesday (exactly 3 days following Sunday closing)
  */
@@ -354,7 +354,7 @@ export interface StatutoryTaxSchedule {
 }
 
 /**
- * Full Dominant Legacy Aggregator-Grade Merchant Weekly Settlement Statement
+ * Full Merchant Weekly Settlement Statement
  */
 export interface MerchantWeeklySettlementStatement {
   statementId: string;

@@ -509,7 +509,7 @@ function PlatformFeeDialSection({
           <div className="rounded-lg bg-surface-2/40 p-2.5 text-[11px] text-slate-400 flex items-start gap-2">
             <Info className="size-4 text-cyan-400 shrink-0 mt-0.5" />
             <p>
-              Unlike legacy market leaders charging ₹9 - ₹12 with hidden commissions, OrderKing transparently reflects this fee directly into customer invoices with 100% Section 9(5) CGST tax adherence.
+              OrderKing transparently reflects platform fees directly into customer invoices with 100% Section 9(5) CGST tax adherence.
             </p>
           </div>
         </div>
@@ -749,7 +749,7 @@ function CommissionOverridesSection() {
                     <span>0% (Free)</span>
                     <span>8% (Floor)</span>
                     <span>15% (Std)</span>
-                    <span>22% (Legacy)</span>
+                    <span>22% (High)</span>
                     <span>35% (Max)</span>
                   </div>
                 </div>
@@ -1366,7 +1366,7 @@ function WednesdayPayoutReleaseSection() {
             <Scale className="size-4 text-orange-400" />
             Statutory Reconciliation Breakdown (Section 9(5) CGST, 1% TCS, 1% TDS)
           </span>
-          <span className="text-[11px] font-mono text-muted">100% SafeInteger Integer Paise</span>
+          <span className="text-[11px] font-mono text-muted">Integer Paise Precision</span>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 font-mono text-xs">

@@ -518,7 +518,7 @@ export function getAvailableSmsProviders(): TelecomProvider[] {
 /**
  * Master Telecom OTP Dispatcher.
  * Dispatches live SMS across configured gateways with automatic failover,
- * guaranteed fallback for development/testing, and WhatsApp deep links.
+ * automatic fallback for development/testing, and WhatsApp deep links.
  */
 export async function dispatchOtpSms(
   params: DispatchOtpParams,
