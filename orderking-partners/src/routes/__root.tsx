@@ -52,10 +52,21 @@ const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     const pathname = location.pathname;
-    const isPublic = pathname === "/login" || pathname === "/privacy" || pathname === "/terms" || pathname.startsWith("/api");
+    const isPublic =
+      pathname === "/login" ||
+      pathname === "/privacy" ||
+      pathname === "/terms" ||
+      pathname.startsWith("/api");
+
     if (isPublic) {
-      return { sessionUser: null };
+      try {
+        const sessionUser = await fetchSessionUser();
+        return { sessionUser: sessionUser || null };
+      } catch {
+        return { sessionUser: null };
+      }
     }
+
     try {
       const sessionUser = await fetchSessionUser();
       if (!sessionUser) {
