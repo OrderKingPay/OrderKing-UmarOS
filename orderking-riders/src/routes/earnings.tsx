@@ -246,7 +246,7 @@ function Page() {
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              100% Tips Passed to Partner
+              Direct Customer Tips Pass-Through (₹0 Platform Fee)
             </span>
           </div>
 

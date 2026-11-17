@@ -559,6 +559,7 @@ export class RiderEngine {
     userId: string,
     status: AvailabilityStatus,
     confirmed: boolean,
+    reason?: string,
   ): Promise<RiderProfile> {
     if (!confirmed) throw new RiderError("CONFIRM_REQUIRED", "Confirm this status change", 400);
     const rider = await this.requireRider(userId);
@@ -592,7 +593,7 @@ export class RiderEngine {
       updatedAt: this.now(),
     };
     await this.store.upsertRider(next);
-    await this.audit(userId, "STATUS", "rider", rider.id, status);
+    await this.audit(userId, "STATUS", "rider", rider.id, status === "OFFLINE" && reason ? `${status}:${reason}` : status);
     if (status === "ONLINE") {
       await this.maybeDispatch(rider.id, userId);
     }

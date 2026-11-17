@@ -11,15 +11,15 @@ export const Route = createFileRoute("/api/vcard")({
         const vcard = [
           "BEGIN:VCARD",
           "VERSION:3.0",
-          "N:OrderKing;Food Concierge;;;",
-          `FN:OrderKing Food VIP (${town})`,
+          "N:OrderKing;Customer Support;;;",
+          `FN:OrderKing Customer Support (${town})`,
           "ORG:OrderKing Hyperlocal Foods;",
-          "TITLE:Local Food Delivery & VIP Dining",
+          "TITLE:Hyperlocal Delivery & Customer Support",
           `TEL;TYPE=CELL,VOICE,WA;VALUE=uri:tel:${phone}`,
           "EMAIL;TYPE=WORK:support@orderking.in",
           "URL:https://orderking.in",
-          "NOTE:Official OrderKing Food VIP contact. Save to view daily 12:30 PM secret lunch deals on WhatsApp Status!",
-          "X-WA-BIZ-DESCRIPTION:Official Food & Grocery Concierge for Karimganj & Silchar",
+          "NOTE:Official OrderKing customer support contact for order tracking, kitchen updates, and inquiries.",
+          "X-WA-BIZ-DESCRIPTION:Official OrderKing Customer Support for Karimganj & Barak Valley",
           "END:VCARD",
         ].join("\r\n");
 
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/api/vcard")({
           status: 200,
           headers: {
             "Content-Type": "text/vcard; charset=utf-8",
-            "Content-Disposition": 'attachment; filename="OrderKing_VIP_Contact.vcf"',
+            "Content-Disposition": 'attachment; filename="OrderKing_Support_Contact.vcf"',
             "Cache-Control": "public, max-age=86400",
           },
         });

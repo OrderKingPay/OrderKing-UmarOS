@@ -22,4 +22,20 @@ describe("rbac", () => {
     assert.equal(can("MANAGER", "settings.financial"), false);
     assert.equal(can("OWNER", "settings.financial"), true);
   });
+
+  it("cashier can manage dining and billing but cannot access bank settings", () => {
+    assert.equal(can("CASHIER", "dining.manage"), true);
+    assert.equal(can("CASHIER", "billing.manage"), true);
+    assert.equal(can("CASHIER", "kot.print"), true);
+    assert.equal(can("CASHIER", "settings.financial"), false);
+  });
+
+  it("chef has pure KDS queue access and zero financial access", () => {
+    assert.equal(can("CHEF", "kitchen.view"), true);
+    assert.equal(can("CHEF", "orders.prepare"), true);
+    assert.equal(can("CHEF", "orders.ready"), true);
+    assert.equal(can("CHEF", "kot.print"), true);
+    assert.equal(can("CHEF", "settlements.view"), false);
+    assert.equal(can("CHEF", "settings.financial"), false);
+  });
 });

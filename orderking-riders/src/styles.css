@@ -88,3 +88,25 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* High-Contrast Outdoor Sunlight Mode for Delivery Partners */
+html.sunlight-mode {
+  --color-bg: #ffffff;
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-fg: #000000;
+  --color-foreground: #000000;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #18181b;
+  --color-border: #000000;
+  font-weight: 600;
+  contrast: 125%;
+}
+
+html.sunlight-mode card,
+html.sunlight-mode .bg-card {
+  border-color: #000000 !important;
+  border-width: 2px !important;
+  color: #000000 !important;
+}

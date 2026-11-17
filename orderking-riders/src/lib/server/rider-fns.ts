@@ -158,11 +158,11 @@ export const submitKycFn = createServerFn({ method: "POST" })
 
 export const setStatusFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { status: AvailabilityStatus; confirmed: boolean }) => input)
+  .validator((input: { status: AvailabilityStatus; confirmed: boolean; reason?: string }) => input)
   .handler(async ({ context, data }) => {
     try {
       const e = await engine();
-      return await e.setStatus(context.userId, data.status, data.confirmed);
+      return await e.setStatus(context.userId, data.status, data.confirmed, data.reason);
     } catch (err) {
       fail(err);
     }

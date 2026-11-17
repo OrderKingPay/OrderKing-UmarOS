@@ -42,6 +42,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Store,
+  Sun,
   Target,
   UserCheck,
   Volume2,
@@ -69,12 +70,21 @@ import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
+import { toggleSunlightMode } from "@/lib/fleet/device-health";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
 
 
 const READINESS_STORAGE_KEY = "ok_rider_readiness_v1";
-const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 250000; // ₹2,500.00 statutory COD float limit
+const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 150000; // ₹1,500.00 statutory COD platform limit
+
+export const MANDATORY_OFFLINE_REASONS = [
+  "End of shift",
+  "Meal break",
+  "Vehicle breakdown",
+  "Bad weather",
+  "Personal emergency",
+] as const;
 
 type ReadinessState = {
   helmetWorn: boolean;
@@ -322,6 +332,14 @@ export function HomeView() {
   const [helmetSelfie, setHelmetSelfie] = useState<string | null>(null);
   const [helmetVerifiedAt, setHelmetVerifiedAt] = useState<string | null>(null);
   const [selfieModalOpen, setSelfieModalOpen] = useState(false);
+  const [offlineModalOpen, setOfflineModalOpen] = useState(false);
+  const [offlineReason, setOfflineReason] = useState<string>("End of shift");
+  const [sunlightActive, setSunlightActive] = useState(() => {
+    if (typeof document !== "undefined") {
+      return document.documentElement.classList.contains("sunlight-mode");
+    }
+    return false;
+  });
   const [driverReadinessConfirmed, setDriverReadinessConfirmed] = useState<boolean>(() => {
     try {
       return window.localStorage.getItem("ok_driver_readiness_v1") === "true";
@@ -575,7 +593,7 @@ export function HomeView() {
     : 0;
   const onlineMs = home.onlineSince ? now - new Date(home.onlineSince).getTime() : 0;
   const kyc = home.rider.kycStatus;
-  const allReady = Boolean(helmetSelfie || driverReadinessConfirmed);
+  const allReady = Boolean(helmetSelfie);
 
   const activeDayBookedSlots = bookedSlotsByDay[activeShiftDateIso] ?? [];
   const nextBookedSlot = OPERATIONAL_SHIFT_SLOTS.find((s) => activeDayBookedSlots.includes(s.id));
@@ -600,21 +618,59 @@ export function HomeView() {
   const isCodNearLimit =
     unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
-  async function go(statusNext: "ONLINE" | "OFFLINE") {
-    if (statusNext === "ONLINE" && !helmetSelfie && !driverReadinessConfirmed) {
-      toast.error("Please complete your safety check before going online.");
-      setSelfieModalOpen(true);
-      return;
+  async function go(statusNext: "ONLINE" | "OFFLINE", reasonArg?: string) {
+    if (statusNext === "ONLINE") {
+      if (!helmetSelfie) {
+        toast.error("Pre-shift camera verification is mandatory. Please capture helmet & bag selfie.");
+        setSelfieModalOpen(true);
+        return;
+      }
+      if (isCodBlocked) {
+        toast.error(
+          `COD Floating Limit Exceeded: Un-deposited cash of ${formatPaise(unreconciledPaise)} exceeds the ₹1,500 platform ceiling. Please deposit cash to go online.`,
+        );
+        return;
+      }
+      // Device battery check (≥15% threshold for active duty)
+      if (typeof navigator !== "undefined" && "getBattery" in navigator) {
+        try {
+          const battery = await (navigator as any).getBattery();
+          if (battery && typeof battery.level === "number") {
+            const batteryPct = Math.round(battery.level * 100);
+            if (batteryPct < 15 && !battery.charging) {
+              toast.error(
+                `Battery level critically low (${batteryPct}%). Minimum 15% battery required to switch online.`,
+              );
+              return;
+            }
+            if (batteryPct < 20 && !battery.charging) {
+              toast.warning(`Low battery warning (${batteryPct}%). Please connect mobile charger.`);
+            }
+          }
+        } catch {}
+      }
     }
     setPending(true);
     try {
-      await withRetry(() => setStatusFn({ data: { status: statusNext, confirmed: true } }));
+      await withRetry(() =>
+        setStatusFn({
+          data: {
+            status: statusNext,
+            confirmed: true,
+            reason: reasonArg,
+          },
+        }),
+      );
       await load();
+      if (statusNext === "OFFLINE" && reasonArg) {
+        toast.info(`Offline reason logged: ${reasonArg}`);
+      }
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
     } finally {
       setPending(false);
       setConfirm(null);
+      setOfflineModalOpen(false);
     }
   }
 
@@ -745,6 +801,23 @@ export function HomeView() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const nextState = toggleSunlightMode();
+                setSunlightActive(nextState);
+                toast.info(nextState ? "Sunlight Mode active (High-contrast outdoor visibility)" : "Standard visual theme restored");
+              }}
+              className={`flex size-8 items-center justify-center rounded-lg border transition ${
+                sunlightActive
+                  ? "border-amber-400 bg-amber-400/20 text-amber-500 font-bold"
+                  : "border-border bg-muted/40 text-muted-foreground hover:text-foreground"
+              }`}
+              title={sunlightActive ? "High-Contrast Sunlight Mode (Active)" : "Enable Sunlight High-Contrast Mode"}
+              aria-label="Toggle Sunlight Mode"
+            >
+              <Sun className="size-4" />
+            </button>
             <StatusPill status={status} online={t("online")} offline={t("offline")} busy={t("busy")} />
             {status === "BUSY" && (
               <Badge tone="busy">{home.active?.state.replaceAll("_", " ") || "On Trip"}</Badge>
@@ -777,7 +850,7 @@ export function HomeView() {
           );
         })()}
 
-        {/* Safety Check */}
+        {/* Mandatory Pre-Shift Safety & Camera Check */}
         <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
           <div className="flex items-center justify-between">
             <span className="flex items-center gap-1.5 text-xs font-bold text-foreground">
@@ -786,7 +859,7 @@ export function HomeView() {
               ) : (
                 <Camera className="size-4 text-primary" />
               )}
-              Safety Check
+              Mandatory Pre-Shift Verification
             </span>
             <span className="text-[11px] font-semibold">
               {allReady ? (
@@ -858,7 +931,7 @@ export function HomeView() {
                 loading={pending}
                 onComplete={() => {
                   if (!allReady) {
-                    toast.info("Safety Check: Please verify your helmet to go online.");
+                    toast.error("Mandatory Safety Check: Please verify front-camera helmet & bag selfie to go online.");
                     setSelfieModalOpen(true);
                     return;
                   }
@@ -884,7 +957,7 @@ export function HomeView() {
                 variant="offline"
                 disabled={pending || Boolean(home.active)}
                 loading={pending}
-                onComplete={() => setConfirm("offline")}
+                onComplete={() => setOfflineModalOpen(true)}
               />
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
                 <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
@@ -1073,16 +1146,74 @@ export function HomeView() {
         onConfirm={() => void go("ONLINE")}
         onCancel={() => setConfirm(null)}
       />
-      <ConfirmDialog
-        open={confirm === "offline"}
-        title={t("confirmOffline")}
-        body={t("confirmOfflineBody")}
-        confirmLabel={t("goOffline")}
-        cancelLabel={t("stayOnline")}
-        danger
-        onConfirm={() => void go("OFFLINE")}
-        onCancel={() => setConfirm(null)}
-      />
+      {/* Mandatory Operational Reason Flow for Going Offline */}
+      {offlineModalOpen ? (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center backdrop-blur-xs animate-in fade-in duration-150">
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-md rounded-2xl bg-card p-5 shadow-2xl border border-border space-y-4"
+          >
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div>
+                <h3 className="font-display text-base font-bold text-foreground">
+                  Going Offline · Reason Mandatory
+                </h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Select your operational reason to update dispatch status
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOfflineModalOpen(false)}
+                className="rounded-lg p-1 text-muted-foreground hover:bg-muted"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {MANDATORY_OFFLINE_REASONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setOfflineReason(r)}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition ${
+                    offlineReason === r
+                      ? "border-primary bg-primary/10 text-primary font-bold shadow-xs"
+                      : "border-border bg-card text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <span>{r}</span>
+                  {offlineReason === r ? (
+                    <CheckCircle2 className="size-4 text-primary" />
+                  ) : (
+                    <div className="size-4 rounded-full border border-border" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-2 pt-2 border-t border-border">
+              <Button
+                variant="destructive"
+                className="flex-1 py-3 text-xs font-bold"
+                disabled={pending || !offlineReason}
+                onClick={() => void go("OFFLINE", offlineReason)}
+              >
+                Confirm Offline ({offlineReason})
+              </Button>
+              <Button
+                variant="outline"
+                className="py-3 text-xs"
+                onClick={() => setOfflineModalOpen(false)}
+              >
+                Stay Online
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {confirm === "decline" && home.offer ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-fg/40 p-4 sm:items-center">
           <div className="w-full max-w-md rounded-xl bg-card p-5">

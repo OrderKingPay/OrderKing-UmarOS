@@ -1,5 +1,5 @@
 import dns from "node:dns";
-try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("verbatim"); } catch (_) {}
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
 
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
@@ -17,7 +17,7 @@ export function getDatabaseUrl() {
     }
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify";
   }
   return url;
 }
@@ -117,7 +117,7 @@ function createNeonSql(): Promise<Sql> {
     types.setTypeParser(OID_INT8, Number);
     types.setTypeParser(OID_DATE, identity);
     types.setTypeParser(OID_INTERVAL, identity);
-    const url: string = getDatabaseUrl() || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
+    const url: string = getDatabaseUrl() || "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify";
     const isRemote = url.includes("neon.tech") || url.includes("sslmode=") || url.includes("supabase.co") || !url.includes("localhost");
     const host = url.includes("@") ? url.split("@")[1].split(/[:\/?]/)[0] : undefined;
     const pool = new Pool({

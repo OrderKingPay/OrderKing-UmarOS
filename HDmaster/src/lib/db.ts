@@ -1,5 +1,5 @@
 import dns from "node:dns";
-try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("verbatim"); } catch (_) {}
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
 
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 
@@ -17,7 +17,7 @@ export function getDatabaseUrl(): string {
     }
   }
   if (!url || !url.startsWith("postgres") || url.includes('your_supabase_pooler')) {
-    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify&pgbouncer=true&connection_limit=10";
+    url = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify";
   }
   return url;
 }

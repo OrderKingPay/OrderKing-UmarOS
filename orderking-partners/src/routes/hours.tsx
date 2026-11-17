@@ -9,6 +9,7 @@ import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { getOperatingSnapshot, saveHours, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { hmToMinutes, minutesToHm } from "@/lib/hours";
+import { MerchantPerformanceScorecard } from "@/components/dashboard/merchant-performance-scorecard";
 import {
   CalendarOff,
   CheckCircle2,
@@ -456,6 +457,9 @@ function HoursPage() {
             </div>
           </div>
         </Card>
+
+        {/* Merchant Operational Scorecard & SLA Health */}
+        <MerchantPerformanceScorecard data={{ avgPrepMinutes: Number(prep) || 20 }} />
 
         {/* Day-by-Day Shift Matrix */}
         <Card className="border-gray-200 bg-white shadow-xs p-5 space-y-3 rounded-3xl">

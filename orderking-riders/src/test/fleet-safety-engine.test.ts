@@ -22,11 +22,11 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
   // 1. LOW BATTERY MODE & ADAPTIVE GPS PING INTERVAL (<20%)
   // ─────────────────────────────────────────────────────────────
   describe("1. Low Battery Mode & Adaptive GPS Cadence", () => {
-    it("maintains 3s high-accuracy GPS cadence and full animations when battery >= 20%", () => {
+    it("maintains 2s high-accuracy GPS cadence and full animations when battery >= 20%", () => {
       const normalProfile = computePowerProfile({ level: 0.85, charging: false });
       expect(normalProfile.isLowBattery).toBe(false);
       expect(normalProfile.gpsIntervalMs).toBe(STANDARD_GPS_INTERVAL_MS);
-      expect(normalProfile.gpsIntervalMs).toBe(3000);
+      expect(normalProfile.gpsIntervalMs).toBe(2000);
       expect(normalProfile.disableNonEssentialAnimations).toBe(false);
       expect(normalProfile.powerSaveMode).toBe(false);
       expect(normalProfile.batteryLevelPercent).toBe(85);
@@ -34,11 +34,11 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
       // Boundary condition: exactly 20% (0.20)
       const boundaryProfile = computePowerProfile({ level: 0.20, charging: false });
       expect(boundaryProfile.isLowBattery).toBe(false);
-      expect(boundaryProfile.gpsIntervalMs).toBe(3000);
+      expect(boundaryProfile.gpsIntervalMs).toBe(2000);
       expect(boundaryProfile.disableNonEssentialAnimations).toBe(false);
     });
 
-    it("automatically drops GPS ping frequency from 3s to 10s when battery < 20%", () => {
+    it("automatically drops GPS ping frequency from 2s to 10s when battery < 20%", () => {
       // 19% battery
       const lowProfile19 = computePowerProfile({ level: 0.19, charging: false });
       expect(lowProfile19.isLowBattery).toBe(true);
@@ -55,12 +55,12 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
       expect(criticalProfile.disableNonEssentialAnimations).toBe(true);
     });
 
-    it("restores standard 3s GPS cadence when device is plugged into charger even below 20%", () => {
+    it("restores standard 2s GPS cadence when device is plugged into charger even below 20%", () => {
       // 15% battery but plugged into motorcycle / power bank USB charger
       const chargingProfile = computePowerProfile({ level: 0.15, charging: true });
       expect(chargingProfile.isLowBattery).toBe(false);
       expect(chargingProfile.gpsIntervalMs).toBe(STANDARD_GPS_INTERVAL_MS);
-      expect(chargingProfile.gpsIntervalMs).toBe(3000);
+      expect(chargingProfile.gpsIntervalMs).toBe(2000);
       expect(chargingProfile.disableNonEssentialAnimations).toBe(false);
     });
 
@@ -69,7 +69,7 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
 
       // Rider starts shift with 100% battery
       engine.updateBatteryStatus({ level: 1.0, charging: false });
-      expect(engine.getGpsPingIntervalMs()).toBe(3000);
+      expect(engine.getGpsPingIntervalMs()).toBe(2000);
       expect(engine.shouldDisableAnimations()).toBe(false);
 
       // Rider reaches end of shift with 14% battery
@@ -80,7 +80,7 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
 
       // Rider plugs into bike USB charger
       engine.updateBatteryStatus({ level: 0.14, charging: true });
-      expect(engine.getGpsPingIntervalMs()).toBe(3000);
+      expect(engine.getGpsPingIntervalMs()).toBe(2000);
       expect(engine.shouldDisableAnimations()).toBe(false);
     });
   });

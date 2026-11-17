@@ -54,11 +54,49 @@ export function parsePermissionList(raw?: string | null): Permission[] {
 
 export function hasPermission(ctx: AccessContext, perm: Permission): boolean {
   if (ctx.status !== "ACTIVE") return false;
-  if (ctx.actingRoleKey === "SUPER_ADMIN" || ctx.roleKey === "SUPER_ADMIN") {
-    if (ctx.actingRoleKey === "SUPER_ADMIN") return true;
-    if (ctx.roleKey === "SUPER_ADMIN" && perm === "assume_role") return true;
+  const isSuper =
+    ctx.actingRoleKey === "SUPER_ADMIN" ||
+    ctx.roleKey === "SUPER_ADMIN" ||
+    ctx.actingRoleKey === "FOUNDER" ||
+    ctx.roleKey === "FOUNDER";
+  if (isSuper) {
+    if (ctx.actingRoleKey === "SUPER_ADMIN" || ctx.actingRoleKey === "FOUNDER") return true;
+    if ((ctx.roleKey === "SUPER_ADMIN" || ctx.roleKey === "FOUNDER") && perm === "assume_role") return true;
   }
   return ctx.permissions.includes(perm);
+}
+
+/**
+ * Validates role limits for customer goodwill credits & refund approvals:
+ * - SUPPORT_SPECIALIST: capped strictly at ₹100 (10,000 paise). Exceeding requires supervisor escalation.
+ * - FINANCE_CONTROLLER: authorized for refunds exceeding ₹500 (50,000 paise).
+ * - FOUNDER / SUPER_ADMIN: unrestricted.
+ */
+export function assertRefundApprovalAuthority(ctx: AccessContext, amountPaise: number): void {
+  requirePermission(ctx, "issue_refunds");
+
+  const isRoot =
+    ctx.actingRoleKey === "SUPER_ADMIN" ||
+    ctx.roleKey === "SUPER_ADMIN" ||
+    ctx.actingRoleKey === "FOUNDER" ||
+    ctx.roleKey === "FOUNDER";
+
+  if (isRoot) return;
+
+  const isFinance = ctx.actingRoleKey === "FINANCE_CONTROLLER" || ctx.roleKey === "FINANCE_CONTROLLER";
+  const isSupport = ctx.actingRoleKey === "SUPPORT_SPECIALIST" || ctx.roleKey === "SUPPORT_SPECIALIST";
+
+  if (isSupport && amountPaise > 10000) {
+    throw new ForbiddenError(
+      `Support Specialist goodwill refund ceiling is ₹100.00 (${amountPaise / 100} INR requested). Automated supervisor escalation required.`
+    );
+  }
+
+  if (amountPaise > 50000 && !isFinance) {
+    throw new ForbiddenError(
+      `Refunds exceeding ₹500.00 require Finance Controller or Root Founder authorization.`
+    );
+  }
 }
 
 export function canAccessResource(

@@ -640,7 +640,7 @@ export function RiderOnboardingPage() {
               </div>
 
               <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
-                <span className="text-slate-300">Delivery Bag Ready</span>
+                <span className="text-slate-300">OrderKing T-Bag (Hot/Cold Divider) &amp; Uniform</span>
                 <span className="text-emerald-400 font-bold">Verified</span>
               </div>
 

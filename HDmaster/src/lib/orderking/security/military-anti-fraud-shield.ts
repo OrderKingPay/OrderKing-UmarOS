@@ -50,6 +50,7 @@ export interface RiderGpsTelemetry {
   lastTimestamp?: number;
   timestamp: number;
   isSimulatedGps?: boolean;
+  isFromMockProvider?: boolean;
 }
 
 export interface SecurityShieldAuditReport {
@@ -413,15 +414,15 @@ export class MilitaryAntiFraudShield {
   // ==========================================================================
 
   public validateRiderTelemetry(data: RiderGpsTelemetry): ValidationResult {
-    // 1. Simulated GPS / Emulator Check
-    if (data.isSimulatedGps) {
+    // 1. Simulated GPS / Emulator Check / Mock Provider
+    if (data.isSimulatedGps || data.isFromMockProvider) {
       this.gpsSpoofingIntercepted++;
       this.totalExploitsBlocked++;
-      this.quarantineEntity(data.riderId, "Simulated location emulator detected", 24 * 60 * 60 * 1000);
+      this.quarantineEntity(data.riderId, "Simulated location emulator or mock provider detected", 24 * 60 * 60 * 1000);
       return {
         valid: false,
         code: "MOCK_GPS_DETECTED",
-        reason: "Rider device reported simulated location provider. Discarded."
+        reason: "Rider device reported simulated location provider (isFromMockProvider/isSimulatedGps). Discarded and quarantined."
       };
     }
 
@@ -441,7 +442,7 @@ export class MilitaryAntiFraudShield {
       };
     }
 
-    // 3. Teleportation / Impossible Speed Check
+    // 3. Teleportation / Impossible Speed Check (> 120 km/h)
     if (
       typeof data.lastLat === "number" &&
       typeof data.lastLng === "number" &&
@@ -453,21 +454,163 @@ export class MilitaryAntiFraudShield {
         const distanceKm = this.calculateHaversine(data.lastLat, data.lastLng, data.lat, data.lng);
         const speedKmh = distanceKm / timeDeltaHours;
 
-        // In urban Indian traffic, sustained speed > 100 km/h is physically impossible for 2-wheelers
-        if (speedKmh > 100) {
+        if (speedKmh > 120) {
           this.gpsSpoofingIntercepted++;
           this.totalExploitsBlocked++;
           this.quarantineEntity(data.riderId, `GPS teleportation: calculated speed ${speedKmh.toFixed(1)} km/h`, 12 * 60 * 60 * 1000);
           return {
             valid: false,
             code: "GPS_TELEPORTATION_DETECTED",
-            reason: `Impossible velocity detected: ${speedKmh.toFixed(1)} km/h. Location rejected.`
+            reason: `Impossible velocity detected: ${speedKmh.toFixed(1)} km/h exceeds 120 km/h threshold. Location rejected and rider suspended.`
           };
         }
       }
     }
 
     return { valid: true, code: "OK", reason: "Rider telemetry verified authentic." };
+  }
+
+  // ==========================================================================
+  // 5B. GEOFENCE ARRIVAL VERIFICATION (WITHIN 100 METERS)
+  // ==========================================================================
+
+  public validateGeofenceArrival(
+    riderLocation: { lat: number; lng: number },
+    targetLocation: { lat: number; lng: number },
+    maxDistanceMeters = 100
+  ): ValidationResult {
+    const distKm = this.calculateHaversine(
+      riderLocation.lat,
+      riderLocation.lng,
+      targetLocation.lat,
+      targetLocation.lng
+    );
+    const distMeters = distKm * 1000;
+
+    if (distMeters > maxDistanceMeters) {
+      this.gpsSpoofingIntercepted++;
+      return {
+        valid: false,
+        code: "GEOFENCE_PROXIMITY_VIOLATION",
+        reason: `Rider is ${Math.round(distMeters)}m from target. Action requires proximity strictly within ${maxDistanceMeters}m.`
+      };
+    }
+
+    return { valid: true, code: "OK", reason: `Geofence arrival verified (${Math.round(distMeters)}m within ${maxDistanceMeters}m limit).` };
+  }
+
+  // ==========================================================================
+  // 5C. PHANTOM ORDER COLLUSION DETECTION
+  // ==========================================================================
+
+  public detectPhantomOrderCollusion(order: {
+    customerId: string;
+    merchantId: string;
+    customerIp?: string;
+    merchantIp?: string;
+    deviceId?: string;
+    merchantDeviceId?: string;
+    paymentInstrumentHash?: string;
+    merchantPayoutInstrumentHash?: string;
+  }): ValidationResult {
+    // 1. Check IP collision
+    if (order.customerIp && order.merchantIp && order.customerIp.trim() === order.merchantIp.trim()) {
+      this.fakeOrdersIntercepted++;
+      this.totalExploitsBlocked++;
+      return {
+        valid: false,
+        code: "COLLUSION_IP_MATCH",
+        reason: "Customer and Merchant share identical IP address. Suspected circular ordering collusion."
+      };
+    }
+
+    // 2. Check Device ID collision
+    if (order.deviceId && order.merchantDeviceId && order.deviceId.trim() === order.merchantDeviceId.trim()) {
+      this.fakeOrdersIntercepted++;
+      this.totalExploitsBlocked++;
+      return {
+        valid: false,
+        code: "COLLUSION_DEVICE_MATCH",
+        reason: "Customer and Merchant share identical hardware device identifier."
+      };
+    }
+
+    // 3. Check Payment Instrument vs Payout Instrument match
+    if (
+      order.paymentInstrumentHash &&
+      order.merchantPayoutInstrumentHash &&
+      order.paymentInstrumentHash.trim() === order.merchantPayoutInstrumentHash.trim()
+    ) {
+      this.fakeOrdersIntercepted++;
+      this.totalExploitsBlocked++;
+      return {
+        valid: false,
+        code: "COLLUSION_PAYMENT_LOOP",
+        reason: "Payment source matches merchant payout destination instrument."
+      };
+    }
+
+    return { valid: true, code: "OK", reason: "Zero collusion signatures detected." };
+  }
+
+  // ==========================================================================
+  // 5D. PROMO CODE VELOCITY LIMITS (ANTI-COUPON EXPLOITATION)
+  // ==========================================================================
+
+  private readonly promoVelocityStore: Map<string, { count: number; windowStart: number }> = new Map();
+
+  public validatePromoVelocity(deviceId: string, cardFingerprint?: string, promoCode?: string): ValidationResult {
+    if (!promoCode) return { valid: true, code: "OK", reason: "No promo code applied." };
+
+    const now = Date.now();
+    const windowMs = 24 * 60 * 60 * 1000; // 24 hours
+    const maxPerDevice = 2; // max 2 promo redemptions per device per day
+
+    const deviceKey = `promo_dev:${deviceId.trim()}:${promoCode.trim().toUpperCase()}`;
+    const devRec = this.promoVelocityStore.get(deviceKey);
+    if (devRec && now - devRec.windowStart < windowMs && devRec.count >= maxPerDevice) {
+      return {
+        valid: false,
+        code: "PROMO_DEVICE_LIMIT_EXCEEDED",
+        reason: `Promotion code ${promoCode} limit reached for this physical device within 24 hours.`
+      };
+    }
+
+    if (cardFingerprint) {
+      const cardKey = `promo_card:${cardFingerprint.trim()}:${promoCode.trim().toUpperCase()}`;
+      const cardRec = this.promoVelocityStore.get(cardKey);
+      if (cardRec && now - cardRec.windowStart < windowMs && cardRec.count >= maxPerDevice) {
+        return {
+          valid: false,
+          code: "PROMO_CARD_LIMIT_EXCEEDED",
+          reason: `Promotion code ${promoCode} limit reached for this payment card within 24 hours.`
+        };
+      }
+      this.promoVelocityStore.set(cardKey, { count: (cardRec?.count || 0) + 1, windowStart: cardRec?.windowStart || now });
+    }
+
+    this.promoVelocityStore.set(deviceKey, { count: (devRec?.count || 0) + 1, windowStart: devRec?.windowStart || now });
+    return { valid: true, code: "OK", reason: "Promo redemption velocity verified." };
+  }
+
+  // ==========================================================================
+  // 5E. COD CASH HOARDING LOCK (₹1,500 THRESHOLD OVER 4 HOURS)
+  // ==========================================================================
+
+  public validateRiderCodHoarding(riderId: string, unDepositedCashPaise: number, hoursUnDeposited: number): ValidationResult {
+    const MAX_COD_CASH_PAISE = 150000; // ₹1,500.00
+    const MAX_HOARDING_HOURS = 4.0;
+
+    if (unDepositedCashPaise > MAX_COD_CASH_PAISE && hoursUnDeposited > MAX_HOARDING_HOURS) {
+      this.totalExploitsBlocked++;
+      return {
+        valid: false,
+        code: "COD_CASH_HOARDING_LOCK",
+        reason: `Rider un-deposited COD cash ₹${(unDepositedCashPaise / 100).toFixed(2)} exceeds ₹1,500 threshold for ${hoursUnDeposited.toFixed(1)}h (>4h). Forced offline.`
+      };
+    }
+
+    return { valid: true, code: "OK", reason: "Rider COD float within compliant operational thresholds." };
   }
 
   // ==========================================================================

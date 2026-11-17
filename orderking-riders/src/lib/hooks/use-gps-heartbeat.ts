@@ -5,6 +5,7 @@ import {
   FleetSafetyEngine,
   STANDARD_GPS_INTERVAL_MS,
   LOW_BATTERY_GPS_INTERVAL_MS,
+  validateGpsTelemetry,
 } from "@/lib/fleet/fleet-safety-engine";
 
 type GPSPosition = {
@@ -72,6 +73,30 @@ export function useGpsHeartbeat(
     let cancelled = false;
 
     async function sendPosition(position: GeolocationPosition) {
+      // Validate telemetry against mock location providers and velocity anomalies
+      const isMock = (position as any).isMock || (position.coords as any).isMock || (position.coords as any).isFromMockProvider;
+      const validation = validateGpsTelemetry(
+        {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracyM: position.coords.accuracy,
+          speed: position.coords.speed,
+          heading: position.coords.heading,
+          timestamp: position.timestamp,
+          isMock,
+        },
+        lastRef.current ? {
+          lat: lastRef.current.lat,
+          lng: lastRef.current.lng,
+          timestamp: lastRef.current.ts,
+        } : null,
+      );
+
+      if (!validation.valid || validation.spoofDetected) {
+        console.warn("[GPS Telemetry Rejected]", validation.reason);
+        return;
+      }
+
       const pos: GPSPosition = {
         lat: position.coords.latitude,
         lng: position.coords.longitude,

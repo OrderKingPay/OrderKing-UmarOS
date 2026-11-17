@@ -43,6 +43,7 @@ export function DeliveryActions({
   const [sosOpen, setSosOpen] = useState(false);
   const [handoverTab, setHandoverTab] = useState<"OTP" | "QR">("OTP");
   const [qrVerified, setQrVerified] = useState(false);
+  const [showBharatQr, setShowBharatQr] = useState(false);
   const billFileInputRef = useRef<HTMLInputElement | null>(null);
 
   function getMaskedContactLabel(contactMasked: string | null | undefined): string {
@@ -161,12 +162,70 @@ export function DeliveryActions({
     }
   }
 
+  function stampPodWatermark(
+    dataUrl: string,
+    orderCode: string,
+    dropLocation: { lat: number; lng: number },
+  ): Promise<string> {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") {
+        resolve(dataUrl);
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width || 800;
+          canvas.height = img.height || 600;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(dataUrl);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          // Translucent dark banner at the bottom for high contrast readability
+          const bannerHeight = Math.max(64, Math.floor(canvas.height * 0.12));
+          ctx.fillStyle = "rgba(0, 0, 0, 0.72)";
+          ctx.fillRect(0, canvas.height - bannerHeight, canvas.width, bannerHeight);
+
+          // Real-time Watermark stamp
+          const fontSize = Math.max(12, Math.floor(canvas.width * 0.024));
+          ctx.font = `bold ${fontSize}px ui-monospace, monospace`;
+          ctx.fillStyle = "#ffffff";
+          ctx.textAlign = "left";
+
+          const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+          const line1 = `OrderKing Delivery Partner · Order #${orderCode}`;
+          const line2 = `${now} IST · Lat: ${dropLocation.lat.toFixed(5)}, Lng: ${dropLocation.lng.toFixed(5)}`;
+
+          ctx.fillText(line1, 16, canvas.height - bannerHeight + fontSize + 8);
+          ctx.font = `${Math.floor(fontSize * 0.85)}px ui-monospace, monospace`;
+          ctx.fillStyle = "#38bdf8";
+          ctx.fillText(line2, 16, canvas.height - bannerHeight + fontSize * 2 + 14);
+
+          resolve(canvas.toDataURL("image/jpeg", 0.88));
+        } catch {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
   async function onPhoto(file: File | undefined) {
     if (!file) return;
     setPending(true);
     try {
       const compressed = await compressImage(file, 180_000);
-      setPodPhoto(compressed.dataUrl);
+      const watermarkedDataUrl = await stampPodWatermark(
+        compressed.dataUrl,
+        delivery.orderCode,
+        delivery.dropLocation,
+      );
+      setPodPhoto(watermarkedDataUrl);
 
       // Attempt upload to Supabase Storage if available
       let publicUrl: string | undefined;
@@ -192,14 +251,14 @@ export function DeliveryActions({
           idempotencyKey: newIdempotencyKey(),
           pod: {
             method: "PHOTO",
-            contentType: compressed.contentType,
-            dataUrl: compressed.dataUrl,
-            bytes: compressed.bytes,
+            contentType: "image/jpeg",
+            dataUrl: watermarkedDataUrl,
+            bytes: watermarkedDataUrl.length,
             storageUrl: publicUrl,
           },
         },
       });
-      toast.success("Doorstep photo proof attached!");
+      toast.success("Doorstep photo proof watermarked & attached!");
       onChanged();
     } catch (e) {
       setError(errorMessage(e, t("actionNotConfirmed")));
@@ -622,18 +681,78 @@ export function DeliveryActions({
       {d.state === "ARRIVED_AT_CUSTOMER" || d.state === "SUPPORT_ESCALATION" ? (
         <div className="space-y-3">
           {d.cod && cash && cash.state === "EXPECTED" ? (
-            <div className="rounded-lg border border-orange-500/40 bg-orange-500/10 p-3 space-y-2">
-              <p className="text-xs font-medium text-orange-950 dark:text-orange-200">
-                {t("cashMustMatch")} ({formatPaise(cash.expectedPaise)})
-              </p>
-              <Button
-                size="lg"
-                className="w-full"
-                disabled={pending}
-                onClick={() => void act("COLLECT_CASH")}
-              >
-                {t("cashCollected")} {formatPaise(cash.expectedPaise)}
-              </Button>
+            <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3.5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-orange-600 dark:text-orange-400">
+                    Cash-on-Delivery (COD) Handover
+                  </span>
+                  <p className="font-display text-xl font-black text-orange-950 dark:text-orange-200">
+                    {formatPaise(cash.expectedPaise)}
+                  </p>
+                </div>
+                <Badge tone="cod">Exact Amount</Badge>
+              </div>
+
+              {/* Dynamic BharatQR UPI Option */}
+              <div className="rounded-lg bg-card p-3 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
+                    <QrCode className="size-4 text-primary" />
+                    <span>Dynamic BharatQR UPI (Digital COD)</span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setShowBharatQr((prev) => !prev)}
+                  >
+                    {showBharatQr ? "Hide QR" : "Show BharatQR"}
+                  </Button>
+                </div>
+
+                {showBharatQr && (
+                  <div className="flex flex-col items-center justify-center p-3 bg-white text-black rounded-lg border border-border space-y-2 text-center animate-in fade-in duration-150">
+                    <p className="text-[11px] font-bold text-black">
+                      Scan via GPay / PhonePe / Paytm / BHIM
+                    </p>
+                    <div className="size-40 border-2 border-black p-1 bg-white flex items-center justify-center">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                          `upi://pay?pa=orderking@ybl&pn=OrderKingPay&am=${(cash.expectedPaise / 100).toFixed(2)}&cu=INR&tr=${d.orderCode}`,
+                        )}`}
+                        alt="Dynamic BharatQR UPI"
+                        className="size-full object-contain"
+                      />
+                    </div>
+                    <div className="text-[10px] font-mono text-neutral-600 space-y-0.5">
+                      <p>VPA: orderking@ybl · Amount: ₹{(cash.expectedPaise / 100).toFixed(2)}</p>
+                      <p>Ref: Order #{d.orderCode}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="lg"
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 font-bold text-xs text-white"
+                  disabled={pending}
+                  onClick={() => void act("COLLECT_CASH", { paymentMode: "CASH_IN_HAND" })}
+                >
+                  Cash Collected
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full font-bold text-xs border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
+                  disabled={pending}
+                  onClick={() => void act("COLLECT_CASH", { paymentMode: "UPI_BHARATQR" })}
+                >
+                  UPI Paid
+                </Button>
+              </div>
             </div>
           ) : null}
 

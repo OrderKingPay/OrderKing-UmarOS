@@ -256,9 +256,11 @@ export const auth = betterAuth({
   // (incl. the client's `/get-session`) skip the DB — this shrinks the "loading"
   // window and reduces auth flicker. See the `auth` skill for the full
   // flicker-prevention guidance (gate on `isPending`; SSR the session).
+  // Enterprise Umar OS Security Lockdown:
+  // Absolute session timeout (8 hours maximum) and idle session timeout (30 minutes)
   session: {
-    expiresIn: 60 * 60 * 24 * 90,
-    updateAge: 60 * 60 * 24 * 1,
+    expiresIn: 60 * 60 * 8, // 8 hours absolute timeout
+    updateAge: 60 * 30, // 30 minutes idle timeout
     cookieCache: { enabled: true, maxAge: 300 },
   },
 
@@ -274,11 +276,11 @@ export const auth = betterAuth({
   // `http://localhost`, so local dev still works.)
   advanced: {
     useSecureCookies: false,
-    defaultCookieAttributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
+    defaultCookieAttributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 8 },
     cookies: {
       session_token: {
         name: SESSION_TOKEN_COOKIE,
-        attributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 90 },
+        attributes: { secure: true, httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 8 },
       },
       session_data: { name: "__Host-grok-auth.session_data" },
       account_data: { name: "__Host-grok-auth.account_data" },

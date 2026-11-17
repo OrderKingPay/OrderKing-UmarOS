@@ -12,18 +12,28 @@
  * No DATABASE_URL (local / preview builds) -> skip; the PGLite fallback applies
  * the same files at startup instead (see src/lib/db.ts).
  */
+import dns from "node:dns";
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
+import { readFileSync, existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import pg from "pg";
 import { pendingMigrations } from "./migration-plan.mjs";
 
-const databaseUrl = process.env.DATABASE_URL;
+let databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
-  console.log(
-    "[migrate] DATABASE_URL not set — skipping (the PGLite fallback migrates itself).",
-  );
-  process.exit(0);
+  const envPath = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
+  if (existsSync(envPath)) {
+    const content = readFileSync(envPath, "utf8");
+    const m = content.match(/DATABASE_URL=["']?([^"'\r\n]+)["']?/);
+    if (m && m[1]) {
+      databaseUrl = m[1].trim();
+    }
+  }
+}
+if (!databaseUrl || !databaseUrl.startsWith("postgres")) {
+  databaseUrl = "postgresql://postgres.wziksbrumklcktrlgedb:UmarHasan%405566@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?sslmode=no-verify";
 }
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "migrations");
@@ -42,7 +52,16 @@ async function main() {
     return;
   }
 
-  const pool = new pg.Pool({ connectionString: databaseUrl, max: 1 });
+  const effectiveUrl = databaseUrl.replace(":6543", ":5432");
+  const host = effectiveUrl.includes("@") ? effectiveUrl.split("@")[1].split(/[:\/?]/)[0] : undefined;
+  const isRemote = effectiveUrl.includes("neon.tech") || effectiveUrl.includes("sslmode=") || effectiveUrl.includes("supabase.co") || effectiveUrl.includes("supabase.com") || !effectiveUrl.includes("localhost");
+  const pool = new pg.Pool({
+    connectionString: effectiveUrl,
+    ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
+    connectionTimeoutMillis: 25000,
+    idleTimeoutMillis: 15000,
+    max: 1,
+  });
   const client = await pool.connect();
   try {
     await client.query(

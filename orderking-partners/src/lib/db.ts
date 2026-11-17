@@ -1,5 +1,5 @@
 import dns from "node:dns";
-try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("verbatim"); } catch (_) {}
+try { if (typeof dns.setDefaultResultOrder === "function") dns.setDefaultResultOrder("ipv4first"); } catch (_) {}
 
 import { pendingMigrations } from "../../scripts/migration-plan.mjs";
 

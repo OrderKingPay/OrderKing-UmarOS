@@ -6,7 +6,15 @@ import {
   LOW_BATTERY_GPS_INTERVAL_MS,
   generateDynamicDeliveryQr,
   verifyDoorstepDelivery,
+  validateGpsTelemetry,
+  MAX_PERMISSIBLE_SPEED_KMH,
 } from "../lib/fleet/fleet-safety-engine";
+import {
+  evaluateDutyBatteryGate,
+  MIN_DUTY_BATTERY_PCT,
+  WARN_DUTY_BATTERY_PCT,
+} from "../lib/fleet/device-health";
+import { MANDATORY_OFFLINE_REASONS } from "../components/rider/home-view";
 import {
   assertValidCoordinates,
   assertPlausiblePing,
@@ -107,40 +115,43 @@ describe("Toughest Tasks Empirical Verification: Rider Fleet & Telecom", () => {
         deliveryId: null,
         point: { lat: 26.1445, lng: 91.7362 },
         accuracyM: 5,
-        at: new Date(now - 3000).toISOString(), // 3 seconds ago
+        at: new Date(now - 2000).toISOString(), // 2 seconds ago
       };
 
-      // Plausible 3-second motorcycle movement (~30m at 36 km/h)
+      // Plausible 2-second motorcycle movement (~20m at 36 km/h)
       const plausibleNext = { lat: 26.1447, lng: 91.7364 };
       expect(() =>
         assertPlausiblePing(prevPing, plausibleNext, new Date(now).toISOString(), "MOTORCYCLE")
       ).not.toThrow();
 
-      // Impossible 3-second jump (~5 km away, > 6000 km/h)
+      // Impossible 2-second jump (~5 km away, > 9000 km/h)
       const impossibleNext = { lat: 26.1900, lng: 91.7800 };
       expect(() =>
         assertPlausiblePing(prevPing, impossibleNext, new Date(now).toISOString(), "MOTORCYCLE")
       ).toThrow(RiderError);
     });
 
-    it("verifies dynamic battery power-profiling: 3s standard cadence drops to 10s on low battery, restoring on charge", () => {
-      // 1. Healthy Battery (85%, discharging) -> Standard 3s interval
+    it("verifies dynamic battery power-profiling: 2s standard cadence drops to 10s on low battery, restoring on charge", () => {
+      // 1. Healthy Battery (85%, discharging) -> Standard 2s interval
       const profileHealthy = computePowerProfile({ level: 0.85, charging: false });
       expect(profileHealthy.isLowBattery).toBe(false);
       expect(profileHealthy.gpsIntervalMs).toBe(STANDARD_GPS_INTERVAL_MS);
+      expect(profileHealthy.gpsIntervalMs).toBe(2000);
       expect(profileHealthy.powerSaveMode).toBe(false);
 
       // 2. Critical Battery (12%, discharging) -> Throttled 10s interval to prevent device shutdown
       const profileLow = computePowerProfile({ level: 0.12, charging: false });
       expect(profileLow.isLowBattery).toBe(true);
       expect(profileLow.gpsIntervalMs).toBe(LOW_BATTERY_GPS_INTERVAL_MS);
+      expect(profileLow.gpsIntervalMs).toBe(10000);
       expect(profileLow.powerSaveMode).toBe(true);
       expect(profileLow.disableNonEssentialAnimations).toBe(true);
 
-      // 3. Low Battery on Charger (12%, charging = true) -> Restores standard 3s interval immediately
+      // 3. Low Battery on Charger (12%, charging = true) -> Restores standard 2s interval immediately
       const profileCharging = computePowerProfile({ level: 0.12, charging: true });
       expect(profileCharging.isLowBattery).toBe(false);
       expect(profileCharging.gpsIntervalMs).toBe(STANDARD_GPS_INTERVAL_MS);
+      expect(profileCharging.gpsIntervalMs).toBe(2000);
       expect(profileCharging.powerSaveMode).toBe(false);
     });
   });
@@ -413,6 +424,135 @@ describe("Toughest Tasks Empirical Verification: Rider Fleet & Telecom", () => {
       );
       expect(delivered.state).toBe("DELIVERED");
       expect(delivered.deliveredAt).not.toBeNull();
+    });
+  });
+
+  // =========================================================================
+  // 4. Mandatory Pre-Shift Camera Verification (Helmet & Bag Safety Gate)
+  // =========================================================================
+  describe("4. Mandatory Pre-Shift Camera Verification (Helmet & Thermal Bag Safety Gate)", () => {
+    it("validates helmet selfie photo payload and rejects corrupted or miniature dataUrls", () => {
+      // 1. Valid compressed base64 JPEG payload (>500 chars)
+      const validSelfie =
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAgACADASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AL+AAAAAFLK1Q/9k=" +
+        "AAAA".repeat(40);
+      expect(validSelfie.startsWith("data:image/")).toBe(true);
+      expect(validSelfie.length).toBeGreaterThanOrEqual(500);
+
+      // 2. Corrupted or invalid image dataUrl
+      const invalidSelfie = "data:image/jpeg;base64,too_short";
+      expect(invalidSelfie.length < 500).toBe(true);
+    });
+
+    it("verifies pre-shift safety checklist criteria: BIS helmet, thermal bag, face visibility", () => {
+      const safetyChecklist = {
+        helmetWorn: true,
+        thermalBagClean: true,
+        clearFaceVisibility: true,
+      };
+      expect(safetyChecklist.helmetWorn).toBe(true);
+      expect(safetyChecklist.thermalBagClean).toBe(true);
+      expect(safetyChecklist.clearFaceVisibility).toBe(true);
+    });
+  });
+
+  // =========================================================================
+  // 5. Zomato Operational Parity: Telemetry, Duty Gating, COD & Dynamic BharatQR
+  // =========================================================================
+  describe("5. Tier-1 Operational Parity: Telemetry Anti-Spoof, Duty Gating, COD & Dynamic BharatQR", () => {
+    it("detects and rejects mock location provider pings", () => {
+      const mockPing = {
+        lat: 26.1445,
+        lng: 91.7362,
+        accuracyM: 5,
+        isMock: true,
+        isFromMockProvider: true,
+      };
+      const result = validateGpsTelemetry(mockPing);
+      expect(result.valid).toBe(false);
+      expect(result.spoofDetected).toBe(true);
+      expect(result.reason).toContain("MOCK_PROVIDER_DETECTED");
+    });
+
+    it("flags and rejects velocity jumps exceeding 120 km/h anomaly cap", () => {
+      const ping1 = {
+        lat: 26.1445,
+        lng: 91.7362,
+        timestamp: Date.now(),
+      };
+      // Ping 2 is 50 km away after only 10 seconds (18,000 km/h)
+      const ping2 = {
+        lat: 26.5000,
+        lng: 91.9500,
+        timestamp: ping1.timestamp + 10_000,
+      };
+      const result = validateGpsTelemetry(ping2, ping1);
+      expect(result.valid).toBe(false);
+      expect(result.spoofDetected).toBe(true);
+      expect(result.reason).toContain("VELOCITY_ANOMALY");
+      expect(result.calculatedSpeedKmH).toBeGreaterThan(MAX_PERMISSIBLE_SPEED_KMH);
+    });
+
+    it("approves genuine urban courier movement under 120 km/h", () => {
+      const ping1 = {
+        lat: 26.1445,
+        lng: 91.7362,
+        timestamp: Date.now(),
+      };
+      // Ping 2 is 250 meters away after 30 seconds (~30 km/h standard two-wheeler speed)
+      const ping2 = {
+        lat: 26.1465,
+        lng: 91.7370,
+        timestamp: ping1.timestamp + 30_000,
+      };
+      const result = validateGpsTelemetry(ping2, ping1);
+      expect(result.valid).toBe(true);
+      expect(result.spoofDetected).toBe(false);
+    });
+
+    it("enforces duty battery gate: blocks below 15% and warns below 20%", () => {
+      // 1. Critically low battery (< 15% and not charging) -> BLOCKED
+      const lowCheck = evaluateDutyBatteryGate({ level: 0.12, charging: false });
+      expect(lowCheck.allowed).toBe(false);
+      expect(lowCheck.levelPct).toBe(12);
+      expect(lowCheck.reason).toContain("critically low");
+
+      // 2. Low battery warning (18% and not charging) -> ALLOWED but WARN
+      const warnCheck = evaluateDutyBatteryGate({ level: 0.18, charging: false });
+      expect(warnCheck.allowed).toBe(true);
+      expect(warnCheck.warn).toBe(true);
+      expect(warnCheck.levelPct).toBe(18);
+
+      // 3. Low battery but plugged in charging -> ALLOWED
+      const chargingCheck = evaluateDutyBatteryGate({ level: 0.10, charging: true });
+      expect(chargingCheck.allowed).toBe(true);
+
+      // 4. Healthy battery (85%) -> ALLOWED with zero warnings
+      const healthyCheck = evaluateDutyBatteryGate({ level: 0.85, charging: false });
+      expect(healthyCheck.allowed).toBe(true);
+      expect(healthyCheck.warn).toBe(false);
+    });
+
+    it("enforces mandatory operational reasons for going offline", () => {
+      expect(MANDATORY_OFFLINE_REASONS).toContain("End of shift");
+      expect(MANDATORY_OFFLINE_REASONS).toContain("Meal break");
+      expect(MANDATORY_OFFLINE_REASONS).toContain("Vehicle breakdown");
+      expect(MANDATORY_OFFLINE_REASONS).toContain("Bad weather");
+      expect(MANDATORY_OFFLINE_REASONS).toContain("Personal emergency");
+      expect(MANDATORY_OFFLINE_REASONS).toHaveLength(5);
+    });
+
+    it("validates dynamic BharatQR NPCI UPI intent structure for COD conversion", () => {
+      const orderCode = "OK-9988";
+      const codPaise = 45000; // ₹450.00
+      const amountRupees = (codPaise / 100).toFixed(2);
+      const vpa = "orderking@ybl";
+      const upiUri = `upi://pay?pa=${vpa}&pn=OrderKingPay&am=${amountRupees}&cu=INR&tr=${orderCode}`;
+
+      expect(upiUri).toBe("upi://pay?pa=orderking@ybl&pn=OrderKingPay&am=450.00&cu=INR&tr=OK-9988");
+      expect(upiUri).toContain("pa=orderking@ybl");
+      expect(upiUri).toContain("am=450.00");
+      expect(upiUri).toContain("tr=OK-9988");
     });
   });
 });

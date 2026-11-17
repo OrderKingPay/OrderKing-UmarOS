@@ -63,8 +63,8 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
         body: "Every delivery offer displays the confirmed expected payout before acceptance. Payouts enforce a statutory base floor of ₹35.00 (3,500 paise) for the first 2 km, plus ₹12.00/km distance compensation beyond 2 km, and ₹1.00/minute restaurant wait-time compensation after 6 minutes past arrival.",
       },
       {
-        heading: "3. 100% Customer Tip Retention & Zero Arbitrary Penalties",
-        body: "100% of customer tips are credited directly to your partner ledger without platform commission. No unilateral or arbitrary monetary penalties are levied; any cash or order discrepancy is subject to documented audit and partner grievance review.",
+        heading: "3. Direct Customer Tip Pass-Through & Documented Dispute Review",
+        body: "Customer tips are credited in full directly to your partner ledger without platform commission. No unilateral or arbitrary monetary penalties are levied; any cash or order discrepancy is subject to documented audit and partner grievance review.",
       },
     ],
   },

@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
+import { MerchantPerformanceScorecard } from "@/components/dashboard/merchant-performance-scorecard";
 import {
   AlertTriangle,
   ArrowUpRight,
@@ -462,6 +463,18 @@ function DashboardPage() {
               }
               : undefined
           }
+        />
+
+        {/* Merchant Operational Scorecard & SLA Health (Zomato Partner Parity) */}
+        <MerchantPerformanceScorecard
+          data={{
+            totalOrders: d?.today.orders ?? 0,
+            acceptedOrders: d?.today.accepted ?? 0,
+            cancelledOrders: d?.today.cancelled ?? 0,
+            avgPrepMinutes: Number((d?.restaurant as any)?.prep_minutes ?? 14),
+            rating: d?.today.rating ? Number(d.today.rating) : 4.8,
+            ratingCount: d?.today.ratingCount ?? 0,
+          }}
         />
 
         {/* Real Today's Performance KPI Grid */}

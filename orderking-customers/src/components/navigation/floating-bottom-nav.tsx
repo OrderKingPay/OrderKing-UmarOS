@@ -338,7 +338,7 @@ export function CustomerFloatingBottomNav({ className, onOpenAi }: FloatingBotto
                 )}
               >
                 <Utensils
-                  className="size-5 sm:size-5.5 text-amber-400 fill-amber-400/20 shrink-0 drop-shadow-xs"
+                  className="size-5.5 sm:size-6 text-amber-400 fill-amber-400/20 shrink-0 drop-shadow-xs"
                   aria-hidden="true"
                 />
                 <span className="text-amber-200 font-black text-xs sm:text-sm tracking-tight truncate leading-tight">

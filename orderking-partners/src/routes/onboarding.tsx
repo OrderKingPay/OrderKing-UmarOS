@@ -1040,10 +1040,10 @@ function OnboardingPage() {
                 </div>
                 <ul className="space-y-1.5 text-[11px] text-gray-600 list-disc pl-4">
                   <li>
-                    <strong className="text-gray-900">0% Merchant Dine-In Commission:</strong> No commission charged on direct dine-in orders or advance table holds.
+                    <strong className="text-gray-900">Dine-In Commission Tier:</strong> 0% platform commission on direct dine-in table QR orders and advance table reservations.
                   </li>
                   <li>
-                    <strong className="text-gray-900">Delivery Logistics:</strong> Transparent 12% logistics &amp; payment gateway processing on completed delivery orders.
+                    <strong className="text-gray-900">Delivery Orders:</strong> Agreed platform commission schedule (18.0% to 28.0% + 18% GST) and 1.84% payment gateway processing on completed delivery orders.
                   </li>
                   <li>
                     <strong className="text-gray-900">Daily Payouts:</strong> Automated T+1 settlement cycles transferred directly to your verified bank account via IMPS/NEFT.

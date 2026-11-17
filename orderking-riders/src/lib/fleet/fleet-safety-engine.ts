@@ -7,10 +7,102 @@ import { sha256Hex, safeTimingSafeEqual } from "@/lib/rider/crypto-util";
 import { haversineKm } from "@/lib/rider/eta";
 import type { GeoPoint } from "@/lib/rider/types";
 
-export const STANDARD_GPS_INTERVAL_MS = 3_000; // 3 seconds standard
+export const STANDARD_GPS_INTERVAL_MS = 2_000; // 2 seconds high-accuracy streaming
 export const LOW_BATTERY_GPS_INTERVAL_MS = 10_000; // 10 seconds power saver (<20% battery)
 export const LOW_BATTERY_THRESHOLD = 0.20; // 20%
 export const MAX_QR_CODE_AGE_MS = 5 * 60 * 1000; // 5 minutes validity
+export const MAX_PERMISSIBLE_SPEED_KMH = 120; // 120 km/h velocity anomaly cap
+
+export interface GpsTelemetryPing {
+  lat: number;
+  lng: number;
+  accuracyM?: number | null;
+  speed?: number | null; // meters per second or km/h
+  heading?: number | null;
+  timestamp?: number;
+  isMock?: boolean;
+  isFromMockProvider?: boolean;
+}
+
+export interface GpsTelemetryValidationResult {
+  valid: boolean;
+  spoofDetected: boolean;
+  reason?: string;
+  calculatedSpeedKmH?: number;
+}
+
+/**
+ * Validates device GPS telemetry pings against mock providers and impossible velocity jumps.
+ * Rejects any ping flagged with `isMock` / `isFromMockProvider` or exceeding 120 km/h displacement.
+ */
+export function validateGpsTelemetry(
+  ping: GpsTelemetryPing,
+  previousPing?: GpsTelemetryPing | null,
+): GpsTelemetryValidationResult {
+  // 1. Mock location provider detection (Android mock provider API / developer option)
+  if (ping.isMock || ping.isFromMockProvider) {
+    return {
+      valid: false,
+      spoofDetected: true,
+      reason: "MOCK_PROVIDER_DETECTED: Mock location provider rejected by Fleet Safety Engine.",
+    };
+  }
+
+  // 2. Geographic boundary validation
+  if (
+    !Number.isFinite(ping.lat) ||
+    !Number.isFinite(ping.lng) ||
+    Math.abs(ping.lat) > 90 ||
+    Math.abs(ping.lng) > 180
+  ) {
+    return {
+      valid: false,
+      spoofDetected: true,
+      reason: "INVALID_COORDINATES: Coordinates out of valid geographic range.",
+    };
+  }
+
+  // 3. Velocity sanity validation between consecutive pings
+  if (
+    previousPing &&
+    previousPing.timestamp &&
+    ping.timestamp &&
+    ping.timestamp > previousPing.timestamp
+  ) {
+    const elapsedHours = (ping.timestamp - previousPing.timestamp) / 3_600_000;
+    if (elapsedHours > 0) {
+      const distKm = haversineKm(
+        { lat: previousPing.lat, lng: previousPing.lng },
+        { lat: ping.lat, lng: ping.lng },
+      );
+      const speedKmH = distKm / elapsedHours;
+
+      if (speedKmH > MAX_PERMISSIBLE_SPEED_KMH) {
+        return {
+          valid: false,
+          spoofDetected: true,
+          calculatedSpeedKmH: Math.round(speedKmH * 10) / 10,
+          reason: `VELOCITY_ANOMALY: Impossible displacement speed of ${speedKmH.toFixed(1)} km/h detected (>${MAX_PERMISSIBLE_SPEED_KMH} km/h threshold). Mock location jump rejected.`,
+        };
+      }
+    }
+  }
+
+  // 4. Instantaneous device speed reading (converted to km/h if m/s)
+  if (Number.isFinite(ping.speed) && ping.speed !== null && ping.speed !== undefined) {
+    const speedKmh = ping.speed > 50 ? ping.speed : ping.speed * 3.6;
+    if (speedKmh > MAX_PERMISSIBLE_SPEED_KMH) {
+      return {
+        valid: false,
+        spoofDetected: true,
+        calculatedSpeedKmH: Math.round(speedKmh * 10) / 10,
+        reason: `EXCESSIVE_DEVICE_SPEED: Instantaneous speed of ${speedKmh.toFixed(1)} km/h exceeds maximum permissible vehicle speed.`,
+      };
+    }
+  }
+
+  return { valid: true, spoofDetected: false };
+}
 
 export interface BatteryState {
   level: number; // 0.0 to 1.0 (e.g. 0.15 = 15%)
@@ -121,7 +213,7 @@ export function computePowerProfile(battery: {
     disableNonEssentialAnimations: false,
     powerSaveMode: false,
     batteryLevelPercent,
-    statusDescription: `Optimal Fleet Power (${batteryLevelPercent}%${charging ? ", Charging" : ""}): GPS operating at high-accuracy 3s cadence with full animations.`,
+    statusDescription: `Optimal Fleet Power (${batteryLevelPercent}%${charging ? ", Charging" : ""}): GPS operating at high-accuracy 2s streaming cadence with full animations.`,
   };
 }
 
@@ -518,6 +610,13 @@ export class FleetSafetyEngine {
     label?: string,
   ): TwoWheelerNavigationLinks {
     return buildTwoWheelerNavigationLinks(point, label);
+  }
+
+  public validateTelemetry(
+    ping: GpsTelemetryPing,
+    previousPing?: GpsTelemetryPing | null,
+  ): GpsTelemetryValidationResult {
+    return validateGpsTelemetry(ping, previousPing);
   }
 }
 

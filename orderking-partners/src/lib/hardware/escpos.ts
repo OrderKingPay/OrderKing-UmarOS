@@ -32,6 +32,11 @@ export interface EscPosReceiptData {
   qrPayload?: string;
   autoCut?: boolean;
   drawerKick?: boolean;
+  fssaiNumber?: string;
+  merchantGstin?: string;
+  platformGstin?: string;
+  restaurantAddress?: string;
+  paymentMethod?: string;
 }
 
 export class EscPosReceiptBuilder {
@@ -274,17 +279,22 @@ export function generateEscPosReceipt(data: EscPosReceiptData, width: PaperWidth
   builder.bold(false);
   builder.divider("=");
 
-  // Footer & Reorder QR
+  // Footer & Direct Storefront QR
   if (data.qrPayload) {
     builder.align("center");
-    builder.line("SCAN TO REORDER ON ORDERKING");
+    builder.line("ORDERKING DIRECT STOREFRONT");
     builder.qrCode(data.qrPayload);
-    builder.line("Save Rs.40-80 on every order");
   }
 
   builder.align("center");
-  builder.line("FSSAI & CGST Sec 9(5) Compliant");
-  builder.line("*** POWERED BY ORDERKING POS ***");
+  if (data.fssaiNumber) {
+    builder.line(`FSSAI: ${data.fssaiNumber}`);
+  }
+  const gstToPrint = data.merchantGstin || data.platformGstin || "18AFXPH9838M1Z9";
+  builder.line(`GSTIN: ${gstToPrint}`);
+  builder.line("SAC: 996331 (Restaurant Services)");
+  builder.line("Computer-generated tax invoice under Section 9(5) CGST Act. Thank you for dining with OrderKing.");
+  builder.line("POWERED BY ORDERKING POS");
 
   // Feed & Auto Cut
   builder.feed(4);

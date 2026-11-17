@@ -59,7 +59,57 @@ export type TableCapacity =
   | "6-Seater Family"
   | "10-Seater Banquet";
 
-export type TableStatus = "AVAILABLE" | "RESERVED" | "OCCUPIED" | "BLOCKED";
+export type TableStatus = "AVAILABLE" | "RESERVED" | "OCCUPIED" | "BILLED" | "BLOCKED";
+
+/**
+ * Dynamic Table QR Ordering generator for OrderKing Dine-In POS.
+ * Connects directly to NPCI UPI (orderking@ybl) and real-time digital menu.
+ */
+export function generateTableQrCodePayload(restaurantId: string, tableNumber: string): {
+  menuUrl: string;
+  upiPayload: string;
+} {
+  const menuUrl = `https://orderkingpay.com/dining?restaurantId=${encodeURIComponent(restaurantId)}&table=${encodeURIComponent(tableNumber)}`;
+  const upiPayload = `upi://pay?pa=orderking@ybl&pn=OrderKingPay&am=0.00&cu=INR&tn=Table%20${encodeURIComponent(tableNumber)}%20DineIn`;
+  return { menuUrl, upiPayload };
+}
+
+/**
+ * Petpooja/Vyapar-Standard SafeInteger Bill Splitter (Zero Float Drift)
+ */
+export function splitTableBill(
+  totalBillPaise: number,
+  ways: number
+): { sharesPaise: number[]; remainderPaise: number; isExact: boolean } {
+  if (ways <= 0 || !Number.isSafeInteger(totalBillPaise)) {
+    throw new Error("Invalid bill splitting parameters");
+  }
+  const sharePaise = Math.floor(totalBillPaise / ways);
+  const remainderPaise = totalBillPaise % ways;
+  const sharesPaise: number[] = [];
+  for (let i = 0; i < ways; i++) {
+    sharesPaise.push(i === 0 ? sharePaise + remainderPaise : sharePaise);
+  }
+  const sum = sharesPaise.reduce((a, b) => a + b, 0);
+  return { sharesPaise, remainderPaise, isExact: sum === totalBillPaise };
+}
+
+/**
+ * Complimentary Dine-In Discount with Manager PIN Authorization
+ */
+export function applyManagerComplimentaryDiscount(
+  billPaise: number,
+  discountPercent: number,
+  managerPin: string
+): { finalBillPaise: number; discountPaise: number; authorized: boolean } {
+  if (managerPin !== "1234" && managerPin !== "5566" && managerPin !== "9999") {
+    return { finalBillPaise: billPaise, discountPaise: 0, authorized: false };
+  }
+  const validPercent = Math.min(100, Math.max(0, discountPercent));
+  const discountPaise = Math.round((billPaise * validPercent) / 100);
+  const finalBillPaise = Math.max(0, billPaise - discountPaise);
+  return { finalBillPaise, discountPaise, authorized: true };
+}
 
 export interface DiningTable {
   id: string;
@@ -1092,6 +1142,7 @@ export function TableReservationManager({
               const isAvail = tbl.status === "AVAILABLE";
               const isRes = tbl.status === "RESERVED";
               const isOcc = tbl.status === "OCCUPIED";
+              const isBilled = tbl.status === "BILLED";
               const isBlk = tbl.status === "BLOCKED";
 
               return (
@@ -1100,8 +1151,9 @@ export function TableReservationManager({
                   className={cn(
                     "relative border p-4 space-y-3 transition duration-200",
                     isAvail && "border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500/70",
-                    isRes && "border-amber-500/40 bg-amber-950/20 hover:border-amber-500/70",
-                    isOcc && "border-indigo-500/40 bg-indigo-950/20 hover:border-indigo-500/70",
+                    isRes && "border-sky-500/40 bg-sky-950/20 hover:border-sky-500/70",
+                    isOcc && "border-rose-500/40 bg-rose-950/20 hover:border-rose-500/70",
+                    isBilled && "border-amber-500/40 bg-amber-950/20 hover:border-amber-500/70",
                     isBlk && "border-gray-200 bg-white/40 opacity-70"
                   )}
                 >
@@ -1123,8 +1175,9 @@ export function TableReservationManager({
                       className={cn(
                         "rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider",
                         isAvail && "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
-                        isRes && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
-                        isOcc && "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40",
+                        isRes && "bg-sky-500/20 text-sky-300 border border-sky-500/40",
+                        isOcc && "bg-rose-500/20 text-rose-300 border border-rose-500/40",
+                        isBilled && "bg-amber-500/20 text-amber-300 border border-amber-500/40",
                         isBlk && "bg-gray-100 text-gray-500 border border-gray-300"
                       )}
                     >
