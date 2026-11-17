@@ -18,7 +18,7 @@ import {
 } from "@/lib/server/api-more";
 import { getRestaurant, updateRestaurantProfile } from "@/lib/server/api-bootstrap";
 import { quickThrottleKitchen } from "@/lib/server/api-orders";
-import { can } from "@/lib/rbac";
+import { can, type RestaurantRole } from "@/lib/rbac";
 import {
   formatINR,
   rupeesToPaise,
@@ -1163,20 +1163,22 @@ function SettingsPage() {
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                     >
-                      <option value="STAFF">STAFF</option>
-                      <option value="MANAGER">MANAGER</option>
-                      <option value="ACCOUNTANT">ACCOUNTANT</option>
-                      <option value="MULTI_OUTLET_MANAGER">MULTI_OUTLET_MANAGER</option>
+                      <option value="STAFF">STAFF (Front of House)</option>
+                      <option value="CHEF">CHEF (Kitchen KDS Only)</option>
+                      <option value="CASHIER">CASHIER (Billing & Dining POS)</option>
+                      <option value="MANAGER">MANAGER (Operations & Menu)</option>
+                      <option value="ACCOUNTANT">ACCOUNTANT (Settlements & Tax)</option>
+                      <option value="MULTI_OUTLET_MANAGER">MULTI_OUTLET_MANAGER (Multi-Branch)</option>
                     </select>
                   </div>
                   <Button
-                    className="self-end h-10 bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs"
+                    className="self-end h-10 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs"
                     onClick={() =>
                       void addStaff({
                         data: {
                           restaurantId: vendor.restaurantId,
                           email,
-                          role: role as "STAFF",
+                          role: role as RestaurantRole,
                         },
                       })
                         .then(() => {
