@@ -135,7 +135,7 @@ export const UMAR_OS_SCREENS: ScreenDefinition[] = [
   // 6. CEO Sovereign Radar
   {
     id: "exec-ceo-radar",
-    title: "Founder CEO Sovereign Radar",
+    title: "Founder Operations Radar",
     category: "EXECUTIVE",
     route: "/app/ceo",
     badgeText: "SOVEREIGN",
@@ -333,7 +333,7 @@ export const UMAR_OS_SCREENS: ScreenDefinition[] = [
     category: "CMS & BRANDING",
     route: "/app/customization-studio",
     badgeText: "DESIGN TOKENS",
-    description: "Live real-time theme customization: Royal Emerald Green, Sovereign Gold, Crimson Velocity, typography, and dark mode.",
+    description: "Live real-time theme customization: Royal Emerald Green, Amber Gold, Crimson Velocity, typography, and dark mode.",
     keywords: [
       "branding", "theme", "color", "emerald green", "visual studio", "dark mode",
       "light mode", "palette", "typography", "fonts", "logo", "app colors"

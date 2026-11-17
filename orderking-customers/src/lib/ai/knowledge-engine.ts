@@ -62,7 +62,7 @@ export interface SearchResult {
 export const INITIAL_KNOWLEDGE_DOCUMENTS: KnowledgeDocument[] = [
   {
     id: "DOC-001",
-    title: "OrderKing Sovereign Architecture Blueprint",
+    title: "OrderKing Core Architecture Blueprint",
     category: "SPEC",
     content:
       "OrderKing delivers a 0% commission food delivery and hyperlocal logistics architecture. It includes customer ordering, rider dispatch with geodesic clustering, restaurant kitchen display systems, and KingPay UPI escrow settlement.",

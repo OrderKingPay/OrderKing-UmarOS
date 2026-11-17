@@ -107,7 +107,7 @@ export class ModelRouterService {
         id: "sovereign-local",
         name: "Sovereign Local Core (100% In-Memory)",
         isConfigured: true,
-        supportedModels: ["sovereign-local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"],
+        supportedModels: ["local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"],
         requiredEnvVar: "None (Zero-cost built-in)",
       },
     ];

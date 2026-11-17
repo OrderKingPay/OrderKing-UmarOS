@@ -426,7 +426,7 @@ describe("GUARANTEED FINTECH & SETTLEMENTS SPECIALIST AUDIT (2b420240)", () => {
       const initialBalance = await canonicalLedger.getKingPayWalletBalancePaise(testUserId);
       assert.strictEqual(initialBalance, 0);
 
-      // 1. Top-Up ₹2,000.00 (200,000 paise) via Sovereign Direct UPI
+      // 1. Top-Up ₹2,000.00 (200,000 paise) via Direct UPI
       const topUpPaise = 200_000;
       const topUpTx = await canonicalLedger.recordKingPayWalletTopUp({
         userId: testUserId,

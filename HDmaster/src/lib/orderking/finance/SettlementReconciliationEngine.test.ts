@@ -181,7 +181,7 @@ describe("SettlementReconciliationEngine - Statutory Tax & Dual Settlement Verif
       assert.equal(result.gstOnCommissionPaise, 5040);     // 18% of 28000 = 5040
     });
 
-    test("verifies 0% commission on Table QR orders (sovereign ordering)", () => {
+    test("verifies 0% commission on Table QR orders (direct ordering)", () => {
       const input: OrderReconciliationInput = {
         orderId: "ord_table_qr_01",
         orderNumber: "OK-1006",

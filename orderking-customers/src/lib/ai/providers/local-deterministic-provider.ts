@@ -14,8 +14,8 @@ import type {
 
 export class LocalDeterministicProvider implements AIProvider {
   readonly id = "local_deterministic";
-  readonly name = "Local Sovereign Core Engine";
-  readonly supportedModels = ["sovereign-ultra-deterministic", "local-v2"];
+  readonly name = "Local Core Engine";
+  readonly supportedModels = ["local-ultra-deterministic", "local-v2"];
   readonly isConfigured = true;
 
   async chat(input: ChatRequest): Promise<ChatResponse> {
@@ -109,7 +109,7 @@ export class LocalDeterministicProvider implements AIProvider {
 
     return {
       provider: this.id,
-      model: "sovereign-ultra-deterministic",
+      model: "local-ultra-deterministic",
       text: responseText,
       toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
       usage: {
@@ -134,7 +134,7 @@ export class LocalDeterministicProvider implements AIProvider {
   async analyze(input: AnalysisRequest): Promise<AnalysisResponse> {
     return {
       provider: this.id,
-      model: "sovereign-ultra-deterministic",
+      model: "local-ultra-deterministic",
       summary: `Analyzed ${input.objective} via local deterministic rules.`,
       findings: [
         "Zero external latency or cost incurred",
@@ -153,7 +153,7 @@ export class LocalDeterministicProvider implements AIProvider {
   async generateCode(input: CodeRequest): Promise<CodeResponse> {
     return {
       provider: this.id,
-      model: "sovereign-ultra-deterministic",
+      model: "local-ultra-deterministic",
       code: `// Deterministic Production Scaffold: ${input.specification}\nexport default function Module() {\n  return <div>Production Code Scaffold</div>;\n}`,
       explanation: "Generated deterministic code blueprint.",
     };

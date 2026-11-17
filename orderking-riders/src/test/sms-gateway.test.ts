@@ -236,6 +236,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
   describe("5. 2Factor.in Gateway", () => {
     it("dispatches live SMS via 2Factor AUTOGEN endpoint", async () => {
       process.env.TWOFACTOR_API_KEY = "mock_2factor_key_456";
+      process.env.TWOFACTOR_OTP_TEMPLATE = "AUTOGEN";
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -259,6 +260,34 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       const [url, options] = mockFetch.mock.calls[0];
       expect(url).toContain("https://2factor.in/v1/API/V1/mock_2factor_key_456/SMS/9876543210/112233/AUTOGEN");
       expect(options.method).toBe("GET");
+
+      delete process.env.TWOFACTOR_OTP_TEMPLATE;
+    });
+
+    it("dispatches live SMS via 2Factor OTP1 template endpoint when configured", async () => {
+      process.env.TWOFACTOR_API_KEY = "mock_2factor_key_456";
+      process.env.TWOFACTOR_OTP_TEMPLATE = "OTP1";
+
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          Status: "Success",
+          Details: "2F_OTP1_UUID_111",
+        }),
+      });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "112233",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("2factor");
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toContain("https://2factor.in/API/V1/mock_2factor_key_456/SMS/+919876543210/112233/OTP1");
+
+      delete process.env.TWOFACTOR_OTP_TEMPLATE;
     });
   });
 

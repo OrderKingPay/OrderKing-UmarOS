@@ -77,9 +77,9 @@ export class ModelRouterService {
       },
       {
         id: "local_deterministic",
-        name: "Local Sovereign Engine (Zero-Dep)",
+        name: "Local Core Engine (Zero-Dep)",
         isConfigured: true,
-        supportedModels: ["sovereign-ultra-deterministic"],
+        supportedModels: ["local-ultra-deterministic"],
         requiredEnvVar: "NONE (Always Active)",
       },
     ];

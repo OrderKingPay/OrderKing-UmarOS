@@ -5,7 +5,7 @@
 export interface VerifiedModelRecord {
   id: string;
   displayName: string;
-  provider: "Local Sovereign" | "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
+  provider: "Local Core" | "Google" | "Anthropic" | "OpenAI" | "xAI" | "Orchestrator" | "Consensus";
   realApiId: string;
   connectionStatus: "CONNECTED" | "CONFIGURATION_REQUIRED" | "UNAVAILABLE";
   authStatus: "VERIFIED" | "MISSING_KEY" | "LOCAL_CORE";
@@ -81,10 +81,10 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
 
   return [
     {
-      id: "sovereign-ultra",
+      id: "local-ultra",
       displayName: "Umar Sovereign Local Engine",
-      provider: "Local Sovereign",
-      realApiId: "sovereign-local-core",
+      provider: "Local Core",
+      realApiId: "local-core",
       connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
       supportedModalities: ["text", "code", "file"],
@@ -117,7 +117,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: 12,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Intelligently routes every query to the fastest and most capable connected model. If external models lack API keys, seamlessly executes via Sovereign Local Core with clear disclosure.",
       capabilities: {
         canStream: true,
@@ -140,7 +140,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: false,
       measuredLatencyMs: 22,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Runs all currently active connected models simultaneously and cross-verifies output invariants. Never fabricates participation: only genuinely connected models are counted.",
       capabilities: {
         canStream: true,
@@ -164,7 +164,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: geminiKey ? 140 : 0,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Google frontier multimodal reasoning engine with high-speed tokens and 1M context window. Connect via GEMINI_API_KEY.",
       capabilities: {
         canStream: true,
@@ -188,7 +188,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: false,
       measuredLatencyMs: anthropicKey ? 190 : 0,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Anthropic state-of-the-art hybrid reasoning model for deep systems architecture and complex coding. Connect via ANTHROPIC_API_KEY.",
       capabilities: {
         canStream: true,
@@ -212,7 +212,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: openaiKey ? 165 : 0,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "OpenAI GPT-5.6 flagship reasoning model. The provider adapter uses the configured OpenAI API and reports the actual model ID used by the deployment.",
       capabilities: {
         canStream: true,
@@ -236,7 +236,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: true,
       measuredLatencyMs: xaiKey ? 180 : 0,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "xAI frontier intelligence with integrated real-time search capabilities. Connect via XAI_API_KEY.",
       capabilities: {
         canStream: true,
@@ -248,7 +248,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
     {
       id: "codex-supreme",
       displayName: "Codex Premium Architect (Local Core)",
-      provider: "Local Sovereign",
+      provider: "Local Core",
       realApiId: "codex-local-v1",
       connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
@@ -259,7 +259,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: false,
       measuredLatencyMs: 6,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Deterministic full-stack code generator, TypeScript validator, and database schema synthesizer running locally.",
       capabilities: {
         canStream: true,
@@ -269,9 +269,9 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "deepseek-r1-sovereign",
-      displayName: "DeepSeek R1 Sovereign (Local Math Core)",
-      provider: "Local Sovereign",
+      id: "deepseek-r1-local",
+      displayName: "DeepSeek R1 Local (Local Math Core)",
+      provider: "Local Core",
       realApiId: "deepseek-r1-local",
       connectionStatus: "UNAVAILABLE",
       authStatus: "LOCAL_CORE",
@@ -282,7 +282,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       supportsWebSearch: false,
       measuredLatencyMs: 5,
       lastChecked: now,
-      fallbackModelId: "sovereign-ultra",
+      fallbackModelId: "local-ultra",
       description: "Axiomatic mathematical formalization, proof verification, and exact logic analysis running locally without network overhead.",
       capabilities: {
         canStream: true,
@@ -304,7 +304,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
   const registry = getVerifiedModelRegistry();
   const target = registry.find((m) => m.id === modelId) || registry[0];
 
-  if (target.provider === "Local Sovereign") {
+  if (target.provider === "Local Core") {
     return {
       modelId: target.id,
       success: false,

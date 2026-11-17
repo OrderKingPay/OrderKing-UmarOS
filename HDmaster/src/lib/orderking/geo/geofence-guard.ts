@@ -26,7 +26,7 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLng: 92.3511,
     radiusKm: 12.0, // 12 km strict radius
     status: "ACTIVE",
-    description: "15-minute ultra-fast sovereign delivery active with 0% surge and live rider fleet.",
+    description: "15-minute ultra-fast delivery active with 0% surge and live rider fleet.",
   },
 ];
 

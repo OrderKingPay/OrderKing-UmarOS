@@ -11,7 +11,7 @@ import {
   calculateHaversineKm,
 } from "./ecosystem-shifts.ts";
 
-describe("Sovereign Ecosystem Shifts & Threat Zones Specification", () => {
+describe("Operations Ecosystem Shifts & Threat Zones Specification", () => {
   it("enforces exact shift delivery radius boundaries (Day: 12km, Evening: 7.5km, Late-Night: 3.5km)", () => {
     assert.equal(ECOSYSTEM_SHIFTS.DAY.maxRadiusKm, 12.0);
     assert.equal(ECOSYSTEM_SHIFTS.EVENING.maxRadiusKm, 7.5);

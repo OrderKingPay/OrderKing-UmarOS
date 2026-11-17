@@ -2050,7 +2050,7 @@ export type CommercialBypassDialsState = {
   mandatoryGigInsuranceCompliance: boolean;
   garageRoadsideAssistanceActive: boolean;
 
-  // Dial 9: WhatsApp viral bounty credit dials
+  // Dial 9: WhatsApp referral reward credit dials
   customerReferralBountyInr: number; // default: 50 (10-500)
   refereeFirstOrderDiscountInr: number; // default: 100 (20-500)
   milestoneFiveFriendsBonusInr: number; // default: 500 (100-2000)

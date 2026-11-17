@@ -99,7 +99,7 @@ export const TIER_CONFIGS: Record<
     ],
   },
   EXECUTIVE_FLAGSHIP: {
-    name: "Sovereign Flagship & Multi-Outlet Brand",
+    name: "Flagship & Multi-Outlet Brand",
     tagline: "Bespoke Multi-Node Kitchen Orchestration & VIP Fleet Dispatch SLA",
     baseFeeInr: 50000,
     recommendedTakeRatePct: 15.0,

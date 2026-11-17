@@ -24,7 +24,7 @@ import type {
 export class SovereignLocalProvider implements AIProvider {
   readonly id = "sovereign-local";
   readonly name = "Sovereign Local Core (In-Memory Engine)";
-  readonly supportedModels = ["sovereign-local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"];
+  readonly supportedModels = ["local-core", "sovereign-foodtech-v1", "sovereign-nlp-edge"];
 
   get isConfigured(): boolean {
     return true; // Always operational by design
@@ -32,7 +32,7 @@ export class SovereignLocalProvider implements AIProvider {
 
   async chat(input: ChatRequest): Promise<ChatResponse> {
     const start = Date.now();
-    const model = input.model || "sovereign-local-core";
+    const model = input.model || "local-core";
     
     // Extract last user message
     const lastUserMsg = input.messages
@@ -135,7 +135,7 @@ export class SovereignLocalProvider implements AIProvider {
   async analyze(input: AnalysisRequest): Promise<AnalysisResponse> {
     return {
       provider: this.name,
-      model: "sovereign-local-core",
+      model: "local-core",
       summary: `Sovereign analytical review for objective: ${input.objective}`,
       findings: [
         "Local rule engine validated transaction boundaries",
@@ -160,7 +160,7 @@ export class SovereignLocalProvider implements AIProvider {
 
     return {
       provider: this.name,
-      model: "sovereign-local-core",
+      model: "local-core",
       code: boilerplates[input.language] || `// Sovereign code generation for ${input.language}\n`,
       explanation: "Deterministic code synthesis from Sovereign Local Core repository templates.",
       dependencies: [],

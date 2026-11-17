@@ -47,7 +47,7 @@ export const FOUNDER_TOOLS: ToolDefinition[] = [
   },
   {
     name: "generate_media",
-    description: "Generates a highly realistic, world-class image or video based on a textual prompt using a top-tier generative model.",
+    description: "Generates a realistic, high-resolution image or video based on a textual prompt using a generative model.",
     parameters: {
       type: "object",
       properties: {

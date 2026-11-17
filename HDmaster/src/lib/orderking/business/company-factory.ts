@@ -68,7 +68,7 @@ export class CompanyFactoryService {
   private seedSampleCompany() {
     const orderKingSaaS: CompanyBlueprint = {
       id: "COMP-001",
-      name: "OrderKing Restaurant OS & Sovereign Dispatch",
+      name: "OrderKing Restaurant OS & Fleet Dispatch",
       concept: "Zero-commission direct food ordering platform with WhatsApp rider dispatch and 0% UPI payments.",
       targetMarket: "India Tier 2/3 Multi-Outlet Restaurants & Cloud Kitchens",
       currentStage: "CODE",
@@ -84,7 +84,7 @@ export class CompanyFactoryService {
           title: "Executive Concept Manifesto",
           filename: "concept-manifesto.md",
           contentType: "markdown",
-          content: "# OrderKing Sovereign FoodTech Operating System\n\nEliminating the 28% aggregator tax by providing restaurants with their own branded direct-ordering apps, integrated delivery dispatch, and 0% King Pay UPI settlement.",
+          content: "# OrderKing FoodTech Operating System\n\nEliminating the 28% aggregator tax by providing restaurants with their own branded direct-ordering apps, integrated delivery dispatch, and 0% King Pay UPI settlement.",
           summary: "Core thesis and market problem statement.",
           generatedAt: "2026-09-18 10:00",
         },

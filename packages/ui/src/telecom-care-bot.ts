@@ -482,7 +482,7 @@ export function validateDriverTelemetry(
     return {
       valid: false,
       code: "GEOFENCE_BREACH",
-      reason: `Coordinates (${current.lat}, ${current.lng}) fall outside operational sovereign territory.`,
+      reason: `Coordinates (${current.lat}, ${current.lng}) fall outside operational service territory.`,
     };
   }
 

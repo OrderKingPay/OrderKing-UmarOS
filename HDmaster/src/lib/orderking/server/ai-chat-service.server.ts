@@ -715,8 +715,8 @@ export async function executeFounderAiChat(
 
     return {
       text: engineeringResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "local-core",
+      provider: "Local Core",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -730,8 +730,8 @@ export async function executeFounderAiChat(
 
     return {
       text: workforceResult,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
+      modelUsed: "local-core",
+      provider: "Local Core",
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
@@ -819,7 +819,7 @@ export async function executeFounderAiChat(
     } else if (xaiKey) {
       activeRecord = registry.find((m) => m.id === "grok-4-6-super") || activeRecord;
     } else {
-      activeRecord = registry.find((m) => m.id === "sovereign-ultra") || registry[0];
+      activeRecord = registry.find((m) => m.id === "local-ultra") || registry[0];
     }
   }
 
@@ -911,16 +911,16 @@ export async function executeFounderAiChat(
 
     return {
       text: localRes.text,
-      modelUsed: "sovereign-local-core",
-      provider: "Local Sovereign",
-      responders: ["Umar Sovereign Local Core"],
+      modelUsed: "local-core",
+      provider: "Local Core",
+      responders: ["Umar Local Core"],
       executionSteps: [],
       latencyMs: Date.now() - startTime,
     };
   }
 
   // 4. External Cloud Provider Execution
-  if (activeRecord.provider !== "Local Sovereign") {
+  if (activeRecord.provider !== "Local Core") {
     const providerKey = activeRecord.provider.toLowerCase();
     const apiKey = request.apiKeys?.[providerKey] || getProviderApiKey(providerKey);
 
@@ -1022,7 +1022,7 @@ export async function executeFounderAiChat(
           latencyMs: Date.now() - startTime,
         };
       } catch (err) {
-        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Sovereign Core:`, err);
+        console.warn(`[ai-chat] Provider ${activeRecord.provider} failed, falling back to Local Core Core:`, err);
         onStreamEvent?.({
           type: "step",
           data: {
@@ -1030,7 +1030,7 @@ export async function executeFounderAiChat(
             totalSteps: 4,
             label: "Local Core Fallback",
             status: "COMPLETED",
-            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Sovereign Core.`,
+            detail: `${activeRecord.provider} returned an error (${err instanceof Error ? err.message : String(err)}). Seamlessly routing to Local Core Core.`,
           },
         });
       }

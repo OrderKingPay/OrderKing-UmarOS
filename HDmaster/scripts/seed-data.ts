@@ -227,7 +227,7 @@ export const UNIVERSAL_PLATFORMS: ConnectedPlatform[] = [
     status: "CONNECTED",
     apiLatencyMs: 12,
     lastSyncTime: "Real-Time",
-    authMethod: "Direct Sovereign RPC",
+    authMethod: "Direct RPC",
     guardrailProtection: {
       sandboxVerified: true,
       zeroDataLeak: true,
@@ -376,7 +376,7 @@ I can integrate and benchmark this within your app within 48 hours. Let's schedu
 export const SEPARABLE_MODULES: SeparableModule[] = [
   {
     id: "mod-video-studio",
-    name: "World-Class 4K Video & Image Studio",
+    name: "4K Video & Image Studio",
     tagline: "World's #1 fastest video generation & editing engine",
     description: "Complete standalone 9:16 reels, 16:9 widescreen, 1:1, and 21:9 video editing platform with young female voiceover and dynamic karaoke auto-subtitles.",
     category: "media",

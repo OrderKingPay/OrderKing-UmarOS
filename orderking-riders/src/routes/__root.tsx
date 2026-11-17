@@ -68,7 +68,12 @@ const fetchSessionUser = createServerFn({ method: "GET" }).handler(async () => {
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     const pathname = location.pathname;
-    const isPublic = pathname === "/login" || pathname === "/terms" || pathname === "/privacy" || pathname.startsWith("/api");
+    const isPublic =
+      pathname === "/login" ||
+      pathname === "/benefits" ||
+      pathname === "/terms" ||
+      pathname === "/privacy" ||
+      pathname.startsWith("/api");
     if (isPublic) {
       return { sessionUser: null };
     }

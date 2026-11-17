@@ -476,24 +476,37 @@ export async function sendViaWhatsAppCloudApi(
 
 export function getAvailableSmsProviders(): TelecomProvider[] {
   const providers: TelecomProvider[] = [];
+  const primary = (process.env.PRIMARY_SMS_PROVIDER || "2factor").toLowerCase();
 
-  const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
-    .trim()
-    .replace(/^["']|["']$/g, "");
-  if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
-    providers.push("fast2sms");
-  }
+  const add2Factor = () => {
+    const twoFactorKey = (
+      process.env.TWOFACTOR_API_KEY ||
+      process.env.TWO_FACTOR_API_KEY ||
+      process.env.TWO_FACTOR_SMS_KEY ||
+      process.env.OTP_2FACTOR_API_KEY ||
+      ""
+    ).trim();
+    const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
+    if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey !== f2sCompare && twoFactorKey.length <= 45) {
+      if (!providers.includes("2factor")) providers.push("2factor");
+    }
+  };
 
-  const twoFactorKey = (
-    process.env.TWOFACTOR_API_KEY ||
-    process.env.TWO_FACTOR_API_KEY ||
-    process.env.TWO_FACTOR_SMS_KEY ||
-    process.env.OTP_2FACTOR_API_KEY ||
-    ""
-  ).trim();
-  const f2sCompare = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "").trim();
-  if (twoFactorKey && twoFactorKey !== "xxx" && !twoFactorKey.includes("change-me") && twoFactorKey !== f2sCompare && twoFactorKey.length <= 45) {
-    providers.push("2factor");
+  const addFast2Sms = () => {
+    const fast2SmsKey = (process.env.FAST2SMS_API_KEY || process.env.SMS_GATEWAY_API_KEY || "")
+      .trim()
+      .replace(/^["']|["']$/g, "");
+    if (fast2SmsKey && fast2SmsKey !== "xxx" && !fast2SmsKey.includes("change-me")) {
+      if (!providers.includes("fast2sms")) providers.push("fast2sms");
+    }
+  };
+
+  if (primary === "fast2sms") {
+    addFast2Sms();
+    add2Factor();
+  } else {
+    add2Factor();
+    addFast2Sms();
   }
 
   const msg91Key = process.env.MSG91_AUTH_KEY;

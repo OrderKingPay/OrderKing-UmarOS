@@ -59,7 +59,7 @@ export class CostControlOptimizer {
       monthlyCostInr: 6000,
       provider: "AWS RDS",
       optimizationRecommendation: {
-        cheaperAlternative: "Self-Hosted Sovereign PostgreSQL on Edge VPS with automated WAL-G S3 backups",
+        cheaperAlternative: "Self-Hosted PostgreSQL on Edge VPS with automated WAL-G S3 backups",
         estimatedSavingsInr: 4200,
         qualityImpact: "ZERO_IMPACT",
         action: "Migrate to dedicated NVMe edge instances with sub-5ms latency and zero per-query fees.",

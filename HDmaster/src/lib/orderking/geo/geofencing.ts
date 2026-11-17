@@ -1,6 +1,6 @@
 /**
- * OrderKing Sovereign Geospatial Engine & Dynamic Serviceability Framework
- * UMAR OS & OrderKing Sovereign Logistics Core
+ * OrderKing Geospatial Engine & Dynamic Serviceability Framework
+ * UMAR OS & OrderKing Logistics Core
  *
  * Implements:
  * 1. Ray-Casting Point-in-Polygon (PIP) with complex polygon & GeoJSON support.
@@ -509,7 +509,7 @@ export const DEFAULT_SCHEDULE_WINDOWS: ServiceScheduleWindow[] = [
   },
   {
     id: "schedule_late_night",
-    name: "Late-Night Sovereign Safe Zones",
+    name: "Late-Night Safe Zones",
     type: "late_night",
     startTime: "22:00",
     endTime: "04:00", // Midnight wrap-around to 4 AM

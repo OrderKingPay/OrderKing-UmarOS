@@ -28,13 +28,13 @@ export type AiModelId =
   | "auto-supreme-orchestrator"
   | "auto-Enterprise-orchestrator"
   | "ensemble-consensus"
-  | "sovereign-ultra"
+  | "local-ultra"
   | "claude-4-6-opus"
   | "gpt-5-6-omni"
   | "grok-4-6-super"
   | "codex-supreme"
   | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
+  | "deepseek-r1-local"
   | "claude-3-7-sonnet"
   | "gpt-4o"
   | "gemini-2-5-pro"
@@ -55,12 +55,12 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 Super for real-time telemetric intelligence." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
+    return { model: "local-ultra", reason: "Auto-routed to Sovereign Ultra for photorealistic multimodal & 4K video generation." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
     return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
+  return { model: "local-ultra", reason: "Auto-routed to Sovereign Ultra flagship executive reasoning engine." };
 }
 
 export interface ChatAttachment {
@@ -206,7 +206,7 @@ export interface ConnectedPlatform {
   status: "CONNECTED" | "ENFORCING" | "STANDBY" | "SECURED";
   apiLatencyMs: number;
   lastSyncTime: string;
-  authMethod: "OAuth2 / HMAC-SHA256" | "Encrypted API Token" | "Zero-Knowledge Webhook" | "Direct Sovereign RPC";
+  authMethod: "OAuth2 / HMAC-SHA256" | "Encrypted API Token" | "Zero-Knowledge Webhook" | "Direct RPC";
   guardrailProtection: {
     sandboxVerified: boolean;
     zeroDataLeak: boolean;
@@ -261,11 +261,11 @@ export interface SystemSettingsConfig {
   zeroDataLeakProtection: boolean;
   hmacSha256Security: boolean;
   maxMemoryCacheMb: number;
-  edgeRoutingRegion: "ap-south-1" | "us-east-1" | "eu-west-1" | "global-sovereign";
+  edgeRoutingRegion: "ap-south-1" | "us-east-1" | "eu-west-1" | "global-edge";
 }
 
 export const DEFAULT_SYSTEM_SETTINGS: SystemSettingsConfig = {
-  aiModel: "sovereign-ultra",
+  aiModel: "local-ultra",
   thinkingDepth: "sovereign_ultra",
   speechVoice: "young_female_aria",
   speechSpeed: 1.05,
@@ -324,7 +324,7 @@ export const CURATED_REMOTE_GIGS: RemoteContractGig[] = [
     fixedBudgetUsd: 25000,
     duration: "6+ Months Contract",
     skillsRequired: ["TypeScript", "React 19", "PostgreSQL", "Double-Entry Ledger", "PGlite"],
-    description: "Architect sub-50ms transaction processing platform with sovereign offline data synchronization.",
+    description: "Architect sub-50ms transaction processing platform with reliable offline data synchronization.",
     matchScore: 96,
     platform: "Upwork Enterprise",
     proposalTemplate: "Hi Hiring Team,\n\nI have reviewed your requirements for the high-throughput fintech ledger system. Having built OrderKing's sovereign multi-store double-entry accounting engine in production, I can deliver your architecture with verified idempotency and sub-50ms execution.",
@@ -681,7 +681,7 @@ Autonomous delivery engine with zero aggregator commission and real-time fleet d
   },
   fintech_ledger: {
     id: "BP-FIN-03",
-    title: "Sovereign FinTech Multi-Wallet & Escrow Settlement Hub",
+    title: "FinTech Multi-Wallet & Escrow Settlement Hub",
     category: "fintech",
     targetOrganization: "FinTech Startups, NBFCs, Cooperative Societies, Neobanks",
     techStack: ["TypeScript", "Node.js", "PostgreSQL", "Double-Entry Ledger", "NPCI UPI Rails", "AES-256"],
@@ -802,7 +802,7 @@ export default function FinTechLedgerPortal({
       {
         filename: "schema.sql",
         language: "sql",
-        code: `-- Sovereign Double-Entry Ledger Schema
+        code: `-- Double-Entry Ledger Schema
 CREATE TABLE accounts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL,
@@ -850,7 +850,7 @@ fintechRouter.post("/escrow/release", async (req, res) => {
       {
         filename: "README.md",
         language: "markdown",
-        code: `# Sovereign FinTech Core & Escrow Engine
+        code: `# FinTech Core & Escrow Engine
 Zero-compromise double-entry financial ledger with instant settlement and 100% Section 79 IT Act compliance.`,
       },
     ],
@@ -1049,7 +1049,7 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "939506
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Scanning Disk & Memory Quotas", status: "COMPLETED", detail: `Scanned ${inspection.formattedTotalSize} across temporary files` },
       { stepNumber: 2, totalSteps: 4, label: "Validating Core Protection Guarantee", status: "COMPLETED", detail: "Protected 15 Client Leads, Invoices, Contracts, & Vault Keys" },
-      { stepNumber: 3, totalSteps: 4, label: "Arming Sovereign Purifier Cockpit", status: "COMPLETED", detail: "Deep cleaning protocol initialized" },
+      { stepNumber: 3, totalSteps: 4, label: "Arming Storage Purifier Cockpit", status: "COMPLETED", detail: "Deep cleaning protocol initialized" },
       { stepNumber: 4, totalSteps: 4, label: "Performance Optimizer Ready", status: "COMPLETED", detail: `Current Speed Score: ${inspection.speedOptimizationScore}%` },
     ];
 
@@ -1064,10 +1064,10 @@ export function parseFounderQuery(query: string, founderUpiVpa: string = "939506
 Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk space and optimize engine performance.`;
 
     const voiceSpokenText = isHindi
-      ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
+      ? `Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
-        ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-        : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
+        ? `Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
+        : `Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
 
     return {
       intent: "storage_purifier",
@@ -1385,7 +1385,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     const inv = generateFounderClientInvoice({
       clientName: "Enterprise Client (Turnkey Software License)",
       amountInr: invoiceAmount,
-      description: "OrderKing Sovereign Cloud Software License & POS Deployment",
+      description: "OrderKing Cloud Software License & POS Deployment",
       founderUpiVpa,
     });
 
@@ -1550,7 +1550,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     }
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Initializing Sovereign App Connector", status: "COMPLETED", detail: `Handshake established with ${matchedPlatform.name}` },
+      { stepNumber: 1, totalSteps: 5, label: "Initializing App Connector", status: "COMPLETED", detail: `Handshake established with ${matchedPlatform.name}` },
       { stepNumber: 2, totalSteps: 5, label: "Validating HMAC-SHA256 Security Guardrails", status: "COMPLETED", detail: "Zero Token Leak Sandbox active · Automated rollback snapshot created" },
       { stepNumber: 3, totalSteps: 5, label: "Auditing Active Platform Permissions", status: "COMPLETED", detail: `${matchedPlatform.authMethod} authenticated · Latency: ${matchedPlatform.apiLatencyMs}ms` },
       { stepNumber: 4, totalSteps: 5, label: "Arming Force-Execution Engine", status: "COMPLETED", detail: `${matchedPlatform.supportedActions.length} strict actions ready for founder execution` },
@@ -1569,9 +1569,9 @@ ${matchedPlatform.supportedActions.map((a) => `  - **${a.label}** (\`${a.safetyL
 Use the interactive card below to force task execution on **${matchedPlatform.name}** or browse other connected platforms.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine ${matchedPlatform.name} ke saath sovereign integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
+      ? `Maine ${matchedPlatform.name} ke saath platform integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
       : isBengali
-        ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
+        ? `Ami ${matchedPlatform.name} er sathe connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
         : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
 
     return {

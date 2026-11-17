@@ -63,10 +63,10 @@ export class UniversalConnectorRegistry {
       },
     });
 
-    // 2. PostgreSQL Sovereign Ledger Connector
+    // 2. PostgreSQL Ledger Connector
     this.register({
       id: "conn-postgres-ledger",
-      name: "PostgreSQL Sovereign Ledger Connector",
+      name: "PostgreSQL Ledger Connector",
       capabilities: ["database_query", "accounting_ledger"],
       async authenticate() {},
       async execute(action, input: any) {

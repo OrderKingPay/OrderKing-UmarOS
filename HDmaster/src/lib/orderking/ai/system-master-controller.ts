@@ -281,7 +281,7 @@ export class SystemMasterController {
       patch.theme_preset = "gold";
       patch.primary_brand_color = "#F59E0B";
       patch.accent_brand_color = "#10B981";
-      changes.push("Applied Sovereign Gold theme (#F59E0B / #10B981)");
+      changes.push("Applied Amber Gold theme (#F59E0B / #10B981)");
     } else if (lower.includes("crimson") || lower.includes("ruby") || lower.includes("chili")) {
       patch.theme_preset = "crimson";
       patch.primary_brand_color = "#E11D48";
@@ -329,7 +329,7 @@ export class SystemMasterController {
       return {
         matched: false,
         summary:
-          "Unrecognized setting command. Try commands like 'Set commission to 15%', 'Base delivery ₹30', 'Max radius 20km', 'Theme: Sovereign Gold', or 'Reset branding'.",
+          "Unrecognized setting command. Try commands like 'Set commission to 15%', 'Base delivery ₹30', 'Max radius 20km', 'Theme: Amber Gold', or 'Reset branding'.",
         patch: {},
       };
     }
@@ -383,7 +383,7 @@ export class SystemMasterController {
       "Local Deterministic Fallback Engine",
       "Universal Platform Integrator",
       "Voice Synthesis Acoustic DSP",
-      "Sovereign Media Storage Vault",
+      "Media Storage Vault",
       "Client Acquisition CRM Pipeline",
       "King Pay Section 79 UPI Engine",
     ];
@@ -397,7 +397,7 @@ export class SystemMasterController {
       componentsRebooted: components,
       activeModelsVerified: 8,
       cleanMemoryInitialized: true,
-      message: "System Restart Complete: All 7 sovereign engines rebooted into clean runtime memory state.",
+      message: "System Restart Complete: All 7 system engines rebooted into clean runtime memory state.",
     };
   }
 

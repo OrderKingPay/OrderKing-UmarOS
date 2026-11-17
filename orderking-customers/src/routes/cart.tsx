@@ -88,10 +88,10 @@ function CartPage() {
             Food delivery is not yet active in {location.cityName || "your region"}
           </h1>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-md mx-auto leading-relaxed">
-            Food delivery is currently limited to active operational zones. Use 0% fee UPI and bill payments on KingPay.
+            Food delivery is currently limited to active service zones. Please update your location to view restaurants.
           </p>
-          <Button asChild className="bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black px-8 py-3 rounded-2xl shadow-md hover:scale-105 transition">
-            <Link to="/king-pay">Open KingPay</Link>
+          <Button asChild className="bg-[#E23744] hover:bg-[#cf2f3c] text-white font-bold px-6 py-2.5 rounded-xl transition">
+            <Link to="/">Browse Restaurants</Link>
           </Button>
         </div>
       </CustomerShell>

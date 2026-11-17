@@ -96,6 +96,7 @@ describe("Rider Fleet & Telecom Specialist Quality Gate (4ee818c6)", () => {
       const voiceResult = await sendVoiceOtp2Factor("9876543210", "123456");
       expect(voiceResult).toBe(false);
       expect(axios.get).not.toHaveBeenCalled();
+      delete process.env.TWOFACTOR_API_KEY;
     });
 
     it("verifies sms-gateway.ts enforces sub-3-second timeout controller", async () => {

@@ -39,7 +39,7 @@ export const ViralGrowthEngine = {
    */
   createViralShareIntent(referralCode: string, amount: number = 500) {
     const link = this.generateDeepLink(referralCode);
-    const copy = `Explore OrderKing services: ${link}. Referral cash and promotional credits are not active.`;
+    const copy = `Order delicious food, track deliveries live, and pay with UPI on OrderKing: ${link}`;
     const encodedCopy = encodeURIComponent(String(copy ?? ""));
 
     return {

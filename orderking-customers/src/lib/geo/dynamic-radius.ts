@@ -1,5 +1,5 @@
 /**
- * OrderKing Sovereign Dynamic Time-Based Geofencing & Hazard Blacklist Architecture
+ * OrderKing Dynamic Time-Based Geofencing & Hazard Blacklist Architecture
  * 
  * Enforces authentic IST (Asia/Kolkata) time calculations:
  * 1. Day Shift (06:00 to 18:30 IST): 12.0 km radius, 45 min max ETA, COD enabled.

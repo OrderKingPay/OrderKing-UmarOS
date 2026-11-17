@@ -68,7 +68,7 @@ export const INITIAL_DEPLOYMENT_HISTORY: DeploymentSnapshot[] = [
     timestamp: new Date(Date.now() - 3600 * 1000).toISOString(),
     commitHash: "8f72a1d",
     status: "HEALTHY",
-    summary: "Integrated Sovereign Founder Command Phase 2 Engines & Benchmark Suite",
+    summary: "Integrated Founder Operations Command Phase 2 Engines & Benchmark Suite",
     tested: true,
   },
   {

@@ -344,9 +344,9 @@ describe("SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", (
   });
 
   // =========================================================================
-  // DIAL 9: WhatsApp Viral Bounty Referral Credit Dials
+  // DIAL 9: WhatsApp Referral Reward Referral Credit Dials
   // =========================================================================
-  describe("Dial 9: WhatsApp Viral Bounty Referral Credit Dials", () => {
+  describe("Dial 9: WhatsApp Referral Reward Referral Credit Dials", () => {
     it("calibrates referrer bounty (₹50), referee discount (₹100), and group milestone (₹500)", async () => {
       const res = await updateCommercialBypassDials(
         founderWs,
@@ -356,7 +356,7 @@ describe("SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", (
           milestoneFiveFriendsBonusInr: 500,
           viralOneTapShareCampaignActive: true,
         },
-        "Founder Viral Bounty Incentive Calibration",
+        "Founder Referral Reward Incentive Calibration",
       );
 
       expect(res.ok).toBe(true);

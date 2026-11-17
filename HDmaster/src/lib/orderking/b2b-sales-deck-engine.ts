@@ -97,7 +97,7 @@ export function calculateMultiUnitRoi(params: RoiSimulationParams): RoiSimulatio
     `Order Volume Basis: ${params.unitsCount} store unit(s) × ${params.dailyOrdersPerUnit} daily delivery orders × 365 operating days = ${annualOrders.toLocaleString()} annual orders.`,
     `Annual Delivery GMV: ${annualOrders.toLocaleString()} orders × ${currencySym}${params.avgTicketValue.toLocaleString()} average basket = ${currencySym}${Math.round(annualGmv).toLocaleString()}.`,
     `Aggregator Commission Deduction: ${params.aggregatorFeePct}% blended take-rate on GMV = ${currencySym}${Math.round(annualAggregatorFees).toLocaleString()}/year (excludes paid listing ads and dispute penalties).`,
-    `OrderKing Sovereign Cost Basis: ${params.orderkingCostPct}% direct processing/dispatch cost${
+    `OrderKing Cost Basis: ${params.orderkingCostPct}% direct processing/dispatch cost${
       annualSaaSFeeTotal > 0 ? ` + ${currencySym}${Math.round(annualSaaSFeeTotal).toLocaleString()} annual SaaS license` : ""
     } = ${currencySym}${Math.round(annualOrderKingCost).toLocaleString()}/year.`,
     `Payback Velocity: Estimated onboarding investment of ${currencySym}${Math.round(effectiveImplementationCost).toLocaleString()} divided by ${currencySym}${Math.max(0, Math.round(dailyNetSavings)).toLocaleString()}/day net savings = ${paybackPeriodDays} day(s) to full capital recovery.`,

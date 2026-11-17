@@ -141,7 +141,7 @@ export class UniversalCapabilityRegistry {
       name: "Market Research & Competitor Intelligence",
       category: "research",
       description: "Conducts deep market scans, competitor pricing analysis, and business opportunity audits.",
-      provider: "Local Sovereign & Web Crawlers",
+      provider: "Local Core & Web Crawlers",
       permissions: ["view_analytics"],
       inputSchema: { type: "object", properties: { query: { type: "string" }, industry: { type: "string" } } },
       outputSchema: { type: "object", properties: { prospects: { type: "array" }, metrics: { type: "object" } } },

@@ -828,7 +828,7 @@ export function computeCorridorTariff(cfg: RawCorridorConfig, source: "CLOUDFLAR
   const cleartripPaise = mrpPaise + cleartripFeePaise;
   const competitorAveragePaise = Math.round((makeMyTripPaise + easeMyTripPaise + cleartripPaise) / 3);
 
-  // OrderKing Sovereign Member Pricing:
+  // OrderKing Member Pricing:
   // Strictly ₹0 convenience fee
   const founderGrossMarginPaise = Math.max(0, mrpPaise - tboNetPaise);
   // 200 bps (2%) cash/gold rebate on base MRP

@@ -18,7 +18,7 @@ const en = {
   nav: {
     dashboard: "Today",
     ceo: "CEO Command",
-    founderCommand: "Founder Sovereign Command",
+    founderCommand: "Founder Operations Command",
     approvals: "Approval Center",
     live: "Live Control",
     orders: "Orders",

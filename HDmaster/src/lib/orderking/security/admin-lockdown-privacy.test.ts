@@ -161,7 +161,7 @@ describe("Umar OS Security Specialist (93b44198): Administrative Access Lockdown
 
       const cleaned = founderPrivacyShield.sanitizePublicQueryResult(rawQueryResult);
 
-      expect(cleaned[0].name).toBe("Chief Sovereign Executive (OrderKing)");
+      expect(cleaned[0].name).toBe("Chief Executive (OrderKing)");
       expect(cleaned[0].phone).toBe(DEFAULT_PUBLIC_IDENTITY.publicNodalPhone);
       expect(cleaned[0].email).toBe(DEFAULT_PUBLIC_IDENTITY.publicSupportEmail);
       expect(cleaned[0].address).toBe(DEFAULT_PUBLIC_IDENTITY.publicStatutoryAddress);
@@ -172,7 +172,7 @@ describe("Umar OS Security Specialist (93b44198): Administrative Access Lockdown
 
     it("passes verifyZeroIdentityLeak for sanitized payloads", () => {
       const payload = {
-        name: "OrderKing Sovereign Operations",
+        name: "OrderKing Platform Operations",
         email: "support@orderking.in",
         phone: "+91 1800-KING-PAY",
         vpa: "orderking@ybl",

@@ -70,7 +70,7 @@ export const VERIFIED_FOUNDER_PORTFOLIO = [
   },
   {
     id: "PORT-FINTECH-POS",
-    title: "King Pay Sovereign QR & POS Billing Suite",
+    title: "KingPay QR & POS Billing Suite",
     description: "Merchant QR generation, bank-verified UPI settlement, and cryptographic financial event ledger.",
     liveUrl: "https://orderking-customers.pages.dev/pay",
     verifiedMetric: "100% IT Act §79 compliant, 0% gateway charges on direct UPI",

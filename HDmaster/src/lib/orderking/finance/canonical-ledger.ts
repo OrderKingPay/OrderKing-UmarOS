@@ -1072,7 +1072,7 @@ export class CanonicalLedger {
           direction: "DEBIT",
           amountPaise: params.amountPaise,
           entityId: "BANK_GATEWAY",
-          memo: params.memo || `Sovereign Bank Top-Up for user ${params.userId}`,
+          memo: params.memo || `Bank Top-Up for user ${params.userId}`,
         },
         {
           account: "CUSTOMER_WALLET",

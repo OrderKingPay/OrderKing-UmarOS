@@ -32,7 +32,7 @@ export const DEFAULT_CASCADE_SEQUENCE = [
   "gemini-2.5-pro",
   "gemini-2.5-flash",
   "deepseek-v3",
-  "sovereign-local-core",
+  "local-core",
 ] as const;
 
 export type CascadeModelId = (typeof DEFAULT_CASCADE_SEQUENCE)[number];
@@ -464,7 +464,7 @@ export async function executeModelRoutingWithFallback<T>(
   for (const modelId of executionCascade) {
     attemptedModels.push(modelId);
     try {
-      const profile = FRONTIER_MODELS[modelId] || FRONTIER_MODELS["sovereign-local-core"];
+      const profile = FRONTIER_MODELS[modelId] || FRONTIER_MODELS["local-core"];
       const res = await executor(modelId, profile);
       return {
         result: res,

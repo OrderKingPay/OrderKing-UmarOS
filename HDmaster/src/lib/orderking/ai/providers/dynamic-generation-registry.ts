@@ -84,7 +84,7 @@ export class DynamicGenerationRegistry {
 
     // Generation 5: Local In-Memory Offline Resilient Fallback
     this.registerModel({
-      modelId: "sovereign-local-core",
+      modelId: "local-core",
       name: "Local Offline Core",
       generation: "GEN_5_LOCAL_REASONING",
       providerId: "sovereign-local",

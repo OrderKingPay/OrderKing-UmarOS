@@ -37,7 +37,7 @@ export class ApplicationEngine {
   // Truthful Verified Portfolio Artifacts
   private readonly verifiedPortfolio = [
     {
-      projectName: "OrderKing Sovereign Ecosystem",
+      projectName: "OrderKing Operations Ecosystem",
       verifiedMetric: "Atomic double-entry financial ledger, zero-loss float reconciliation, 4-app live architecture (Customer, Partner, Rider, Admin).",
       techStack: ["Next.js 15", "React 19", "TypeScript", "PostgreSQL", "Kysely", "King Pay UPI"],
       repositoryReference: "OrderKing/HDmaster",

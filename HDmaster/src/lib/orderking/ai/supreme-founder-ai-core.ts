@@ -13,13 +13,13 @@ import type { UmarAiJumpCardData } from "./umar-ai-directory";
 export type AiModelId =
   | "auto-supreme-orchestrator"
   | "ensemble-consensus"
-  | "sovereign-ultra"
+  | "local-ultra"
   | "claude-4-6-opus"
   | "gpt-5-6-omni"
   | "grok-4-6-super"
   | "codex-supreme"
   | "gemini-3-8-ultra"
-  | "deepseek-r1-sovereign"
+  | "deepseek-r1-local"
   | "claude-3-7-sonnet"
   | "gpt-4o"
   | "gemini-2-5-pro"
@@ -40,12 +40,12 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
   }
   if (q.includes("video") || q.includes("image") || q.includes("render") || q.includes("4k") || q.includes("reel")) {
-    return { model: "sovereign-ultra", reason: "Auto-routed to OrderKing Core for photorealistic multimodal & 4K video generation." };
+    return { model: "local-ultra", reason: "Auto-routed to OrderKing Core for photorealistic multimodal & 4K video generation." };
   }
   if (q.includes("invoice") || q.includes("client") || q.includes("contract") || q.includes("legal") || q.includes("upwork") || q.includes("pitch")) {
     return { model: "claude-4-6-opus", reason: "Auto-routed to Claude 4.6 Opus for enterprise contractual & high-ticket negotiation excellence." };
   }
-  return { model: "sovereign-ultra", reason: "Auto-routed to OrderKing Core flagship executive reasoning engine." };
+  return { model: "local-ultra", reason: "Auto-routed to OrderKing Core flagship executive reasoning engine." };
 }
 
 export interface ChatAttachment {
@@ -186,7 +186,7 @@ export interface ConnectedPlatform {
   status: "CONNECTED" | "ENFORCING" | "STANDBY" | "SECURED";
   apiLatencyMs: number;
   lastSyncTime: string;
-  authMethod: "OAuth2 / HMAC-SHA256" | "Encrypted API Token" | "Zero-Knowledge Webhook" | "Direct Sovereign RPC";
+  authMethod: "OAuth2 / HMAC-SHA256" | "Encrypted API Token" | "Zero-Knowledge Webhook" | "Direct RPC";
   guardrailProtection: {
     sandboxVerified: boolean;
     zeroDataLeak: boolean;
@@ -241,11 +241,11 @@ export interface SystemSettingsConfig {
   zeroDataLeakProtection: boolean;
   hmacSha256Security: boolean;
   maxMemoryCacheMb: number;
-  edgeRoutingRegion: "ap-south-1" | "us-east-1" | "eu-west-1" | "global-sovereign";
+  edgeRoutingRegion: "ap-south-1" | "us-east-1" | "eu-west-1" | "global-edge";
 }
 
 export const DEFAULT_SYSTEM_SETTINGS: SystemSettingsConfig = {
-  aiModel: "sovereign-ultra",
+  aiModel: "local-ultra",
   thinkingDepth: "sovereign_ultra",
   speechVoice: "young_female_aria",
   speechSpeed: 1.05,
@@ -424,10 +424,10 @@ export async function parseFounderQuery(query: string, founderUpiVpa: string = "
 Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cached items and reclaim storage.`;
 
     const voiceSpokenText = isHindi
-      ? `Sovereign Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
+      ? `Storage Purifier active hai. ${inspection.formattedTotalSize} temporary cache scan ho gaya hai. Aapke sabhi client leads aur invoices bilkul surakshit hain.`
       : isBengali
-        ? `Sovereign Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
-        : `Sovereign Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
+        ? `Storage Purifier ready. ${inspection.formattedTotalSize} temp cache scan kora hoyeche. Apnar client leads ebong invoices 100% safe.`
+        : `Storage Purifier is armed. Scanned ${inspection.formattedTotalSize} of temporary cache. Your client leads and invoices are 100% protected and safe.`;
 
     return {
       intent: "storage_purifier",
@@ -727,7 +727,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     const inv = generateFounderClientInvoice({
       clientName: "Enterprise Client (Turnkey Software License)",
       amountInr: 75000,
-      description: "OrderKing Sovereign Cloud Software License & POS Deployment",
+      description: "OrderKing Cloud Software License & POS Deployment",
       founderUpiVpa,
     });
 
@@ -795,7 +795,7 @@ ${bp.frontendRoutes.map((r) => `  - \`${r}\``).join("\n")}
     else if (q.includes("aws") || q.includes("cloud") || q.includes("deploy") || q.includes("edge")) matchedPlatform = (await getUniversalPlatforms())[7];
 
     const executionSteps: AgentExecutionStep[] = [
-      { stepNumber: 1, totalSteps: 5, label: "Initializing Sovereign App Connector", status: "COMPLETED", detail: `Handshake established with ${matchedPlatform.name}` },
+      { stepNumber: 1, totalSteps: 5, label: "Initializing App Connector", status: "COMPLETED", detail: `Handshake established with ${matchedPlatform.name}` },
       { stepNumber: 2, totalSteps: 5, label: "Validating HMAC-SHA256 Security Guardrails", status: "COMPLETED", detail: "Zero Token Leak Sandbox active · Automated rollback snapshot created" },
       { stepNumber: 3, totalSteps: 5, label: "Auditing Active Platform Permissions", status: "COMPLETED", detail: `${matchedPlatform.authMethod} authenticated · Latency: ${matchedPlatform.apiLatencyMs}ms` },
       { stepNumber: 4, totalSteps: 5, label: "Arming Force-Execution Engine", status: "COMPLETED", detail: `${matchedPlatform.supportedActions.length} strict actions ready for founder execution` },
@@ -814,9 +814,9 @@ ${matchedPlatform.supportedActions.map((a) => `  - **${a.label}** (\`${a.safetyL
 Use the interactive card below to force task execution on **${matchedPlatform.name}** or browse other connected platforms.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine ${matchedPlatform.name} ke saath sovereign integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
+      ? `Maine ${matchedPlatform.name} ke saath platform integration verify kar li hai. Safety guardrails active hain aur aap 1-click me task enforce kar sakte hain.`
       : isBengali
-        ? `Ami ${matchedPlatform.name} er sathe sovereign connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
+        ? `Ami ${matchedPlatform.name} er sathe connection verify korechi. Safety guardrail active ache ebong apni 1-click e kaaj force korte paren.`
         : `Universal Platform Connector is synchronized with ${matchedPlatform.name}. All safety guardrails and rollback snapshots are verified. Ready to force task execution on your order.`;
 
     return {
@@ -955,7 +955,7 @@ You can **separate, extract, and deploy ANY part of HDmaster** into an independe
 4. **Client Acquisition Machine**: Standalone sales radar & proposal app (\`sales.orderking.in\`)
 5. **Hospital Management ERP**: Full healthcare patient portal (\`hospital.orderking.in\`)
 6. **Hyperlocal Multi-Vendor Marketplace**: Standalone food/grocery delivery app (\`market.orderking.in\`)
-7. **Sovereign Storage Purifier**: Standalone system cleaner cockpit (\`purifier.orderking.in\`)
+7. **Storage Purifier**: Standalone system cleaner cockpit (\`purifier.orderking.in\`)
 
 Select any module below to **preview standalone source code, download full ZIP package, or deploy to a different website!**`;
 

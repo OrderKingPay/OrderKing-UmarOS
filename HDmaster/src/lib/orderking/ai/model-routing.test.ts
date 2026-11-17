@@ -172,7 +172,7 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
     });
 
     it("confirms Sovereign Local Core has zero cost in USD and INR paise", () => {
-      const cost = estimateRoutingCost("sovereign-local-core", 500_000, 50_000);
+      const cost = estimateRoutingCost("local-core", 500_000, 50_000);
       expect(cost.costUsd).toBe(0);
       expect(cost.costInr).toBe(0);
       expect(cost.costInrPaise).toBe(0);
@@ -196,14 +196,14 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
       expect(cascadeCosts["gemini-2.5-pro"]).toBeDefined();
       expect(cascadeCosts["gemini-2.5-flash"]).toBeDefined();
       expect(cascadeCosts["deepseek-v3"]).toBeDefined();
-      expect(cascadeCosts["sovereign-local-core"]).toBeDefined();
+      expect(cascadeCosts["local-core"]).toBeDefined();
 
       // Pro cost > Flash cost
       expect(cascadeCosts["gemini-2.5-pro"].costInrPaise).toBeGreaterThan(
         cascadeCosts["gemini-2.5-flash"].costInrPaise
       );
       // Local cost is 0
-      expect(cascadeCosts["sovereign-local-core"].costInrPaise).toBe(0);
+      expect(cascadeCosts["local-core"].costInrPaise).toBe(0);
     });
   });
 
@@ -255,7 +255,7 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
         maxBudgetPaise: 100, // Pro breaches budget (costs > 400 paise)
       });
 
-      expect(decision.selectedModelId).toBe("sovereign-local-core");
+      expect(decision.selectedModelId).toBe("local-core");
       expect(decision.isFallback).toBe(true);
       expect(decision.evaluationChain[1].rejectionReasons[0]).toContain("Max output tokens breached");
       expect(decision.evaluationChain[2].rejectionReasons[0]).toContain("Max output tokens breached");
@@ -277,7 +277,7 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
         maxBudgetPaise: 0, // Zero paise forces Sovereign Local Core
       });
 
-      expect(decision.selectedModelId).toBe("sovereign-local-core");
+      expect(decision.selectedModelId).toBe("local-core");
       expect(decision.isFallback).toBe(true);
       expect(decision.estimatedCost.paise).toBe(0);
       expect(decision.evaluationChain[0].passed).toBe(false); // Pro breached
@@ -315,7 +315,7 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
         maxLatencyMs: 50,
       });
 
-      expect(decision.selectedModelId).toBe("sovereign-local-core");
+      expect(decision.selectedModelId).toBe("local-core");
       expect(decision.isFallback).toBe(true);
       expect(decision.typicalLatencyMs).toBe(12);
       // All three cloud models (520ms, 240ms, 410ms) breached the 50ms latency threshold
@@ -342,8 +342,8 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
       });
 
       // DeepSeek V3 cannot handle 72,000 tokens (limit: 64,000)
-      // Cascades to next in chain: sovereign-local-core (limit: 131,072)
-      expect(decision.selectedModelId).toBe("sovereign-local-core");
+      // Cascades to next in chain: local-core (limit: 131,072)
+      expect(decision.selectedModelId).toBe("local-core");
       expect(decision.isFallback).toBe(true);
       expect(decision.evaluationChain[0].rejectionReasons[0]).toContain("Context window breached");
     });
@@ -374,7 +374,7 @@ describe("UMAR OS Intelligent Fallback Model Router", () => {
       });
 
       // DeepSeek V3 rejected for lacking extended thinking -> cascades to Sovereign Local Core
-      expect(decision.selectedModelId).toBe("sovereign-local-core");
+      expect(decision.selectedModelId).toBe("local-core");
       expect(decision.evaluationChain[0].rejectionReasons[0]).toContain("does not support extended thinking");
     });
 

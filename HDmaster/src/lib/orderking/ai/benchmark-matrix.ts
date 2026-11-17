@@ -15,7 +15,7 @@
 export interface ModelEconomicProfile {
   id: string;
   name: string;
-  provider: "Google" | "Anthropic" | "DeepSeek" | "Local Sovereign";
+  provider: "Google" | "Anthropic" | "DeepSeek" | "Local Core";
   inputCostPerMillionUsd: number;
   outputCostPerMillionUsd: number;
   cachedInputCostPerMillionUsd: number;
@@ -104,10 +104,10 @@ export const FRONTIER_MODELS: Record<string, ModelEconomicProfile> = {
     humanEvalCodingScore: 88.2,
     math500Score: 90.4,
   },
-  "sovereign-local-core": {
-    id: "sovereign-local-core",
+  "local-core": {
+    id: "local-core",
     name: "Sovereign Local Core",
-    provider: "Local Sovereign",
+    provider: "Local Core",
     inputCostPerMillionUsd: 0.00,
     outputCostPerMillionUsd: 0.00,
     cachedInputCostPerMillionUsd: 0.00,

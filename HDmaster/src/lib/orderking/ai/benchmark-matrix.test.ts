@@ -14,10 +14,10 @@ describe("UMAR OS Multimodel Benchmark Matrix & Economic Engine", () => {
     expect(FRONTIER_MODELS["gemini-2.5-flash"]).toBeDefined();
     expect(FRONTIER_MODELS["claude-3-7-sonnet"]).toBeDefined();
     expect(FRONTIER_MODELS["deepseek-v3"]).toBeDefined();
-    expect(FRONTIER_MODELS["sovereign-local-core"]).toBeDefined();
+    expect(FRONTIER_MODELS["local-core"]).toBeDefined();
 
     // Verify sovereign local core has zero marginal token cost
-    const local = FRONTIER_MODELS["sovereign-local-core"];
+    const local = FRONTIER_MODELS["local-core"];
     expect(local.inputCostPerMillionUsd).toBe(0);
     expect(local.outputCostPerMillionUsd).toBe(0);
     expect(local.typicalTtftMs).toBeLessThan(50);

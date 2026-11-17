@@ -372,10 +372,10 @@ describe("UmarOS Security Hardening & DevSecOps Suite", () => {
     });
 
     it("enforces zero founder personal identity leaks with FounderPrivacyShield", () => {
-      const leakedInput = "Payment authorized by Hasan Habibullah for sovereign delivery node.";
+      const leakedInput = "Payment authorized by Hasan Habibullah for delivery node.";
       const masked = founderPrivacyShield.maskText(leakedInput);
       expect(masked).not.toContain("Hasan Habibullah");
-      expect(masked).toContain("Chief Sovereign Executive (OrderKing)");
+      expect(masked).toContain("Chief Executive (OrderKing)");
 
       const audit = founderPrivacyShield.verifyZeroIdentityLeak({
         payer: "Hasan",

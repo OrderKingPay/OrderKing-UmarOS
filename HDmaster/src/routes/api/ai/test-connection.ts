@@ -35,7 +35,7 @@ export const Route = createFileRoute("/api/ai/test-connection")({
             });
           }
           const body = (await request.json()) as { modelId?: string };
-          const modelId = body?.modelId || "sovereign-ultra";
+          const modelId = body?.modelId || "local-ultra";
           const result = await testModelConnectivity(modelId);
           return new Response(JSON.stringify(result), {
             status: 200,

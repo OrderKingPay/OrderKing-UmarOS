@@ -4522,7 +4522,7 @@ function GoLivePage() {
             variant={cur.capacity.syntheticLoadGeneratorEnabled ? "primary" : "secondary"}
             onClick={() => updateCapacity({ syntheticLoadGeneratorEnabled: !cur.capacity.syntheticLoadGeneratorEnabled })}
           >
-            Synthetic Load Generator: {cur.capacity.syntheticLoadGeneratorEnabled ? "ON" : "OFF"}
+            Load Generator: {cur.capacity.syntheticLoadGeneratorEnabled ? "ON" : "OFF"}
           </Button>
           <Button
             size="sm"

@@ -380,7 +380,7 @@ export class LiveOrchestrationEngine {
     if (validVerdicts.length === 0) {
       const localAdapter = this.adapters.get("sovereign_local")!;
       const localRes = await localAdapter.executePrompt({
-        model: "sovereign-ultra-deterministic",
+        model: "local-ultra-deterministic",
         systemPrompt,
         prompt: params.prompt,
       });

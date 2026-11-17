@@ -124,7 +124,7 @@ export class EnsembleConsensusEngine {
         connectionStatus: "CONNECTED",
       },
       {
-        modelId: "deepseek-r1-sovereign",
+        modelId: "deepseek-r1-local",
         modelName: "DeepSeek R1 Local Core",
         provider: "OpenSource",
         confidenceScore: 99.4,

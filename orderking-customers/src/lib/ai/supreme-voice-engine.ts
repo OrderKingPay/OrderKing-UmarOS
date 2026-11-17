@@ -81,7 +81,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
   ananya: {
     id: "ananya",
     name: "Ananya",
-    tagline: "Bengal & Northeast Sovereign · Warm, melodious Bengali & Sylheti native",
+    tagline: "Bengal & Northeast Operations · Warm, melodious Bengali & Sylheti native",
     pitch: 1.22,
     rate: 1.04,
     recommendedLanguages: ["bn-IN", "as-IN", "en-IN"],

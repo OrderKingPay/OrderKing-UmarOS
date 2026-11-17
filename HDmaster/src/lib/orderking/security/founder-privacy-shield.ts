@@ -1,4 +1,4 @@
-// Umar OS Founder Privacy & Sovereign Identity Shield
+// Umar OS Founder Privacy & Platform Identity Shield
 // Enforces 100% cryptographic masking: Zero founder personal identity
 // is ever visible to any customer, restaurant, rider, or public entity.
 
@@ -12,7 +12,7 @@ export interface MaskedIdentityConfig {
 }
 
 export const DEFAULT_PUBLIC_IDENTITY: MaskedIdentityConfig = {
-  publicEntityName: "OrderKing Sovereign Operations",
+  publicEntityName: "OrderKing Platform Operations",
   publicLegalEntity: "King Pay Network Technologies (Section 79 IT Act Compliant Intermediary)",
   publicSupportEmail: "support@orderking.in",
   publicNodalPhone: "+91 1800-KING-PAY",
@@ -34,9 +34,9 @@ export class FounderPrivacyShield {
     let sanitized = input;
 
     // Replace known personal aliases with Sovereign Network Title
-    sanitized = sanitized.replace(/hasan\s*habibullah/gi, "Chief Sovereign Executive (OrderKing)");
+    sanitized = sanitized.replace(/hasan\s*habibullah/gi, "Chief Executive (OrderKing)");
     sanitized = sanitized.replace(/hasan/gi, "Executive Director");
-    sanitized = sanitized.replace(/habibullah/gi, "Sovereign Administrator");
+    sanitized = sanitized.replace(/habibullah/gi, "Platform Administrator");
 
     return sanitized;
   }

@@ -10,7 +10,7 @@ describe("Sovereign Local Intelligence Provider", () => {
   it("is always configured and operational", () => {
     expect(provider.isConfigured).toBe(true);
     expect(provider.id).toBe("sovereign-local");
-    expect(provider.supportedModels).toContain("sovereign-local-core");
+    expect(provider.supportedModels).toContain("local-core");
   });
 
   it("handles conversational tool selection for platform state", async () => {
@@ -70,7 +70,7 @@ describe("Dynamic Generation Registry", () => {
   it("filters free tier models accurately", () => {
     const freeModels = dynamicGenerationRegistry.listFreeTierModels();
     const ids = freeModels.map((m) => m.modelId);
-    expect(ids).toContain("sovereign-local-core");
+    expect(ids).toContain("local-core");
     expect(ids).toContain("deepseek-r1-distill-llama-70b");
     expect(ids).toContain("llama-3.3-70b-versatile");
   });

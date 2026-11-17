@@ -624,17 +624,17 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
     emoji: "AI",
     badge: "16 Depts",
     tagline:
-      "Sovereign King AI Command, 16 Specialist Departments, Role-Based Access Governance & Plugin Connectors",
+      "AI Operations Command, 16 Specialist Departments, Role-Based Access Governance & Plugin Connectors",
     categories: [
       {
         id: "umar_ai_command",
         label: "King AI Command",
-        summary: "Sovereign AI copilot, deterministic operations triage, and token budget governance.",
+        summary: "Operations AI copilot, deterministic operations triage, and token budget governance.",
         badge: "AI Core",
         options: [
           {
             id: "ai-console",
-            subCategory: "Sovereign Copilot",
+            subCategory: "Operations Copilot",
             label: "King AI Operations & Analytics Console",
             description: "Query live order bottlenecks, settlement anomalies, and partner health via AI.",
             to: "/app/ai",
@@ -969,7 +969,7 @@ export const UMAR_OS_BOTTOM_HUBS: BottomNavHub[] = [
           {
             id: "exec-command-home",
             subCategory: "Founder Deck",
-            label: "Sovereign Founder Command Dashboard",
+            label: "Founder Operations Command Dashboard",
             description: "Unified executive cockpit with live GMV, active fleet, and 6-tier health indicators.",
             to: "/app",
             badge: "Master Deck",

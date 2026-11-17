@@ -14,7 +14,7 @@ export interface PublicFacingEntity {
 export const SOVEREIGN_PUBLIC_ENTITIES: Record<"FOODS" | "KINGPAY" | "SYSTEM", PublicFacingEntity> = {
   FOODS: {
     appName: "Order King",
-    legalEntity: "OrderKing Sovereign Operations Private Limited",
+    legalEntity: "OrderKing Platform Operations Private Limited",
     supportEmail: "ops@orderking.in",
     publicPhone: "+91 8000 123 456",
     publicUpiVpa: "9395065587@ybl",

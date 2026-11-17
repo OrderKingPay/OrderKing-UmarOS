@@ -166,7 +166,7 @@ export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   // 3. KingPay Fintech & Payment Switch
   kingPayOfflineMessage: "KingPay digital wallet switch is undergoing scheduled reserve settlement maintenance. Instant UPI and card rails remain fully active.",
   kingPayHeroHeadline: "Instant 1-Tap Checkout with Zero Payment Failure Rate",
-  kingPayWalletBalanceLabel: "Available Sovereign Balance",
+  kingPayWalletBalanceLabel: "Available Balance",
   kingPayInstantCheckoutCta: "Pay with KingPay (1-Tap Instant Checkout)",
   kingPayCashbackPromoText: "Earn instant cash rewards deposited directly into your verified wallet on every meal order.",
   kingPayLaterNotice: "Direct NPCI UPI (orderking@ybl, 9395065587@ybl) and Nodal Escrow digital settlement rails.",
@@ -1173,7 +1173,7 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     enabled: false,
     currency: "INR",
     autoSettlement: true,
-    syndicateNetworkName: "OrderKing Sovereign Global Ad Syndicate",
+    syndicateNetworkName: "OrderKing Global Ad Syndicate",
     promotedPlacements: {
       enabled: true,
       dailyPlacementFeeInr: 450,

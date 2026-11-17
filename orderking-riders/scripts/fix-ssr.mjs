@@ -45,7 +45,7 @@ function readEnv() {
     SMS_GATEWAY_API_KEY: '8N1WpYHWBVeiCvSqiH0AoYYF8xXp227bvOF3RDFeBBg4QVf4Gx8cACyYk7aiUNowVGPVaj9GePXTJcfU',
     TWOFACTOR_API_KEY: 'bae2bf50-d3d4-11f1-ac3e-0200cd936042',
     OTP_2FACTOR_API_KEY: 'bae2bf50-d3d4-11f1-ac3e-0200cd936042',
-    TWOFACTOR_OTP_TEMPLATE: 'AUTOGEN',
+    TWOFACTOR_OTP_TEMPLATE: 'OTP1',
     VITE_AUTH_ENABLED: 'true',
   };
   for (const [k, v] of Object.entries(productionDefaults)) {

@@ -750,7 +750,7 @@ export class McpServerRuntime {
     this.registerTool({
       name: "social_publish_campaign",
       description:
-        "Dispatches and broadcasts marketing creatives and campaign copy across sovereign social channels.",
+        "Dispatches and broadcasts marketing creatives and campaign copy across connected social channels.",
       requiredPermissions: ["social:publish"],
       inputSchema: {
         type: "object",

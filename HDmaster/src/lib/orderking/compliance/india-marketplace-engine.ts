@@ -97,7 +97,7 @@ export interface CentralCommissionTierDef {
 
 export const CENTRAL_COMMISSION_TIERS: readonly CentralCommissionTierDef[] = [
   { pct: 0, bps: 0, label: "Direct Dine-In / QR Order & Pay", category: "DINE_IN", description: "Direct order model for dine-in table ordering, QR payments, and new partner onboarding" },
-  { pct: 3, bps: 300, label: "3% Sovereign Essential", category: "ESSENTIAL", description: "Direct order link, sovereign cloud kitchens and essential food services" },
+  { pct: 3, bps: 300, label: "3% Standard Essential", category: "ESSENTIAL", description: "Direct order link, sovereign cloud kitchens and essential food services" },
   { pct: 5, bps: 500, label: "5% Hyperlocal Self-Delivery", category: "HYPERLOCAL", description: "Merchant self-delivery model with platform customer discovery" },
   { pct: 8, bps: 800, label: "8% Statutory Floor Minimum", category: "STATUTORY_FLOOR", description: "Statutory minimum floor commission for high-volume enterprise contracts" },
   { pct: 12, bps: 1200, label: "12% Standard Marketplace", category: "STANDARD", description: "Standard standalone restaurants and regional food businesses" },

@@ -1,5 +1,5 @@
 /**
- * OrderKing Sovereign Travel Engine - Production B2B Partner Aggregators
+ * OrderKing Travel Engine - Production B2B Partner Aggregators
  *
  * Real-world white-label affiliate and aggregation deep-link routing engine for:
  * 1. Flights: Kiwi.com / Skyscanner affiliate links with live route params (origin, destination, date, passengers, currency=INR, affiliate sub-id).
@@ -106,7 +106,7 @@ export interface PartnerDeepLinkResult {
   clickId: string;
   expectedCommissionBps: number;
   estimatedCommissionPaise: number;
-  platformMarkupPaise: 0; // Strictly 0 paise under OrderKing Sovereign Travel guarantee
+  platformMarkupPaise: 0; // Strictly 0 paise under OrderKing Travel guarantee
   routeSummary: string;
   createdAt: string;
   expiresAt: string;

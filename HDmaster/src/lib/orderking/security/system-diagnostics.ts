@@ -280,13 +280,13 @@ export class SystemDiagnosticsEngine {
 
   private static checkSecurityShieldHealth(): ComponentHealth {
     const t0 = Date.now();
-    const testPayload = "Order King Sovereign Operations - Nodal Intermediary Audit";
+    const testPayload = "Order King Platform Operations - Nodal Intermediary Audit";
     const verification = founderPrivacyShield.verifyZeroIdentityLeak(testPayload);
     const latencyMs = Date.now() - t0;
 
     return {
       componentId: 'founder_privacy_shield',
-      name: 'Founder Privacy & Sovereign Identity Shield',
+      name: 'Founder Privacy & Platform Identity Shield',
       category: 'SECURITY',
       status: verification.leakDetected ? 'CRITICAL' : 'HEALTHY',
       latencyMs: Math.max(1, latencyMs),
@@ -296,7 +296,7 @@ export class SystemDiagnosticsEngine {
       metrics: {
         leakDetected: verification.leakDetected,
         shieldActive: true,
-        maskedEntityName: "OrderKing Sovereign Operations",
+        maskedEntityName: "OrderKing Platform Operations",
       },
       lastCheckedAt: new Date().toISOString(),
       incidentCount: verification.leakDetected ? 1 : 0,

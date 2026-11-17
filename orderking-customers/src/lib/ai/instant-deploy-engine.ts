@@ -39,7 +39,7 @@ export class InstantDeployEngine {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
-      .slice(0, 24) || "sovereign-portal";
+      .slice(0, 24) || "operations-portal";
     
     const projectId = `deploy-${Date.now()}`;
     const targetDomain = `https://${slug}.orderking.in`;
@@ -88,7 +88,7 @@ export class InstantDeployEngine {
 
     return {
       id: projectId,
-      projectName: prompt.slice(0, 35) || "Sovereign Project",
+      projectName: prompt.slice(0, 35) || "Project",
       category: "business_portal",
       liveUrl: previewDataUri,
       previewDataUri,

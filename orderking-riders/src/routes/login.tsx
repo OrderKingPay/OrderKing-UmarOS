@@ -511,6 +511,15 @@ function Login() {
                   <ShieldCheck className="size-4 text-sky-600" />
                   <span>Verify with Truecaller (1-Tap)</span>
                 </Button>
+                <div className="pt-2 text-center">
+                  <Link
+                    to="/benefits"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E23744] hover:underline"
+                  >
+                    <span>View Partner Benefits &amp; Earning Guide</span>
+                    <span aria-hidden="true">&rarr;</span>
+                  </Link>
+                </div>
               </form>
 
               <p className="text-center text-[11px] leading-relaxed text-gray-500">

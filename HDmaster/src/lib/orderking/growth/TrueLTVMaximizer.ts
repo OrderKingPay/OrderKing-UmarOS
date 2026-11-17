@@ -71,7 +71,7 @@ export class TrueLTVMaximizer {
    */
   public getMaximumSustainableCac(trueLtv: number): number {
     // We can spend up to 25% of the TRUE ecosystem LTV on acquisition.
-    // Because our LTV is ~4x competitors, our 25% CAC allows us to dominate any market.
+    // Because our LTV is ~4x competitors, our 25% CAC allows us to operate efficiently across any market.
     return parseFloat((trueLtv * 0.25).toFixed(2));
   }
 }

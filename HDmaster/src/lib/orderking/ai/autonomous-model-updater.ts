@@ -72,7 +72,7 @@ export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
     benchmarkScore: 100.0,
   },
   {
-    id: "deepseek-r1-sovereign",
+    id: "deepseek-r1-local",
     name: "DeepSeek R1 Reasoner",
     generation: "deepseek-r1-local",
     provider: "DeepSeek",

@@ -214,7 +214,7 @@ export function formatRazorpayXCompositePayoutPayload(
     narration: cleanNarration,
     notes: {
       platform: 'OrderKing',
-      engine: 'KingPay Sovereign Settlement',
+      engine: 'KingPay Settlement',
       ...(input.notes || {}),
       ...statutoryNotes,
     },
@@ -359,7 +359,7 @@ export async function executeRazorpayXPayout(
     narration: input.narration || "OrderKing T+1 Payout",
     notes: {
       platform: "OrderKing",
-      engine: "KingPay Sovereign Settlement",
+      engine: "KingPay Settlement",
       ...(input.notes || {}),
     },
   };

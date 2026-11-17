@@ -334,7 +334,7 @@ export async function executeFounderAiChat(
     } else if (xaiKey) {
       activeRecord = registry.find((m) => m.id === "grok-4-6-super") || activeRecord;
     } else {
-      activeRecord = registry.find((m) => m.id === "sovereign-ultra") || registry[0];
+      activeRecord = registry.find((m) => m.id === "local-ultra") || registry[0];
     }
   }
 
@@ -430,7 +430,7 @@ export async function executeFounderAiChat(
   }
 
   // 4. External Cloud Provider Execution
-  if (activeRecord.provider !== "Local Sovereign") {
+  if (activeRecord.provider !== "Local Core") {
     const providerKey = activeRecord.provider.toLowerCase();
     const apiKey = request.apiKeys?.[providerKey] || await getProviderApiKeyAsync(providerKey);
 

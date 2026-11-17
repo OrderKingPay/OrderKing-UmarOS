@@ -100,7 +100,7 @@ export function CommercialBypassDialsSection() {
   const [mandatoryGigInsuranceCompliance, setMandatoryGigInsuranceCompliance] = useState(true);
   const [garageRoadsideAssistanceActive, setGarageRoadsideAssistanceActive] = useState(true);
 
-  // 9. WhatsApp Viral Bounty Referral Dials
+  // 9. WhatsApp Referral Reward Referral Dials
   const [customerReferralBountyInr, setCustomerReferralBountyInr] = useState(50);
   const [refereeFirstOrderDiscountInr, setRefereeFirstOrderDiscountInr] = useState(100);
   const [milestoneFiveFriendsBonusInr, setMilestoneFiveFriendsBonusInr] = useState(500);
@@ -904,7 +904,7 @@ export function CommercialBypassDialsSection() {
         </div>
 
         {/* ================================================================= */}
-        {/* DIAL 9: WhatsApp Viral Bounty Credit Dials */}
+        {/* DIAL 9: WhatsApp Referral Reward Credit Dials */}
         {/* ================================================================= */}
         <div className="rounded-xl border border-teal-500/30 bg-zinc-950/80 p-4 space-y-4 shadow-lg flex flex-col justify-between">
           <div className="space-y-2">

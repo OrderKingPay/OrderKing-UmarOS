@@ -221,7 +221,7 @@ export const FOUNDER_TOOL_REGISTRY: Record<string, FounderTool> = {
 
   system_health_audit: {
     name: "system_health_audit",
-    label: "Sovereign Security & System Health Audit",
+    label: "Security & System Health Audit",
     description: "Inspects database connections, memory usage, background worker health, and security invariants.",
     category: "system",
     risk: "READ",

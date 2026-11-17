@@ -522,7 +522,7 @@ export const AI_FOUNDATION_MODELS: readonly TechRegistryItem[] = [
     name: "Google Gemini 1.5/2.0",
     category: "ai_foundation_models",
     provider: "Google DeepMind / Google Cloud",
-    tier: "Primary Multimodal Supreme Reasoning Engine",
+    tier: "Primary Multimodal Reasoning Engine",
     status: "ONLINE",
     version: "Gemini 2.5 Pro / Flash & 1.5 Pro",
     latencyMs: 320,
