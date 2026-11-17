@@ -100,7 +100,14 @@ describe("Rider Fleet & Telecom Specialist Quality Gate (4ee818c6)", () => {
     });
 
     it("verifies sms-gateway.ts enforces sub-3-second timeout controller", async () => {
+      const origPrimary = process.env.PRIMARY_SMS_PROVIDER;
+      const orig2fKey = process.env.TWOFACTOR_API_KEY;
+      const origOtp2fKey = process.env.OTP_2FACTOR_API_KEY;
+
+      process.env.PRIMARY_SMS_PROVIDER = "fast2sms";
       process.env.FAST2SMS_API_KEY = "test_f2s_sms_gw";
+      delete process.env.TWOFACTOR_API_KEY;
+      delete process.env.OTP_2FACTOR_API_KEY;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -112,14 +119,21 @@ describe("Rider Fleet & Telecom Specialist Quality Gate (4ee818c6)", () => {
       });
       vi.stubGlobal("fetch", mockFetch);
 
-      const res = await dispatchOtpSms({
-        phone: "9876543210",
-        otp: "889900",
-      });
+      try {
+        const res = await dispatchOtpSms({
+          phone: "9876543210",
+          otp: "889900",
+        });
 
-      expect(res.success).toBe(true);
-      expect(res.provider).toBe("fast2sms");
-      expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(res.success).toBe(true);
+        expect(res.provider).toBe("fast2sms");
+        expect(mockFetch).toHaveBeenCalledTimes(1);
+      } finally {
+        if (origPrimary !== undefined) process.env.PRIMARY_SMS_PROVIDER = origPrimary;
+        else delete process.env.PRIMARY_SMS_PROVIDER;
+        if (orig2fKey !== undefined) process.env.TWOFACTOR_API_KEY = orig2fKey;
+        if (origOtp2fKey !== undefined) process.env.OTP_2FACTOR_API_KEY = origOtp2fKey;
+      }
     });
   });
 

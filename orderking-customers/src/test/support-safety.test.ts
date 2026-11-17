@@ -6,6 +6,9 @@ const state = vi.hoisted(() => ({
 vi.mock("@tanstack/react-start", () => ({
   createServerFn: () => { const b: any = { middleware: () => b, validator: () => b, handler: (h: any) => h }; return b; },
 }));
+vi.mock("@tanstack/start-client-core", () => ({
+  createServerFn: () => { const b: any = { middleware: () => b, validator: () => b, handler: (h: any) => h }; return b; },
+}));
 vi.mock("@/lib/auth/middleware", () => ({ authMiddleware: {} }));
 vi.mock("@/lib/db", () => ({
   getSql: async () => async (strings: TemplateStringsArray, ...values: unknown[]) => {

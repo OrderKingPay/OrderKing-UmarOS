@@ -361,6 +361,7 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
 
   describe("8. Automatic Multi-Gateway Failover", () => {
     it("fails over from Fast2SMS to 2Factor if Fast2SMS returns 500 error", async () => {
+      process.env.PRIMARY_SMS_PROVIDER = "fast2sms";
       process.env.FAST2SMS_API_KEY = "f2s_key";
       process.env.TWOFACTOR_API_KEY = "2factor_key";
 
@@ -387,6 +388,40 @@ describe("OrderKing Telecom & SMS Gateway Dispatch Engine", () => {
       expect(res.success).toBe(true);
       expect(res.provider).toBe("2factor");
       expect(res.messageId).toBe("2F_FAILOVER_SUCCESS_ID");
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      delete process.env.PRIMARY_SMS_PROVIDER;
+    });
+
+    it("defaults to 2Factor primary and fails over to Fast2SMS if 2Factor fails", async () => {
+      delete process.env.PRIMARY_SMS_PROVIDER;
+      process.env.TWOFACTOR_API_KEY = "2factor_key";
+      process.env.FAST2SMS_API_KEY = "f2s_key";
+
+      const mockFetch = vi.fn()
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+          text: async () => "2Factor error",
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            return: true,
+            request_id: "F2S_FAILOVER_SUCCESS_ID",
+            message: ["SMS delivered"],
+          }),
+        });
+      vi.stubGlobal("fetch", mockFetch);
+
+      const res = await dispatchOtpSms({
+        phone: "9876543210",
+        otp: "990011",
+      });
+
+      expect(res.success).toBe(true);
+      expect(res.provider).toBe("fast2sms");
+      expect(res.messageId).toBe("F2S_FAILOVER_SUCCESS_ID");
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });
   });
