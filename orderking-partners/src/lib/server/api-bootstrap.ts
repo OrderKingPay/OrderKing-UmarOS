@@ -537,7 +537,7 @@ export const submitForReview = createServerFn({ method: "POST" })
         throw new Error("A valid 10-character PAN card number is required to submit your restaurant for verification.");
       }
       if (rest.bank_ifsc && !validateIfsc(rest.bank_ifsc)) {
-        throw new Error("A valid 11-character Bank IFSC code is required to ensure seamless payouts for your restaurant.");
+        throw new Error("A valid 11-character Bank IFSC code is required to ensure timely payouts for your restaurant.");
       }
       if (rest.gstin && rest.gstin.trim() && !validateGstin(rest.gstin.trim())) {
         throw new Error("The GSTIN format provided is invalid. Please enter a valid 15-character GSTIN, or leave it blank if turnover is under ₹20 Lakhs.");

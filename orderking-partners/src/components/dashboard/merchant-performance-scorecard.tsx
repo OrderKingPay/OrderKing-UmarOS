@@ -350,7 +350,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
             <span className="text-gray-600">
               {scorecard.isEligibleForPromotedPlacement
                 ? "Your outlet qualifies for 1st-page search boost and high-ranking banner placements on OrderKing."
-                : "Maintain Acceptance >= 98%, Cancellation < 0.5%, and Rating >= 4.5 to unlock search boost."}
+                : "Maintain Acceptance >= 98%, Cancellation < 0.5%, and Rating >= 4.5 to qualify for search boost."}
             </span>
           </div>
         </div>

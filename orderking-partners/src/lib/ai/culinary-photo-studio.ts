@@ -1,5 +1,5 @@
 // Order King King AI: Automated Culinary Photo Studio & Menu Experience Engine
-// Deterministic, studio-grade 4:3 food visual rendering, smart culinary taxonomy,
+// Deterministic, studio-grade 4:3 food visual rendering, standardized culinary taxonomy,
 // dietary classification, and 1-tap automated dish photo generation for restaurant partners.
 
 export type CulinaryStudioLightingStyle =
@@ -410,7 +410,7 @@ export const CULINARY_PHOTO_DATABASE: CulinaryVisualPreset[] = [
     basePriceRupees: 189,
     servingSize: "1 Large Burger with Dip",
     description:
-      "Crispy seasoned vegetable patty tucked in a toasted sesame brioche bun with crunchy iceberg lettuce, ripe tomatoes, melted cheese, and our secret house dressing.",
+      "Crispy seasoned vegetable patty tucked in a toasted sesame brioche bun with crunchy iceberg lettuce, ripe tomatoes, melted cheese, and house herb dressing.",
     tags: ["Pure Veg", "Toasted Brioche Bun", "Crunchy Herb Patty", "Serves 1 (250g)"],
     primaryPhotoUrl:
       "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",

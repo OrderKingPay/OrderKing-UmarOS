@@ -33,7 +33,7 @@ function validateSubmitForReviewRequirements(rest: {
   }
   if (!validateIfsc(rest.bank_ifsc)) {
     throw new Error(
-      "A valid 11-character Bank IFSC code is required to ensure seamless payouts for your restaurant."
+      "A valid 11-character Bank IFSC code is required to ensure timely payouts for your restaurant."
     );
   }
   if (rest.gstin && rest.gstin.trim() && !validateGstin(rest.gstin.trim())) {

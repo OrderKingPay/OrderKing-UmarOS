@@ -386,7 +386,7 @@ function HoursPage() {
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-[#E23744]" />
               <h3 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
-                1-Tap Smart Schedule Templates
+                1-Tap Schedule Templates
               </h3>
             </div>
             <div className="flex flex-wrap gap-2">

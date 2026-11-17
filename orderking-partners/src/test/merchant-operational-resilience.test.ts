@@ -108,7 +108,7 @@ describe("Merchant Operational Resilience Suite", () => {
       }).toThrow("Please select at least one out-of-stock dish from the order to decline.");
     });
 
-    it("seamlessly links 'item_unavailable' with Timed Stockout presets and computes target expiry", () => {
+    it("directly links 'item_unavailable' with Timed Stockout presets and computes target expiry", () => {
       const refDate = new Date("2026-10-17T12:00:00.000Z");
 
       // 1. Turn off for 2 Hours

@@ -408,7 +408,7 @@ function SettingsPage() {
                       Multi-Outlet Locations &amp; Switcher
                     </h2>
                     <p className="text-xs text-gray-500">
-                      Seamlessly switch between your dining rooms, bistros, and cloud kitchens across India without logging out.
+                      Switch between active outlets and cloud kitchens without logging out.
                     </p>
                   </div>
                 </div>
