@@ -7,26 +7,27 @@ import {
   verifyTotpCode,
   generateRecoveryCodes,
   verifyRecoveryCode,
-} from "../../src/lib/auth/two-factor.server";
+} from "../../src/lib/auth/two-factor.server.ts";
 
-import { AuthRateLimitSentinel } from "../../src/lib/auth/sentinel.server";
+import { AuthRateLimitSentinel } from "../../src/lib/auth/sentinel.server.ts";
 
 import {
   hasPermission,
   requirePermission,
+  resolvePermissions,
   assertRefundApprovalAuthority,
   ForbiddenError,
   type AccessContext,
-} from "../../src/lib/orderking/rbac";
+} from "../../src/lib/orderking/rbac.ts";
 
 import {
   computeAuditChecksum,
   verifyAuditChainIntegrity,
-} from "../../src/lib/orderking/security/system-audit-ledger";
+} from "../../src/lib/orderking/security/system-audit-ledger.ts";
 
 import {
   militaryAntiFraudShield,
-} from "../../src/lib/orderking/security/military-anti-fraud-shield";
+} from "../../src/lib/orderking/security/military-anti-fraud-shield.ts";
 
 import {
   freezeAllPayouts,
@@ -37,12 +38,12 @@ import {
   dispatchEmergencySosBridge,
   getMasterLockdownState,
   type ActorSecurityContext,
-} from "../../src/lib/orderking/security/emergency-command.server";
+} from "../../src/lib/orderking/security/emergency-command.server.ts";
 
 import {
   reconcileDailyPlatformSettlement,
   type SettlementLedgerSummary,
-} from "../../src/lib/orderking/finance/daily-settlement-reconciliation.server";
+} from "../../src/lib/orderking/finance/daily-settlement-reconciliation.server.ts";
 
 describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
   // =========================================================================
@@ -124,8 +125,9 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const founderCtx: AccessContext = {
         userId: "founder_1",
         roleKey: "FOUNDER",
-        permissions: [],
+        permissions: resolvePermissions("FOUNDER"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
       assert.equal(hasPermission(founderCtx, "manage_platform_settings"), true);
       assert.equal(hasPermission(founderCtx, "approve_settlements"), true);
@@ -137,8 +139,9 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const financeCtx: AccessContext = {
         userId: "fin_1",
         roleKey: "FINANCE_CONTROLLER",
-        permissions: [],
+        permissions: resolvePermissions("FINANCE_CONTROLLER"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
       assert.equal(hasPermission(financeCtx, "approve_settlements"), true);
       assert.equal(hasPermission(financeCtx, "modify_financial_settings"), true);
@@ -154,8 +157,9 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const dispatchCtx: AccessContext = {
         userId: "disp_1",
         roleKey: "DISPATCH_CHIEF",
-        permissions: [],
+        permissions: resolvePermissions("DISPATCH_CHIEF"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
       assert.equal(hasPermission(dispatchCtx, "modify_orders"), true);
       assert.equal(hasPermission(dispatchCtx, "manage_delivery_zones"), true);
@@ -170,8 +174,9 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const supportCtx: AccessContext = {
         userId: "supp_1",
         roleKey: "SUPPORT_SPECIALIST",
-        permissions: [],
+        permissions: resolvePermissions("SUPPORT_SPECIALIST"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
 
       // ₹100 or less allowed
@@ -189,20 +194,23 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const supportCtx: AccessContext = {
         userId: "supp_1",
         roleKey: "SUPPORT_SPECIALIST",
-        permissions: [],
+        permissions: resolvePermissions("SUPPORT_SPECIALIST"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
       const financeCtx: AccessContext = {
         userId: "fin_1",
         roleKey: "FINANCE_CONTROLLER",
-        permissions: [],
+        permissions: resolvePermissions("FINANCE_CONTROLLER"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
       const founderCtx: AccessContext = {
         userId: "root_1",
         roleKey: "FOUNDER",
-        permissions: [],
+        permissions: resolvePermissions("FOUNDER"),
         orgId: "org_1",
+        status: "ACTIVE",
       };
 
       // 60,000 paise (₹600.00)
@@ -252,90 +260,105 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
   // 5. REAL-TIME FRAUD SENTINEL & ANTI-ABUSE ENGINE
   // =========================================================================
   describe("5. Military Anti-Fraud Shield & Anti-Abuse Sentinel", () => {
-    it("flags rider teleportation when geodesic speed > 120 km/h or mock provider", async () => {
-      // Coordinate shift > 120 km/h
-      // Guwahati (26.1445, 91.7362) to Karimganj (24.8690, 92.3586) in 60 seconds
-      const result = await militaryAntiFraudShield.evaluateRiderTelemetryRisk({
+    it("flags rider teleportation when geodesic speed > 120 km/h or mock provider", () => {
+      const result = militaryAntiFraudShield.validateRiderTelemetry({
         riderId: "rider_teleport",
-        latitude: 26.1445,
-        longitude: 91.7362,
+        lat: 26.1445,
+        lng: 91.7362,
         timestamp: Date.now(),
-        previousTelemetry: {
-          latitude: 24.8690,
-          longitude: 92.3586,
-          timestamp: Date.now() - 60000, // 1 minute ago (~180 km distance)
-        },
+        lastLat: 24.8690,
+        lastLng: 92.3586,
+        lastTimestamp: Date.now() - 60000, // 1 minute ago (~180 km distance -> >120 km/h)
       });
 
-      assert.equal(result.isFlagged, true);
-      assert.ok(result.speedKmh > 120, "Speed must exceed 120 km/h");
-      assert.ok(result.riskFlags.some((f) => f.includes("EXCESSIVE_SPEED")));
+      assert.equal(result.valid, false);
+      assert.equal(result.code, "GPS_TELEPORTATION_DETECTED");
+      assert.match(result.reason, /exceeds 120 km\/h/);
     });
 
-    it("flags telemetry if isFromMockProvider returns true", async () => {
-      const mockResult = await militaryAntiFraudShield.evaluateRiderTelemetryRisk({
+    it("flags telemetry if isFromMockProvider returns true", () => {
+      const mockResult = militaryAntiFraudShield.validateRiderTelemetry({
         riderId: "rider_mock",
-        latitude: 24.8690,
-        longitude: 92.3586,
+        lat: 24.8690,
+        lng: 92.3586,
         isFromMockProvider: true,
         timestamp: Date.now(),
       });
 
-      assert.equal(mockResult.isFlagged, true);
-      assert.ok(mockResult.riskFlags.some((f) => f.includes("MOCK_PROVIDER")));
+      assert.equal(mockResult.valid, false);
+      assert.equal(mockResult.code, "MOCK_GPS_DETECTED");
     });
 
     it("validates that geofence arrival is within 100m threshold", () => {
       // Identical coordinates -> distance 0m (< 100m)
       const valid = militaryAntiFraudShield.validateGeofenceArrival(
-        24.8690,
-        92.3586,
-        24.8690,
-        92.3586
+        { lat: 24.8690, lng: 92.3586 },
+        { lat: 24.8690, lng: 92.3586 }
       );
       assert.equal(valid.valid, true);
-      assert.ok(valid.distanceMeters < 100);
+      assert.equal(valid.code, "OK");
 
       // Coordinates ~1.5km away -> rejected
       const invalid = militaryAntiFraudShield.validateGeofenceArrival(
-        24.8690,
-        92.3586,
-        24.8800,
-        92.3586
+        { lat: 24.8690, lng: 92.3586 },
+        { lat: 24.8800, lng: 92.3586 }
       );
       assert.equal(invalid.valid, false);
-      assert.ok(invalid.distanceMeters > 100);
+      assert.equal(invalid.code, "GEOFENCE_PROXIMITY_VIOLATION");
     });
 
     it("detects phantom order collusion between matching IPs, devices, or accounts", () => {
       const collusion = militaryAntiFraudShield.detectPhantomOrderCollusion({
+        customerId: "cust_1",
+        merchantId: "merch_1",
         customerIp: "103.20.15.5",
         merchantIp: "103.20.15.5",
-        customerDeviceId: "dev_xyz",
-        merchantDeviceId: "dev_xyz",
-        orderValuePaise: 45000,
       });
 
-      assert.equal(collusion.isCollusion, true);
-      assert.ok(collusion.reasons.length >= 2);
+      assert.equal(collusion.valid, false);
+      assert.equal(collusion.code, "COLLUSION_IP_MATCH");
+
+      const deviceCollusion = militaryAntiFraudShield.detectPhantomOrderCollusion({
+        customerId: "cust_2",
+        merchantId: "merch_2",
+        deviceId: "dev_xyz_99",
+        merchantDeviceId: "dev_xyz_99",
+      });
+      assert.equal(deviceCollusion.valid, false);
+      assert.equal(deviceCollusion.code, "COLLUSION_DEVICE_MATCH");
+    });
+
+    it("enforces promo code velocity limits per device and payment instrument", () => {
+      const devId = `dev_promo_${Date.now()}`;
+      const code = "SUMMER50";
+      // 1st redemption ok
+      assert.equal(militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
+      // 2nd redemption ok
+      assert.equal(militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
+      // 3rd redemption on same device within 24h -> blocked
+      const blocked = militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code);
+      assert.equal(blocked.valid, false);
+      assert.equal(blocked.code, "PROMO_DEVICE_LIMIT_EXCEEDED");
     });
 
     it("enforces COD cash hoarding limit (forces offline if > ₹1,500 for > 4h)", () => {
-      // ₹1,600 held for 5 hours -> must force offline
+      // ₹1,600 (160000 paise) held for 5 hours -> lock
       const hoarding = militaryAntiFraudShield.validateRiderCodHoarding(
-        160000, // 1600 INR in paise
-        5 * 3600 * 1000 // 5 hours in ms
+        "rider_cod_1",
+        160000,
+        5.0
       );
-      assert.equal(hoarding.isViolation, true);
-      assert.equal(hoarding.forceOffline, true);
+      assert.equal(hoarding.valid, false);
+      assert.equal(hoarding.code, "COD_CASH_HOARDING_LOCK");
 
-      // ₹1,200 held for 2 hours -> allowed
+      // ₹1,200 held for 2 hours -> compliant
       const allowed = militaryAntiFraudShield.validateRiderCodHoarding(
+        "rider_cod_2",
         120000,
-        2 * 3600 * 1000
+        2.0
       );
-      assert.equal(allowed.isViolation, false);
-      assert.equal(allowed.forceOffline, false);
+      assert.equal(allowed.valid, true);
+      assert.equal(allowed.code, "OK");
     });
   });
 

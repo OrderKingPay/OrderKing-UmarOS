@@ -15,8 +15,8 @@
  * ============================================================================
  */
 
-import { recordSystemAuditLog } from "./system-audit-ledger";
-import { type OrderKingRole } from "../permissions";
+import { recordSystemAuditLog } from "./system-audit-ledger.ts";
+import { type OrderKingRole } from "../permissions.ts";
 
 export interface ActorSecurityContext {
   actorId: string;

@@ -20,9 +20,9 @@
  * ============================================================================
  */
 
-import { recordSystemAuditLog } from "../security/system-audit-ledger";
-import { freezeAllPayouts } from "../security/emergency-command.server";
-import { assertSafePaise } from "../revenue/tax-calculator";
+import { recordSystemAuditLog } from "../security/system-audit-ledger.ts";
+import { freezeAllPayouts } from "../security/emergency-command.server.ts";
+import { assertSafePaise } from "../revenue/tax-calculator.ts";
 
 export interface SettlementLedgerSummary {
   batchDate: string; // YYYY-MM-DD

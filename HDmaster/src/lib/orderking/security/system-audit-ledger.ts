@@ -211,3 +211,11 @@ export class SystemAuditLedger {
 }
 
 export const systemAuditLedger = SystemAuditLedger.getInstance();
+
+export async function recordSystemAuditLog(entry: SystemAuditEntry): Promise<SystemAuditRecord> {
+  return SystemAuditLedger.getInstance().record(entry);
+}
+
+export async function verifyAuditChainIntegrity(limit = 100): Promise<{ valid: boolean; recordsChecked: number; error?: string }> {
+  return SystemAuditLedger.getInstance().verifyAuditChainIntegrity(limit);
+}

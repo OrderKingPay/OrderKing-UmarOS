@@ -61,6 +61,7 @@ export function hasPermission(ctx: AccessContext, perm: Permission): boolean {
     ctx.roleKey === "FOUNDER";
   if (isSuper) {
     if (ctx.actingRoleKey === "SUPER_ADMIN" || ctx.actingRoleKey === "FOUNDER") return true;
+    if (!ctx.actingRoleKey && (ctx.roleKey === "SUPER_ADMIN" || ctx.roleKey === "FOUNDER")) return true;
     if ((ctx.roleKey === "SUPER_ADMIN" || ctx.roleKey === "FOUNDER") && perm === "assume_role") return true;
   }
   return ctx.permissions.includes(perm);

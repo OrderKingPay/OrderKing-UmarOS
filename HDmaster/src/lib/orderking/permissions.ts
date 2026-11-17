@@ -85,6 +85,7 @@ export const SYSTEM_ROLES = [
 ] as const;
 
 export type RoleKey = (typeof SYSTEM_ROLES)[number] | string;
+export type OrderKingRole = RoleKey;
 
 const ALL = [...PERMISSIONS];
 

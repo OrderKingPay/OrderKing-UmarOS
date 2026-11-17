@@ -1,4 +1,4 @@
-import { getSql } from "../db";
+import { getSql } from "../db.ts";
 
 export interface AuthAttemptContext {
   ip: string;
