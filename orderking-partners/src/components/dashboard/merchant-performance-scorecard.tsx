@@ -144,7 +144,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-emerald-600" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 font-mono">
-              Zomato / Industry Benchmark Parity
+              OrderKing Partner / Industry Benchmark Parity
             </span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-gray-900 mt-0.5">

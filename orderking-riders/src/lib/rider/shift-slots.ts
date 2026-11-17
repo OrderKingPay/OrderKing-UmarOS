@@ -26,11 +26,11 @@ export const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
     peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · ₹1/min wait pay after 10m",
   },
   {
-    id: "lunch_peak_12_1530",
+    id: "lunch_peak_1130_1530",
     label: "Lunch Peak",
-    window: "12:00–15:30",
-    durationHours: 3.5,
-    tag: "High-Demand Peak",
+    window: "11:30–15:30",
+    durationHours: 4,
+    tag: "High-Demand Lunch Peak",
     baseFarePaise: STATUTORY_BASE_FARE_PAISE,
     distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
     peakIncentiveNote: "Base ₹35 + ₹12/km · High order density toward Daily Milestone slabs",
@@ -46,11 +46,11 @@ export const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
     peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · Short-radius trips",
   },
   {
-    id: "dinner_peak_19_23",
+    id: "dinner_peak_19_2330",
     label: "Dinner Peak",
-    window: "19:00–23:00",
-    durationHours: 4,
-    tag: "Prime Peak Slot",
+    window: "19:00–23:30",
+    durationHours: 4.5,
+    tag: "Prime Dinner Peak Slot",
     baseFarePaise: STATUTORY_BASE_FARE_PAISE,
     distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
     peakIncentiveNote: "Base ₹35 + ₹12/km · Peak dispatch priority & kitchen wait-time pay",
@@ -72,4 +72,85 @@ export const BOOKED_GIGS_STORAGE_KEY = "ok_rider_booked_gigs_v1";
 export function getIsoDateOffset(daysOffset: number): string {
   const d = new Date(Date.now() + daysOffset * 86_400_000);
   return d.toISOString().slice(0, 10);
+}
+
+export interface MinimumGuaranteeCriteria {
+  minLoggedHours: number; // e.g. 4.0 hours
+  minAcceptanceRatePct: number; // >= 80%
+  maxUnexcusedCancellations: number; // 0
+  minCompletedOrders: number; // e.g. 5 trips
+  guaranteeAmountPaise: number; // e.g. ₹500 (50,000 paise)
+}
+
+export interface MinimumGuaranteeEvaluation {
+  eligible: boolean;
+  loggedHours: number;
+  acceptanceRatePct: number;
+  cancellations: number;
+  completedOrders: number;
+  guaranteeAmountPaise: number;
+  actualEarningsPaise: number;
+  topUpDuePaise: number;
+  reasons: string[];
+}
+
+/**
+ * Calculates Minimum Guarantee (MG) eligibility for booked shift slots.
+ * Criteria: Logged-in hours, minimum acceptance rate (≥80%), zero unexcused cancellations.
+ */
+export function evaluateMinimumGuaranteeEligibility(
+  actual: {
+    loggedHours: number;
+    acceptanceRatePct: number;
+    unexcusedCancellations: number;
+    completedOrders: number;
+    earnedPaise: number;
+  },
+  criteria: MinimumGuaranteeCriteria = {
+    minLoggedHours: 4,
+    minAcceptanceRatePct: 80,
+    maxUnexcusedCancellations: 0,
+    minCompletedOrders: 5,
+    guaranteeAmountPaise: 50000,
+  },
+): MinimumGuaranteeEvaluation {
+  const reasons: string[] = [];
+
+  if (actual.loggedHours < criteria.minLoggedHours) {
+    reasons.push(
+      `Logged hours (${actual.loggedHours.toFixed(1)}h) below minimum required ${criteria.minLoggedHours}h`,
+    );
+  }
+  if (actual.acceptanceRatePct < criteria.minAcceptanceRatePct) {
+    reasons.push(
+      `Acceptance Rate (${actual.acceptanceRatePct}%) below minimum required ${criteria.minAcceptanceRatePct}%`,
+    );
+  }
+  if (actual.unexcusedCancellations > criteria.maxUnexcusedCancellations) {
+    reasons.push(
+      `Unexcused cancellations (${actual.unexcusedCancellations}) exceeded zero-tolerance threshold`,
+    );
+  }
+  if (actual.completedOrders < criteria.minCompletedOrders) {
+    reasons.push(
+      `Completed trips (${actual.completedOrders}) below minimum shift quota of ${criteria.minCompletedOrders}`,
+    );
+  }
+
+  const eligible = reasons.length === 0;
+  const topUpDuePaise = eligible
+    ? Math.max(0, criteria.guaranteeAmountPaise - actual.earnedPaise)
+    : 0;
+
+  return {
+    eligible,
+    loggedHours: actual.loggedHours,
+    acceptanceRatePct: actual.acceptanceRatePct,
+    cancellations: actual.unexcusedCancellations,
+    completedOrders: actual.completedOrders,
+    guaranteeAmountPaise: criteria.guaranteeAmountPaise,
+    actualEarningsPaise: actual.earnedPaise,
+    topUpDuePaise,
+    reasons,
+  };
 }
