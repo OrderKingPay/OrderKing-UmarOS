@@ -12,7 +12,7 @@ import {
   computePartnerContractSchedule,
 } from "../features/kyc/MerchantKYCVerification";
 
-describe("MerchantKYCVerification - Zomato Restaurant Onboarding Parity", () => {
+describe("MerchantKYCVerification - OrderKing Restaurant Onboarding Standards", () => {
   describe("Phone & Telecom Authentication", () => {
     it("validates 10-digit Indian mobile numbers starting with 6, 7, 8, or 9", () => {
       const valid = validateIndianMobile("9395065587");

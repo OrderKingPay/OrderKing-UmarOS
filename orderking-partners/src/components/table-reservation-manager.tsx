@@ -75,7 +75,7 @@ export function generateTableQrCodePayload(restaurantId: string, tableNumber: st
 }
 
 /**
- * Petpooja/Vyapar-Standard SafeInteger Bill Splitter (Zero Float Drift)
+ * OrderKing POS Standard SafeInteger Bill Splitter (Zero Float Drift)
  */
 export function splitTableBill(
   totalBillPaise: number,

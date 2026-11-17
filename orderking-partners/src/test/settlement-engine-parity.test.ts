@@ -5,7 +5,7 @@ import {
   type DailySettlementBatch,
 } from "../features/finance/SettlementEngine";
 
-describe("SettlementEngine - Zomato / Petpooja Commercial Parity", () => {
+describe("SettlementEngine - OrderKing Commercial & Statutory Standards", () => {
   it("enforces statutory constants and platform credentials", () => {
     expect(SettlementEngine.PLATFORM_GSTIN).toBe("18AFXPH9838M1Z9");
     expect(SettlementEngine.SAC_CODE).toBe("996331");

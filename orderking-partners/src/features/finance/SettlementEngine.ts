@@ -1,6 +1,6 @@
 ﻿/**
  * OrderKing Partner Financial Settlement & Monetization Engine
- * Full Operational Parity with Zomato Partner & Petpooja Financial Benchmarks
+ * OrderKing Partner Production Financial & Monetization Standards
  *
  * Exact Invariants:
  * 1. 100% Integer-Paise Arithmetic (Zero floating point drift).

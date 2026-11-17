@@ -4,7 +4,7 @@ import {
   type MerchantScorecardInput,
 } from "../components/dashboard/merchant-performance-scorecard";
 
-describe("MerchantPerformanceScorecard - Zomato Restaurant Partner Benchmark Parity", () => {
+describe("MerchantPerformanceScorecard - OrderKing Restaurant Partner Benchmark Standards", () => {
   it("calculates optimal scorecard and approves promoted search boost eligibility", () => {
     const input: MerchantScorecardInput = {
       totalOrders: 100,

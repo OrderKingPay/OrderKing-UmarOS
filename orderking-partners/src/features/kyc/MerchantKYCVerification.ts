@@ -1,6 +1,6 @@
 ﻿/**
  * OrderKing Enterprise Merchant Statutory KYC & Identity Verification Engine
- * 100% Operational Parity with Zomato Partner Onboarding Standards
+ * OrderKing Enterprise Statutory Compliance & Identity Standards
  *
  * Implements:
  * 1. 10-digit Indian Mobile Validation (/^[6-9]\d{9}$/) with Fast2SMS carrier & WhatsApp failover.

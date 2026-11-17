@@ -285,7 +285,7 @@ export const LiveKDSOrderPipeline: React.FC<LiveKDSOrderPipelineProps> = ({
             )}
           </div>
           <span style={{ fontSize: "13px", color: "#94A3B8" }}>
-            Outlet: {restaurantId} | Real-Time PostgreSQL Synced | Petpooja / Vyapar POS Benchmark
+            Outlet: {restaurantId} | Real-Time PostgreSQL Synced | High-Throughput Kitchen Display System
           </span>
         </div>
         <div style={{ display: "flex", gap: "8px" }}>

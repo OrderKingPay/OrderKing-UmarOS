@@ -6,7 +6,7 @@ import {
   type TaxInvoicePrintData,
 } from "../hardware/escpos/ThermalPrinterDriver";
 
-describe("ThermalPrinterDriver - Petpooja/Vyapar Standard ESC/POS Engine", () => {
+describe("ThermalPrinterDriver - OrderKing Standard ESC/POS Engine", () => {
   it("verifies exact raw byte command sequences match industrial ESC/POS standards", () => {
     expect(ThermalPrinterDriver.CMD.INIT).toEqual([0x1b, 0x40]);
     expect(ThermalPrinterDriver.CMD.ALIGN_CENTER).toEqual([0x1b, 0x61, 0x01]);

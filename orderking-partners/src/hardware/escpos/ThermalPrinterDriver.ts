@@ -1,6 +1,6 @@
 ﻿/**
  * OrderKing Enterprise ESC/POS Hardware Thermal Printer Driver
- * Standard Petpooja / Vyapar POS Benchmark
+ * OrderKing POS Hardware ESC/POS Benchmark
  *
  * Implements:
  * 1. 58mm (32 chars/line) and 80mm (48 chars/line) formatting.
