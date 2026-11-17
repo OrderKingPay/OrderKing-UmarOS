@@ -570,7 +570,7 @@ function Login() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       autoComplete="name"
-                      placeholder="e.g. Rajeshwari Iyer"
+                      placeholder="Enter owner / manager full name"
                       className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                     />
                   </div>

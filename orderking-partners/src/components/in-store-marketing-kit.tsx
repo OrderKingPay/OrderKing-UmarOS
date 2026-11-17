@@ -190,7 +190,7 @@ export function InStoreMarketingKit({
                 <Input
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value.toUpperCase())}
-                  placeholder="e.g. Table 04, Rooftop 02"
+                  placeholder="Table / station identifier"
                   className="mt-1 h-9 text-xs bg-gray-50 border-gray-200 font-mono"
                 />
               </div>

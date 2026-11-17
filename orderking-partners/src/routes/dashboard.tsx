@@ -472,7 +472,7 @@ function DashboardPage() {
             acceptedOrders: d?.today.accepted ?? 0,
             cancelledOrders: d?.today.cancelled ?? 0,
             avgPrepMinutes: Number((d as any)?.restaurant?.prep_minutes ?? 14),
-            rating: d?.today.rating ? Number(d.today.rating) : 4.8,
+            rating: d?.today.rating ? Number(d.today.rating) : 0,
             ratingCount: d?.today.ratingCount ?? 0,
           }}
         />

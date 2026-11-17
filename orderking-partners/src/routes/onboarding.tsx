@@ -516,7 +516,7 @@ function OnboardingPage() {
                   <Input
                     value={form.name}
                     onChange={(e) => updateField("name", e.target.value)}
-                    placeholder="e.g. Royal Kitchen &amp; Biryani"
+                    placeholder="Enter restaurant legal / trade name"
                     className="mt-1 bg-white border-gray-300 text-gray-900 focus:border-[#E23744] h-11"
                   />
                 </div>

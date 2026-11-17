@@ -214,7 +214,8 @@ export function OrderCard({
   }, [order.state, order.placedAt]);
 
   // Handover state
-  const expectedOtp = order.orderNumber.replace(/\D/g, "").slice(-4) || "8421";
+  const numericDigits = order.orderNumber.replace(/\D/g, "") || order.id.replace(/\D/g, "");
+  const expectedOtp = numericDigits.length >= 4 ? numericDigits.slice(-4) : numericDigits.padStart(4, "0");
   const [enteredOtp, setEnteredOtp] = useState(["", "", "", ""]);
   const [barcodeScanned, setBarcodeScanned] = useState(false);
   const [tamperTapeChecked, setTamperTapeChecked] = useState(true);

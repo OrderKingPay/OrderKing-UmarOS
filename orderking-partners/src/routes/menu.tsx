@@ -2166,7 +2166,7 @@ function MenuPage() {
                     )}
                   </div>
                   <Input
-                    placeholder="e.g. Murgh Makhani (Butter Chicken)"
+                    placeholder="Enter dish name"
                     value={editor.name}
                     onChange={(e) => setEditor({ ...editor, name: e.target.value })}
                   />
@@ -2260,7 +2260,7 @@ function MenuPage() {
                     <Label>Base Selling Price (₹) *</Label>
                     <Input
                       inputMode="decimal"
-                      placeholder="e.g. 249"
+                      placeholder="0.00"
                       value={baseSellingPrice}
                       onChange={(e) => {
                         const val = e.target.value;

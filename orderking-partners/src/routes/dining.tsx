@@ -303,7 +303,7 @@ function DiningPage() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Sneha Sengupta"
+                    placeholder="Enter guest full name"
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"

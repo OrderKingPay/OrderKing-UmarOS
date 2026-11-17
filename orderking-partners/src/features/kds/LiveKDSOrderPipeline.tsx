@@ -216,7 +216,8 @@ export const LiveKDSOrderPipeline: React.FC<LiveKDSOrderPipelineProps> = ({
     const target = orders.find((o) => o.orderId === handoverOrderId);
     if (!target) return;
 
-    const expectedOtp = target.riderAssigned?.pickupOtp || target.displayNumber.slice(-4) || "1234";
+    const numericDigits = target.displayNumber.replace(/\D/g, "") || target.orderId.replace(/\D/g, "");
+    const expectedOtp = target.riderAssigned?.pickupOtp || (numericDigits.length >= 4 ? numericDigits.slice(-4) : numericDigits.padStart(4, "0"));
     if (enteredHandoverOtp.trim() !== expectedOtp) {
       setHandoverError(`Invalid Handover OTP! Rider must provide correct 4-digit code (Expected: ${expectedOtp}).`);
       return;

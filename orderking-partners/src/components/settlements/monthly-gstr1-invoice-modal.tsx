@@ -121,12 +121,12 @@ export function MonthlyGstr1InvoiceModal({
   const rawGstin = restaurant?.gstin?.trim().toUpperCase();
   const merchantGstin = rawGstin && rawGstin.length === 15 ? rawGstin : "EXEMPT / UNREGISTERED";
   const merchantPan = restaurant?.pan?.trim().toUpperCase() || "PAN ON RECORD";
-  const merchantAddress = (restaurant?.address || "Registered Kitchen Outlet, Urban Delivery Corridor").trim();
-  const merchantFssai = restaurant?.fssai_licence_number?.trim() || "10021000000000 (Verified u/s FSSAI 2006)";
+  const merchantAddress = (restaurant?.address || "Registered Restaurant Outlet").trim();
+  const merchantFssai = restaurant?.fssai_licence_number?.trim() || "FSSAI Pending Verification";
   const merchantBankName = restaurant?.bank_name?.trim() || merchantLegalName;
   const rawAcct = restaurant?.bank_account?.trim() || "";
   const maskedAcct = rawAcct ? `•••• •••• ${rawAcct.slice(-4)}` : "Registered Settlement Account";
-  const merchantIfsc = restaurant?.bank_ifsc?.trim().toUpperCase() || "HDFC0001234";
+  const merchantIfsc = restaurant?.bank_ifsc?.trim().toUpperCase() || "IFSC Pending";
 
   // Statutory Calculations
   const netTaxableFoodSupply = Math.max(0, effectiveTotals.gross - effectiveTotals.restDisc);

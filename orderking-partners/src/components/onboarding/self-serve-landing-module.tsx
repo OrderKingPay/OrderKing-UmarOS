@@ -310,7 +310,7 @@ export function SelfServeLandingModule() {
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Karimganj Kitchen"
+                placeholder="Enter restaurant legal / trade name"
                 className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>

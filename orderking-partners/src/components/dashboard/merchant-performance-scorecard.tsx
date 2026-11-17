@@ -45,7 +45,7 @@ export function calculateMerchantScorecard(input: MerchantScorecardInput): Compu
   const accepted = Math.min(total, Math.max(0, input.acceptedOrders));
   const cancelled = Math.min(total, Math.max(0, input.cancelledOrders));
   const avgPrep = input.avgPrepMinutes != null && input.avgPrepMinutes > 0 ? input.avgPrepMinutes : 14;
-  const rating = input.rating != null && input.rating > 0 ? Number(input.rating.toFixed(1)) : 4.8;
+  const rating = input.rating != null && input.rating > 0 ? Number(input.rating.toFixed(1)) : 0;
   const ratingCount = input.ratingCount ?? 0;
 
   // 1. Order Acceptance Rate
@@ -85,11 +85,15 @@ export function calculateMerchantScorecard(input: MerchantScorecardInput): Compu
 
   // 4. Merchant Operational Rating
   // Benchmark comparison: 4.5+ is Top Rated
-  let ratingStatus: RatingStatus = "TOP_RATED";
-  if (rating < 4.0) {
+  let ratingStatus: RatingStatus = "GOOD";
+  if (rating === 0) {
+    ratingStatus = "GOOD";
+  } else if (rating < 4.0) {
     ratingStatus = "NEEDS_IMPROVEMENT";
   } else if (rating < 4.5) {
     ratingStatus = "GOOD";
+  } else {
+    ratingStatus = "TOP_RATED";
   }
 
   // 5. Overall Platform Health Score (0 - 100)
@@ -97,7 +101,7 @@ export function calculateMerchantScorecard(input: MerchantScorecardInput): Compu
   const acceptanceScore = Math.min(40, (acceptanceRatePct / 100) * 40);
   const cancellationScore = Math.max(0, 30 - cancellationRatePct * 15);
   const prepScore = avgPrep <= 15 ? 15 : avgPrep <= 25 ? 10 : 4;
-  const ratingScore = (rating / 5.0) * 15;
+  const ratingScore = rating > 0 ? (rating / 5.0) * 15 : 12;
   const overallHealthScore = Math.min(
     100,
     Math.max(0, Math.round(acceptanceScore + cancellationScore + prepScore + ratingScore))
