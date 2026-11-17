@@ -260,9 +260,9 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
             setInitialConfig(config);
             success = true;
           }
-        } catch {
-          setInitialConfig(config);
-          success = true;
+        } catch (postErr) {
+          console.error("Failed to persist connector settings:", postErr);
+          success = false;
         }
       }
 

@@ -134,8 +134,8 @@ function createNeonSql(): Promise<Sql> {
     const pool = new Pool({
       connectionString: cleanUrl,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-      max: 5,
-      idleTimeoutMillis: 1000,
+      max: 10,
+      idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 20000,
     });
     pool.on('error', (err: Error) => {
@@ -173,9 +173,9 @@ function createNeonSql(): Promise<Sql> {
                   const pgMod = await import("pg");
                   const Client = pgMod.default?.Client ?? pgMod.Client;
                   const fallbackClient = new Client({
-                    connectionString: cleanUrl.includes(":6543") ? cleanUrl.replace(":6543", ":5432") : cleanUrl,
+                    connectionString: cleanUrl,
                     ssl: { rejectUnauthorized: false },
-                    connectionTimeoutMillis: 8000,
+                    connectionTimeoutMillis: 10000,
                   });
                   await fallbackClient.connect();
                   const freshRes = await fallbackClient.query(text, params);
@@ -218,9 +218,9 @@ function createNeonSql(): Promise<Sql> {
                   const pgMod = await import("pg");
                   const Client = pgMod.default?.Client ?? pgMod.Client;
                   const fallbackClient = new Client({
-                    connectionString: cleanUrl.includes(":6543") ? cleanUrl.replace(":6543", ":5432") : cleanUrl,
+                    connectionString: cleanUrl,
                     ssl: { rejectUnauthorized: false },
-                    connectionTimeoutMillis: 12000,
+                    connectionTimeoutMillis: 15000,
                   });
                   await fallbackClient.connect();
                   try {

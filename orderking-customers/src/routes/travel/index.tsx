@@ -2200,8 +2200,6 @@ export function TravelPage() {
                           "Desert Safari with Dune Bashing & BBQ",
                           "Burj Khalifa 124th Floor Observation Deck",
                         ],
-                        publishedMrp: 5900000,
-                        orderkingPrice: 4800000,
                         departureCity: "All Major Indian Airports",
                       },
                       {
@@ -2218,8 +2216,6 @@ export function TravelPage() {
                           "Coral Island Speedboat Tour & Lunch",
                           "Chaophraya Princess River Dinner Cruise",
                         ],
-                        publishedMrp: 4600000,
-                        orderkingPrice: 3850000,
                         departureCity: "Delhi / Kolkata / Mumbai / Bengaluru",
                       },
                       {
@@ -2236,8 +2232,6 @@ export function TravelPage() {
                           "Mount Titlis Glacier Excursion with Rotair",
                           "Lake Lucerne Cruise & 4-Star Scenic Stay",
                         ],
-                        publishedMrp: 18500000,
-                        orderkingPrice: 14500000,
                         departureCity: "Delhi / Mumbai / Bengaluru",
                       },
                       {
@@ -2254,8 +2248,6 @@ export function TravelPage() {
                           "Nusa Penida Island Speedboat Day Tour",
                           "Kintamani Volcano & Traditional Spa Session",
                         ],
-                        publishedMrp: 6800000,
-                        orderkingPrice: 5400000,
                         departureCity: "Delhi / Mumbai / Kolkata / Chennai",
                       },
                       {
@@ -2272,8 +2264,6 @@ export function TravelPage() {
                           "Gulmarg Gondola Phase 1 & 2 Passes",
                           "Private Chauffeur AC Vehicle",
                         ],
-                        publishedMrp: 3400000,
-                        orderkingPrice: 2650000,
                         departureCity: "All Major Indian Airports",
                       },
                       {
@@ -2290,8 +2280,6 @@ export function TravelPage() {
                           "Sunset Mandovi River Cruise with Dinner",
                           "Private Airport Transfers Included",
                         ],
-                        publishedMrp: 2100000,
-                        orderkingPrice: 1450000,
                         departureCity: "All Major Indian Airports",
                       },
                       {
@@ -2308,8 +2296,6 @@ export function TravelPage() {
                           "Dawki Crystal Clear Umngot River Boat Ride",
                           "Eco-Resort Stay in Shillong Pine Woods",
                         ],
-                        publishedMrp: 2200000,
-                        orderkingPrice: 1650000,
                         departureCity: "Assam / Northeast / Kolkata",
                       },
                       {
@@ -2326,8 +2312,6 @@ export function TravelPage() {
                           "Tea Estate & Eravikulam National Park",
                           "Private AC Vehicle for Complete Circuit",
                         ],
-                        publishedMrp: 2900000,
-                        orderkingPrice: 2200000,
                         departureCity: "All Major Indian Airports",
                       },
                       {
@@ -2344,8 +2328,6 @@ export function TravelPage() {
                           "One-Horned Rhino & Wildlife Views",
                           "Chauffeur Transfers from Guwahati / Jorhat",
                         ],
-                        publishedMrp: 2500000,
-                        orderkingPrice: 1850000,
                         departureCity: "Assam / Northeast / Kolkata",
                       },
                     ].map((pkg) => (
@@ -2532,8 +2514,6 @@ export function TravelPage() {
                             "Umrah Visa & Comprehensive Medical Insurance",
                             "Dedicated AC Bus Ziyarat & Multilingual Guide",
                           ],
-                          publishedMrp: 9200000,
-                          orderkingPrice: 7850000,
                           departureCity: "Guwahati / Kolkata / Delhi",
                         },
                         {
@@ -2552,8 +2532,6 @@ export function TravelPage() {
                             "Rawdah Permit & E-Visa VIP Processing",
                             "Private Chauffeur AC Coach Ziyarat & Full Board Buffet",
                           ],
-                          publishedMrp: 13500000,
-                          orderkingPrice: 11800000,
                           departureCity: "Guwahati / Kolkata / Delhi",
                         },
 
@@ -2574,8 +2552,6 @@ export function TravelPage() {
                             "Private Ganga Aarti Boat Ride at Dashashwamedh Ghat",
                             "Heritage Haveli Stay with Pure Satvik Meals",
                           ],
-                          publishedMrp: 2400000,
-                          orderkingPrice: 1850000,
                           departureCity: "Delhi / Patna / Guwahati",
                         },
                         {
@@ -2593,8 +2569,6 @@ export function TravelPage() {
                             "Sunset Luxury Brahmaputra River Cruise with Aarti",
                             "Satvik Dining & Heritage Riverside Resort",
                           ],
-                          publishedMrp: 1800000,
-                          orderkingPrice: 1250000,
                           departureCity: "Assam / Northeast / Bengal",
                         },
                         {
@@ -2612,8 +2586,6 @@ export function TravelPage() {
                             "All Road Transfers in Luxury AC Innova",
                             "Pure Satvik Organic Vegetarian Meals",
                           ],
-                          publishedMrp: 4200000,
-                          orderkingPrice: 3250000,
                           departureCity: "Dehradun / Haridwar / Delhi",
                         },
 
@@ -2633,8 +2605,6 @@ export function TravelPage() {
                             "Wagah Border Retreat Ceremony VIP Passes",
                             "Guru Ka Langar & Sacred Kada Prasad",
                           ],
-                          publishedMrp: 1600000,
-                          orderkingPrice: 1150000,
                           departureCity: "Delhi / Chandigarh / Guwahati",
                         },
 
@@ -2654,8 +2624,6 @@ export function TravelPage() {
                             "St. Francis Xavier Relics Sacred Viewing",
                             "Riverside Boutique Stay with Daily Breakfast",
                           ],
-                          publishedMrp: 1850000,
-                          orderkingPrice: 1350000,
                           departureCity: "Goa / Mumbai / Bengaluru",
                         },
                       ]

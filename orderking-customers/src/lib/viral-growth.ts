@@ -490,7 +490,7 @@ export const PRESTIGE_AWARDS_REGISTRY: FounderAwardProgram[] = [
     impactMetricsRequired: [
       "Autonomous AI dispatch & settlement automation",
       "2G low-network offline resilience guarantee",
-      "Instant 24K digital gold micro-savings participation rate",
+      "Direct NPCI UPI and integer paise double-entry settlement rate",
     ],
     nominationWindow: "July – September",
     prReachProjected: "TechCircle, Inc42, Business Standard, live keynote invitation at TiE Con.",
@@ -634,9 +634,7 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
   const link = `${baseUrl}?ref=${refCode}&utm_source=${utmSource}&utm_medium=viral_share&utm_campaign=jackpot_viral`;
 
   const town = payload.townName ?? "Karimganj";
-  const rewardSnippet = payload.goldMgWon
-    ? `Received ${payload.goldMgWon}mg 24K Pure Digital Gold on OrderKing.`
-    : payload.jackpotRewardText
+  const rewardSnippet = payload.jackpotRewardText
     ? `Unlocked ${payload.jackpotRewardText} on OrderKing.`
     : `Ordered at direct menu pricing on OrderKing.`;
 
@@ -752,11 +750,11 @@ export function generateInstitutionalPitchDossier(
   return {
     subject: `Keynote Speaker Invitation / Innovation Showcase: ${founderName}, Founder of OrderKing`,
     salutation: `To the Respected Coordinator / Dean of Student Affairs / E-Cell Head, ${institutionName},`,
-    body: `I am writing to introduce ${founderName}, the visionary founder of OrderKing (Food Delivery) & KingPay (FinTech Super-App), born and built in the Barak Valley of Assam. ${founderName} has engineered an enterprise-grade, multi-platform ecosystem with zero external corporate backing—achieving 2G offline resilience, 0% menu inflation, and algorithmic 24K digital gold micro-savings.\n\n${founderName} is available for guest keynote addresses, entrepreneurship conclaves, and interactive workshops to inspire students on how local technology can eliminate high 30% aggregator commissions, empower local eateries, and deliver genuine value to consumers.`,
+    body: `I am writing to introduce ${founderName}, founder of OrderKing & KingPay, developed in the Barak Valley of Assam. ${founderName} has engineered an enterprise-grade multi-platform logistics ecosystem achieving 2G offline network resilience, direct merchant menu pricing, and direct NPCI UPI settlements.\n\n${founderName} is available for technical discussions and workshops on how distributed software architecture empowers regional merchants and provides resilient local services.`,
     keyStats: [
-      "Zero-downtime, 5-app integrated architecture (Customer, Restaurant, Rider, Admin, Integration Hub)",
-      "22% local merchant sustainability model vs 30%+ corporate inflation",
-      "Over ₹3.74 Crore in verified government grant & cloud infrastructure alignment",
+      "Zero-downtime, 4-app integrated architecture (Customer, Partner, Rider, Umar OS)",
+      "Direct merchant sustainability model adhering to Section 9(5) CGST Act",
+      "Statutory compliance under GSTIN 18AFXPH9838M1Z9 with integer paise double-entry ledgers",
     ],
     founderBio: `${founderName} is a technologist and startup founder from Assam developing rural-first hyperlocal logistics and digital payment infrastructure.`,
     contactDetails: "Email: founder@orderking.in | Phone: +91 38xxx xxxxx | Web: orderking.in",

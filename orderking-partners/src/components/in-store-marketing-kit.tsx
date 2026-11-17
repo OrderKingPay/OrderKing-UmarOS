@@ -92,9 +92,9 @@ export function InStoreMarketingKit({
         {/* Growth ROI Stat Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-emerald-500/20 text-xs">
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
-            <span className="text-[10px] font-mono text-gray-500 uppercase">Aggregator Cut Avoided</span>
-            <div className="font-bold text-emerald-400 mt-0.5 text-sm">Save ~24% per Order</div>
-            <p className="text-[10px] text-gray-500">0% commission on orders placed via table QR</p>
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Dine-In Commission</span>
+            <div className="font-bold text-emerald-600 mt-0.5 text-sm">0.0% Commission</div>
+            <p className="text-[10px] text-gray-500">Self-fulfilled guest orders via physical table QR</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
             <span className="text-[10px] font-mono text-gray-500 uppercase">Diner Retention &amp; Cashback</span>

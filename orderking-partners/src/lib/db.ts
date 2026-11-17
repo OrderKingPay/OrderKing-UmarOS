@@ -132,9 +132,9 @@ function createNeonSql(): Promise<Sql> {
     const pool = new Pool({
       connectionString: connectionUrl,
       ssl: isRemote ? { rejectUnauthorized: false } : undefined,
-      max: 5,
-      idleTimeoutMillis: 1000,
-      connectionTimeoutMillis: 15000,
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 20000,
     });
     pool.on('error', (err: any) => console.warn('[Postgres Pool Warning]:', err?.message));
     const run = async <T>(text: string, params: unknown[]) => {

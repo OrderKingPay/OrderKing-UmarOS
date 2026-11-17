@@ -759,7 +759,7 @@ export function Page() {
                               </dd>
                             </div>
                             <div className="flex justify-between">
-                              <dt className="text-muted-foreground">Customer Tip (100% Partner Retained)</dt>
+                              <dt className="text-muted-foreground">Direct Customer Tip (₹0 Platform Fee)</dt>
                               <dd className="font-mono">
                                 {formatINR(tipPaise)} ({tipPaise.toLocaleString("en-IN")} paise)
                               </dd>

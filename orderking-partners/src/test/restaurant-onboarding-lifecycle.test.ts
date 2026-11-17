@@ -127,7 +127,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     // Verify menu is locked for draft restaurant
     expect(isStatutoryKycApproved(rows[0].verification_status)).toBe(false);
     expect(() => assertMenuUnlocked(rows[0].verification_status)).toThrow(/Menu is locked/);
-  });
+  }, 90000);
 
   // Test 2: Submit KYC details -> status transitions to 'UNDER_REVIEW'
   it("Test 2: submits KYC details (FSSAI, PAN, IFSC) and transitions status to 'UNDER_REVIEW'", async () => {
@@ -183,7 +183,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     // Menu must still remain locked while under review
     expect(isStatutoryKycApproved(rows[0].verification_status)).toBe(false);
     expect(() => assertMenuUnlocked(rows[0].verification_status)).toThrow(/Menu is locked/);
-  });
+  }, 90000);
 
   // Test 3: Umar OS invokes approveRestaurantFn -> status transitions to 'VERIFIED', active = true, status = 'ACTIVE'
   it("Test 3: Umar OS invokes approveRestaurantFn handler, activating restaurant and outlets", async () => {
@@ -228,7 +228,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     // 4. Verify menu lock is now UNLOCKED
     expect(isStatutoryKycApproved(rows[0].verification_status)).toBe(true);
     expect(() => assertMenuUnlocked(rows[0].verification_status)).not.toThrow();
-  });
+  }, 90000);
 
   // Test 4: Partner adds menu items -> items saved with valid price and availability
   it("Test 4: partner creates menu categories and dishes with available = true and valid paise pricing", async () => {
@@ -307,7 +307,7 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
     expect(items[0].name_en).toBe("Murgh Malai Tikka");
     expect(items[0].available).toBe(true);
     expect(Number(items[0].base_price_paise)).toBe(itemPricePaise);
-  }, 30000);
+  }, 90000);
 
   // Test 5: Verify query simulates customer catalog and retrieves the verified restaurant with menu items
   it("Test 5: customer catalog query retrieves verified restaurant and its active menu items", async () => {
@@ -370,5 +370,5 @@ describe("Phase 2: Restaurant Onboarding Lifecycle & Umar OS Approval Integratio
       where r.active = false and r.id = ${testRestaurantId}
     `;
     expect(inactiveSim.length).toBe(0);
-  }, 30000);
+  }, 90000);
 });

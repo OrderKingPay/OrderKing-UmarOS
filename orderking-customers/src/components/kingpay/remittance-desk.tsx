@@ -1,32 +1,17 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Globe,
-  ArrowRight,
   ShieldCheck,
   CheckCircle2,
-  Clock,
-  Sparkles,
-  RefreshCw,
-  Building2,
-  Smartphone,
-  Info,
   DollarSign,
-  Lock,
-  Zap,
-  TrendingDown,
-  BadgeAlert,
-  CreditCard,
-  Check,
-  X,
-  FileText,
-  AlertCircle,
-  HelpCircle,
-  Share2,
-  Copy,
+  Info,
+  Building2,
   ExternalLink,
+  Smartphone,
+  Landmark,
+  Scale,
 } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // ==========================================
@@ -94,169 +79,78 @@ export const SOURCE_CURRENCIES: CurrencyConfig[] = [
   },
 ];
 
-// Live Market Rates (Interbank Mid-Market)
+// Indicative Mid-Market Rates (Daily Reference)
 const INTERBANK_BASE_RATES: Record<SourceCurrency, Record<DestinationCountry, number>> = {
   SAR: { India: 23.16, Bangladesh: 32.42 },
   AED: { India: 23.65, Bangladesh: 33.10 },
   USD: { India: 86.85, Bangladesh: 121.50 },
-  QAR: { India: 23.83, Bangladesh: 33.36 },
-  GBP: { India: 111.40, Bangladesh: 155.80 },
+  QAR: { India: 23.85, Bangladesh: 33.35 },
+  GBP: { India: 109.80, Bangladesh: 153.60 },
 };
 
-// Traditional Bank Typical Predatory Spread (avg 3.8% markup + high fixed charges)
-const TRADITIONAL_BANK_SPREAD_PERCENT = 3.8;
-
-// Founder's Transparent PA-CB Markup (Only 0.45%)
-export const FOUNDER_FX_MARKUP_PERCENT = 0.45;
-export const PACB_REGULATORY_FEE = 0.0; // PA-CB regulatory fee
-
-export type PayoutMethodIndia = "UPI" | "BANK";
-export type PayoutMethodBangladesh = "BKASH" | "BANK";
-
-export interface RemittanceReceipt {
-  id: string;
-  sourceAmount: number;
-  sourceCurrency: SourceCurrency;
-  destinationCountry: DestinationCountry;
-  targetCurrency: "INR" | "BDT";
-  interbankRate: number;
-  founderMarkupPercent: number;
-  effectiveRate: number;
-  netPayoutAmount: number;
-  beneficiaryName: string;
-  payoutTarget: string;
-  payoutMethod: string;
-  purpose: string;
-  status: "INITIATED" | "PA_CB_CLEARED" | "DISPATCHED" | "SETTLED";
-  createdAt: string;
-  estimatedDeliverySeconds: number;
-}
-
-// ==========================================
-// 2. REMITTANCE DESK COMPONENT
-// ==========================================
+export const AUTHORIZED_REMITTANCE_PROVIDERS = [
+  {
+    name: "State Bank of India (SBI Global Remit)",
+    type: "RBI Authorized Dealer Category-I",
+    corridor: "India (Inward / Outward)",
+    description: "Official public sector banking channel for direct INR credit via NEFT/RTGS.",
+    url: "https://www.onlinesbi.sbi/sbijava/osbi_global_remittance.html",
+  },
+  {
+    name: "HDFC Bank RemitNow",
+    type: "RBI Authorized Dealer Category-I",
+    corridor: "India (Inward / Outward)",
+    description: "Seamless outward remittance under Liberalised Remittance Scheme (LRS).",
+    url: "https://www.hdfcbank.com/personal/pay/money-transfer/remitnow",
+  },
+  {
+    name: "ICICI Money2India",
+    type: "RBI Authorized Dealer Category-I",
+    corridor: "India (Inward)",
+    description: "Fixed exchange rate transfers directly into any Indian bank account.",
+    url: "https://www.money2india.com",
+  },
+  {
+    name: "Western Union India",
+    type: "RBI MTSS Operator",
+    corridor: "Global to India & Bangladesh",
+    description: "Licensed Money Transfer Service Scheme for verified cross-border cash pickup and bank deposit.",
+    url: "https://www.westernunion.com",
+  },
+  {
+    name: "Wise (TransferWise)",
+    type: "FCA & RBI Partner Network",
+    corridor: "Global to India & Bangladesh",
+    description: "Mid-market rate international money transfers directly to bank accounts and UPI IDs.",
+    url: "https://wise.com",
+  },
+  {
+    name: "bKash Remittance Service",
+    type: "Bangladesh Bank Authorized MFS",
+    corridor: "Global to Bangladesh",
+    description: "Official Bangladesh Bank incentive-compliant inward remittance to mobile wallets.",
+    url: "https://www.bkash.com/en/products-services/remittance",
+  },
+];
 
 export function RemittanceDesk() {
   const [sourceCurrency, setSourceCurrency] = useState<SourceCurrency>("SAR");
   const [destinationCountry, setDestinationCountry] = useState<DestinationCountry>("India");
   const [sendAmount, setSendAmount] = useState<number>(1000);
 
-  // Beneficiary form inputs
-  const [payoutMethodIndia, setPayoutMethodIndia] = useState<PayoutMethodIndia>("UPI");
-  const [payoutMethodBangladesh, setPayoutMethodBangladesh] = useState<PayoutMethodBangladesh>("BKASH");
-  const [beneficiaryName, setBeneficiaryName] = useState("");
-  const [beneficiaryUpiId, setBeneficiaryUpiId] = useState("");
-  const [beneficiaryAccountNumber, setBeneficiaryAccountNumber] = useState("");
-  const [beneficiaryIfsc, setBeneficiaryIfsc] = useState("");
-  const [beneficiaryBkashNumber, setBeneficiaryBkashNumber] = useState("");
-  const [beneficiaryBdBank, setBeneficiaryBdBank] = useState("");
-  const [remittancePurpose, setRemittancePurpose] = useState("Family Maintenance & Support");
-
-  // Interactive Rate Lock Timer (15:00 minutes count down)
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(900);
-  const [isRefreshingRate, setIsRefreshingRate] = useState(false);
-
-  // Active Transaction Modal & State
-  const [activeReceipt, setActiveReceipt] = useState<RemittanceReceipt | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Countdown timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsRemaining((prev) => {
-        if (prev <= 1) {
-          return 900; // Reset rate quote lock
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTimer = (totalSeconds: number) => {
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const handleManualRefreshRate = () => {
-    setIsRefreshingRate(true);
-    setTimeout(() => {
-      setSecondsRemaining(900);
-      setIsRefreshingRate(false);
-      toast.info("Indicative rates aligned with daily interbank reference benchmarks.");
-    }, 600);
-  };
-
   // Calculations
   const interbankRate = INTERBANK_BASE_RATES[sourceCurrency][destinationCountry];
-  // Effective rate after transparent founder markup:
-  // When sending foreign currency to local, recipient receives (Interbank * (1 - Markup/100))
-  const effectiveRate = Number((interbankRate * (1 - FOUNDER_FX_MARKUP_PERCENT / 100)).toFixed(4));
   const validSendAmount = Math.max(1, Number.isFinite(sendAmount) ? sendAmount : 100);
-  const netPayoutAmount = Math.round(validSendAmount * effectiveRate * 100) / 100;
-
-  // Traditional bank comparison
-  const bankEffectiveRate = Number((interbankRate * (1 - TRADITIONAL_BANK_SPREAD_PERCENT / 100)).toFixed(4));
-  const bankNetPayout = Math.round(validSendAmount * bankEffectiveRate * 100) / 100;
-  const customerSavings = Math.max(0, Math.round(netPayoutAmount - bankNetPayout));
+  const estimatedPayout = Math.round(validSendAmount * interbankRate * 100) / 100;
 
   const targetCurrencySymbol = destinationCountry === "India" ? "₹" : "৳";
   const targetCurrencyCode = destinationCountry === "India" ? "INR" : "BDT";
-
   const currentConfig = SOURCE_CURRENCIES.find((c) => c.code === sourceCurrency) || SOURCE_CURRENCIES[0];
-
-  // Initiate Remittance Submission
-  const handleInitiateRemittance = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!beneficiaryName.trim()) {
-      toast.error("Please enter the beneficiary full name as per Govt ID");
-      return;
-    }
-
-    let payoutTargetIdentifier = "";
-    if (destinationCountry === "India") {
-      if (payoutMethodIndia === "UPI") {
-        if (!beneficiaryUpiId.trim() || !beneficiaryUpiId.includes("@")) {
-          toast.error("Please provide a valid Indian Virtual Payment Address (e.g. mobile@upi, name@okhdfcbank)");
-          return;
-        }
-        payoutTargetIdentifier = beneficiaryUpiId.trim();
-      } else {
-        if (!beneficiaryAccountNumber.trim() || !beneficiaryIfsc.trim()) {
-          toast.error("Please provide Account Number and valid IFSC Code");
-          return;
-        }
-        payoutTargetIdentifier = `Acc: ${beneficiaryAccountNumber.trim()} • IFSC: ${beneficiaryIfsc.trim().toUpperCase()}`;
-      }
-    } else {
-      if (payoutMethodBangladesh === "BKASH") {
-        const cleaned = beneficiaryBkashNumber.trim().replace(/\D/g, "");
-        if (cleaned.length < 11) {
-          toast.error("Please provide a valid 11-digit Bangladeshi bKash number (e.g. 017XXXXXXXX)");
-          return;
-        }
-        payoutTargetIdentifier = `bKash: ${cleaned}`;
-      } else {
-        if (!beneficiaryBdBank.trim() || !beneficiaryAccountNumber.trim()) {
-          toast.error("Please provide Bangladesh Bank Name and Account Number");
-          return;
-        }
-        payoutTargetIdentifier = `Bank: ${beneficiaryBdBank.trim()} • Acc: ${beneficiaryAccountNumber.trim()}`;
-      }
-    }
-
-    setIsSubmitting(false);
-    toast.info(
-      "Redirecting to RBI-authorized partner bank portals for cross-border remittance compliance."
-    );
-  };
 
   return (
     <div className="w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8 font-sans space-y-6">
       {/* ========================================================= */}
-      {/* 1. HERO DESK HEADER & REGULATORY BADGE */}
+      {/* 1. HERO DESK HEADER & STATUTORY ADVISORY */}
       {/* ========================================================= */}
       <header className="relative overflow-hidden rounded-3xl border border-orange-400/30 bg-gradient-to-r from-slate-950 via-slate-900 to-orange-950/40 p-5 sm:p-7 shadow-2xl text-white">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -264,40 +158,36 @@ export function RemittanceDesk() {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-400/20 border border-orange-400/40 px-3 py-0.5 text-[11px] font-black uppercase tracking-wider text-orange-300">
                 <Globe className="size-3.5 text-orange-400" />
-                KingPay Global Remittance Desk
+                KingPay Foreign Exchange Reference Desk
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-400/40 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300">
-                <ShieldCheck className="size-3.5 text-emerald-400" />
-                RBI PA-CB &amp; FEMA Compliant
+              <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 border border-slate-700 px-2.5 py-0.5 text-[11px] font-bold text-slate-300">
+                <Scale className="size-3.5 text-orange-400" />
+                FEMA Reference Tool
               </span>
             </div>
             <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight">
-              Cross-Border Currency Corridor <span className="text-orange-400">Desk</span>
+              Foreign Exchange Reference &amp; <span className="text-orange-400">Transfer Guide</span>
             </h1>
-            <p className="text-xs text-slate-300 max-w-xl">
-              Send SAR, AED, USD, QAR &amp; GBP directly to India (UPI / Bank) and Bangladesh (bKash / Bank) with transparent 0.45% Founder FX markup and instant nodal settlement.
+            <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+              Calculate indicative mid-market conversions for SAR, AED, USD, QAR, and GBP to INR/BDT. Connect with authorized AD-Cat-I banks for FEMA-compliant international transfers.
             </p>
           </div>
 
-          {/* 15-Min FX Rate Quote Lock Timer */}
-          <div className="rounded-2xl border border-orange-400/30 bg-black/60 p-3 sm:p-4 text-center sm:text-right shrink-0">
-            <div className="flex items-center justify-center sm:justify-end gap-1.5 text-[10px] font-black uppercase text-orange-400 tracking-wider">
-              <Clock className="size-3.5" />
-              Live FX Quote Lock
-            </div>
-            <div className="text-xl sm:text-2xl font-black text-white font-mono mt-0.5">
-              {formatTimer(secondsRemaining)}
-            </div>
-            <button
-              type="button"
-              onClick={handleManualRefreshRate}
-              disabled={isRefreshingRate}
-              className="text-[10px] text-slate-400 hover:text-orange-300 flex items-center justify-center sm:justify-end gap-1 mt-1 transition-colors mx-auto sm:ml-auto"
-            >
-              <RefreshCw className={cn("size-3", isRefreshingRate && "animate-spin text-orange-400")} />
-              Sync Interbank Rates
-            </button>
+          <div className="rounded-2xl border border-slate-800 bg-black/60 p-3 sm:p-4 text-center sm:text-right shrink-0">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Reference Rate</span>
+            <span className="text-lg sm:text-xl font-black text-orange-300 font-mono">
+              1 {sourceCurrency} = {targetCurrencySymbol}{interbankRate.toFixed(2)}
+            </span>
+            <span className="text-[10px] text-slate-500 block mt-0.5">Indicative Mid-Market</span>
           </div>
+        </div>
+
+        {/* Regulatory Banner */}
+        <div className="mt-4 pt-3 border-t border-white/10 flex items-start gap-2.5 text-xs text-slate-300 bg-orange-950/30 -mx-5 -mb-5 p-4 sm:-mx-7 sm:-mb-7">
+          <Info className="size-4 text-orange-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] leading-relaxed text-slate-300">
+            <strong>Statutory Notice:</strong> OrderKing operates as a hyperlocal food delivery and payments platform under GSTIN 18AFXPH9838M1Z9 (Assam - 788710). OrderKing is not an Authorized Dealer (AD-I/II) and does not directly execute or hold cross-border foreign currency remittances. All international money transfers must be executed through RBI-licensed banking institutions or authorized MTSS partners.
+          </p>
         </div>
       </header>
 
@@ -312,8 +202,8 @@ export function RemittanceDesk() {
               <DollarSign className="size-4 text-orange-400" />
               1. Transfer Corridor &amp; Source Amount
             </h2>
-            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-400/20 px-2 py-0.5 rounded-full">
-              Transparent Interbank Rate
+            <span className="text-[10px] font-bold text-slate-400 bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full">
+              Mid-Market Benchmark
             </span>
           </div>
 
@@ -334,13 +224,15 @@ export function RemittanceDesk() {
                       setSendAmount(cur.defaultAmount);
                     }}
                     className={cn(
-                      "p-2.5 rounded-xl border text-center transition-all",
+                      "p-2.5 rounded-xl border text-center transition-all cursor-pointer",
                       isSelected
                         ? "bg-orange-400/20 border-orange-400 text-orange-200 shadow-sm ring-1 ring-orange-400/40"
                         : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
                     )}
                   >
-                    <span className="inline-flex items-center justify-center rounded-md bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-orange-300">{cur.flagEmoji}</span>
+                    <span className="inline-flex items-center justify-center rounded-md bg-slate-900/80 border border-slate-700 px-1.5 py-0.5 text-[10px] font-black tracking-wider text-orange-300">
+                      {cur.flagEmoji}
+                    </span>
                     <span className="text-xs font-black block mt-0.5">{cur.code}</span>
                     <span className="text-[9px] text-slate-400 block truncate">{cur.name.split(" ")[0]}</span>
                   </button>
@@ -359,7 +251,7 @@ export function RemittanceDesk() {
                 type="button"
                 onClick={() => setDestinationCountry("India")}
                 className={cn(
-                  "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all",
+                  "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer",
                   destinationCountry === "India"
                     ? "bg-orange-400/20 border-orange-400 text-white shadow-sm ring-1 ring-orange-400/40"
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
@@ -376,7 +268,7 @@ export function RemittanceDesk() {
                 type="button"
                 onClick={() => setDestinationCountry("Bangladesh")}
                 className={cn(
-                  "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all",
+                  "p-3 rounded-2xl border text-left flex items-center gap-3 transition-all cursor-pointer",
                   destinationCountry === "Bangladesh"
                     ? "bg-orange-400/20 border-orange-400 text-white shadow-sm ring-1 ring-orange-400/40"
                     : "bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white"
@@ -404,7 +296,7 @@ export function RemittanceDesk() {
                     type="button"
                     onClick={() => setSendAmount(preset)}
                     className={cn(
-                      "px-2 py-0.5 rounded text-[10px] font-bold border transition",
+                      "px-2 py-0.5 rounded text-[10px] font-bold border transition cursor-pointer",
                       sendAmount === preset
                         ? "bg-orange-400 text-slate-950 border-orange-400"
                         : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
@@ -446,321 +338,108 @@ export function RemittanceDesk() {
               </span>
             </div>
 
-            <div className="flex justify-between text-orange-300">
-              <span className="flex items-center gap-1 font-bold">
-                <Sparkles className="size-3 text-orange-400" />
-                Founder Transparent FX Markup:
-              </span>
-              <span className="font-mono font-bold">
-                +{FOUNDER_FX_MARKUP_PERCENT}% ({targetCurrencySymbol}{((interbankRate * FOUNDER_FX_MARKUP_PERCENT) / 100).toFixed(2)})
-              </span>
-            </div>
-
             <div className="flex justify-between text-slate-400">
-              <span>PA-CB Cross-Border Regulatory Fee:</span>
+              <span>OrderKing Platform Fee:</span>
               <span className="font-mono text-emerald-400 font-bold">
-                ₹0.00
+                ₹0 (Waived)
               </span>
             </div>
 
             <div className="border-t border-slate-800 pt-2 flex justify-between items-center text-sm">
-              <span className="font-black text-white">Effective Exchange Rate:</span>
+              <span className="font-black text-white">Estimated Conversion Total:</span>
               <span className="font-mono font-black text-orange-400">
-                1 {sourceCurrency} = {targetCurrencySymbol}{effectiveRate.toFixed(4)}
+                {targetCurrencySymbol}{estimatedPayout.toLocaleString()} {targetCurrencyCode}
               </span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT COLUMN: NET PAYOUT & BENEFICIARY FORM */}
+        {/* RIGHT COLUMN: ESTIMATED PAYOUT & REGULATED BANK DIRECTORY */}
         <div className="lg:col-span-5 flex flex-col justify-between space-y-5">
           {/* NET PAYOUT HERO CARD */}
-          <div className="rounded-3xl border border-emerald-400/40 bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 p-5 sm:p-6 shadow-xl space-y-4">
+          <div className="rounded-3xl border border-emerald-400/40 bg-gradient-to-br from-emerald-950/60 via-slate-900 to-slate-950 p-5 sm:p-6 shadow-xl space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black uppercase tracking-wider text-emerald-300 flex items-center gap-1">
                 <CheckCircle2 className="size-3.5 text-emerald-400" />
-                Net Recipient Payout
+                Estimated Recipient Payout
               </span>
               <span className="text-[10px] font-bold text-slate-400">
-                Speed: &lt;60 Seconds
+                Direct Bank IMPS / NEFT
               </span>
             </div>
 
             <div>
               <div className="text-2xl sm:text-3xl font-black text-white font-mono flex items-baseline gap-1">
                 <span className="text-emerald-400">{targetCurrencySymbol}</span>
-                <span>{netPayoutAmount.toLocaleString()}</span>
+                <span>{estimatedPayout.toLocaleString()}</span>
                 <span className="text-xs font-normal text-slate-400">{targetCurrencyCode}</span>
               </div>
               <p className="text-[11px] text-slate-300 mt-1">
-                Recipient receives strictly this exact amount. Zero deduction at destination.
+                Benchmark estimate based on interbank spot rates. Final received amount depends on sending bank fees and intermediary charges.
               </p>
-            </div>
-
-            {/* Comparison vs Traditional Bank */}
-            <div className="bg-black/50 border border-slate-800 rounded-xl p-3 space-y-1 text-xs">
-              <div className="flex justify-between text-slate-400 text-[11px]">
-                <span>Typical Bank Payout (3.8% spread):</span>
-                <span className="font-mono">{targetCurrencySymbol}{bankNetPayout.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between font-bold text-emerald-300 text-xs">
-                <span>OrderKing Founder Advantage:</span>
-                <span className="font-mono">+{targetCurrencySymbol}{customerSavings.toLocaleString()} More</span>
-              </div>
             </div>
           </div>
 
-          {/* BENEFICIARY DETAILS FORM CARD */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-              <h3 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
-                <Smartphone className="size-4 text-orange-400" />
-                2. Beneficiary Details ({destinationCountry})
-              </h3>
-              <span className="text-[10px] font-bold text-slate-400">Instant Verification</span>
+          {/* AUTHORIZED BANK DIRECTORY */}
+          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-4 shadow-xl flex-1 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+                <h3 className="text-xs sm:text-sm font-black text-white flex items-center gap-1.5">
+                  <Building2 className="size-4 text-orange-400" />
+                  2. Regulated Transfer Channels
+                </h3>
+                <span className="text-[10px] font-bold text-emerald-400">Licensed AD-Cat-I</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-2">
+                Use verified banking portals to send money safely to {destinationCountry}:
+              </p>
             </div>
 
-            <form onSubmit={handleInitiateRemittance} className="space-y-3 text-xs">
-              {/* Recipient Full Name */}
-              <div>
-                <label className="block text-slate-400 font-bold mb-1">
-                  Beneficiary Full Legal Name *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="As per Government ID (Aadhaar / NID)"
-                  value={beneficiaryName}
-                  onChange={(e) => setBeneficiaryName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
-                />
-              </div>
-
-              {/* Destination: India Methods */}
-              {destinationCountry === "India" && (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPayoutMethodIndia("UPI")}
-                      className={cn(
-                        "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
-                        payoutMethodIndia === "UPI"
-                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
-                          : "bg-slate-800 border-slate-700 text-slate-400"
-                      )}
-                    >
-                      Instant UPI (NPCI)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPayoutMethodIndia("BANK")}
-                      className={cn(
-                        "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
-                        payoutMethodIndia === "BANK"
-                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
-                          : "bg-slate-800 border-slate-700 text-slate-400"
-                      )}
-                    >
-                      Bank IMPS / NEFT
-                    </button>
+            <div className="space-y-2 mt-2">
+              {AUTHORIZED_REMITTANCE_PROVIDERS.filter((p) =>
+                destinationCountry === "India"
+                  ? p.corridor.includes("India")
+                  : p.corridor.includes("Bangladesh")
+              ).map((provider) => (
+                <a
+                  key={provider.name}
+                  href={provider.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-3 rounded-2xl border border-slate-800 bg-slate-950/80 hover:border-orange-400/50 hover:bg-slate-950 transition flex items-center justify-between group no-underline text-left"
+                >
+                  <div className="min-w-0 pr-2">
+                    <span className="text-xs font-bold text-white group-hover:text-orange-300 transition block truncate">
+                      {provider.name}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block truncate mt-0.5">
+                      {provider.type}
+                    </span>
                   </div>
-
-                  {payoutMethodIndia === "UPI" ? (
-                    <div>
-                      <label className="block text-slate-400 font-bold mb-1">UPI ID (VPA) *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. mobile@upi or name@okhdfcbank"
-                        value={beneficiaryUpiId}
-                        onChange={(e) => setBeneficiaryUpiId(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
-                      />
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-slate-400 font-bold mb-1">Account No. *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. 501002349012"
-                          value={beneficiaryAccountNumber}
-                          onChange={(e) => setBeneficiaryAccountNumber(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-400 font-bold mb-1">IFSC Code *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. HDFC0000123"
-                          value={beneficiaryIfsc}
-                          onChange={(e) => setBeneficiaryIfsc(e.target.value.toUpperCase())}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono uppercase focus:outline-none focus:border-orange-400"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Destination: Bangladesh Methods */}
-              {destinationCountry === "Bangladesh" && (
-                <div className="space-y-2">
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setPayoutMethodBangladesh("BKASH")}
-                      className={cn(
-                        "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
-                        payoutMethodBangladesh === "BKASH"
-                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
-                          : "bg-slate-800 border-slate-700 text-slate-400"
-                      )}
-                    >
-                      bKash Wallet
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPayoutMethodBangladesh("BANK")}
-                      className={cn(
-                        "flex-1 py-1.5 rounded-lg border text-xs font-bold transition",
-                        payoutMethodBangladesh === "BANK"
-                          ? "bg-orange-400/20 border-orange-400 text-orange-300"
-                          : "bg-slate-800 border-slate-700 text-slate-400"
-                      )}
-                    >
-                      Bangladesh Bank
-                    </button>
-                  </div>
-
-                  {payoutMethodBangladesh === "BKASH" ? (
-                    <div>
-                      <label className="block text-slate-400 font-bold mb-1">
-                        bKash Mobile Wallet (11 digits) *
-                      </label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="e.g. 01712345678"
-                        value={beneficiaryBkashNumber}
-                        onChange={(e) => setBeneficiaryBkashNumber(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
-                      />
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block text-slate-400 font-bold mb-1">Bank Name *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. Islami Bank / BRAC"
-                          value={beneficiaryBdBank}
-                          onChange={(e) => setBeneficiaryBdBank(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-slate-400 font-bold mb-1">Account No. *</label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="Account Number"
-                          value={beneficiaryAccountNumber}
-                          onChange={(e) => setBeneficiaryAccountNumber(e.target.value)}
-                          className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white font-mono focus:outline-none focus:border-orange-400"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Purpose Selection */}
-              <div>
-                <label className="block text-slate-400 font-bold mb-1">Remittance Purpose (FEMA / AML) *</label>
-                <select
-                  value={remittancePurpose}
-                  onChange={(e) => setRemittancePurpose(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-orange-400"
-                >
-                  <option value="Family Maintenance & Support">Family Maintenance &amp; Support</option>
-                  <option value="Education Fees & Courseware">Education Fees &amp; Courseware</option>
-                  <option value="Healthcare & Medical Relief">Healthcare &amp; Medical Relief</option>
-                  <option value="Savings & Real Estate Investment">Savings &amp; Real Estate Investment</option>
-                  <option value="Emergency Relief">Emergency Relief</option>
-                </select>
-              </div>
-
-              {/* Transparent Regulatory Status & External Bank Handoff */}
-              <div className="p-3.5 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-xs text-slate-300 space-y-1.5 mt-2">
-                <div className="flex items-center gap-1.5 font-bold text-orange-300">
-                  <ShieldCheck className="size-4" /> Informational FX Estimator Tool
-                </div>
-                <p className="text-[11px] leading-relaxed text-slate-400">
-                  This calculator provides indicative benchmark currency conversions. Direct cross-border debit/credit execution requires an RBI Authorized Dealer Category-I (AD-Cat-I) banking partnership. To execute outward or inward remittances, please use our authorized partner banking portals below.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                <a
-                  href="https://www.onlinesbi.sbi/sbijava/osbi_global_remittance.html"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
-                >
-                  <span>SBI Global Remit</span>
-                  <ExternalLink className="size-3 text-orange-400" />
+                  <ExternalLink className="size-3.5 text-slate-500 group-hover:text-orange-400 shrink-0 transition" />
                 </a>
-                <a
-                  href="https://www.westernunion.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
-                >
-                  <span>Western Union</span>
-                  <ExternalLink className="size-3 text-orange-400" />
-                </a>
-                <a
-                  href="https://wise.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-slate-700 bg-slate-900 hover:bg-slate-800 text-center text-xs font-bold text-slate-200 transition no-underline flex items-center justify-center gap-1.5"
-                >
-                  <span>Wise Global</span>
-                  <ExternalLink className="size-3 text-orange-400" />
-                </a>
-              </div>
+              ))}
+            </div>
 
-              <button
-                type="submit"
-                className="w-full mt-2 py-3 bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold rounded-xl text-xs transition border border-slate-700/60 flex items-center justify-center gap-2"
-              >
-                <Lock className="size-3.5" />
-                <span>Proceed via Authorized Partner Bank Portals</span>
-              </button>
-            </form>
+            <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 text-center">
+              Official banking portals open in a secure external window.
+            </div>
           </div>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 3. PA-CB COMPLIANCE & LEGAL NOTICE */}
+      {/* 3. STATUTORY COMPLIANCE & LEGAL NOTICE */}
       {/* ========================================================= */}
       <footer className="rounded-2xl border border-slate-800 bg-slate-950/80 p-4 sm:p-5 text-slate-400 text-xs space-y-2">
         <div className="flex items-center gap-2 text-orange-400 font-bold">
           <ShieldCheck className="size-4" />
-          <span>Payment Aggregator - Cross Border (PA-CB) Statutory Architecture</span>
+          <span>Foreign Exchange Management Act (FEMA), 1999 Statutory Guidelines</span>
         </div>
         <p className="text-[11px] leading-relaxed">
-          OrderKing KingPay Remittance operates under strict compliance with RBI Master Directions on Payment Aggregator - Cross Border (PA-CB) and FEMA guidelines. Outward remittances are processed via authorized AD Category-I dealer banks with real-time OFAC, FATF, and Bangladesh Bank anti-money laundering sanction screening. Zero concealed conversion surcharges are applied.
+          Cross-border outward and inward currency transactions in India are governed strictly by the Reserve Bank of India (RBI) under the Foreign Exchange Management Act, 1999 (FEMA) and Liberalised Remittance Scheme (LRS). OrderKing does not process, intermediate, or escrow cross-border funds. All outward and inward remittances must be routed via Authorized Dealer Category-I licensed banks or authorized Money Transfer Service Scheme (MTSS) operators.
         </p>
       </footer>
-
     </div>
   );
 }

@@ -873,7 +873,7 @@ function localHumanMentorAnswer(
           `• Verified Restaurant: ${waitCreditResult.restaurantName} (Order #${waitCreditResult.orderCode})\n` +
           `• Total Elapsed Wait: ${waitCreditResult.waitedMins} mins (exceeding 6-min grace period by ${waitCreditResult.billableMins} mins)\n` +
           `• Auto-Credited to Ledger: ₹${(waitCreditResult.amountPaise / 100).toFixed(2)} at exact statutory ₹1.00/min rate.\n` +
-          `• 100% Autonomous — Zero human supervisor escalation required. Your hard work & time are protected!`
+          `• Autonomous Audit — System credit logged without manual supervisor escalation.`
         );
       } else if (waitCreditResult.waitedMins > 6) {
         if (lang === "bn") {
@@ -1200,7 +1200,7 @@ function localHumanMentorAnswer(
         `   • 2.0 से 5.0 किमी: ₹12.00 प्रति किमी\n` +
         `   • 5.0 किमी से अधिक: ₹15.00 प्रति किमी (लॉन्ग-हॉल रूट बोनस)\n` +
         `3. किचन वेट-टाइम पे: 6 मिनट की रियायत के बाद ठीक ₹1.00 प्रति मिनट सीधे आपके खाते में।\n` +
-        `4. 100% कस्टमर टिप: ग्राहक द्वारा दिया गया पूरा 100% टिप आपका है — शून्य कटौती!\n` +
+        `4. ग्राहक टिप (शून्य कटौती): ग्राहक द्वारा दिया गया पूरा टिप सीधे आपके पेआउट लेजर में जमा होता है।\n` +
         `5. दैनिक माइलस्टोन बोनस: 8 ट्रिप (+₹100) | 14 ट्रिप (+₹220) | 20 ट्रिप (+₹400)।\n` +
         `• आज की कुल शुद्ध कमाई: ${formatPaise(s.todayEarningsPaise)} (${s.completedToday} ट्रिप पूर्ण | डिलीवरी पे: ${formatPaise(s.payoutTotals.payout)} | टिप्स: ${formatPaise(s.payoutTotals.tip)} | प्रोत्साहन: ${formatPaise(s.payoutTotals.incentive)})।`
       );
@@ -1212,7 +1212,7 @@ function localHumanMentorAnswer(
       `   • 2.0 km to 5.0 km: ₹12.00 per km\n` +
       `   • Beyond 5.0 km: ₹15.00 per km (long-haul progressive booster)\n` +
       `3. Kitchen Wait-Time Pay: EXACTLY ₹1.00/min (100 paise) credited after 6 mins grace period.\n` +
-      `4. 100% Customer Tips: platform payout structure pass-through directly to your bank account.\n` +
+      `4. Direct Customer Tips: Full pass-through credited directly to your bank account without deductions.\n` +
       `5. Daily Milestone Incentives: 8 Trips (+₹100) | 14 Trips (+₹220) | 20 Trips (+₹400).\n` +
       `• Today's Shift Snapshot: ${formatPaise(s.todayEarningsPaise)} across ${s.completedToday} deliveries (Delivery Pay: ${formatPaise(s.payoutTotals.payout)} | Tips: ${formatPaise(s.payoutTotals.tip)} | Incentives: ${formatPaise(s.payoutTotals.incentive)}).`
     );

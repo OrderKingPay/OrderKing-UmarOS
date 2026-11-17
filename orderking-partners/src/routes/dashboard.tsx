@@ -465,7 +465,7 @@ function DashboardPage() {
           }
         />
 
-        {/* Merchant Operational Scorecard & SLA Health (Zomato Partner Parity) */}
+        {/* Merchant Operational Scorecard & SLA Health (OrderKing Partner Parity) */}
         <MerchantPerformanceScorecard
           data={{
             totalOrders: d?.today.orders ?? 0,

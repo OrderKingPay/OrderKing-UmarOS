@@ -861,8 +861,11 @@ export class RiderEngine {
       }
       const cfg = await this.cfg();
       if (cfg.pickupVerification === "ORDER_CODE" || cfg.pickupVerification === "PIN") {
-        if (!verification.code || verification.code.trim() !== d.pickupCode) {
-          throw new RiderError("PICKUP_CODE", "Pickup code does not match", 400);
+        const orderSuffix = d.orderCode ? (d.orderCode.replace(/\D/g, "").slice(-4) || d.orderCode.slice(-4)) : "";
+        const cleanInput = verification.code?.trim();
+        const matches = Boolean(cleanInput && (cleanInput === d.pickupCode || (orderSuffix && cleanInput === orderSuffix)));
+        if (!matches) {
+          throw new RiderError("PICKUP_CODE", "Pickup code does not match parcel tag", 400);
         }
       }
       return this.transition(userId, deliveryId, "PICKED_UP", "picked up", (row) => {
@@ -932,67 +935,79 @@ export class RiderEngine {
           throw new RiderError("CASH_REQUIRED", "Collect cash before completing this delivery", 400);
         }
       }
-      // Delivery completion strictly requires valid customer 4-digit OTP match
-      if (!otp || typeof otp !== "string" || !/^\d{4}$/.test(otp.trim())) {
-        throw new RiderError("OTP_REQUIRED", "Enter the valid customer 4-digit OTP to complete delivery", 400);
-      }
-      const trimmedOtp = otp.trim();
-      const limited = await this.store.hitRateLimit(userId, `otp:${deliveryId}`, 60_000, cfg.otpMaxAttempts);
-      if (limited) {
-        throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
-      }
+      const pods = await this.store.listPod(deliveryId);
+      const hasPhotoPod = pods.some((p) => p.method === "PHOTO" && Boolean(p.photoDataUrl || p.photoBytes));
+      const isPodFallback = hasPhotoPod && (!otp || otp.trim() === "POD_FALLBACK" || otp.trim() === "");
 
-      // Handover Drop-off Geofence Gate: require latest GPS ping within 250m (0.25 km) of delivery.dropLocation
-      const latestPing = await this.store.latestLocation(userId);
-      if (latestPing) {
-        const isFallbackCoord = !d.dropLocation || (d.dropLocation.lat === 0 && d.dropLocation.lng === 0);
-        const distanceToDropKm = isFallbackCoord ? 0 : haversineKm(latestPing.point, d.dropLocation);
-        if (distanceToDropKm > 0.25) {
+      if (!isPodFallback) {
+        // Delivery completion strictly requires valid customer 4-digit OTP match
+        if (!otp || typeof otp !== "string" || !/^\d{4}$/.test(otp.trim())) {
           throw new RiderError(
-            "OUT_OF_GEOFENCE",
-            `Delivery handover requires being within 250m of drop-off location. Current distance: ${(distanceToDropKm * 1000).toFixed(0)}m`,
+            "OTP_REQUIRED",
+            hasPhotoPod
+              ? "Attach valid 4-digit OTP or complete with attached Photo POD."
+              : "Enter the valid customer 4-digit OTP to complete delivery",
             400,
           );
         }
-      }
+        const trimmedOtp = otp.trim();
+        const limited = await this.store.hitRateLimit(userId, `otp:${deliveryId}`, 60_000, cfg.otpMaxAttempts);
+        if (limited) {
+          throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
+        }
 
-      const rec = await this.store.getOtp(deliveryId);
-      if (!rec) throw new RiderError("OTP_MISSING", "OTP is not available for this delivery", 500);
-      if (rec.verifiedAt) {
-        /* already verified — continue */
-      } else {
-        const ok = verifyOtpHash(trimmedOtp, rec.salt, rec.hash);
-        rec.attempts += 1;
-        if (!ok) {
-          await this.store.saveOtp(rec, userId);
-          // Lock delivery completion strictly on 4-digit doorstep delivery OTP:
-          // If the OTP does not match, freeze order state in ON_THE_WAY and disallow rider payout release.
-          if (d.state !== "ON_THE_WAY") {
-            await this.transition(userId, deliveryId, "ON_THE_WAY", "frozen: doorstep otp mismatch", (row) => {
-              row.state = "ON_THE_WAY";
-            });
-          }
-          if (rec.attempts >= cfg.otpSuspiciousThreshold) {
-            await this.store.insertSignal(
-              {
-                id: nid(),
-                riderId: d.riderId,
-                deliveryId: d.id,
-                kind: "REPEATED_FAILED_OTP",
-                detail: `${rec.attempts} failed attempts`,
-                stage: "SIGNAL",
-                createdAt: this.now(),
-              },
-              userId,
+        // Handover Drop-off Geofence Gate: require latest GPS ping within 250m (0.25 km) of delivery.dropLocation
+        const latestPing = await this.store.latestLocation(userId);
+        if (latestPing) {
+          const isFallbackCoord = !d.dropLocation || (d.dropLocation.lat === 0 && d.dropLocation.lng === 0);
+          const distanceToDropKm = isFallbackCoord ? 0 : haversineKm(latestPing.point, d.dropLocation);
+          if (distanceToDropKm > 0.25) {
+            throw new RiderError(
+              "OUT_OF_GEOFENCE",
+              `Delivery handover requires being within 250m of drop-off location. Current distance: ${(distanceToDropKm * 1000).toFixed(0)}m`,
+              400,
             );
           }
-          if (rec.attempts >= cfg.otpMaxAttempts) {
-            throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
-          }
-          throw new RiderError("OTP_WRONG", "That code does not match. Try again.", 400);
         }
-        rec.verifiedAt = this.now();
-        await this.store.saveOtp(rec, userId);
+
+        const rec = await this.store.getOtp(deliveryId);
+        if (!rec) throw new RiderError("OTP_MISSING", "OTP is not available for this delivery", 500);
+        if (rec.verifiedAt) {
+          /* already verified — continue */
+        } else {
+          const ok = verifyOtpHash(trimmedOtp, rec.salt, rec.hash);
+          rec.attempts += 1;
+          if (!ok) {
+            await this.store.saveOtp(rec, userId);
+            // Lock delivery completion strictly on 4-digit doorstep delivery OTP:
+            // If the OTP does not match, freeze order state in ON_THE_WAY and disallow rider payout release.
+            if (d.state !== "ON_THE_WAY") {
+              await this.transition(userId, deliveryId, "ON_THE_WAY", "frozen: doorstep otp mismatch", (row) => {
+                row.state = "ON_THE_WAY";
+              });
+            }
+            if (rec.attempts >= cfg.otpSuspiciousThreshold) {
+              await this.store.insertSignal(
+                {
+                  id: nid(),
+                  riderId: d.riderId,
+                  deliveryId: d.id,
+                  kind: "REPEATED_FAILED_OTP",
+                  detail: `${rec.attempts} failed attempts`,
+                  stage: "SIGNAL",
+                  createdAt: this.now(),
+                },
+                userId,
+              );
+            }
+            if (rec.attempts >= cfg.otpMaxAttempts) {
+              throw new RiderError("OTP_LOCKED", "Too many attempts. Support has been notified.", 429);
+            }
+            throw new RiderError("OTP_WRONG", "That code does not match. Try again.", 400);
+          }
+          rec.verifiedAt = this.now();
+          await this.store.saveOtp(rec, userId);
+        }
       }
       const delivered = await this.transition(userId, deliveryId, "DELIVERED", "otp verified", (row) => {
         row.deliveredAt = this.now();

@@ -434,7 +434,7 @@ export function OrderKingSparkModal({
     const sparkMsg: ChatMessage = {
       id: `spark-recon-${Date.now()}`,
       sender: "spark",
-      text: `Daily Shift & Financial Recon Report Generated:\nDelivered Orders: ${recon.totalDeliveredOrders} | Gross Sales: ${formatINR(recon.grossCustomerSpendPaise)}\nPlatform Commission: ₹0.00 (0%)\nStatutory GST Sec 9(5): ${formatINR(recon.gst95RemittedByPlatformPaise)}\nNet Bank Payout: ${formatINR(recon.netPayoutAccruedPaise)} (T+1 Daily Deposit)`,
+      text: `Daily Shift & Financial Recon Report:\nDelivered Orders: ${recon.totalDeliveredOrders} | Gross Sales: ${formatINR(recon.grossCustomerSpendPaise)}\nPlatform Commission: ${formatINR(recon.orderKingPlatformCommissionPaise)}\nStatutory GST Sec 9(5): ${formatINR(recon.gst95RemittedByPlatformPaise)}\nNet Bank Payout Accrued: ${formatINR(recon.netPayoutAccruedPaise)} (T+1 Daily Deposit)`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       actionCardType: "RECON",
       reconData: recon,
@@ -445,23 +445,24 @@ export function OrderKingSparkModal({
 
   // Quick Action: Dispute Arbitration
   const triggerDisputeAction = () => {
-    const sampleDispute: SparkDisputeCase = {
-      disputeId: `disp-${Date.now()}`,
-      orderId: "ORD-9421",
-      customerName: "Rahul Sharma",
-      complaintType: "FOOD_SPILL",
-      complaintText: "Curry container arrived crushed and spilled inside delivery bag.",
-      claimAmountPaise: 38000,
-      prepTimeMinutes: 18,
-      transitTimeMinutes: 38,
-      spillPhotoSubmitted: true,
-      sealIntactReported: true,
-    };
-    const decision = orderKingSpark.arbitrateDispute(sampleDispute);
+    const activeDisputes = orderKingSpark.getActiveDisputes();
+    if (activeDisputes.length === 0) {
+      const sparkMsg: ChatMessage = {
+        id: `spark-dispute-${Date.now()}`,
+        sender: "spark",
+        text: "No active customer complaints or packaging disputes pending review. Kitchen operations are running smoothly with 100% verified fulfillment.",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      setMessages((prev) => [...prev, sparkMsg]);
+      speakResponse(sparkMsg.text);
+      return;
+    }
+    const first = activeDisputes[0];
+    const decision = orderKingSpark.arbitrateDispute(first);
     const sparkMsg: ChatMessage = {
       id: `spark-dispute-${Date.now()}`,
       sender: "spark",
-      text: `Dispute Case #ORD-9421 Arbitrated:\n• Finding: ${decision.legalSenseRationale}\n• Merchant Liability: ₹0.00 (Protected)\n• Logistics Liability: ${formatINR(decision.logisticsLiabilityPaise)}\n• Statutory GST Reversal: ${formatINR(decision.gstReversalPaise)} under Section 9(5) CGST.`,
+      text: `Dispute Case #${decision.disputeId} Arbitrated:\n• Finding: ${decision.legalSenseRationale}\n• Merchant Liability: ${formatINR(decision.merchantLiabilityPaise)}\n• Logistics Liability: ${formatINR(decision.logisticsLiabilityPaise)}\n• Statutory GST Reversal: ${formatINR(decision.gstReversalPaise)} under Section 9(5) CGST.`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       actionCardType: "DISPUTE",
       disputeData: decision,
@@ -476,12 +477,12 @@ export function OrderKingSparkModal({
     const sparkItems = rawItems.map((i: any) => ({
       id: i.id,
       name: i.name,
-      category: "Main Course",
-      pricePaise: 24000,
-      isAvailable: true,
-      preparationMinutes: i.prep_minutes || 20,
-      totalOrdersToday: 8,
-      diet: i.diet || "NONVEG",
+      category: i.category_name || i.category || "Main Course",
+      pricePaise: i.price_paise || i.pricePaise || 20000,
+      isAvailable: Boolean(i.available ?? i.isAvailable ?? true),
+      preparationMinutes: i.prep_minutes || i.preparationMinutes || 20,
+      totalOrdersToday: i.total_orders || i.totalOrdersToday || 0,
+      diet: i.diet || "NON_VEG",
     }));
 
     const combos = orderKingSpark.generateComboRecommendations(sparkItems);
@@ -836,9 +837,11 @@ export function OrderKingSparkModal({
                           {formatINR(m.reconData.grossCustomerSpendPaise)}
                         </span>
                       </div>
-                      <div className="flex justify-between text-emerald-400">
-                        <span>Platform Commission:</span>
-                        <span className="font-bold">₹0.00 (0%)</span>
+                      <div className="flex justify-between text-slate-300">
+                        <span>Platform Commission (22%):</span>
+                        <span className="font-bold text-white">
+                          {formatINR(m.reconData.orderKingPlatformCommissionPaise)}
+                        </span>
                       </div>
                       <div className="flex justify-between text-slate-300">
                         <span>5% CGST Sec 9(5) (Remitted):</span>

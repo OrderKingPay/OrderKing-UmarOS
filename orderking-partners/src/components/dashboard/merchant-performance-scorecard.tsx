@@ -104,7 +104,7 @@ export function calculateMerchantScorecard(input: MerchantScorecardInput): Compu
   );
 
   const isEligibleForPromotedPlacement =
-    acceptanceRatePct >= 98.0 && cancellationRatePct < 0.5 && rating >= 4.5;
+    total >= 20 && acceptanceRatePct >= 98.0 && cancellationRatePct < 0.5 && rating >= 4.5;
 
   return {
     acceptanceRatePct,
@@ -128,12 +128,12 @@ export interface MerchantPerformanceScorecardProps {
 
 export function MerchantPerformanceScorecard({ data, className }: MerchantPerformanceScorecardProps) {
   const scorecard = calculateMerchantScorecard({
-    totalOrders: data?.totalOrders ?? 42,
-    acceptedOrders: data?.acceptedOrders ?? 42,
+    totalOrders: data?.totalOrders ?? 0,
+    acceptedOrders: data?.acceptedOrders ?? 0,
     cancelledOrders: data?.cancelledOrders ?? 0,
-    avgPrepMinutes: data?.avgPrepMinutes ?? 13,
-    rating: data?.rating ?? 4.8,
-    ratingCount: data?.ratingCount ?? 118,
+    avgPrepMinutes: data?.avgPrepMinutes ?? 14,
+    rating: data?.rating ?? 5.0,
+    ratingCount: data?.ratingCount ?? 0,
   });
 
   return (

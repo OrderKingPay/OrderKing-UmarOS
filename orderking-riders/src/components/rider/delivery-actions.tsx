@@ -509,18 +509,18 @@ export function DeliveryActions({
             </div>
           ) : null}
 
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold">
-              Pickup Verification OTP: <span className="font-mono font-bold tabular-nums text-primary">{d.pickupCode}</span>
+          <div className="rounded-xl border border-border bg-card p-3 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-foreground">
+                Merchant Parcel Tag: #{d.orderCode}
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
+                Check Parcel Bill
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              Match the physical bill attached to the parcel with Order #{d.orderCode} and enter the 4-digit pickup code from merchant staff.
             </p>
-            <Button
-              size="sm"
-              variant="outline"
-              type="button"
-              onClick={() => setCode(d.pickupCode)}
-            >
-              Confirm Code
-            </Button>
           </div>
 
           <div className="space-y-1">
@@ -884,14 +884,16 @@ export function DeliveryActions({
 
           <SwipeSlider
             label={
-              otp.trim().length >= 4 || qrVerified
-                ? "Swipe to Complete Delivery"
-                : "Enter Customer OTP to Complete"
+              otp.trim().length >= 4
+                ? "Swipe to Complete Delivery (PIN)"
+                : podPhoto
+                ? "Swipe to Complete (Photo POD Attached)"
+                : "Enter Customer PIN or Attach Photo"
             }
-            disabled={(!qrVerified && otp.trim().length < 4) || pending}
+            disabled={(!podPhoto && otp.trim().length < 4) || pending}
             variant="gold"
             loading={pending}
-            onComplete={() => act("DELIVER", { otp: otp.trim(), method: qrVerified ? "QR" : "OTP" })}
+            onComplete={() => act("DELIVER", { otp: otp.trim() ? otp.trim() : "POD_FALLBACK" })}
           />
         </div>
       ) : null}

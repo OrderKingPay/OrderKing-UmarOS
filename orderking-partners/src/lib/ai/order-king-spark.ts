@@ -35,8 +35,11 @@ export interface SparkKitchenAnomaly {
 export interface SparkSettlementSummary {
   period: string;
   grossSalesPaise: number;
-  commissionPaidPaise: number; // 0 paise with OrderKing!
-  legacyAggregatorLossAvoidedPaise: number; // ~24% of gross sales
+  commissionPaidPaise: number;
+  servicesGstPaise: number;
+  paymentGatewayFeePaise: number;
+  tcsDeductionPaise: number;
+  tdsDeductionPaise: number;
   netSettlementPaise: number;
   status: "SETTLED" | "PENDING_BANK" | "PROCESSING";
   settlementAccount: string;
@@ -119,11 +122,12 @@ export interface SparkShiftFinancialReconReport {
   grossCustomerSpendPaise: number;
   merchantFundedDiscountsPaise: number;
   platformSponsoredDiscountCreditPaise: number;
-  orderKingPlatformCommissionPaise: number; // 0 paise!
-  aggregatorCommissionAvoidedPaise: number; // 24% saved!
-  gst95RemittedByPlatformPaise: number; // 5% CGST Sec 9(5)
-  tcsSection52Paise: number; // 0.5%
-  tdsSection194OPaise: number; // 0.1%
+  orderKingPlatformCommissionPaise: number;
+  servicesGstPaise: number;
+  paymentGatewayFeePaise: number;
+  gst95RemittedByPlatformPaise: number;
+  tcsSection52Paise: number;
+  tdsSection194OPaise: number;
   customerDisputeDeductionsPaise: number;
   netPayoutAccruedPaise: number;
   bankSettlementAccount: string;
@@ -241,13 +245,13 @@ export class OrderKingSpark {
         detectedAt: "Today, 8:42 PM",
       },
       {
-        anomalyId: "anom-sav-02",
-        type: "SALES_DECLINE",
+        anomalyId: "anom-stock-02",
+        type: "REJECTION_SPIKE",
         severity: "LOW",
-        headline: "Direct Ordering Savings: ₹14,280 Retained Today",
-        rootCauseHypothesis: "Direct orders processed at transparent platform commission rates.",
-        recommendedAction: "Offer free garlic naan on orders over ₹500 to drive repeat orders.",
-        authorizedActionLabel: "Launch Repeat Customer Offer",
+        headline: "Low Stock Buffer: Shahi Firni marked 86 at 9:00 PM",
+        rootCauseHypothesis: "Dinner rush exhausted clay pot dessert inventory before kitchen shift close.",
+        recommendedAction: "Pre-stock 25 units for tomorrow's dinner service to prevent lost dessert sales.",
+        authorizedActionLabel: "Acknowledge Inventory Alert",
         detectedAt: "Today, 9:00 PM",
       },
     ];
@@ -301,17 +305,32 @@ export class OrderKingSpark {
   }
 
   public getSettlementSummary(): SparkSettlementSummary {
-    const grossSalesPaise = 18500000;
-    const legacyAggregatorLossAvoidedPaise = Math.round(grossSalesPaise * 0.24);
+    const grossSalesPaise = 18500000; // ₹1,85,000.00
+    // Standard 22% platform commission tier
+    const commissionPaidPaise = Math.round(grossSalesPaise * 0.22); // ₹40,700.00
+    const servicesGstPaise = Math.round(commissionPaidPaise * 0.18); // 18% GST on services = ₹7,326.00
+    const paymentGatewayFeePaise = Math.round(grossSalesPaise * 0.0184 * 1.18); // 1.84% + 18% GST = ₹4,017.00
+    const tcsDeductionPaise = Math.round(grossSalesPaise * 0.01); // 1% Sec 52 = ₹1,850.00
+    const tdsDeductionPaise = Math.round(grossSalesPaise * 0.001); // 0.1% Sec 194-O = ₹185.00
+    const netSettlementPaise =
+      grossSalesPaise -
+      commissionPaidPaise -
+      servicesGstPaise -
+      paymentGatewayFeePaise -
+      tcsDeductionPaise -
+      tdsDeductionPaise;
 
     return {
       period: "Trailing 7 Days",
       grossSalesPaise,
-      commissionPaidPaise: 0,
-      legacyAggregatorLossAvoidedPaise,
-      netSettlementPaise: grossSalesPaise,
+      commissionPaidPaise,
+      servicesGstPaise,
+      paymentGatewayFeePaise,
+      tcsDeductionPaise,
+      tdsDeductionPaise,
+      netSettlementPaise,
       status: "SETTLED",
-      settlementAccount: "Verified Settlement Bank Account",
+      settlementAccount: "Verified Settlement Bank Account (HDFC Bank ••••4012)",
     };
   }
 
@@ -507,13 +526,17 @@ export class OrderKingSpark {
     const grossCustomerSpendPaise = grossFoodSalesPaise + packagingChargesPaise; // ₹25,720.00
     const merchantFundedDiscountsPaise = 180000; // ₹1,800.00
     const platformSponsoredDiscountCreditPaise = 65000; // ₹650.00 reimbursed by OrderKing
-    const orderKingPlatformCommissionPaise = 0; // 0% commission!
-    const aggregatorCommissionAvoidedPaise = Math.round(grossCustomerSpendPaise * 0.24); // ₹6,173.00
+    
+    // Standard agreed platform commission tier (22% on net food sales)
+    const netFoodSalesPaise = grossFoodSalesPaise - merchantFundedDiscountsPaise;
+    const orderKingPlatformCommissionPaise = Math.round(netFoodSalesPaise * 0.22); // ₹5,060.00
+    const servicesGstPaise = Math.round(orderKingPlatformCommissionPaise * 0.18); // 18% GST = ₹910.80 -> ₹911
+    const paymentGatewayFeePaise = Math.round(grossCustomerSpendPaise * 0.0184 * 1.18); // 1.84% + 18% GST = ₹558.00
 
     // Statutory Taxes
     const taxableBasePaise = grossCustomerSpendPaise - merchantFundedDiscountsPaise; // ₹23,920.00
     const gst95RemittedByPlatformPaise = Math.round(taxableBasePaise * 0.05); // 5% CGST Sec 9(5) = ₹1,196.00
-    const tcsSection52Paise = Math.round(taxableBasePaise * 0.005); // 0.5% TCS = ₹119.60 -> ₹120
+    const tcsSection52Paise = Math.round(taxableBasePaise * 0.01); // 1.0% TCS = ₹239.20 -> ₹239
     const tdsSection194OPaise = Math.round(taxableBasePaise * 0.001); // 0.1% TDS = ₹23.92 -> ₹24
 
     // Customer dispute deductions
@@ -525,19 +548,21 @@ export class OrderKingSpark {
       merchantFundedDiscountsPaise +
       platformSponsoredDiscountCreditPaise -
       orderKingPlatformCommissionPaise -
+      servicesGstPaise -
+      paymentGatewayFeePaise -
       tcsSection52Paise -
       tdsSection194OPaise -
-      customerDisputeDeductionsPaise; // ₹24,367.00
+      customerDisputeDeductionsPaise;
 
     const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
-- **OrderKing Platform Commission**: **₹0.00 (0% commission)**.
-- **Net Margin Retained**: Retained **₹${((grossCustomerSpendPaise - orderKingPlatformCommissionPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
-- **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government by Order King on your behalf).
-- **Withholding Taxes Deducted**: TCS Sec 52 (0.5%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
+- **Platform Commission (22%)**: **₹${(orderKingPlatformCommissionPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (+ 18% GST on services: ₹${(servicesGstPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}).
+- **Payment Gateway Fee (1.84% + GST)**: **₹${(paymentGatewayFeePaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}**.
+- **Statutory GST Sec 9(5) Remitted**: **₹${(gst95RemittedByPlatformPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (5% food GST remitted directly to the government under Section 9(5) CGST).
+- **Withholding Statutory Deductions**: TCS Sec 52 (1.0%): **₹${(tcsSection52Paise / 100).toFixed(2)}** · TDS Sec 194-O (0.1%): **₹${(tdsSection194OPaise / 100).toFixed(2)}**.
 - **Customer Dispute Adjustments**: **-₹${(customerDisputeDeductionsPaise / 100).toFixed(2)}** (Missing Naan #ORD-8845).
-- **Net Bank Payout Accrued**: **₹${(netPayoutAccruedPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}**, scheduled for automatic IMPS/NEFT transfer to Verified Settlement Bank Account.`;
+- **Net Bank Payout Accrued**: **₹${(netPayoutAccruedPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}**, scheduled for automatic batch transfer to Verified Settlement Bank Account.`;
 
     return {
       shiftDate,
@@ -550,13 +575,14 @@ export class OrderKingSpark {
       merchantFundedDiscountsPaise,
       platformSponsoredDiscountCreditPaise,
       orderKingPlatformCommissionPaise,
-      aggregatorCommissionAvoidedPaise,
+      servicesGstPaise,
+      paymentGatewayFeePaise,
       gst95RemittedByPlatformPaise,
       tcsSection52Paise,
       tdsSection194OPaise,
       customerDisputeDeductionsPaise,
       netPayoutAccruedPaise,
-      bankSettlementAccount: "Verified Settlement Bank Account",
+      bankSettlementAccount: "Verified Settlement Bank Account (HDFC Bank ••••4012)",
       settlementStatus: "PENDING_MIDNIGHT_BATCH",
       conversationalSummary: summary,
     };
@@ -650,18 +676,25 @@ ${mod.arbitrationProtection}
       q.includes("leak")
     ) {
       const disputes = this.getActiveDisputes();
-      const first = disputes[0] ?? {
-        disputeId: "dsp-ref-8831",
-        orderId: "ord-8831",
-        customerName: "Rahul Sharma",
-        complaintType: "FOOD_SPILL" as const,
-        complaintText: "Dal Makhani leaked inside delivery polythene during transit.",
-        claimAmountPaise: 24000,
-        prepTimeMinutes: 12,
-        transitTimeMinutes: 44,
-        spillPhotoSubmitted: true,
-        sealIntactReported: true,
-      };
+      if (disputes.length === 0) {
+        return {
+          id,
+          sender: "spark",
+          text: `### Automated Customer Dispute & Refund Arbitrator
+**Active Queue**: 0 active customer disputes.
+- All live orders prepared and handed over within SLA.
+- Your restaurant payout remains 100% protected with zero deductions.`,
+          timestamp,
+          actionCard: {
+            type: "dispute_arbitration",
+            data: {
+              disputes: [],
+              decision: null,
+            },
+          },
+        };
+      }
+      const first = disputes[0];
       const decision = this.arbitrateDispute(first);
 
       return {
@@ -752,16 +785,18 @@ ${recon.conversationalSummary}`,
       };
     }
 
-    // 4. Settlement & Commission Savings
-    if (q.includes("settlement") || q.includes("payout") || q.includes("money") || q.includes("save") || q.includes("saving")) {
+    // 4. Settlement & Statutory Deductions
+    if (q.includes("settlement") || q.includes("payout") || q.includes("money") || q.includes("fee") || q.includes("commission")) {
       const summary = this.getSettlementSummary();
       return {
         id,
         sender: "spark",
-        text: `### Settlement & Commission Savings Report
+        text: `### Settlement & Statutory Deductions Report
 - **Trailing 7 Days Gross Sales**: **₹${(summary.grossSalesPaise / 100).toLocaleString("en-IN")}**
-- **OrderKing Platform Commission**: **₹0 (0% commission)**
-- **Net Sales Retained**: **₹${((summary.grossSalesPaise - summary.commissionPaidPaise) / 100).toLocaleString("en-IN")}** directly in your merchant account.
+- **Agreed Platform Commission (22%)**: **₹${(summary.commissionPaidPaise / 100).toLocaleString("en-IN")}** (+ 18% GST on services: ₹${(summary.servicesGstPaise / 100).toLocaleString("en-IN")})
+- **Payment Gateway Processing (1.84% + GST)**: **₹${(summary.paymentGatewayFeePaise / 100).toLocaleString("en-IN")}**
+- **Statutory Withholdings (TCS Sec 52 + TDS Sec 194-O)**: **₹${((summary.tcsDeductionPaise + summary.tdsDeductionPaise) / 100).toLocaleString("en-IN")}**
+- **Net Bank Payout**: **₹${(summary.netSettlementPaise / 100).toLocaleString("en-IN")}**
 - **Settlement Account**: **${summary.settlementAccount}** (Status: **${summary.status}**)`,
         timestamp,
         actionCard: {
@@ -911,22 +946,31 @@ I am your restaurant growth, operations & financial partner. I can:
   }
 
   /**
-   * Calculates avoided legacy aggregator commission loss with integer-paise rigor
+   * Calculates platform commission and statutory deductions schedule with integer-paise rigor
    */
-  public calculateAvoidedLegacyAggregatorLoss(grossSalesPaise: number) {
-    const takeRateBps = 2400; // 24% standard aggregator take rate
-    const legacyAggregatorLossAvoidedPaise = Math.round((grossSalesPaise * takeRateBps) / 10000);
-    const gstOnCommissionSavedPaise = Math.round((legacyAggregatorLossAvoidedPaise * 18) / 100);
-    const totalPartnerTakeHomeRetainedPaise =
-      legacyAggregatorLossAvoidedPaise + gstOnCommissionSavedPaise;
+  public calculateOrderKingCommissionSchedule(grossSalesPaise: number, commissionRateBps = 2200) {
+    const platformCommissionPaise = Math.round((grossSalesPaise * commissionRateBps) / 10000);
+    const servicesGstPaise = Math.round((platformCommissionPaise * 18) / 100);
+    const pgFeePaise = Math.round(grossSalesPaise * 0.0184 * 1.18);
+    const tcsPaise = Math.round(grossSalesPaise * 0.01);
+    const tdsPaise = Math.round(grossSalesPaise * 0.001);
+    const netPartnerPayoutPaise =
+      grossSalesPaise -
+      platformCommissionPaise -
+      servicesGstPaise -
+      pgFeePaise -
+      tcsPaise -
+      tdsPaise;
 
     return {
       grossSalesPaise,
-      orderKingCommissionPaise: 0,
-      standardLegacyAggregatorTakeRateBps: takeRateBps,
-      legacyAggregatorLossAvoidedPaise,
-      gstOnCommissionSavedPaise,
-      totalPartnerTakeHomeRetainedPaise,
+      platformCommissionRateBps: commissionRateBps,
+      platformCommissionPaise,
+      servicesGstPaise,
+      pgFeePaise,
+      tcsPaise,
+      tdsPaise,
+      netPartnerPayoutPaise,
     };
   }
 

@@ -418,7 +418,7 @@ function Login() {
                           id="owner-name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="e.g. Rahul Sharma"
+                          placeholder="Enter owner / manager name"
                           className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                         />
                       </div>

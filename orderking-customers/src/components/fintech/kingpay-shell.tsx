@@ -12,7 +12,7 @@ import { CustomerFloatingBottomNav } from "@/components/navigation/floating-bott
 import { ErrorBoundary } from "@/components/error-boundary";
 import { formatPaise } from "@/lib/money";
 
-export type KingPaySection = "pay" | "garage" | "loan" | "bills" | "passbook" | "account" | "wealth";
+export type KingPaySection = "pay" | "garage" | "bills" | "passbook" | "account";
 
 type Props = {
   children: ReactNode;
@@ -38,14 +38,12 @@ export function KingPayShell({
   const [serviceQuery, setServiceQuery] = useState("");
   const { user, isPending } = useCurrentUserState();
   const searchableFeatures: { label: string; keywords: string; section: KingPaySection }[] = [
-    { label: "Pay & Transfer (UPI / QR)", keywords: "pay send money transfer upi qr scan", section: "pay" },
-    { label: "Bills & Utility Recharges", keywords: "electricity water dth broadband mobile gas lpg bill", section: "bills" },
-    { label: "Garage & FASTag", keywords: "car bike vehicle fastag toll insurance challan", section: "garage" },
-    { label: "Credit & Pay Later", keywords: "loan credit bnpl emi limit", section: "loan" },
-    { label: "Passbook & Statement", keywords: "history passbook ledger entries statement", section: "passbook" },
-    { label: "Wealth & Rewards", keywords: "wealth features products crown rewards", section: "wealth" },
-    { label: "Account & Security", keywords: "profile details kyc bank settings", section: "account" },
-      ];
+    { label: "Pay & Transfer (Direct UPI / BharatQR)", keywords: "pay send money transfer upi qr scan vpa bharatqr", section: "pay" },
+    { label: "Bills & Utility Recharges (BBPS)", keywords: "electricity water dth broadband mobile gas lpg bill bbps", section: "bills" },
+    { label: "Garage & FASTag (Vehicle Alerts & Toll)", keywords: "car bike vehicle fastag toll insurance challan rto", section: "garage" },
+    { label: "Passbook & Statement (Double-Entry Integer)", keywords: "history passbook ledger entries statement audit", section: "passbook" },
+    { label: "Account & Security (KYC & Session)", keywords: "profile details kyc bank settings security session", section: "account" },
+  ];
   const matchedFeatures = searchableFeatures.filter((feature) =>
     (feature.label + " " + feature.keywords)
       .toLocaleLowerCase()
@@ -87,22 +85,6 @@ export function KingPayShell({
 
           {/* Right Controls: Wallet Balance, Travel Shortcut & Notifications */}
           <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
-            {/* Wealth & Affiliate Quick Pill */}
-            <button
-              type="button"
-              onClick={() => onSelectSection("wealth")}
-              className={`hidden sm:flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold transition shadow-xs ${
-                activeSection === "wealth"
-                  ? "border-orange-500/50 bg-orange-500/15 text-orange-500 ring-1 ring-orange-500/30"
-                  : "border-border bg-surface-2 text-muted hover:text-fg"
-              }`}
-            >
-              <Sparkles className="size-3.5 text-orange-500" />
-              <span>Wealth</span>
-              <span className="rounded-full bg-emerald-500/10 text-emerald-500 px-1 py-0.2 text-[9px] font-extrabold">
-                Explore
-              </span>
-            </button>
 
             
             {/* Hide QR scan and wallet top-up until provider authorization is verified. Original controls retained. */}

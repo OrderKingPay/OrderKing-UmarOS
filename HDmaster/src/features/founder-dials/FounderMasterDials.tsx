@@ -50,12 +50,13 @@ export const FounderMasterDials: React.FC<FounderMasterDialsProps> = ({
             />
           </div>
           <div>
-            <label style={{ fontSize: "12px", color: "#94A3B8", display: "block", marginBottom: "4px" }}>Train Booking Fee (INR)</label>
+            <label style={{ fontSize: "12px", color: "#94A3B8", display: "block", marginBottom: "4px" }}>Train Booking Fee (INR) - CRIS ₹0</label>
             <input
               type="number"
-              value={settings.trainConvenienceFeeInr}
-              onChange={e => setSettings({ ...settings, trainConvenienceFeeInr: Number(e.target.value) })}
-              style={{ width: "100%", padding: "8px 12px", backgroundColor: "#0F172A", border: "1px solid #334155", borderRadius: "6px", color: "#FFF" }}
+              value={0}
+              readOnly
+              title="Indian Railways CRIS Invariant: Strictly ₹0 platform fee"
+              style={{ width: "100%", padding: "8px 12px", backgroundColor: "#064E3B", border: "1px solid #059669", borderRadius: "6px", color: "#6EE7B7", cursor: "not-allowed" }}
             />
           </div>
           <div>

@@ -6,7 +6,6 @@ export interface FoodCollection {
   id: string;
   title: string;
   tagline: string;
-  placesCount: number;
   coverImage: string;
   badge: string;
   searchFilter: { category?: string; veg?: boolean; openNow?: boolean };
@@ -17,54 +16,48 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
     id: "trending-now",
     title: "Trending This Week",
     tagline: "Most ordered flavors loved across the city",
-    placesCount: 24,
     coverImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80",
     badge: "Popular",
     searchFilter: { category: "Biryani" },
   },
   {
     id: "late-night",
-    title: "Late Night Cravings",
-    tagline: "Midnight food cravings delivered till 3 AM",
-    placesCount: 18,
+    title: "Late Night Deliveries",
+    tagline: "Late night food delivered by active kitchen partners",
     coverImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80",
-    badge: "Open Late",
+    badge: "Open Now",
     searchFilter: { openNow: true },
   },
   {
     id: "pure-veg-gems",
-    title: "Pure Veg Wonders",
-    tagline: "100% vegetarian restaurants & sweets",
-    placesCount: 16,
+    title: "Pure Veg Kitchens",
+    tagline: "Vegetarian restaurants, sweets & bakery",
     coverImage: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=500&q=80",
-    badge: "100% Veg",
+    badge: "Pure Veg",
     searchFilter: { veg: true },
   },
   {
     id: "pocket-friendly",
-    title: "Pocket-Friendly Feasts",
-    tagline: "Hearty combos and satisfying meals under ₹199",
-    placesCount: 32,
+    title: "Value Combos",
+    tagline: "Hearty combos and satisfying meal packs",
     coverImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80",
-    badge: "Under ₹199",
+    badge: "Combos",
     searchFilter: { category: "Rolls" },
   },
   {
     id: "romantic-dining",
-    title: "Romantic Dining Out",
-    tagline: "Rooftop ambiance and candlelight tables for two",
-    placesCount: 12,
+    title: "Dine-In Experiences",
+    tagline: "Verified dining partner ambiance & table reservations",
     coverImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80",
-    badge: "Romantic",
+    badge: "Dine-In",
     searchFilter: { category: "Cafe" },
   },
   {
     id: "authentic-biryani",
-    title: "Biryani Central",
-    tagline: "Kolkata, Dum & Awadhi style biryani",
-    placesCount: 20,
+    title: "Biryani Special",
+    tagline: "Dum, Kolkata & Awadhi preparation",
     coverImage: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80",
-    badge: "Authentic",
+    badge: "Specialty",
     searchFilter: { category: "Biryani" },
   },
 ];

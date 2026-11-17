@@ -50,7 +50,7 @@ export function DeliveryPartnerTermsPage() {
                 <strong className="text-white">Merchant Wait-Time Pay:</strong> ₹1.00 per minute auto-credited for wait time exceeding 6 minutes from arrival timestamp at restaurant.
               </li>
               <li>
-                <strong className="text-white">100% Customer Tip Pass-Through:</strong> Customer tips are credited 100% to the Partner with zero platform commission or tax withholding.
+                <strong className="text-white">Customer Tip Pass-Through:</strong> Customer tips are credited directly to the Partner with zero platform commission or tax withholding.
               </li>
               <li>
                 <strong className="text-white">Settlement Cycles:</strong> T+1 automated daily settlement to verified Bank Account or UPI ID, with weekly Wednesday reconciliation.

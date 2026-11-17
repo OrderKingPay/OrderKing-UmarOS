@@ -651,7 +651,7 @@ function SettingsPage() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Delivery orders are processed with the platform standard 10% logistics commission covering rider delivery, real-time live map tracking, and customer payment gateway costs. Dine-in and takeaway orders have zero commission (0%). All net sales are settled directly into your registered bank account on a daily T+1 schedule (excluding bank holidays).
+                  Delivery orders are processed according to the restaurant partner's agreed contract schedule (18.0% to 28.0% + 18% GST on platform services, 1.84% payment gateway fee, 1.0% Section 52 TCS, and 0.1%/1.0% Section 194-O TDS). Dine-in and takeaway orders have 0.0% commission (self-fulfillment). All net sales are settled directly into your registered bank account on an automated daily T+1 schedule.
                 </p>
               </div>
 

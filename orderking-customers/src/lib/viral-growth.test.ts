@@ -24,7 +24,7 @@ describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
     orderId: "ord_test_881",
     customerName: "Hasan",
     restaurantName: "Biryani Darbar",
-    goldMgWon: 1.5,
+    jackpotRewardText: "₹75 Dining Voucher",
     savingsPaise: 8500, // ₹85 saved
     referralCode: "HASAN777",
     townName: "Karimganj",
@@ -33,7 +33,7 @@ describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
   it("generates WhatsApp Status viral share URL with encoded text and referral UTM", () => {
     const url = generateViralShareUrl(payload, "WHATSAPP_STATUS");
     assert.ok(url.startsWith("https://api.whatsapp.com/send?text="));
-    assert.ok(url.includes("1.5mg%2024K%20Pure%20Digital%20Gold"));
+    assert.ok(url.includes("Unlocked%20%E2%82%B975%20Dining%20Voucher"));
     assert.ok(url.includes("Saved%20%E2%82%B985%20with%20Fair%20Pricing"));
     assert.ok(url.includes("ref%3DHASAN777"));
     assert.ok(url.includes("utm_source%3Dwhatsapp_status"));

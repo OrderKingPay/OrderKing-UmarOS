@@ -811,7 +811,7 @@ export function TableReservationManager({
             )}
           >
             <Receipt className="size-4" />
-            <span>Dining Settlement Ledger (0% commission)</span>
+            <span>Dining Settlement Ledger (Dine-In Direct)</span>
             <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-black">
               ₹{totalDeposits.toLocaleString("en-IN")}
             </span>
@@ -1440,7 +1440,7 @@ export function TableReservationManager({
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Rahul Sharma"
+                  placeholder="Enter guest full name"
                   value={wiName}
                   onChange={(e) => setWiName(e.target.value)}
                   className="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-900 focus:border-emerald-400 focus:outline-none"

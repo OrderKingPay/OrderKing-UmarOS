@@ -2087,10 +2087,10 @@ export const DEFAULT_BYPASS_DIALS: CommercialBypassDialsState = {
   flightConvenienceFeeInternationalInr: 1299,
   kingpayZeroFeeCheckoutActive: true,
 
-  tatkalServiceFeeInr: 40,
-  confirmationProbabilityThresholdPct: 85,
-  splitTicketingArbitrageEnabled: true,
-  autoTatkalAlternativePrompt: true,
+  tatkalServiceFeeInr: 0,
+  confirmationProbabilityThresholdPct: 100,
+  splitTicketingArbitrageEnabled: false,
+  autoTatkalAlternativePrompt: false,
 
   primaryTelecomProvider: "FAST2SMS",
   backupTelecomProvider: "WHATSAPP",

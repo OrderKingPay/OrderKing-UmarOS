@@ -458,7 +458,7 @@ export function SettlementsDesk() {
               </div>
               <div className="rounded-xl border border-border bg-bg/50 p-3.5">
                 <span className="text-[11px] font-medium text-muted-foreground block">
-                  100% {t("customerTip")}
+                  {t("customerTip")} (₹0 Platform Fee)
                 </span>
                 <span className="mt-1 block font-display text-xl font-bold text-online">
                   {formatPaise(earnings.totals.tip ?? 0)}
@@ -588,7 +588,7 @@ export function SettlementsDesk() {
               <CardTitle>Tax &amp; Income Statement</CardTitle>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              100% of your calculated delivery fares, incentives, and customer tips are remitted to your bank account without platform service fee deductions.
+              All calculated delivery fares, incentives, and customer tips are remitted to your bank account without platform service fee deductions.
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Use the <em>Download CSV Voucher</em> or <em>Print / Save PDF</em> buttons above for your records and loan verifications.

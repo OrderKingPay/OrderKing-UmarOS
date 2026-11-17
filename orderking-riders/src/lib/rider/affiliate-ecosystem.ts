@@ -343,7 +343,7 @@ export const RIDER_AFFILIATE_PARTNERS = {
     accidentalDeathCover: "₹10,00,000 (₹10 Lakh Cover)",
     disabilityCover: "₹10,00,000 Total Disability Protection",
     hospitalizationCover: "₹1,00,000 Emergency Medical Cover",
-    opdHealthCard: "₹5/week Unlimited 24/7 Tele-Consultations",
+    opdHealthCard: "₹5/week 24/7 Primary Tele-Consultations",
     opdPartners: "MediBuddy, Clinikk, PlumHQ Affinity Network",
     pharmacyDiscount: "20% flat discount on Apollo & Netmeds medicines",
   },

@@ -161,20 +161,11 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
   { id: "s-tr-2", category: "Trains", title: "Vande Bharat Express (22221)", sub: "AC Chair Car & Executive · Superfast Express", icon: "train", url: "/travel?tab=trains", keywords: "train vande bharat express 22221 speed irctc" },
   { id: "s-tr-3", category: "Trains", title: "Saraighat Express (12345)", sub: "HWH to GHY Superfast · Official IRCTC Schedule", icon: "train", url: "/travel?tab=trains", keywords: "train saraighat express 12345 howrah guwahati schedule" },
 
-  // Tours & Leisure
-  { id: "s-to-1", category: "Tours", title: "Kashmir Valley Paradise (5N/6D)", sub: "Houseboat, Shikara & Gulmarg Gondola · ₹26,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour kashmir srinagar gulmarg dal lake holiday" },
-  { id: "s-to-2", category: "Tours", title: "Dubai Luxury Oasis Tour (4N/5D)", sub: "Burj Khalifa, Desert Safari & Marina · ₹48,000", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour dubai burj khalifa desert safari uae" },
-  { id: "s-to-3", category: "Tours", title: "Shillong & Meghalaya Northeast Escapes", sub: "Cherrapunji & Crystal Dawki River · ₹16,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour shillong meghalaya dawki cherrapunji northeast" },
-  { id: "s-to-4", category: "Tours", title: "Goa Beachfront & Sun Splash Luxury Resort", sub: "Candolim Beach & Mandovi Cruise · ₹14,500", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour goa beach candolim resort sun vacation" },
+  // Tours & Custom Itineraries
+  { id: "s-to-1", category: "Tours", title: "Custom Holiday Tours & Itineraries", sub: "Domestic & international travel inquiries · Itemized carrier pricing", icon: "tour", url: "/travel?tab=pilgrimage", keywords: "tour kashmir dubai shillong goa holiday package travel" },
 
   // Sacred Pilgrimages
-  { id: "s-sc-1", category: "Sacred", title: "Umrah 15-Day Economy Saver Pilgrimage", sub: "Makkah & Madinah Packages · ₹78,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah makkah madinah saudi arabia islamic muslim pilgrimage ziyarat" },
-  { id: "s-sc-2", category: "Sacred", title: "Umrah Makkah Clock Tower 5-Star Hotel", sub: "Haram Facing 5-Star Hotel Stay · ₹1,18,000", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah clock tower haram hotel stay islamic muslim pilgrimage" },
-  { id: "s-sc-3", category: "Sacred", title: "Kashi Vishwanath & Ayodhya Ram Mandir Yatra", sub: "Corridor Aarti Pass & Satvik Haveli · ₹18,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kashi vishwanath ayodhya ram mandir varanasi darshan hindu sanatan yatra" },
-  { id: "s-sc-4", category: "Sacred", title: "Maa Kamakhya Devi Temple Yatra", sub: "Nilachal Hills Priority Entry & River Cruise · ₹12,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "kamakhya devi temple guwahati assam nilachal darshan hindu" },
-  { id: "s-sc-5", category: "Sacred", title: "Maha Char Dham Yatra (Kedarnath & Badrinath)", sub: "Himalayan Sacred Circuit with Helicopter · ₹32,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "char dham kedarnath badrinath gangotri yamunotri uttarakhand hindu" },
-  { id: "s-sc-6", category: "Sacred", title: "Amritsar Golden Temple & Wagah Border Yatra", sub: "Sri Harmandir Sahib Palki Seva · ₹11,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "amritsar golden temple harmandir sahib wagah sikh gurdwara" },
-  { id: "s-sc-7", category: "Sacred", title: "Old Goa Basilica of Bom Jesus Heritage Shrines", sub: "St. Francis Xavier Relics Sacred Viewing · ₹13,500", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "old goa basilica bom jesus christian church heritage shrines" },
+  { id: "s-sc-1", category: "Sacred", title: "Pilgrimage & Sacred Yatra Concierge", sub: "Umrah, Kashi, Kamakhya & Char Dham travel inquiries", icon: "sacred", url: "/travel?tab=pilgrimage", keywords: "umrah pilgrimage yatra darshan kashi kamakhya chardham sacred" },
 
   // Utility Bills & BBPS
   { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Assam Electricity Distribution · Fees ₹0 (Waived)", icon: "bill-electric", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
@@ -309,9 +300,9 @@ export function SupremeKingPayExperience() {
     ?? ""))}&pn=OrderKingPay&am=${(parsedAmountPaise / 100).toFixed(
       2
     )}&cu=INR&tn=${encodeURIComponent(upiNote.trim())}`;
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(String(
+  const qrImageUrl = `/api/qr?url=${encodeURIComponent(String(
     upiUri
-    ?? ""))}&bgcolor=FFFFFF&color=080a10`;
+    ?? ""))}&format=png`;
 
   const handleCopyUpiLink = async () => {
     try {

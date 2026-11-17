@@ -16,7 +16,7 @@ describe("King Jackpot Scratch Card & Referral Engine", () => {
     assert.ok(card.title.length > 0);
     assert.ok(card.amountPaise > 0);
     assert.equal(card.isScratched, false);
-    assert.ok(["CASHBACK", "DIGITAL_GOLD", "PARTNER_VOUCHER", "BUMPER_GOLD"].includes(card.type));
+    assert.ok(["CASHBACK", "PARTNER_VOUCHER"].includes(card.type));
   });
 
   it("generates scratch cards for referral milestones", () => {

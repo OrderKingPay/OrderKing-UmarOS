@@ -628,76 +628,45 @@ export function CommercialBypassDialsSection() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-rose-500/20 text-rose-400">
+                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
                   <Train className="size-4" />
                 </div>
-                <h3 className="font-bold text-sm text-white">5. Rail Quota Arbitrage</h3>
+                <h3 className="font-bold text-sm text-white">5. Official IRCTC CRIS Handoff</h3>
               </div>
-              <Badge className="bg-rose-950 border-rose-500 text-rose-300 text-[10px] font-mono">
-                IRCTC TATKAL
+              <Badge className="bg-emerald-950 border-emerald-500 text-emerald-300 text-[10px] font-mono">
+                ₹0 CRIS COMPLIANT
               </Badge>
             </div>
             <p className="text-xs text-muted">
-              Tatkal / Premium Tatkal booking margin threshold and confirmation cut-offs.
+              Direct handoff to official IRCTC portal. Synthetic fares and mock quotas permanently purged.
             </p>
 
             <div className="space-y-3 pt-2">
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-zinc-400">Tatkal Platform Service Fee:</span>
-                  <span className="text-rose-400 font-mono font-bold">₹{tatkalServiceFeeInr}</span>
+                  <span className="text-zinc-400">Platform Convenience Surcharge:</span>
+                  <span className="text-emerald-400 font-mono font-bold">₹0 (Fixed CRIS Invariant)</span>
                 </div>
-                <input
-                  type="range"
-                  min="20"
-                  max="150"
-                  step="5"
-                  value={tatkalServiceFeeInr}
-                  onChange={(e) => setTatkalServiceFeeInr(Number(e.target.value))}
-                  onMouseUp={() => updateMutation.mutate({ tatkalServiceFeeInr })}
-                  className="w-full accent-rose-500 h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
-                />
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-zinc-400">Confirmation Cut-off Threshold:</span>
-                  <span className="text-rose-400 font-mono font-bold">{confirmationProbabilityThresholdPct}%</span>
+                  <span className="text-zinc-400">Inventory Verification:</span>
+                  <span className="text-emerald-400 font-mono font-bold">Official CRIS Live Portal</span>
                 </div>
-                <input
-                  type="range"
-                  min="50"
-                  max="99"
-                  value={confirmationProbabilityThresholdPct}
-                  onChange={(e) => setConfirmationProbabilityThresholdPct(Number(e.target.value))}
-                  onMouseUp={() => updateMutation.mutate({ confirmationProbabilityThresholdPct })}
-                  className="w-full accent-rose-500 h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
-                />
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1 border-t border-zinc-800">
-                <span className="text-zinc-300">Split-Ticketing Quota Search:</span>
-                <button
-                  onClick={() => {
-                    const nextVal = !splitTicketingArbitrageEnabled;
-                    setSplitTicketingArbitrageEnabled(nextVal);
-                    updateMutation.mutate({ splitTicketingArbitrageEnabled: nextVal });
-                  }}
-                  className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded border font-mono",
-                    splitTicketingArbitrageEnabled
-                      ? "bg-rose-950 border-rose-500 text-rose-300"
-                      : "bg-zinc-900 border-zinc-700 text-zinc-400"
-                  )}
-                >
-                  {splitTicketingArbitrageEnabled ? "AUTO-ARBITRAGE" : "DIRECT ONLY"}
-                </button>
+                <span className="text-zinc-300">Station Pair Routing:</span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded border font-mono bg-emerald-950 border-emerald-500 text-emerald-300">
+                  OFFICIAL IRCTC NGeT
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-zinc-400">
-            Tatkal cut-off: 85% probability trigger enabled
+          <div className="pt-2 border-t border-zinc-800/80 text-[11px] font-mono text-emerald-400">
+            CRIS Compliance: ₹0 markup, zero synthetic quota simulation
           </div>
         </div>
 

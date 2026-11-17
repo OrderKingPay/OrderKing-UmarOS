@@ -64,8 +64,9 @@ export const getHomeFn = createServerFn({ method: "GET" })
               }
               const restaurant = { id: o.restaurant_id ?? "live_restaurant", name: o.restaurant_name ?? "Restaurant", area: "", address: o.restaurant_address ?? "", location: { lat: o.restaurant_lat ?? 0, lng: o.restaurant_lng ?? 0 }, phoneMasked: "XXX", specialPickupInstructions: null, preparationStatus: "READY" as const };
               const customer = { displayName: o.customer_name ?? "Customer", area: o.zone_name ?? "", address: o.customer_address ?? o.zone_name ?? "", contactMasked: null, contactAllowed: false, instructions: null };
+              const parcelCode = o.order_id ? (String(o.order_id).replace(/\D/g, "").slice(-4) || String(o.order_id).slice(-4).padStart(4, "0")) : generateOtp(4);
               await e.getStore().insertDelivery({
-                pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 }, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: "0000", otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
+                pickupLocation: { lat: Number(o.restaurant_lat) || 0, lng: Number(o.restaurant_lng) || 0 }, dropLocation: { lat: Number(o.customer_lat) || 0, lng: Number(o.customer_lng) || 0 }, packageCount: 1, cod: false, codAmountPaise: 0, pickupVerification: "ORDER_CODE", pickupCode: parcelCode, otpRequired: true, arrivedRestaurantAt: null, expectedReadyAt: null, pickedUpAt: null, arrivedCustomerAt: null, deliveredAt: null, waitStartedAt: null, contactAttempts: 0, cancelReason: null, failReason: null, updatedAt: o.offered_at,
                 id: o.order_id,
                 orderCode: o.order_id,
                 orderId: o.order_id,

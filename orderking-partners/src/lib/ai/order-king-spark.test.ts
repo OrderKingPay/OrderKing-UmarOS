@@ -76,16 +76,19 @@ describe("Order King Spark - Partner AI Assistant", () => {
 
     const types = anomalies.map((a) => a.type);
     assert.ok(types.includes("PREP_DELAY"));
-    assert.ok(types.includes("SALES_DECLINE"));
+    assert.ok(types.includes("REJECTION_SPIKE"));
   });
 
-  test("calculates 0% platform commission settlement with legacy aggregator avoided loss", () => {
+  test("calculates platform commission settlement with statutory deductions", () => {
     const summary = orderKingSpark.getSettlementSummary();
 
-    assert.equal(summary.commissionPaidPaise, 0); // 0% commission!
+    assert.ok(summary.commissionPaidPaise > 0); // 22% platform commission
     assert.ok(summary.grossSalesPaise > 0);
-    assert.equal(summary.netSettlementPaise, summary.grossSalesPaise);
-    assert.equal(summary.legacyAggregatorLossAvoidedPaise, Math.round(summary.grossSalesPaise * 0.24));
+    assert.ok(summary.servicesGstPaise > 0);
+    assert.ok(summary.paymentGatewayFeePaise > 0);
+    assert.ok(summary.tcsDeductionPaise > 0);
+    assert.ok(summary.tdsDeductionPaise > 0);
+    assert.ok(summary.netSettlementPaise < summary.grossSalesPaise);
     assert.equal(summary.status, "SETTLED");
   });
 
@@ -170,21 +173,22 @@ describe("Order King Spark - Partner AI Assistant", () => {
     const recon = orderKingSpark.generateDailyShiftRecon("Today");
 
     assert.ok(recon.totalDeliveredOrders > 0);
-    assert.equal(recon.orderKingPlatformCommissionPaise, 0); // 0% commission
-    assert.ok(recon.aggregatorCommissionAvoidedPaise > 0);
+    assert.ok(recon.orderKingPlatformCommissionPaise > 0); // 22% commission
+    assert.ok(recon.servicesGstPaise > 0); // 18% GST on services
+    assert.ok(recon.paymentGatewayFeePaise > 0); // 1.84% + GST
     assert.ok(recon.gst95RemittedByPlatformPaise > 0); // 5% CGST Sec 9(5)
-    assert.ok(recon.tcsSection52Paise > 0); // 0.5% TCS
+    assert.ok(recon.tcsSection52Paise > 0); // 1.0% TCS
     assert.ok(recon.tdsSection194OPaise > 0); // 0.1% TDS
     assert.ok(recon.netPayoutAccruedPaise > 0);
-    assert.ok(recon.conversationalSummary.includes("GST Sec 9(5)"));
-    assert.ok(recon.conversationalSummary.includes("0% commission"));
+    assert.ok(recon.conversationalSummary.includes("Section 9(5) CGST"));
+    assert.ok(recon.conversationalSummary.includes("Platform Commission (22%)"));
   });
 
   test("handles natural language queries with context-aware action cards", () => {
     // 1. Settlement query
-    const settlementReply = orderKingSpark.handleRestaurantQuery("How much money did I save on commission?");
+    const settlementReply = orderKingSpark.handleRestaurantQuery("How much is my settlement and commission?");
     assert.equal(settlementReply.sender, "spark");
-    assert.ok(settlementReply.text.includes("0% commission"));
+    assert.ok(settlementReply.text.includes("Agreed Platform Commission"));
     assert.equal(settlementReply.actionCard?.type, "settlement_breakdown");
 
     // 2. Menu query

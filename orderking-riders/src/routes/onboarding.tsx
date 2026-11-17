@@ -3,7 +3,7 @@ import { AppShell } from "@/components/rider/app-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ZONES } from "@/lib/rider/catalog";
+import { ZONES, OPERATIONAL_HUBS } from "@/lib/rider/catalog";
 import { bootstrapRiderFn, saveProfileFn, submitKycFn } from "@/lib/server/rider-fns";
 import type { RiderProfile } from "@/lib/rider/types";
 import { validateVerhoeffChecksum, validatePan } from "@/lib/rider/kyc";
@@ -38,8 +38,10 @@ export function RiderOnboardingPage() {
   // Step 1: Mobile & Basic Profile
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [cityZone, setCityZone] = useState<string>(ZONES?.[0] || "Guwahati");
-  const [pincode, setPincode] = useState("781001");
+  const [selectedHubId, setSelectedHubId] = useState<string>("hub-karimganj-central");
+  const [selectedPocketId, setSelectedPocketId] = useState<string>("kj-main");
+  const [cityZone, setCityZone] = useState<string>("Karimganj - Main Bazar Pocket");
+  const [pincode, setPincode] = useState("788710");
   const [serviceAddress, setServiceAddress] = useState("");
 
   // Step 2: Personal Documents
@@ -327,6 +329,76 @@ export function RiderOnboardingPage() {
                     />
                   </div>
                 </div>
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs text-slate-300">Operational Delivery Hub</Label>
+                    <select
+                      value={selectedHubId}
+                      onChange={(e) => {
+                        const newHubId = e.target.value;
+                        setSelectedHubId(newHubId);
+                        const hub = OPERATIONAL_HUBS.find((h) => h.id === newHubId);
+                        if (hub && hub.pockets[0]) {
+                          setSelectedPocketId(hub.pockets[0].id);
+                          setCityZone(`${hub.city} - ${hub.pockets[0].name}`);
+                        }
+                      }}
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-semibold text-slate-200 outline-none focus:border-primary"
+                    >
+                      {OPERATIONAL_HUBS.map((h) => (
+                        <option key={h.id} value={h.id} className="bg-slate-900 text-slate-100">
+                          {h.name} ({h.city})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <Label className="text-xs text-slate-300">Assigned Geofenced Pocket &amp; Live Capacity</Label>
+                    <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {OPERATIONAL_HUBS.find((h) => h.id === selectedHubId)?.pockets.map((pkt) => {
+                        const isSelected = selectedPocketId === pkt.id;
+                        const hub = OPERATIONAL_HUBS.find((h) => h.id === selectedHubId);
+                        return (
+                          <button
+                            key={pkt.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedPocketId(pkt.id);
+                              if (hub) setCityZone(`${hub.city} - ${pkt.name}`);
+                            }}
+                            className={`flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition ${
+                              isSelected
+                                ? "border-primary bg-primary/10 text-primary"
+                                : "border-border bg-background text-slate-300 hover:border-slate-700"
+                            }`}
+                          >
+                            <div>
+                              <div className="font-bold text-[11px]">{pkt.name}</div>
+                              <div className="text-[10px] text-slate-400">Cap: {pkt.activeRiderCap} active riders</div>
+                            </div>
+                            <span
+                              className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
+                                pkt.capacityStatus === "HIGH_DEMAND"
+                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                                  : pkt.capacityStatus === "OPEN"
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                                  : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                              }`}
+                            >
+                              {pkt.capacityStatus === "HIGH_DEMAND"
+                                ? "HIGH DEMAND"
+                                : pkt.capacityStatus === "OPEN"
+                                ? "OPEN"
+                                : "STANDBY"}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-slate-300">City Zone</Label>
@@ -450,10 +522,10 @@ export function RiderOnboardingPage() {
 
               <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  { id: "BIKE", label: "Motorcycle" },
-                  { id: "SCOOTER", label: "Scooter" },
-                  { id: "EV", label: "Electric Vehicle" },
-                  { id: "CYCLE", label: "Bicycle" },
+                  { id: "BIKE", label: "Motorcycle (ICE)", desc: "Mandatory DL & RC · All Distances" },
+                  { id: "SCOOTER", label: "Scooter (ICE)", desc: "Mandatory DL & RC · All Distances" },
+                  { id: "EV", label: "Low-Speed EV (<25 km/h)", desc: "CMVR Rule 2U Exempt · Battery Tracked" },
+                  { id: "CYCLE", label: "Bicycle / Cycle", desc: "Rule 2U Exempt · 0–3 km Radius Cap" },
                 ].map((v) => (
                   <button
                     key={v.id}
@@ -468,7 +540,8 @@ export function RiderOnboardingPage() {
                       }`}
                   >
                     <Bike className="size-5 mx-auto mb-1.5" />
-                    <div>{v.label}</div>
+                    <div className="font-bold text-xs">{v.label}</div>
+                    <div className="text-[10px] text-slate-400 mt-0.5">{v.desc}</div>
                   </button>
                 ))}
               </div>
@@ -485,7 +558,9 @@ export function RiderOnboardingPage() {
                 </div>
               ) : (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-xs text-emerald-300">
-                  Bicycle / EV selected: Driving License and RC plate are exempt under CMVR rules.
+                  {vehicleCategory === "CYCLE"
+                    ? "Bicycle: Rule 2U non-motorized exemption; 0–3 km delivery radius cap; zero driving license or RC plate required."
+                    : "Low-Speed EV (<25 km/h): Battery-powered vehicle (<250W) exempt from driving license and registration under CMVR Rule 2U."}
                 </div>
               )}
 
@@ -640,8 +715,27 @@ export function RiderOnboardingPage() {
               </div>
 
               <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
-                <span className="text-slate-300">OrderKing T-Bag (Hot/Cold Divider) &amp; Uniform</span>
-                <span className="text-emerald-400 font-bold">Verified</span>
+                <div className="w-full space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-200">Kit &amp; Uniform Ledger</span>
+                    <span className="text-emerald-400 font-bold text-[11px]">Allocated &amp; Verified</span>
+                  </div>
+                  <div className="space-y-1 text-[11px] text-slate-400 border-t border-border/50 pt-1.5">
+                    <div className="flex justify-between">
+                      <span>OrderKing Thermal Insulated Delivery Bag</span>
+                      <span className="text-slate-200 font-medium">Included</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Reflective Safety Uniform &amp; Rain Shell</span>
+                      <span className="text-slate-200 font-medium">Included</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Security Deposit Amortization</span>
+                      <span className="text-primary font-medium">₹0 Upfront (₹50/wk amortized)</span>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               {/* T-Shirt Kit Sizing */}

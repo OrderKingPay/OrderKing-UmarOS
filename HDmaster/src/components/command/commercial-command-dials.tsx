@@ -641,19 +641,19 @@ function CommissionOverridesSection() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => void handleBulkPreset(22.0, "Legacy Aggregator Parity")}
+            onClick={() => void handleBulkPreset(22.0, "Standard Delivery Rate")}
             className="border-orange-500/40 bg-orange-950/40 text-xs text-orange-300 hover:bg-orange-950/60"
           >
-            All 22% (Legacy Parity)
+            All 22% (Standard Rate)
           </Button>
 
           <Button
             size="sm"
             variant="outline"
-            onClick={() => void handleBulkPreset(0.0, "Flash Acquisition")}
+            onClick={() => void handleBulkPreset(0.0, "Introductory Rate")}
             className="border-cyan-500/40 bg-cyan-950/40 text-xs text-cyan-300 hover:bg-cyan-900/60"
           >
-            All 0% (Merchant Acquisition)
+            All 0% (Introductory Rate)
           </Button>
         </div>
       </div>
@@ -689,10 +689,10 @@ function CommissionOverridesSection() {
               tierLabel = "Enterprise / Cloud Kitchen Cap";
             } else if (currentPct >= 19) {
               tierColor = "bg-orange-500/20 text-orange-300 border-orange-500/30";
-              tierLabel = "Standard Aggregator Parity";
+              tierLabel = "Standard Merchant Tier (22%)";
             } else if (currentPct >= 8) {
               tierColor = "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
-              tierLabel = "OrderKing Standard Advantage";
+              tierLabel = "Partner Value Tier (8-18%)";
             }
 
             return (

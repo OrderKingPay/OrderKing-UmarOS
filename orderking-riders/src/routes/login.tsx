@@ -497,7 +497,7 @@ function Login() {
                     <span className="w-full border-t border-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-[10px] uppercase">
-                    <span className="bg-white px-2 text-gray-400 font-semibold tracking-wider">Or 1-Tap Instant</span>
+                    <span className="bg-white px-2 text-gray-400 font-semibold tracking-wider">Or</span>
                   </div>
                 </div>
 

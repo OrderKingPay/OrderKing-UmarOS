@@ -528,15 +528,15 @@ export function LaunchPlaybookView() {
                 </div>
               </div>
 
-              {/* Side-by-Side Merchant Savings Comparison vs Legacy Aggregators */}
+              {/* Side-by-Side Merchant Payout Comparison */}
               <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                   <div>
                     <h4 className="font-bold text-slate-900 text-sm">
-                      Merchant Direct Bank Benefit: OrderKing vs Legacy Aggregators (30%)
+                      Merchant Net Payout Model: OrderKing vs Market Standard (30%)
                     </h4>
                     <p className="text-xs text-slate-500">
-                      Transparent math proving why owners sign with OrderKing
+                      Transparent statutory math and net bank payout comparison
                     </p>
                   </div>
                   <div className="text-right">
@@ -548,7 +548,7 @@ export function LaunchPlaybookView() {
 
                 <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                   <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                    <div className="font-bold text-slate-900 text-sm">Legacy Aggregators (30%)</div>
+                    <div className="font-bold text-slate-900 text-sm">Market Standard (30% Model)</div>
                     <div className="flex justify-between text-slate-600">
                       <span>Order Subtotal:</span>
                       <span>{formatPaiseToInr(merchantComparison.orderSubtotalPaise)}</span>
