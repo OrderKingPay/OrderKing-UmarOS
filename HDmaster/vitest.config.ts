@@ -13,6 +13,7 @@ export default defineConfig({
     include: [
       "src/lib/orderking/tech-registry/catalog.test.ts",
       "src/lib/orderking/finance/merchant-contracts.test.ts",
+      "src/lib/orderking/finance/production-npci-bharatqr-settlement.test.ts",
       "src/lib/orderking/geo/geofencing.test.ts",
       "src/lib/orderking/ai/benchmark-matrix.test.ts",
       "src/lib/orderking/ai/model-routing.test.ts",
