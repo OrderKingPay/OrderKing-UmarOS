@@ -47,7 +47,7 @@ function DiningPage() {
                 Book a table
               </h1>
               <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                Same restaurants. Pick one and send a table request.
+                Reserve tables at top dining restaurants in your city.
               </p>
 
               <div className="pt-2 flex flex-wrap items-center gap-3">
