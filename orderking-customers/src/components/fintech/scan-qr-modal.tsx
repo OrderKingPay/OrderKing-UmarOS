@@ -141,26 +141,18 @@ export function ScanQrModal({
       toast.error("Please enter a valid NPCI UPI ID (e.g. merchant@icici, user@okhdfcbank)");
       return;
     }
-    const amountPaise = Math.round(amt * 100);
-    if (amountPaise > walletBalancePaise) {
-      toast.error(
-        `Insufficient KingPay balance (${formatPaise(walletBalancePaise)}). Please add funds.`
-      );
-      return;
-    }
 
     const recipient = payeeName || cleanUpi;
     if (validUpiIntentUri) {
       if (typeof window !== "undefined") {
         window.location.href = validUpiIntentUri;
       }
-      toast.info(`Redirecting to UPI application to authorize payment to ${recipient}...`);
+      toast.info(`Opening UPI app to pay ${recipient}...`);
       onClose();
       return;
     }
-    toast.error("Unable to generate verified NPCI intent for this address.");
+    toast.error("Unable to generate NPCI UPI intent for this address.");
     return;
-
   };
 
   const handleReset = () => {
@@ -200,11 +192,11 @@ export function ScanQrModal({
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-white">
-              Scan &amp; Pay Instant UPI
+              Scan &amp; Pay UPI
             </h2>
             <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1.5">
               <ShieldCheck className="size-3.5 text-emerald-400 inline" />
-              <span>Instant UPI Payment</span>
+              <span>Direct NPCI UPI Payment</span>
             </p>
           </div>
 
@@ -380,8 +372,8 @@ export function ScanQrModal({
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                <Camera className="size-3.5" />
-                <span>Camera Scanner</span>
+                <Upload className="size-3.5" />
+                <span>Upload QR Image</span>
               </button>
               <button
                 type="button"
@@ -398,34 +390,16 @@ export function ScanQrModal({
             </div>
 
             {mode === "camera" ? (
-              /* BharatQR Optical Viewfinder */
+              /* QR Image Decoder */
               <div className="space-y-4">
-                <div className="relative aspect-square max-h-64 mx-auto w-full rounded-2xl overflow-hidden bg-black border-2 border-dashed border-orange-400/60 flex flex-col items-center justify-center p-4">
-                  {/* Scanner Laser Animation */}
-                  <div className="absolute inset-x-4 top-4 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent shadow-[0_0_12px_rgba(245,158,11,0.9)] animate-pulse" />
-
-                  {/* Corner Reticles */}
-                  <div className="absolute top-3 left-3 size-6 border-t-2 border-l-2 border-orange-400 rounded-tl-lg" />
-                  <div className="absolute top-3 right-3 size-6 border-t-2 border-r-2 border-orange-400 rounded-tr-lg" />
-                  <div className="absolute bottom-3 left-3 size-6 border-b-2 border-l-2 border-orange-400 rounded-bl-lg" />
-                  <div className="absolute bottom-3 right-3 size-6 border-b-2 border-r-2 border-orange-400 rounded-br-lg" />
-
-                  <QrCode className="size-16 text-orange-400/40 mb-2 animate-pulse" />
-                  <p className="text-xs font-bold text-slate-300 text-center">
-                    Align any BharatQR / UPI QR within frame
+                <div className="rounded-2xl bg-black/70 border border-dashed border-orange-400/50 flex flex-col items-center justify-center p-6 text-center">
+                  <QrCode className="size-12 text-orange-400/70 mb-2" />
+                  <p className="text-xs font-bold text-slate-200">
+                    Decode a UPI / BharatQR image from your device
                   </p>
-                  <p className="text-[10px] text-slate-500 text-center mt-1">
-                    Works with PhonePe, Paytm, GPay, BHIM &amp; All Bank QRs
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Reads standard UPI QR codes and fills the VPA and amount automatically.
                   </p>
-
-                  <button
-                    type="button"
-                    onClick={() => setMode("manual")}
-                    className="mt-3 text-xs bg-orange-400/20 text-orange-300 border border-orange-400/30 px-3 py-1.5 rounded-full hover:bg-orange-400/30 font-semibold flex items-center gap-1.5 transition"
-                  >
-                    <AtSign className="size-3" />
-                    <span>Enter UPI ID / VPA Manually</span>
-                  </button>
                 </div>
 
                 {/* Upload QR File Input */}
@@ -443,7 +417,7 @@ export function ScanQrModal({
                   className="w-full h-11 rounded-xl border-orange-400/40 bg-slate-900 text-slate-200 hover:bg-slate-800 hover:text-white flex items-center justify-center gap-2 text-xs font-bold"
                 >
                   <Upload className="size-4 text-orange-400" />
-                  <span>Upload QR Code Image from Gallery</span>
+                  <span>Select QR Code Image</span>
                 </Button>
               </div>
             ) : (
@@ -488,7 +462,7 @@ export function ScanQrModal({
                       className="w-full bg-transparent px-2 text-xl font-black text-white focus:outline-none"
                     />
                     <span className="pr-2 text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 rounded-md">
-                      Instant Transfer
+                      Direct UPI
                     </span>
                   </div>
                 </div>
@@ -537,9 +511,8 @@ export function ScanQrModal({
                     </span>
                   ) : (
                     <>
-                      <Sparkles className="size-4" />
                       <span>
-                        Pay ₹{Number(amountRupees || 0).toLocaleString("en-IN")} Instant
+                        Pay ₹{Number(amountRupees || 0).toLocaleString("en-IN")} via UPI App
                       </span>
                       <ArrowRight className="size-4" />
                     </>

@@ -237,9 +237,9 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
     // Rich SEO Meta Tags
     const title = `Food Delivery in ${areaDisplayName}, ${city.name} | Order Online | OrderKing`;
     const description = `Order food online in ${areaDisplayName}, ${city.name}${
-      totalOutlets > 0 ? ` from ${totalOutlets} active kitchens` : ""
-    }. ${topCuisines}, direct restaurant menu pricing, live tracking and rewards on OrderKing.`;
-    const keywords = `food delivery ${areaDisplayName}, restaurants in ${areaDisplayName}, order food online ${city.name}, best food delivery in ${city.name}, biryani delivery ${areaDisplayName}, best food delivery alternative ${city.name}, direct ordering ${city.name}, OrderKing ${city.name}`;
+      totalOutlets > 0 ? ` from ${totalOutlets} active restaurants` : ""
+    }. ${topCuisines}, itemized billing and live order tracking on OrderKing.`;
+    const keywords = `food delivery ${areaDisplayName}, restaurants in ${areaDisplayName}, order food online ${city.name}, biryani delivery ${areaDisplayName}, OrderKing ${city.name}`;
 
     // Schema.org Structured Data Graph
     const jsonLd = {

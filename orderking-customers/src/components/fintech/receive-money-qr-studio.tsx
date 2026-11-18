@@ -563,16 +563,15 @@ export function ReceiveMoneyQrStudio({
             />
           </div>
 
-          {/* 5. Benefits Summary */}
+          {/* 5. Settlement Information */}
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3.5 text-xs text-emerald-800 dark:text-emerald-200 space-y-1">
             <div className="flex items-center gap-1.5 font-bold">
               <ShieldCheck className="size-4 text-emerald-600" />
-              <span>Merchant Settlement Standard</span>
+              <span>NPCI UPI QR Standard</span>
             </div>
             <p className="text-[11px] text-muted leading-relaxed">
-              • Direct bank-to-bank settlement via NPCI UPI network<br />
-              • Zero intermediary wallet withholding<br />
-              • Instant transaction reconciliation on connected accounts
+              • Standard NPCI UPI QR format compatible with UPI apps<br />
+              • Direct payment to the configured UPI VPA
             </p>
           </div>
         </div>

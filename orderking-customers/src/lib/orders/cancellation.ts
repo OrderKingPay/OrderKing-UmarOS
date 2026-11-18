@@ -103,6 +103,6 @@ export function calculateRefundDetails(
     refundDestination,
     zeroDeduction: true,
     instantApproval: true,
-    message: "100% instant refund credited to your KingPay Wallet/UPI without dispute.",
+    message: "Full refund credited to your KingPay Wallet or original payment source.",
   };
 }

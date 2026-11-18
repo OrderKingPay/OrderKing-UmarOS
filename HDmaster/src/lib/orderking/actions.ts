@@ -1148,36 +1148,10 @@ export const savePluginConnectorsFn = createServerFn({ method: "POST" })
 
 export const testPluginConnectorFn = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { service: "razorpay" | "stripeAtlas" | "payoneer" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing" | "b2bLeadGen" | "telemarketing" | "geospatialAdExchange" | "metaOmnichannel" | "aiMediaEngine" | "oemLockScreen" | "globalAdSyndicate" | "wifiCaptivePortal" | "openai" | "gemini" | "xai" | "antigravity" | "openaiGemini"; payload: any }) => input)
+  .validator((input: { service: "razorpay" | "whatsapp" | "fssai" | "mapbox" | "cleartax" | "whatsappMarketing" | "b2bLeadGen" | "telemarketing" | "geospatialAdExchange" | "metaOmnichannel" | "aiMediaEngine" | "oemLockScreen" | "globalAdSyndicate" | "wifiCaptivePortal" | "openai" | "gemini" | "xai" | "antigravity" | "openaiGemini"; payload: any }) => input)
   .handler(async ({ data }) => {
     try {
       const { service, payload } = data;
-      if (service === "stripeAtlas") {
-        if (!payload.publishableKey || !payload.secretKey) {
-          return { ok: false as const, error: "Stripe Publishable Key and Secret Key are required to test connection." };
-        }
-        if (!payload.publishableKey.startsWith("pk_live_") && !payload.publishableKey.startsWith("pk_test_")) {
-          return { ok: false as const, error: "Stripe Publishable Key must start with 'pk_live_' or 'pk_test_'." };
-        }
-        if (!payload.secretKey.startsWith("sk_live_") && !payload.secretKey.startsWith("sk_test_") && !payload.secretKey.startsWith("rk_")) {
-          return { ok: false as const, error: "Stripe Secret Key must start with 'sk_live_', 'sk_test_', or 'rk_'." };
-        }
-        return {
-          ok: true as const,
-          message: `Stripe Atlas ${payload.mode?.toUpperCase() || "LIVE"} USD B2B SaaS router verified. Delaware C-Corp subscription billing rails active.`,
-        };
-      }
-
-      if (service === "payoneer") {
-        if (!payload.programId || (!payload.clientSecret && !payload.accountNumber)) {
-          return { ok: false as const, error: "Payoneer Program ID and Client Secret / Account Number are required to test connection." };
-        }
-        return {
-          ok: true as const,
-          message: "Payoneer Cross-Border Routing handshake verified. US Virtual Fedwire/ACH & Saudi SAR collection routing rails active.",
-        };
-      }
-
       if (service === "razorpay") {
         if (!payload.keyId || !payload.keySecret) {
           return { ok: false as const, error: "Razorpay Key ID and Key Secret are required to test connection." };

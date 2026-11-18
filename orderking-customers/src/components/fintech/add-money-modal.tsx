@@ -212,7 +212,7 @@ export function AddMoneyModal({
                 className="w-full bg-transparent px-2 text-2xl font-black text-white focus:outline-none"
               />
               <span className="pr-3 text-[11px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/15 border border-emerald-400/30 px-2 py-0.5 rounded-md">
-                Direct UPI
+                {selectedSource === "upi" ? "UPI" : selectedSource === "netbanking" ? "NetBanking" : "Card"}
               </span>
             </div>
 
@@ -255,7 +255,7 @@ export function AddMoneyModal({
               >
                 <Smartphone className="size-5 text-orange-400" />
                 <span className="text-xs font-bold leading-tight">UPI Apps</span>
-                <span className="text-[9px] text-emerald-400 font-extrabold">Instant</span>
+                <span className="text-[9px] text-emerald-400 font-extrabold">NPCI UPI</span>
               </button>
 
               <button
@@ -283,18 +283,9 @@ export function AddMoneyModal({
               >
                 <CreditCard className="size-5 text-orange-400" />
                 <span className="text-xs font-bold leading-tight">RuPay / Cards</span>
-                <span className="text-[9px] text-emerald-400 font-extrabold">₹0 Surcharge</span>
+                <span className="text-[9px] text-slate-400">Razorpay</span>
               </button>
             </div>
-          </div>
-
-          {/* Surcharge Guarantee Pill */}
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-300 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 font-bold">
-              <Zap className="size-4 text-emerald-400" />
-              <span>Platform Surcharge: ₹0.00</span>
-            </span>
-            <span className="font-mono text-emerald-400 font-black">Zero Surcharge</span>
           </div>
 
           {/* Action Button */}

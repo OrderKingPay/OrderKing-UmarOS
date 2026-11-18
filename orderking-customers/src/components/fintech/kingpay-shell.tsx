@@ -39,7 +39,7 @@ export function KingPayShell({
   const { user, isPending } = useCurrentUserState();
   const searchableFeatures: { label: string; keywords: string; section: KingPaySection }[] = [
     { label: "Pay & Transfer (Direct UPI / BharatQR)", keywords: "pay send money transfer upi qr scan vpa bharatqr", section: "pay" },
-    { label: "Bills & Utility Recharges (BBPS)", keywords: "electricity water dth broadband mobile gas lpg bill bbps", section: "bills" },
+    { label: "Utility Bills (BBPS Status)", keywords: "electricity water dth broadband mobile gas lpg bill bbps", section: "bills" },
     { label: "Garage & FASTag (Vehicle Alerts & Toll)", keywords: "car bike vehicle fastag toll insurance challan rto", section: "garage" },
     { label: "Passbook & Statement (Double-Entry Integer)", keywords: "history passbook ledger entries statement audit", section: "passbook" },
     { label: "Account & Security (KYC & Session)", keywords: "profile details kyc bank settings security session", section: "account" },
@@ -154,7 +154,7 @@ export function KingPayShell({
             value={serviceQuery}
             autoComplete="off"
             onChange={(e) => setServiceQuery(e.target.value)}
-            placeholder="Search payments, bills, FASTag, passbook, wealth..."
+            placeholder="Search UPI payments, garage, passbook, account..."
             aria-label="Search King Pay services"
             className="h-10 min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-400 focus:outline-none"
           />

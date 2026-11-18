@@ -137,10 +137,9 @@ export function SlowNetworkFallbackCard({
         )}
       </div>
 
-      {/* Offline Storage Assurance */}
       <div className="mt-4 flex items-center justify-center gap-1.5 text-[10px] text-orange-900/80">
         <Sparkles className="size-3 text-orange-600" />
-        <span>IndexedDB Cache & Offline Order Queue Active</span>
+        <span>Local offline cache active</span>
       </div>
     </div>
   );

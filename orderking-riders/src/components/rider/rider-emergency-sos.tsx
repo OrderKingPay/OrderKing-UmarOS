@@ -3,15 +3,12 @@ import {
   AlertOctagon,
   CheckCircle2,
   Copy,
-  ExternalLink,
   Mic,
   MicOff,
   Navigation,
   PhoneCall,
   Radio,
-  Share2,
   ShieldAlert,
-  ShieldCheck,
   Siren,
   X,
 } from "lucide-react";
@@ -99,8 +96,7 @@ export function createEmergencyDistressPayload(
 }
 
 /**
- * Authentic Red SOS Safety Emergency Panic Shield Button
- * Designed with pulsing radar ring and high-contrast red alert styling.
+ * Red SOS Emergency Button with high-contrast styling.
  */
 export function EmergencySosButton({
   onClick,
@@ -126,14 +122,14 @@ export function EmergencySosButton({
       onClick={onClick}
       disabled={disabled}
       aria-label="OrderKing SOS Emergency Safety Call"
-      className={`group relative flex items-center justify-center gap-1.5 rounded-xl border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-black text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${isSm
+      className={`group relative flex items-center justify-center gap-1.5 rounded-xl border border-red-500/80 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 font-black text-white shadow-md shadow-red-600/35 transition-all duration-200 hover:from-red-500 hover:to-rose-600 active:scale-95 disabled:opacity-50 disabled:pointer-events-none ${
+        isSm
           ? "px-2.5 py-1 text-xs"
           : isLg
             ? "px-4 py-3 text-sm"
             : "px-3 py-1.5 text-xs"
-        } ${className}`}
+      } ${className}`}
     >
-      {/* Pulsing Alert Radar Beacon Ring */}
       <span className="absolute -inset-0.5 rounded-xl bg-red-500/30 opacity-70 blur-xs animate-ping group-hover:opacity-100 pointer-events-none" />
 
       <AlertOctagon className={`${isSm ? "size-3.5" : isLg ? "size-5" : "size-4"} animate-pulse stroke-[2.5] shrink-0 text-white`} />
@@ -151,12 +147,11 @@ export function EmergencySosButton({
 }
 
 /**
- * Comprehensive Emergency Safety Sheet / Modal
- * Features:
+ * Emergency Safety Sheet / Modal
  * - 1-tap dialer to Emergency Police / Ambulance (tel:112, tel:108)
  * - 1-tap dialer to OrderKing 24x7 Fleet Safety Helpline (tel:+919395065587)
- * - Live GPS Coordinate Broadcast (with copy + SMS + WhatsApp beacons)
- * - Audio recording safety beacon toggle with real-time timer
+ * - Live GPS Coordinate Broadcast (copy + SMS + WhatsApp)
+ * - Local microphone recording toggle with proper stream cleanup
  */
 export function RiderEmergencySafetySheet({
   isOpen,
@@ -176,13 +171,28 @@ export function RiderEmergencySafetySheet({
   onDistressLogged?: (payload: EmergencyDistressPayload) => void;
 }) {
   const [countdown, setCountdown] = useState<number | null>(5);
-  const [sosActive, setSosActive] = useState<boolean>(false);
   const [audioBeaconActive, setAudioBeaconActive] = useState<boolean>(false);
   const [audioTimerSec, setAudioTimerSec] = useState<number>(0);
   const [gpsLocation, setGpsLocation] = useState<{ lat: number; lng: number; accuracyM: number } | null>(null);
   const [incidentId, setIncidentId] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+
+  const stopAudioStream = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch {
+        // ignore
+      }
+    }
+    mediaRecorderRef.current = null;
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((track) => track.stop());
+      mediaStreamRef.current = null;
+    }
+  };
 
   // Initialize or fetch live GPS telemetry
   const refreshGps = () => {
@@ -206,7 +216,7 @@ export function RiderEmergencySafetySheet({
             setGpsLocation(null);
           }
         },
-        { enableHighAccuracy: true, timeout: 6000 }
+        { enableHighAccuracy: true, timeout: 6000 },
       );
     } else if (defaultGps) {
       setGpsLocation({
@@ -222,14 +232,18 @@ export function RiderEmergencySafetySheet({
   useEffect(() => {
     if (isOpen) {
       setCountdown(5);
-      setSosActive(false);
       setAudioBeaconActive(false);
       setAudioTimerSec(0);
       setCopied(false);
       const incId = `SOS-${Date.now().toString().slice(-6)}`;
       setIncidentId(incId);
       refreshGps();
+    } else {
+      stopAudioStream();
     }
+    return () => {
+      stopAudioStream();
+    };
   }, [isOpen, defaultGps]);
 
   // 5-Second Countdown
@@ -259,7 +273,6 @@ export function RiderEmergencySafetySheet({
 
   const triggerSosNow = async () => {
     setCountdown(null);
-    setSosActive(true);
     refreshGps();
 
     const payload = createEmergencyDistressPayload({
@@ -285,40 +298,35 @@ export function RiderEmergencySafetySheet({
           lng: payload.lng,
         },
       });
-      toast.error("Emergency helpline notified. Direct lines are open.");
+      toast.error("Emergency safety alert logged. Direct lines are open.");
     } catch {
-      // Telemetry continues offline via native dialers
+      // Direct dialers remain available offline
     }
   };
 
   const toggleAudioRecording = async () => {
     if (audioBeaconActive) {
+      stopAudioStream();
       setAudioBeaconActive(false);
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
-        try {
-          mediaRecorderRef.current.stop();
-        } catch {
-          // ignore
-        }
-      }
-      toast.info("Audio recording safety beacon stopped.");
-    } else {
-      setAudioBeaconActive(true);
-      toast.success("Audio recording safety beacon ACTIVE. Streaming ambient safety telemetry.");
+      toast.info("Audio recording stopped.");
+      return;
+    }
 
-      // Attempt to access microphone if available in current browser environment
-      if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
-        navigator.mediaDevices
-          .getUserMedia({ audio: true })
-          .then((stream) => {
-            const recorder = new MediaRecorder(stream);
-            mediaRecorderRef.current = recorder;
-            recorder.start();
-          })
-          .catch(() => {
-            // Fallback audio telemetry mode
-          });
-      }
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      toast.error("Microphone recording is not supported in this browser.");
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setAudioBeaconActive(true);
+      toast.success("Audio recording active on device.");
+    } catch {
+      toast.error("Microphone permission denied. Enable microphone access to record audio.");
     }
   };
 
@@ -330,11 +338,14 @@ export function RiderEmergencySafetySheet({
     }
     const coordsText = `${gpsLocation.lat.toFixed(5)}, ${gpsLocation.lng.toFixed(5)}`;
     if (typeof navigator !== "undefined" && navigator.clipboard) {
-      navigator.clipboard.writeText(coordsText).then(() => {
-        setCopied(true);
-        toast.success("GPS Coordinates copied to clipboard!");
-        setTimeout(() => setCopied(false), 2500);
-      }).catch(() => { });
+      navigator.clipboard
+        .writeText(coordsText)
+        .then(() => {
+          setCopied(true);
+          toast.success("GPS Coordinates copied to clipboard.");
+          setTimeout(() => setCopied(false), 2500);
+        })
+        .catch(() => {});
     }
   };
 
@@ -350,11 +361,11 @@ export function RiderEmergencySafetySheet({
   });
 
   const handleEndAlert = () => {
+    stopAudioStream();
     setCountdown(null);
-    setSosActive(false);
     setAudioBeaconActive(false);
     onClose();
-    toast.success("Emergency safety alert ended. Stay safe!");
+    toast.success("Emergency safety alert ended.");
   };
 
   if (!isOpen) return null;
@@ -363,7 +374,7 @@ export function RiderEmergencySafetySheet({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-150">
       <div className="w-full max-w-md overflow-hidden rounded-2xl border border-red-500/50 bg-card shadow-[0_25px_60px_-15px_rgba(225,29,72,0.6)] text-foreground space-y-0">
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-red-500/30 bg-gradient-to-r from-red-950/90 via-[#161D2B] to-[#0E121B] px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-red-500/30 bg-gradient-to-r from-red-950/90 via-[#161D2B] to-[#0E121B] px-5 py-3.5 text-white">
           <div className="flex items-center gap-2.5">
             <span className="flex size-8 items-center justify-center rounded-lg bg-red-600/30 border border-red-500/40 text-red-400">
               <ShieldAlert className="size-5 animate-pulse" />
@@ -371,19 +382,19 @@ export function RiderEmergencySafetySheet({
             <div>
               <h2 className="text-sm font-black uppercase tracking-wider text-red-400 flex items-center gap-1.5">
                 <span>OrderKing 24x7 Safety Guard</span>
-                <span className="rounded bg-red-500/20 px-1.5 py-0.2 text-[9px] font-mono text-red-300">
+                <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-[9px] font-mono text-red-200">
                   {incidentId || "SOS"}
                 </span>
               </h2>
-              <p className="text-[11px] text-muted-foreground">
-                National Emergency 112 &amp; Live Telemetry Shield
+              <p className="text-[11px] text-slate-300">
+                National Emergency 112 &amp; Live GPS Broadcast
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-muted-foreground hover:bg-white/10 hover:text-white transition"
+            className="rounded-lg p-1.5 text-slate-300 hover:bg-white/10 hover:text-white transition"
             aria-label="Close emergency modal"
           >
             <X className="size-5" />
@@ -392,7 +403,7 @@ export function RiderEmergencySafetySheet({
 
         <div className="p-5 space-y-4">
           {countdown !== null ? (
-            /* Countdown Siren Phase */
+            /* Countdown Phase */
             <div className="text-center space-y-4 py-2">
               <div className="relative mx-auto flex size-24 items-center justify-center rounded-full bg-red-600 text-white shadow-[0_0_35px_rgba(220,38,38,0.7)] animate-pulse">
                 <Siren className="size-12 animate-bounce" />
@@ -401,12 +412,12 @@ export function RiderEmergencySafetySheet({
 
               <div>
                 <h3 className="font-display text-xl font-black text-red-500 tracking-wide uppercase">
-                  Distress Beacon Triggering
+                  Distress Alert Triggering
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 max-w-xs mx-auto">
-                  Broadcasting live coordinates to OrderKing Safety Operations and readying 112 hotline in:
+                  Logging live coordinates to OrderKing Safety Operations and opening 112 quick-dial in:
                 </p>
-                <p className="font-display text-5xl font-black text-white mt-2 tabular-nums">
+                <p className="font-display text-5xl font-black text-foreground mt-2 tabular-nums">
                   {countdown}s
                 </p>
               </div>
@@ -434,17 +445,17 @@ export function RiderEmergencySafetySheet({
             /* Active SOS Hub & Safety Tools */
             <div className="space-y-4">
               {/* Active Distress Badge */}
-              <div className="flex items-center justify-between rounded-xl border border-red-500/50 bg-red-950/40 p-3 text-xs">
+              <div className="flex items-center justify-between rounded-xl border border-red-500/50 bg-red-500/10 p-3 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="flex size-3 relative">
                     <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-red-400 opacity-75" />
                     <span className="relative inline-flex rounded-full size-3 bg-red-500" />
                   </span>
-                  <span className="font-bold text-red-300">
-                    DISTRESS BEACON ACTIVE
+                  <span className="font-bold text-red-600 dark:text-red-400">
+                    DISTRESS ALERT ACTIVE
                   </span>
                 </div>
-                <span className="font-mono text-[11px] font-semibold text-red-400">
+                <span className="font-mono text-[11px] font-semibold text-red-600 dark:text-red-400">
                   {incidentId}
                 </span>
               </div>
@@ -452,7 +463,7 @@ export function RiderEmergencySafetySheet({
               {/* 1-Tap Emergency Hotlines */}
               <div className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  1-Tap Instant Dialers
+                  1-Tap Emergency Dialers
                 </p>
                 <div className="grid grid-cols-2 gap-2.5">
                   <a
@@ -497,36 +508,36 @@ export function RiderEmergencySafetySheet({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 font-bold text-foreground">
                     <Navigation className="size-3.5 text-primary" />
-                    <span>Live GPS Coordinate Broadcast</span>
+                    <span>Live GPS Coordinates</span>
                   </span>
                   <button
                     type="button"
                     onClick={refreshGps}
-                    className="flex items-center gap-1 font-mono text-[10px] text-emerald-400 hover:underline"
+                    className="flex items-center gap-1 font-mono text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
                     <Radio className="size-3 animate-pulse" />
                     <span>{gpsLocation ? `Locked ±${gpsLocation.accuracyM}m` : "Refresh GPS"}</span>
                   </button>
                 </div>
 
-                <div className="rounded-lg bg-black/60 p-2.5 font-mono text-xs text-slate-300 space-y-1 border border-white/5">
+                <div className="rounded-lg bg-muted p-2.5 font-mono text-xs text-foreground space-y-1 border border-border">
                   {gpsLocation ? (
                     <div className="flex items-center justify-between">
                       <span>
                         Latitude:{" "}
-                        <strong className="text-white">
+                        <strong className="font-bold">
                           {gpsLocation.lat.toFixed(5)}
                         </strong>
                       </span>
                       <span>
                         Longitude:{" "}
-                        <strong className="text-white">
+                        <strong className="font-bold">
                           {gpsLocation.lng.toFixed(5)}
                         </strong>
                       </span>
                     </div>
                   ) : (
-                    <p className="text-amber-300">
+                    <p className="text-amber-700 dark:text-amber-300">
                       GPS fix unavailable — enable location permission and tap Refresh GPS
                     </p>
                   )}
@@ -535,7 +546,7 @@ export function RiderEmergencySafetySheet({
                   </p>
                 </div>
 
-                {/* Broadcast Action Buttons: Copy Coordinates, WhatsApp Beacon, SMS Beacon */}
+                {/* Broadcast Action Buttons */}
                 <div className="grid grid-cols-3 gap-2 pt-0.5">
                   <Button
                     type="button"
@@ -545,7 +556,7 @@ export function RiderEmergencySafetySheet({
                     className="text-[11px] gap-1 h-8 bg-muted/30 border-border text-foreground hover:bg-muted"
                   >
                     {copied ? (
-                      <CheckCircle2 className="size-3 text-emerald-400" />
+                      <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
                     ) : (
                       <Copy className="size-3" />
                     )}
@@ -556,64 +567,69 @@ export function RiderEmergencySafetySheet({
                     href={currentPayload.whatsappDistressUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold h-8 hover:bg-emerald-500/20 transition"
+                    className="inline-flex items-center justify-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] font-semibold h-8 hover:bg-emerald-500/20 transition"
                   >
                     <span>WhatsApp</span>
                   </a>
 
                   <a
                     href={currentPayload.smsDistressUrl}
-                    className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-500/40 bg-blue-500/10 text-blue-400 text-[11px] font-semibold h-8 hover:bg-blue-500/20 transition"
+                    className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-500/40 bg-blue-500/10 text-blue-700 dark:text-blue-400 text-[11px] font-semibold h-8 hover:bg-blue-500/20 transition"
                   >
                     <span>SMS SOS</span>
                   </a>
                 </div>
               </div>
 
-              {/* Audio Recording Safety Beacon Toggle */}
-              <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-xs space-y-2">
+              {/* Audio Recording Safety Toggle */}
+              <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`flex size-7 items-center justify-center rounded-lg ${audioBeaconActive
+                      className={`flex size-7 items-center justify-center rounded-lg ${
+                        audioBeaconActive
                           ? "bg-red-600 text-white animate-pulse"
-                          : "bg-muted/40 text-muted-foreground"
-                        }`}
+                          : "bg-muted text-muted-foreground"
+                      }`}
                     >
                       {audioBeaconActive ? <Mic className="size-4" /> : <MicOff className="size-4" />}
                     </span>
                     <div>
                       <p className="font-bold text-foreground">
-                        Audio Recording Safety Beacon
+                        Audio Recording
                       </p>
                       <p className="text-[10px] text-muted-foreground">
                         {audioBeaconActive
-                          ? "Recording ambient audio & logging to fleet dispatch"
-                          : "Record audio evidence during unsafe situations"}
+                          ? "Recording ambient audio on device"
+                          : "Record audio during unsafe situations"}
                       </p>
                     </div>
                   </div>
 
                   <button
                     type="button"
-                    onClick={toggleAudioRecording}
-                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${audioBeaconActive
-                        ? "bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.5)]"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
-                      }`}
+                    onClick={() => void toggleAudioRecording()}
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${
+                      audioBeaconActive
+                        ? "bg-red-600 text-white shadow-sm"
+                        : "bg-muted text-foreground hover:bg-muted/80"
+                    }`}
                   >
                     {audioBeaconActive ? "STOP REC" : "START REC"}
                   </button>
                 </div>
 
                 {audioBeaconActive && (
-                  <div className="flex items-center justify-between rounded-lg bg-black/60 px-3 py-1.5 font-mono text-[11px] text-rose-300 border border-red-500/30">
+                  <div className="flex items-center justify-between rounded-lg bg-muted px-3 py-1.5 font-mono text-[11px] text-red-600 dark:text-rose-300 border border-red-500/30">
                     <span className="flex items-center gap-1.5">
                       <span className="size-2 rounded-full bg-red-500 animate-ping" />
-                      <span>REC {String(Math.floor(audioTimerSec / 60)).padStart(2, "0")}:{String(audioTimerSec % 60).padStart(2, "0")}</span>
+                      <span>
+                        REC {String(Math.floor(audioTimerSec / 60)).padStart(2, "0")}:
+                        {String(audioTimerSec % 60).padStart(2, "0")}
+                      </span>
                     </span>
-                    <span className="text-[10px] text-emerald-400 font-sans">
-                      Beacon Broadcasting
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-sans">
+                      Microphone Active
                     </span>
                   </div>
                 )}
@@ -624,9 +640,9 @@ export function RiderEmergencySafetySheet({
                 type="button"
                 variant="outline"
                 onClick={handleEndAlert}
-                className="w-full text-xs font-semibold text-rose-300 hover:text-white border-rose-500/30 bg-muted/20 hover:bg-muted/40"
+                className="w-full text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-foreground border-rose-500/30 bg-muted/20 hover:bg-muted/40"
               >
-                I Am Safe (End Emergency Beacon)
+                I Am Safe (End Emergency Alert)
               </Button>
             </div>
           )}
@@ -637,7 +653,7 @@ export function RiderEmergencySafetySheet({
 }
 
 /**
- * Backwards-compatible standalone RiderEmergencySOS widget
+ * Standalone RiderEmergencySOS widget
  */
 export function RiderEmergencySOS() {
   const [sheetOpen, setSheetOpen] = useState(false);

@@ -2413,7 +2413,7 @@ export function AiPage({ mode = "ops" }: { mode?: "ops" | "ceo" }) {
             className="text-left rounded-[14px] border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/15 p-3 transition-all"
             onClick={() => {
               const prompt =
-                "Calculate 15-unit India, US, and Saudi franchise ROI comparing 28%-30% aggregator commissions vs OrderKing direct stack and capital payback days.";
+                "Calculate multi-outlet Indian restaurant unit economics comparing standard commission schedules, GST 9(5), TCS/TDS, and net merchant settlement.";
               setQ(prompt);
               setSpecialistId("strategist");
               setSelectedDepartmentId("dept_06_b2b_saas_revenue");

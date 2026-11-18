@@ -85,13 +85,13 @@ export function FoodUpiCheckoutCard({
               </h3>
               <p className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
                 <ShieldCheck className="size-3 text-emerald-500" />
-                <span>Zero gateway markup · Direct NPCI UPI settlement</span>
+                <span>Direct NPCI UPI payment</span>
               </p>
             </div>
           </div>
 
           <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            0% Gateway Fee
+            Direct UPI
           </span>
         </div>
 
@@ -151,7 +151,7 @@ export function FoodUpiCheckoutCard({
         </div>
 
         <p className="text-[10px] text-muted-foreground text-center pt-0.5">
-          NPCI UPI Intent standard • Instant direct bank settlement • 0% gateway fee
+          NPCI UPI Intent standard · Orderkingpay (GSTIN 18AFXPH9838M1Z9)
         </p>
       </div>
 

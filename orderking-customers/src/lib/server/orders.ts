@@ -830,9 +830,9 @@ export const cancelMyOrder = createServerFn({ method: "POST" })
     const totalRefundPaise = order.total_paise;
 
     await sql`update orders set status = ${nextStatus}, payment_status = ${"refunded"}, updated_at = now() where id = ${order.id} and user_id = ${context.userId}`;
-    await writeEvent(order.id, order.status, nextStatus, context.userId, "customer", data.reason || "Cancelled by customer within 60s grace window (100% instant refund)");
+    await writeEvent(order.id, order.status, nextStatus, context.userId, "customer", data.reason || "Cancelled by customer within grace window");
 
-    // 100% Instant Refund to KingPay wallet or UPI without human intervention or restaurant dispute
+    // Full refund to KingPay wallet for prepaid orders
     if (order.payment_method !== "COD" && totalRefundPaise > 0) {
       await sql`
         INSERT INTO kingpay_wallets (user_id, balance_paise, updated_at)
@@ -842,14 +842,14 @@ export const cancelMyOrder = createServerFn({ method: "POST" })
       `;
       await sql`
         INSERT INTO kingpay_transactions (id, user_id, amount_paise, type, description)
-        VALUES (${newId("kpt")}, ${context.userId}, ${totalRefundPaise}, 'CREDIT', ${`100% Instant Refund for Cancelled Order #${order.public_id}`})
+        VALUES (${newId("kpt")}, ${context.userId}, ${totalRefundPaise}, 'CREDIT', ${`Refund for Cancelled Order #${order.public_id}`})
       `;
       await sql`UPDATE payments SET status = 'refunded' WHERE order_id = ${order.id}`;
     }
 
     await sql`
       INSERT INTO notifications (id, user_id, title, body, kind, entity_id)
-      VALUES (${newId("ntf")}, ${context.userId}, ${"100% Instant Refund Issued"}, ${`Order #${order.public_id} was cancelled. 100% refund of ₹${(totalRefundPaise / 100).toFixed(2)} processed to KingPay Wallet/UPI without dispute.`}, ${"ORDER_CANCELLED"}, ${order.id})
+      VALUES (${newId("ntf")}, ${context.userId}, ${"Order Cancelled — Refund Credited"}, ${`Order #${order.public_id} was cancelled. Refund of ₹${(totalRefundPaise / 100).toFixed(2)} credited to KingPay Wallet.`}, ${"ORDER_CANCELLED"}, ${order.id})
     `;
 
     return { ok: true, orderId: order.id, status: nextStatus, refundPaise: totalRefundPaise, authoritative: "customer-app" as const };

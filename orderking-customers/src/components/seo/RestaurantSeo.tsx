@@ -25,9 +25,9 @@ export function getRestaurantSeoMeta(restaurant: RestaurantDetail | null | undef
 
   const dynamicDescription = restaurant
     ? `Order food online from ${cleanName} in ${area}. Estimated ${eta}-min delivery, ${cuisine}${rating ? `, ${rating}` : ""}, live order tracking on OrderKing.`
-    : `Order food online from ${cleanName}. Live order tracking and direct menu pricing on OrderKing.`;
+    : `Order food online from ${cleanName}. Live order tracking and itemized billing on OrderKing.`;
 
-  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, late night food delivery near me, veg food delivery near me, direct delivery alternative, aggregator alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
+  const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, late night food delivery near me, veg food delivery near me, OrderKing delivery, food order near me, ${cuisine} near me`;
 
   const canonicalUrl = `https://orderkingpay.com/r/${slug}`;
 
@@ -100,7 +100,7 @@ export function buildRestaurantJsonLd(
     hasMenuItem: c.items.map((it) => ({
       "@type": "MenuItem",
       name: it.name,
-      description: it.description || `${it.name} - Prepared fresh to order at ${restaurantName}`,
+      description: it.description || `${it.name} from ${restaurantName}`,
       ...(it.imageUrl ? { image: it.imageUrl } : {}),
       ...(it.veg ? { suitableForDiet: "https://schema.org/VegetarianDiet" } : {}),
       offers: {

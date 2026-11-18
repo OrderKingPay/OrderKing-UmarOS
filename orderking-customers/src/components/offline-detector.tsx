@@ -39,7 +39,7 @@ export function OfflineDetector() {
     >
       <div className="flex items-center gap-2">
         <WifiOff className="size-4 text-orange-400 shrink-0" />
-        <span>Network connection interrupted. Operating in resilient cache mode.</span>
+        <span>You are offline. Showing cached content.</span>
       </div>
       <button
         type="button"

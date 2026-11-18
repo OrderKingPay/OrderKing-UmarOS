@@ -84,7 +84,7 @@ export function PwaInstallPrompt() {
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-white">Install OrderKing</p>
             <p className="text-xs text-neutral-300 mt-1">
-              Tap <span className="font-bold text-orange-400">Share</span> in Safari, then select <span className="font-bold text-orange-400">'Add to Home Screen'</span> for instant 1-tap ordering.
+              Tap <span className="font-bold text-orange-400">Share</span> in Safari, then select <span className="font-bold text-orange-400">'Add to Home Screen'</span> for quick access.
             </p>
           </div>
           <button
@@ -116,7 +116,7 @@ export function PwaInstallPrompt() {
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-white">Install OrderKing</p>
-          <p className="truncate text-xs text-neutral-400">Add to home screen for 1-tap ordering</p>
+          <p className="truncate text-xs text-neutral-400">Add to home screen for quick access</p>
         </div>
         <div className="flex items-center gap-1.5">
           <button

@@ -23,11 +23,11 @@ export function NextGenSeo({ config }: { config: any }) {
 
   const dynamicTitle = isRestaurant
     ? `${restaurantName} - Food Delivery Near Me | Order Online | OrderKing`
-    : `Best Food Delivery in ${city} | OrderKing`;
+    : `Food Delivery in ${city} | OrderKing`;
 
   const dynamicDescription = isRestaurant
-    ? `Order food online from ${restaurantName}. Live order tracking and partner menu pricing on OrderKing.`
-    : `Order food from restaurants in ${city} with direct menu pricing and live tracking on OrderKing.`;
+    ? `Order food online from ${restaurantName} with live order tracking on OrderKing.`
+    : `Order food online from restaurants in ${city} with itemized billing and live order tracking on OrderKing.`;
 
   const dynamicKeywords = isRestaurant
     ? `${restaurantName}, ${restaurantName} menu, ${restaurantName} online order, food delivery near me, order food online near me, restaurants near me, OrderKing`

@@ -542,8 +542,8 @@ export const PRESTIGE_AWARDS_REGISTRY: FounderAwardProgram[] = [
     prestigeLevel: "INDUSTRY_LEADERSHIP",
     category: "Ethical Commerce & Fair-Pay Marketplace Leadership",
     impactMetricsRequired: [
-      "0% menu price markup vs standard aggregator commission",
-      "Algorithmic instant tip pass-through to delivery partners",
+      "Itemized GST-compliant restaurant billing",
+      "Direct tip pass-through to delivery riders",
     ],
     nominationWindow: "September – November",
     prReachProjected: "Mint, Financial Express, Business Standard editorial spotlight.",

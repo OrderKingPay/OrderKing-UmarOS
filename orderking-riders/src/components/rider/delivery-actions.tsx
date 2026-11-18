@@ -14,7 +14,7 @@ import { AlertTriangle, Camera, Check, CheckCircle2, Clock3, Compass, MessageSqu
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { SwipeSlider } from "./swipe-slider";
-import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
+import { RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
 import { verifyDoorstepDelivery, evaluateThreatZoneRisk } from "@/lib/fleet/fleet-safety-engine";
 
@@ -322,12 +322,6 @@ export function DeliveryActions({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <EmergencySosButton
-            onClick={() => setSosOpen(true)}
-            size="sm"
-            label="SOS"
-            subLabel="Shield"
-          />
           <div className="text-right">
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
               {t("expectedPayout")}
@@ -1018,7 +1012,7 @@ export function DeliveryActions({
                           type="button"
                           onClick={() => setReason(justifiedReason)}
                           className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold text-left transition ${isSelected
-                              ? "border-emerald-500 bg-emerald-500/15 text-emerald-300 shadow-sm font-bold"
+                              ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shadow-sm font-bold"
                               : "border-border bg-muted/30 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                             }`}
                         >
@@ -1034,7 +1028,7 @@ export function DeliveryActions({
                   </div>
 
                   {isJustifiedOperationalReason(reason) && (
-                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 p-2 text-[11px] text-emerald-300 font-medium">
+                    <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-2 text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
                       <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
                       <span>Standard order reassignment to nearest partner</span>
                     </div>

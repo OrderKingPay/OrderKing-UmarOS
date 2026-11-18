@@ -62,14 +62,14 @@ export const Route = createFileRoute("/r/$slug")({
           .join(" ")
       : "Restaurant";
     const title = `${cleanName} - Food Delivery | Order Online | OrderKing`;
-    const desc = `Order food online from ${cleanName}. Live order tracking and transparent menu pricing on OrderKing.`;
+    const desc = `Order food online from ${cleanName}. Live order tracking and itemized billing on OrderKing.`;
     const pageUrl = `https://orderkingpay.com/r/${slug}`;
     const ogImg = `https://orderkingpay.com/icon-512.png`;
     return {
       meta: [
         { title },
         { name: "description", content: desc },
-        { name: "keywords", content: `${cleanName}, food delivery near me, order food online near me, restaurants near me, online food order, best food delivery, OrderKing` },
+        { name: "keywords", content: `${cleanName}, food delivery near me, order food online near me, restaurants near me, online food order, OrderKing` },
         { property: "og:title", content: title },
         { property: "og:description", content: desc },
         { property: "og:url", content: pageUrl },

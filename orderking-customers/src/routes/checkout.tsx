@@ -461,7 +461,7 @@ function CheckoutPage() {
 
               <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700">
                 <Lock className="size-3.5 text-emerald-600" />
-                <span>256-bit SSL</span>
+                <span>Secure Checkout</span>
               </div>
             </div>
           </div>

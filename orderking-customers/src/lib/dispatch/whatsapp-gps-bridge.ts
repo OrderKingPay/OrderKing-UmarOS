@@ -113,7 +113,7 @@ export function formatWhatsAppDispatchMessage(params: WhatsAppDispatchParams): s
     itemsText || "- Standard Order Package",
     ``,
     `*BILL TOTAL:* ₹${totalRupees}`,
-    `*PAYMENT:* ${params.paymentMethod} (Direct Settlement - 0% fee)`,
+    `*PAYMENT:* ${params.paymentMethod}`,
   ];
 
   if (params.paymentRef) {

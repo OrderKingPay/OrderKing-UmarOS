@@ -218,10 +218,10 @@ export function BannerCarouselSection({
   const banners = [
     {
       id: "verified_kitchens_offer",
-      title: "Verified Kitchen Excellence",
-      subtitle: "Explore available menus with transparent prices",
-      tag: "Verified Kitchens",
-      cta: "Explore Kitchens",
+      title: "Order from Local Restaurants",
+      subtitle: "Browse live menus and delivery availability",
+      tag: "Restaurants",
+      cta: "Explore Restaurants",
       link: "/search",
       gradient: "from-orange-500 via-orange-400 to-orange-600",
       bgClass: "from-orange-950 via-stone-900 to-orange-950",
@@ -229,11 +229,11 @@ export function BannerCarouselSection({
     },
     {
       id: "gold_crown_rewards",
-      title: "Rewards & Offers",
-      subtitle: "View available rewards and eligibility",
-      tag: "Reward information",
-      cta: "View Rewards",
-      link: "/earn",
+      title: "Available Offers",
+      subtitle: "View active restaurant and checkout coupons",
+      tag: "Offers",
+      cta: "View Offers",
+      link: "/offers",
       gradient: "from-orange-400 via-orange-300 to-orange-500",
       bgClass: "from-slate-950 via-orange-950 to-slate-900",
       accent: "text-orange-200",
@@ -367,11 +367,8 @@ export function CategoryGridSection({ section }: { section: LayoutSection }) {
       <div className="flex items-center justify-between mb-2.5">
         <div>
           <h2 className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-            {section.title || "Inspiration for your order"}
+            {section.title || "What's on your mind?"}
           </h2>
-          <p className="text-xs text-gray-500 font-medium">
-            Dishes and restaurants
-          </p>
         </div>
         <Link
           to="/search"
@@ -662,23 +659,16 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
         </div>
       )}
 
-      {/* Title & Trust Header */}
+      {/* Title Header */}
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-950 tracking-tight">
               {selectedCategory
-                ? `Top Kitchens for ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`
+                ? `Restaurants for ${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)}`
                 : "Restaurants Delivering to You"}
             </h2>
           </div>
-          <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Check available menus and delivery options
-          </p>
-        </div>
-        <div className="hidden md:flex items-center gap-2 text-xs font-bold text-stone-700 bg-white border border-orange-200/80 px-3 py-1.5 rounded-xl shadow-2xs">
-          <Clock className="size-3.5 text-orange-600" />
-          <span>Avg ETA: 25 min</span>
         </div>
       </div>
 
@@ -761,7 +751,7 @@ export function RestaurantFeedSection({ section }: { section: LayoutSection }) {
                     </span>
                   </div>
                   <p className="mt-1 line-clamp-1 text-xs text-gray-600 font-medium">
-                    {o.itemPreview || "Previous delicious order"}
+                    {o.itemPreview || "Previous order"}
                   </p>
                 </div>
                 <div className="mt-3.5 flex items-center justify-between border-t border-orange-100 pt-3">
@@ -815,7 +805,7 @@ export function MonsoonSurgeBannerSection() {
               Monsoon Rain Surge Active
             </span>
             <span className="rounded-full bg-sky-500/30 border border-sky-400/40 px-2 py-0.5 text-[9px] font-black uppercase text-sky-900 dark:text-sky-200">
-              Priority Dispatch
+              Weather Advisory
             </span>
           </div>
           <p className="text-xs text-sky-800/90 dark:text-sky-300/90 mt-0.5">

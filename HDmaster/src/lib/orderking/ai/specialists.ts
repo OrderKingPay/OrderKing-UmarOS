@@ -783,11 +783,11 @@ export const MANDATE_1_SPECIALIST_DEPARTMENTS: Mandate1SpecialistDepartment[] = 
     responsibilities: [
       "Operate the 15-stage Client Acquisition CRM Pipeline Engine from LEAD to REPEAT",
       "Compute the 9 separated Mandate 3 commercial revenue buckets from VERIFIED_CRM_RECORD leads",
-      "Execute mathematical multi-unit franchise ROI simulations for India (INR), US (USD), and Saudi (SAR)",
+      "Execute mathematical multi-outlet unit economics and settlement calculations in INR (integer paise)",
     ],
     ownedModules: ["crm-pipeline", "b2b-sales-deck", "sellable-services", "corporate-alliances"],
     primaryTools: ["generate_corporate_alliance", "optimize_affiliate_alliances", "revenue_report", "profitability_report"],
-    defaultDirective: "Run a full B2B SaaS CRM pipeline audit, list all 10 sellable services, and calculate 15-unit India/US/Saudi franchise ROI.",
+    defaultDirective: "Run a B2B restaurant onboarding pipeline audit and compute multi-outlet INR settlement unit economics.",
   },
   {
     id: "dept_07_fintech_integrity",

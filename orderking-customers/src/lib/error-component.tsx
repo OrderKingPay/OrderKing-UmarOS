@@ -102,7 +102,7 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
             className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-600 px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-amber-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
           >
             <RotateCcw className="size-4 stroke-[2.4]" />
-            Try Again Instantly
+            Try Again
           </button>
 
           <button
@@ -123,10 +123,9 @@ export function AppErrorComponent({ error, reset }: ErrorComponentProps) {
           </a>
         </div>
 
-        {/* Security badge */}
         <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-700 pt-1">
           <ShieldCheck className="size-4 text-emerald-600 stroke-[2.2]" />
-          <span>OrderKing SafeShield Protected</span>
+          <span>OrderKing</span>
         </div>
       </div>
     </main>

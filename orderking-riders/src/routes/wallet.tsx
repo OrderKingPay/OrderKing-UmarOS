@@ -3,6 +3,7 @@ import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   formatPaise,
@@ -19,7 +20,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/wallet")({
   beforeLoad: ({ context }) => {
     if (!context?.sessionUser) throw redirect({ to: "/login" });
   },
-  component: WalletPage
+  component: WalletPage,
 });
 
 type HomeData = Awaited<ReturnType<typeof getHomeFn>>;
@@ -37,6 +38,7 @@ export function WalletPage() {
   const [home, setHome] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [quickAmountRupees, setQuickAmountRupees] = useState<number>(500);
+  const [utrReference, setUtrReference] = useState<string>("");
   const [depositingQuick, setDepositingQuick] = useState(false);
   const [showQrModal, setShowQrModal] = useState(false);
 
@@ -70,6 +72,18 @@ export function WalletPage() {
     Math.min(100, Math.round((unreconciledPaise / Math.max(1, limitPaise)) * 100));
   const remainingPaise = Math.max(0, limitPaise - unreconciledPaise);
 
+  const fullAmountRupees = unreconciledPaise > 0 ? Math.ceil(unreconciledPaise / 100) : 0;
+  const amountOptions = useMemo(() => {
+    const base: Array<{ amount: number; isFull: boolean }> = [500, 1000, 1500].map((amount) => ({
+      amount,
+      isFull: fullAmountRupees > 0 && amount === fullAmountRupees,
+    }));
+    if (fullAmountRupees > 0 && !base.some((o) => o.amount === fullAmountRupees)) {
+      base.push({ amount: fullAmountRupees, isFull: true });
+    }
+    return base;
+  }, [fullAmountRupees]);
+
   const treasuryVpa = home?.disciplineConfig?.upiDepositVpa || COD_DEFAULT_TREASURY_VPA;
   const upiIntentUri = generateUpiDepositIntent(quickAmountRupees, treasuryVpa, "FloatDeposit");
   const upiQrCodeUrl = generateUpiQrUrl(quickAmountRupees, treasuryVpa, "FloatDeposit", 220);
@@ -82,15 +96,17 @@ export function WalletPage() {
     setDepositingQuick(true);
     try {
       const amountPaise = amountRupees * 100;
+      const trimmedUtr = utrReference.trim();
       await depositFloatingCashFn({
         data: {
           amountPaise,
           method: "UPI_QR",
-          reference: `UPI-1TAP-${Date.now().toString(36).toUpperCase()}`,
+          reference: trimmedUtr || `UPI-DEPOSIT-${Date.now().toString(36).toUpperCase()}`,
           idempotencyKey: newIdempotencyKey(),
         },
       });
-      toast.success(`Deposit of ₹${amountRupees} confirmed. In-hand cash cleared.`);
+      toast.success(`Deposit of ₹${amountRupees} recorded.`);
+      setUtrReference("");
       setShowQrModal(false);
       await loadData();
     } catch (err) {
@@ -135,42 +151,45 @@ export function WalletPage() {
         </div>
 
         {/* Pocket Balance Card */}
-        {loading && !home ? <Skeleton className="h-44 w-full rounded-xl" /> : null}
-        <Card className="space-y-4 p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
-                In-Hand Cash
-              </span>
-              <p className={`text-3xl font-black font-mono tracking-tight mt-0.5 ${isBlocked ? "text-orange-600" : "text-foreground"}`}>
-                {formatPaise(unreconciledPaise)}
-              </p>
+        {loading && !home ? (
+          <Skeleton className="h-44 w-full rounded-xl" />
+        ) : (
+          <Card className="space-y-4 p-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  In-Hand Cash
+                </span>
+                <p className={`text-3xl font-black font-mono tracking-tight mt-0.5 ${isBlocked ? "text-orange-600" : "text-foreground"}`}>
+                  {formatPaise(unreconciledPaise)}
+                </p>
+              </div>
+              <Badge tone={isBlocked ? "busy" : isSoftWarning ? "busy" : "online"} className="text-xs">
+                {isBlocked ? "Limit Reached" : isSoftWarning ? "Near Limit" : "Limit Available"}
+              </Badge>
             </div>
-            <Badge tone={isBlocked ? "busy" : isSoftWarning ? "busy" : "online"} className="text-xs">
-              {isBlocked ? "Limit Reached" : isSoftWarning ? "Near Limit" : "Limit Available"}
-            </Badge>
-          </div>
 
-          <div className="space-y-1.5">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className={`h-full transition-all duration-300 ${isBlocked ? "bg-orange-600" : isSoftWarning ? "bg-orange-500" : "bg-emerald-500"}`}
-                style={{ width: `${Math.min(100, utilizationPct)}%` }}
-              />
+            <div className="space-y-1.5">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className={`h-full transition-all duration-300 ${isBlocked ? "bg-orange-600" : isSoftWarning ? "bg-orange-500" : "bg-emerald-500"}`}
+                  style={{ width: `${Math.min(100, utilizationPct)}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Limit: ₹{(limitPaise / 100).toLocaleString("en-IN")}</span>
+                <span>Available: {formatPaise(remainingPaise)}</span>
+              </div>
             </div>
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Limit: ₹{(limitPaise / 100).toLocaleString("en-IN")}</span>
-              <span>Available: {formatPaise(remainingPaise)}</span>
-            </div>
-          </div>
 
-          {isBlocked ? (
-            <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3 text-xs text-orange-950 dark:text-orange-200">
-              <p className="font-bold">Cash limit reached</p>
-              <p className="text-[11px] mt-0.5 text-muted-foreground">Deposit cash to continue receiving cash on delivery orders.</p>
-            </div>
-          ) : null}
-        </Card>
+            {isBlocked ? (
+              <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3 text-xs text-orange-950 dark:text-orange-200">
+                <p className="font-bold">Cash limit reached</p>
+                <p className="text-[11px] mt-0.5 text-muted-foreground">Deposit cash to continue receiving cash on delivery orders.</p>
+              </div>
+            ) : null}
+          </Card>
+        )}
 
         {/* Deposit Cash Card */}
         <Card className="space-y-3.5 p-5">
@@ -178,22 +197,36 @@ export function WalletPage() {
 
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground font-medium">Select Amount</label>
-            <div className="grid grid-cols-4 gap-2">
-              {[500, 1000, 1500, Math.max(100, Math.ceil(unreconciledPaise / 100))].map((amt, idx) => (
+            <div className={`grid gap-2 ${amountOptions.length === 4 ? "grid-cols-4" : "grid-cols-3"}`}>
+              {amountOptions.map(({ amount, isFull }) => (
                 <button
-                  key={idx}
+                  key={amount}
                   type="button"
-                  onClick={() => setQuickAmountRupees(amt)}
-                  className={`rounded-xl border py-2 text-xs font-mono font-bold transition ${quickAmountRupees === amt
+                  onClick={() => setQuickAmountRupees(amount)}
+                  className={`rounded-xl border py-2 text-xs font-mono font-bold transition ${
+                    quickAmountRupees === amount
                       ? "border-emerald-500 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 shadow-xs"
                       : "border-border bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
+                  }`}
                 >
-                  ₹{amt}
-                  {idx === 3 && unreconciledPaise > 0 ? " (Full)" : ""}
+                  ₹{amount}
+                  {isFull ? " (Full)" : ""}
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground font-medium">
+              UPI UTR / Reference Number (Optional)
+            </label>
+            <Input
+              type="text"
+              value={utrReference}
+              onChange={(e) => setUtrReference(e.target.value)}
+              placeholder="e.g. 432112345678"
+              className="font-mono text-xs h-9"
+            />
           </div>
 
           <div className="flex gap-2 pt-1">

@@ -182,13 +182,13 @@ export function OrderKingPassbookReceipts({
           <span className={`text-[10px] font-black uppercase tracking-wider block ${
             isDark ? "text-slate-400" : "text-stone-500"
           }`}>
-            Platform Transaction Surcharge
+            Ledger Currency
           </span>
           <span className="text-2xl font-black font-mono text-emerald-600 dark:text-emerald-400 block mt-0.5">
-            ₹0.00
+            INR
           </span>
           <span className={`text-[10px] block mt-1 ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            Direct NPCI UPI Transfer
+            Integer Paise Accounting
           </span>
         </div>
       </div>

@@ -106,12 +106,12 @@ export const Route = createRootRoute({
 
               <div className="space-y-2">
                 <h2 className="text-xl font-black text-gray-950 tracking-tight">
-                  {isChunk ? "Platform Update Detected" : "OrderKing Core Recovery"}
+                  {isChunk ? "App Update Available" : "Something Went Wrong"}
                 </h2>
                 <p className="text-xs text-gray-600 leading-relaxed">
                   {isChunk
-                    ? "A newer version of the OrderKing customer app was deployed. Tap below to synchronize instantly."
-                    : "OrderKing encountered a startup or network interruption. SafeShield is protecting your cart and profile."}
+                    ? "A newer version of OrderKing is available. Tap below to reload."
+                    : "A network or loading error occurred. Reload to continue."}
                 </p>
               </div>
 
@@ -155,7 +155,7 @@ export const Route = createRootRoute({
 
               <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-700 pt-1">
                 <ShieldCheck className="size-4 text-emerald-600 stroke-[2.2]" />
-                <span>OrderKing SafeShield</span>
+                <span>OrderKing</span>
               </div>
             </div>
           </main>

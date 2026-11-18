@@ -562,7 +562,7 @@ export function TrainBookingEngine({
               </span>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
                 <Tag className="size-3" />
-                ₹0 OrderKing Booking Markup
+                Official IRCTC Handoff
               </span>
             </div>
             <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
@@ -570,7 +570,7 @@ export function TrainBookingEngine({
               <span>Real-Time PRS Reservation ({fromCode} to {toCode})</span>
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-              Real-time seat inventory, dynamic Tatkal quotas, waitlist status, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing provides zero-friction direct handoff with ₹0 platform markup.
+              Real-time seat inventory, Tatkal quotas, waitlist status, and confirmed reservations are managed exclusively by Indian Railways PRS on the official IRCTC portal. OrderKing links you directly to IRCTC.
             </p>
           </div>
 

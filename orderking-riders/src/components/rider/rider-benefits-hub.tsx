@@ -9,20 +9,16 @@ import {
 import {
   CheckCircle2,
   Coffee,
-  Copy,
   CreditCard,
   Crown,
   Download,
-  ExternalLink,
   Flower2,
-  Fuel,
   Gift,
   Hospital,
   MapPin,
   Phone,
   ShieldCheck,
   X,
-  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -114,10 +110,11 @@ export function PeriodLeaveModal({
             <button
               type="button"
               onClick={() => setSelectedOption("2days")}
-              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${selectedOption === "2days"
+              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${
+                selectedOption === "2days"
                   ? "border-rose-500 bg-rose-500/15 text-foreground font-semibold"
                   : "border-border bg-card text-muted-foreground hover:bg-muted/40"
-                }`}
+              }`}
             >
               <div className="space-y-0.5">
                 <span className="text-xs font-bold block text-foreground">
@@ -133,10 +130,11 @@ export function PeriodLeaveModal({
             <button
               type="button"
               onClick={() => setSelectedOption("today")}
-              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${selectedOption === "today"
+              className={`w-full flex items-center justify-between rounded-xl border p-3 text-left transition ${
+                selectedOption === "today"
                   ? "border-rose-500 bg-rose-500/15 text-foreground font-semibold"
                   : "border-border bg-card text-muted-foreground hover:bg-muted/40"
-                }`}
+              }`}
             >
               <div className="space-y-0.5">
                 <span className="text-xs font-bold block text-foreground">Today Only</span>
@@ -342,7 +340,7 @@ National Emergency: 112 (Police/SOS) | 108 (Ambulance)`;
   );
 }
 
-type CategoryFilter = "ALL" | "EV" | "FUEL" | "INSURANCE" | "FEMALE_WELFARE" | "CASHOUT" | "REST_POINTS";
+type CategoryFilter = "ALL" | "INSURANCE" | "FEMALE_WELFARE" | "CASHOUT" | "REST_POINTS";
 
 export function RiderBenefitsHub({
   lifetimeDeliveries = 0,
@@ -354,7 +352,6 @@ export function RiderBenefitsHub({
   riderId?: string;
 }) {
   const [filter, setFilter] = useState<CategoryFilter>("ALL");
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [tpaModalOpen, setTpaModalOpen] = useState(false);
   const [periodLeaveModalOpen, setPeriodLeaveModalOpen] = useState(false);
   const [claimedPeriodLeave, setClaimedPeriodLeave] = useState<{
@@ -384,13 +381,6 @@ export function RiderBenefitsHub({
     }
   };
 
-  function copyCode(code: string) {
-    navigator.clipboard?.writeText(code);
-    setCopiedCode(code);
-    toast.success(`Partner code ${code} copied.`);
-    setTimeout(() => setCopiedCode(null), 3000);
-  }
-
   return (
     <div className="space-y-4">
       <Card className="relative overflow-hidden border-border p-4 sm:p-5">
@@ -401,7 +391,7 @@ export function RiderBenefitsHub({
                 <Gift className="size-4" />
               </span>
               <h2 className="font-display text-lg font-bold text-foreground">
-                Partner Welfare &amp; Benefits
+                Partner Welfare &amp; Statutory Cover
               </h2>
               <span className="inline-flex items-center gap-1 rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
                 <Crown className="size-3" />
@@ -409,7 +399,7 @@ export function RiderBenefitsHub({
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Statutory Code on Social Security 2020 cover, fleet partner programs, payout schedule, and Assam partner rest hubs.
+              Statutory Code on Social Security 2020 cover, payout schedule, and Assam partner hubs.
             </p>
           </div>
 
@@ -433,17 +423,16 @@ export function RiderBenefitsHub({
             { id: "FEMALE_WELFARE", label: "Period Leave" },
             { id: "CASHOUT", label: "Payout Rules" },
             { id: "REST_POINTS", label: "Assam Hubs" },
-            { id: "EV", label: "EV Partners" },
-            { id: "FUEL", label: "Fuel Programs" },
           ].map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setFilter(cat.id as CategoryFilter)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${filter === cat.id
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                filter === cat.id
                   ? "bg-primary text-white shadow-xs"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
-                }`}
+              }`}
             >
               {cat.label}
             </button>
@@ -637,7 +626,7 @@ export function RiderBenefitsHub({
         </Card>
       )}
 
-      {/* 3. ASSAM REST POINTS & CHARGING HUBS */}
+      {/* 3. ASSAM REST POINTS & PARTNER HUBS */}
       {(filter === "ALL" || filter === "REST_POINTS") && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -666,109 +655,6 @@ export function RiderBenefitsHub({
                       <span>{amenity}</span>
                     </div>
                   ))}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 4. EV RENTAL & BATTERY SWAP SECTION */}
-      {(filter === "ALL" || filter === "EV") && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Zap className="size-4 text-emerald-600" />
-              <span>EV Rental &amp; Battery Swapping Programs</span>
-            </h3>
-            <Badge tone="online" className="text-[10.5px]">Partner Codes</Badge>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {RIDER_AFFILIATE_PARTNERS.evPartners.map((ev) => (
-              <Card key={ev.id} className="flex flex-col justify-between border-border/70 p-4 space-y-3">
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="font-bold text-sm text-foreground">{ev.name}</h4>
-                      <p className="text-xs text-muted-foreground">{ev.service}</p>
-                    </div>
-                    <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      15% OFF
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {ev.description}
-                  </p>
-                </div>
-
-                <div className="space-y-2 pt-2 border-t border-border/60">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground font-mono">Code: {ev.promoCode}</span>
-                    <button
-                      type="button"
-                      onClick={() => copyCode(ev.promoCode)}
-                      className="text-primary hover:underline flex items-center gap-1 font-semibold"
-                    >
-                      {copiedCode === ev.promoCode ? (
-                        <CheckCircle2 className="size-3.5 text-emerald-600 inline" />
-                      ) : (
-                        <Copy className="size-3.5 inline" />
-                      )}
-                      <span>{copiedCode === ev.promoCode ? "Copied" : "Copy Code"}</span>
-                    </button>
-                  </div>
-
-                  <a
-                    href={ev.deepLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-[#c92d39] transition"
-                  >
-                    <span>Visit Partner Site</span>
-                    <ExternalLink className="size-3.5" />
-                  </a>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 5. FUEL CASHBACK & FLEET PETROCARD SECTION */}
-      {(filter === "ALL" || filter === "FUEL") && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Fuel className="size-4 text-orange-500" />
-              <span>Fuel Fleet Petrocard Programs</span>
-            </h3>
-            <Badge tone="online" className="text-[10.5px]">PetroCard</Badge>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {RIDER_AFFILIATE_PARTNERS.fuelPartners.map((fuel) => (
-              <Card key={fuel.id} className="border-border/70 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-sm text-foreground">{fuel.name}</h4>
-                    <p className="text-xs text-muted-foreground">{fuel.service}</p>
-                  </div>
-                  <span className="rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-700 dark:text-orange-400">
-                    {fuel.discount}
-                  </span>
-                </div>
-
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {fuel.description}
-                </p>
-
-                <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Enrollment</span>
-                  <a href="tel:+919395065587" className="font-semibold text-primary hover:underline">
-                    {fuel.claimText}
-                  </a>
                 </div>
               </Card>
             ))}

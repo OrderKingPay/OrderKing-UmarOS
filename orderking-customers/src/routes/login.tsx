@@ -250,7 +250,7 @@ function Login() {
                       type="text"
                       value={phoneName}
                       onChange={(e) => setPhoneName(e.target.value)}
-                      placeholder="e.g. Hasan Habibullah"
+                      placeholder="Enter your full name"
                       className="w-full rounded-2xl border-2 border-stone-200 bg-stone-50/70 px-4 py-3 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:border-orange-500 focus:bg-white focus:outline-none"
                     />
                   </div>

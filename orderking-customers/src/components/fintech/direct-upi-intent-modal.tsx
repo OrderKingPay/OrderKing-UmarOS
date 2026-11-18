@@ -369,7 +369,7 @@ export function DirectUpiIntentModal({
             {/* CRC-16 Checksum Status */}
             <div className="flex items-center gap-1.5 text-[10px] text-emerald-400 font-mono mb-2">
               <ShieldCheck className="size-3 text-emerald-400" />
-              <span>CRC-16: 0x{bharatQr.emvcoPayload.slice(-4)} ({isCrcValid ? "Verified 100%" : "Invalid"})</span>
+              <span>CRC-16: 0x{bharatQr.emvcoPayload.slice(-4)} ({isCrcValid ? "CRC Valid" : "Invalid"})</span>
             </div>
 
             <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-300">

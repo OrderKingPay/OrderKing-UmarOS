@@ -231,6 +231,18 @@ export function HomeFeed({
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
   const [locDialogOpen, setLocDialogOpen] = useState(false);
 
+  useEffect(() => {
+    if (category !== undefined) {
+      setSelectedCategory(category || null);
+    }
+  }, [category]);
+
+  useEffect(() => {
+    if (veg === true) {
+      setDietFilter("veg");
+    }
+  }, [veg, setDietFilter]);
+
   const activeFilterCount =
     (filterFast ? 1 : 0) +
     (filterRating ? 1 : 0) +
@@ -431,7 +443,7 @@ export function HomeFeed({
         <section aria-label="Food Categories" className="pt-0.5">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-sm sm:text-base font-extrabold text-gray-950 tracking-tight">
-              Categories
+              What&apos;s on your mind?
             </h2>
             <Link
               to="/search"
@@ -754,9 +766,6 @@ export function HomeFeed({
                     <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
                       Explore Popular Cuisines
                     </h4>
-                    <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      Top dishes and cuisines served by our kitchen partners
-                    </p>
                   </div>
 
                   <div className="flex flex-wrap items-center justify-center gap-2">
@@ -764,7 +773,7 @@ export function HomeFeed({
                       <button
                         key={cat.slug}
                         type="button"
-                        onClick={() => setSelectedCategory(cat.slug)}
+                        onClick={() => void navigate({ to: "/search", search: { q: cat.name } })}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:border-[#E85D04] hover:bg-orange-50/60 text-xs font-bold text-gray-800 transition active:scale-95 cursor-pointer shadow-2xs"
                       >
                         <Utensils className="size-3 text-[#E85D04]" />

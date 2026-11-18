@@ -129,12 +129,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
 
             <div className="space-y-2">
               <h2 className="text-xl font-black text-gray-950 tracking-tight">
-                {isChunk ? "Seamless App Synchronization" : "Safe Transition Recovery"}
+                {isChunk ? "App Update Available" : "Something Went Wrong"}
               </h2>
               <p className="text-xs text-gray-600 leading-relaxed">
                 {isChunk
-                  ? "OrderKing was updated with fresh speeds and enhancements. One click syncs your active session instantly."
-                  : (error.message || "An unexpected condition occurred. We've captured the diagnostics and secured your state.")}
+                  ? "A newer version of OrderKing is available. Reload to continue."
+                  : (error.message || "An unexpected error occurred. Try reloading this page.")}
               </p>
             </div>
 
@@ -146,7 +146,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
                 className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-600 to-orange-600 px-5 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition-all hover:brightness-105 active:scale-98 cursor-pointer"
               >
                 <RotateCcw className="size-4 stroke-[2.2]" />
-                Try Again Instantly
+                Try Again
               </button>
 
               <button
@@ -187,10 +187,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
               )}
             </div>
 
-            {/* Security badge */}
+            {/* Brand footer */}
             <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-emerald-700 pt-1">
               <ShieldCheck className="size-4 text-emerald-600 stroke-[2.2]" />
-              <span>OrderKing SafeShield Protected</span>
+              <span>OrderKing</span>
             </div>
           </div>
         </main>

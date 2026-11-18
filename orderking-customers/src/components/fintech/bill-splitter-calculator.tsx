@@ -13,7 +13,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
   const [totalInr, setTotalInr] = useState<number>(1800);
   const [splitCount, setSplitCount] = useState<number>(4);
   const [tipPercent, setTipPercent] = useState<number>(0);
-  const [payeeVpa, setPayeeVpa] = useState("9395065587@ybl");
+  const [payeeVpa, setPayeeVpa] = useState("");
 
   const baseBillPaise = Math.max(100, Math.round((Number.isFinite(totalInr) ? totalInr : 1800) * 100));
   const count = Math.max(2, Math.min(20, Math.floor(splitCount)));
@@ -25,18 +25,26 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
   const remainderPaise = grandTotalPaise % count;
 
   const perPersonFormattedRupees = (perPersonBasePaise / 100).toFixed(2);
-  const shareUpiLink = `upi://pay?pa=${encodeURIComponent(payeeVpa.trim())}&pn=Food%20Bill%20Split&am=${perPersonFormattedRupees}&cu=INR&tn=Split%20Meal%20Share`;
+  const trimmedVpa = payeeVpa.trim();
+  const shareUpiLink = trimmedVpa
+    ? `upi://pay?pa=${encodeURIComponent(trimmedVpa)}&pn=Food%20Bill%20Split&am=${perPersonFormattedRupees}&cu=INR&tn=Split%20Meal%20Share`
+    : "";
 
   const handleShareWhatsApp = () => {
-    const text = `Hey! Here is your ${formatPaise(perPersonBasePaise)} share for our meal bill of ${formatPaise(
+    const payLine = shareUpiLink ? `\nPay here via UPI: ${shareUpiLink}` : "";
+    const text = `Your share is ${formatPaise(perPersonBasePaise)} for our meal bill of ${formatPaise(
       grandTotalPaise
-    )} (${count} people split):\nPay here via UPI: ${shareUpiLink}`;
+    )} (${count} people split).${payLine}`;
     if (typeof window !== "undefined") {
       window.open(`https://wa.me/?text=${encodeURIComponent(String(text ?? ""))}`, "_blank");
     }
   };
 
   const handleCopyLink = () => {
+    if (!shareUpiLink) {
+      toast.error("Enter your receiving UPI ID first to generate a UPI payment link.");
+      return;
+    }
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       void navigator.clipboard.writeText(shareUpiLink);
       toast.success("UPI split payment link copied to clipboard!");
@@ -64,11 +72,11 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
             Bill Splitter Calculator
           </h3>
           <p className={`text-xs ${isDark ? "text-slate-400" : "text-stone-500"}`}>
-            Zero-drift SafeInteger paise arithmetic ensures exact accounting down to 1 paisa (NPCI compliant)
+            Split a restaurant bill accurately to the nearest paisa.
           </p>
         </div>
         <span className="text-[10px] font-black uppercase bg-orange-500/10 border border-orange-500/30 text-orange-600 dark:text-orange-300 px-2.5 py-1 rounded-full self-start sm:self-auto">
-          WhatsApp Instant Handoff
+          Share via WhatsApp
         </span>
       </div>
 
@@ -158,7 +166,7 @@ export function BillSplitterCalculator({ className = "", theme = "dark" }: BillS
               type="text"
               value={payeeVpa}
               onChange={(e) => setPayeeVpa(e.target.value)}
-              placeholder="e.g. 9395065587@ybl"
+              placeholder="e.g. yourname@upi"
               className={`w-full h-11 px-3.5 rounded-xl border font-mono text-sm outline-none transition ${
                 isDark
                   ? "border-slate-700 bg-slate-950 text-white focus:border-orange-400"

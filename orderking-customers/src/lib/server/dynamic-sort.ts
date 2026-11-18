@@ -123,7 +123,7 @@ export function getRealTimeMarketContext(
           ? "Rainy Day Comfort Bites Under ₹99"
           : "Budget Deals: Popular Meals Under ₹129",
       subheadline:
-        "Slow-hour value unlock: Bestselling dishes sorted low-to-high at 0% menu markup.",
+        "Popular dishes sorted by price.",
       badge: "Low-Price Value",
       sortStrategy: "lowest_price_first",
       weatherCondition: weather,
@@ -152,7 +152,7 @@ export function getRealTimeMarketContext(
     demandPhase: "PEAK_ORDER_PERIOD",
     headline: "Peak Hours: Royal Dum Biryani & Chef Specials",
     subheadline:
-      "Hand-crafted meals from top-rated restaurants with 0% menu markup.",
+      "Meals from top-rated restaurants near you.",
     badge: "Top Rated Kitchens",
     sortStrategy: "highest_value_first",
     weatherCondition: weather,

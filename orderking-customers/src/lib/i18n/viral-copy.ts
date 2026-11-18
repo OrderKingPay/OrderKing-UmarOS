@@ -41,7 +41,7 @@ export const VIRAL_COPY_MATRIX: Record<
     syl: (ctx, url) => {
       const town = ctx.townName || "করিমগঞ্জ";
       const area = ctx.areaName || "স্টেশন রোড";
-      const msg = `*${town}র ${area}ত অর্ডার কিং ডেলিভারি চালু অইছে।*\n\nরেস্টুরেন্টের আসল মেন্যু দামে গরম খাওন ঘরের দরজাত ডেলিভারি। লাইভ অর্ডার ট্র্যাকিং সুবিধা।\n\nএখান থাকি অর্ডার করইন: ${url}`;
+      const msg = `*${town}র ${area}ত অর্ডার কিং ডেলিভারি চালু অইছে।*\n\nলাইভ অর্ডার ট্র্যাকিং সহ অনলাইন ফুড ডেলিভারি।\n\nএখান থাকি অর্ডার করইন: ${url}`;
       return {
         title: `${area}, ${town}ত অর্ডার কিং ডেলিভারি`,
         text: msg,
@@ -51,7 +51,7 @@ export const VIRAL_COPY_MATRIX: Record<
     bn: (ctx, url) => {
       const town = ctx.townName || "করিমগঞ্জ";
       const area = ctx.areaName || "লোকাল এরিয়া";
-      const msg = `*${town}-এর ${area}-তে অর্ডার কিং ডেলিভারি চালু হয়েছে।*\n\nরেস্তোরাঁর আসল মেন্যু দামে সরাসরি হোম ডেলিভারি ও লাইভ ট্র্যাকিং।\n\nঅর্ডার করতে দেখুন: ${url}`;
+      const msg = `*${town}-এর ${area}-তে অর্ডার কিং ডেলিভারি চালু হয়েছে।*\n\nলাইভ অর্ডার ট্র্যাকিং সহ অনলাইন ফুড ডেলিভারি।\n\nঅর্ডার করতে দেখুন: ${url}`;
       return {
         title: `${area}, ${town}-এ খাবার ডেলিভারি`,
         text: msg,
@@ -61,7 +61,7 @@ export const VIRAL_COPY_MATRIX: Record<
     as: (ctx, url) => {
       const town = ctx.townName || "গুৱাহাটী";
       const area = ctx.areaName || "পল্টন বজাৰ";
-      const msg = `*${town}ৰ ${area}ত অৰ্ডাৰ কিং ডেলিভাৰী এতিয়া উপলব্ধ।*\n\nআপোনাৰ প্ৰিয় ৰেস্তোৰাঁৰ মূল মেন্যু দামত ঘৰৰ দুৱাৰমুখত খাদ্য ডেলিভাৰী আৰু লাইভ ট্ৰেকিং।\n\nএতিয়া অৰ্ডাৰ কৰক: ${url}`;
+      const msg = `*${town}ৰ ${area}ত অৰ্ডাৰ কিং ডেলিভাৰী এতিয়া উপলব্ধ।*\n\nলাইভ অৰ্ডাৰ ট্ৰেকিং সহ অনলাইন খাদ্য ডেলিভাৰী।\n\nএতিয়া অৰ্ডাৰ কৰক: ${url}`;
       return {
         title: `${area}, ${town}ত অৰ্ডাৰ কিং খাদ্য ডেলিভাৰী`,
         text: msg,
@@ -71,7 +71,7 @@ export const VIRAL_COPY_MATRIX: Record<
     hi: (ctx, url) => {
       const town = ctx.townName || "करीमगंज";
       const area = ctx.areaName || "लोकल एरिया";
-      const msg = `*${town} के ${area} में ऑर्डर किंग डिलीवरी उपलब्ध है।*\n\nअसली रेस्टोरेंट मेन्यू रेट पर सीधी होम डिलीवरी और लाइव GPS ट्रैकिंग।\n\nयहाँ से ऑर्डर करें: ${url}`;
+      const msg = `*${town} के ${area} में ऑर्डर किंग डिलीवरी उपलब्ध है।*\n\nलाइव ऑर्डर ट्रैकिंग के साथ ऑनलाइन फूड डिलीवरी।\n\nयहाँ से ऑर्डर करें: ${url}`;
       return {
         title: `${area}, ${town} में फूड डिलीवरी`,
         text: msg,
@@ -81,7 +81,7 @@ export const VIRAL_COPY_MATRIX: Record<
     en: (ctx, url) => {
       const town = ctx.townName || "Karimganj";
       const area = ctx.areaName || "Local Area";
-      const msg = `*Food Delivery in ${area}, ${town} on OrderKing*\n\nOrder directly at genuine restaurant menu prices with 0% menu markup and live GPS tracking.\n\nBrowse kitchens: ${url}`;
+      const msg = `*Food Delivery in ${area}, ${town} on OrderKing*\n\nOrder food online with itemized billing and live order tracking.\n\nBrowse restaurants: ${url}`;
       return {
         title: `Food Delivery in ${area}, ${town} - OrderKing`,
         text: msg,
@@ -95,7 +95,7 @@ export const VIRAL_COPY_MATRIX: Record<
     syl: (ctx, url) => {
       const rest = ctx.restaurantName || "স্থানীয় রেস্টুরেন্ট";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `*${rest}*${cuisine}র খাওন অখন অর্ডার কিং-এ উপলব্ধ।\n\nরেস্টুরেন্টের আসল দামে অর্ডার করইন এবং লাইভ ট্র্যাকিং পাউবা: ${url}`;
+      const msg = `*${rest}*${cuisine}র খাওন অখন অর্ডার কিং-এ উপলব্ধ।\n\nঅনলাইন অর্ডার এবং লাইভ ট্র্যাকিং: ${url}`;
       return {
         title: `${rest} - অর্ডার কিং`,
         text: msg,
@@ -105,7 +105,7 @@ export const VIRAL_COPY_MATRIX: Record<
     bn: (ctx, url) => {
       const rest = ctx.restaurantName || "রেস্তোরাঁ";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `*${rest}*${cuisine}-এর খাবার অর্ডার করুন অর্ডার কিং-এ।\n\nসরাসরি রেস্তোরাঁর মেন্যু দামে হোম ডেলিভারি ও লাইভ ট্র্যাকিং: ${url}`;
+      const msg = `*${rest}*${cuisine}-এর খাবার অর্ডার করুন অর্ডার কিং-এ।\n\nঅনলাইন হোম ডেলিভারি ও লাইভ ট্র্যাকিং: ${url}`;
       return {
         title: `${rest} থেকে অর্ডার করুন - অর্ডার কিং`,
         text: msg,
@@ -115,7 +115,7 @@ export const VIRAL_COPY_MATRIX: Record<
     as: (ctx, url) => {
       const rest = ctx.restaurantName || "প্ৰিয় ৰেস্তোৰাঁ";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `*${rest}*${cuisine}ৰ খাদ্য এতিয়া অৰ্ডাৰ কিঙত উপলব্ধ।\n\nৰেস্তোৰাঁৰ মূল দামত পোনে পোনে ঘৰত ডেলিভাৰী: ${url}`;
+      const msg = `*${rest}*${cuisine}ৰ খাদ্য এতিয়া অৰ্ডাৰ কিঙত উপলব্ধ।\n\nঅনলাইন ডেলিভাৰী আৰু লাইভ ট্ৰেকিং: ${url}`;
       return {
         title: `${rest} - অৰ্ডাৰ কিং অসম`,
         text: msg,
@@ -125,7 +125,7 @@ export const VIRAL_COPY_MATRIX: Record<
     hi: (ctx, url) => {
       const rest = ctx.restaurantName || "रेस्टोरेंट";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `*${rest}*${cuisine} का खाना अब ऑर्डर किंग पर उपलब्ध है।\n\nरेस्टोरेंट के असली मेन्यू रेट पर डिलीवरी और लाइव ट्रैकिंग: ${url}`;
+      const msg = `*${rest}*${cuisine} का खाना अब ऑर्डर किंग पर उपलब्ध है।\n\nऑनलाइन डिलीवरी और लाइव ट्रैकिंग: ${url}`;
       return {
         title: `${rest} on OrderKing`,
         text: msg,
@@ -133,9 +133,9 @@ export const VIRAL_COPY_MATRIX: Record<
       };
     },
     en: (ctx, url) => {
-      const rest = ctx.restaurantName || "Partner Kitchen";
+      const rest = ctx.restaurantName || "Local Restaurant";
       const cuisine = ctx.cuisine ? ` (${ctx.cuisine})` : "";
-      const msg = `Order from *${rest}*${cuisine} on OrderKing.\n\nDirect restaurant menu prices with 0% markup and live order tracking: ${url}`;
+      const msg = `Order from *${rest}*${cuisine} on OrderKing.\n\nOnline delivery with live order tracking: ${url}`;
       return {
         title: `Order from ${rest} on OrderKing`,
         text: msg,
@@ -193,7 +193,7 @@ export const VIRAL_COPY_MATRIX: Record<
     syl: (ctx, url) => {
       const total = ctx.orderTotalRupees || 0;
       const amountText = total > 0 ? `₹${total}র ` : "";
-      const msg = `*আমি অর্ডার কিং দিয়া ${amountText}অর্ডার করছি।*\n\nরেস্টুরেন্টের আসল রেটে সরাসরি ডেলিভারি: ${url}`;
+      const msg = `*আমি অর্ডার কিং দিয়া ${amountText}অর্ডার করছি।*\n\nলাইভ অর্ডার ট্র্যাকিং সহ ডেলিভারি: ${url}`;
       return {
         title: `অর্ডার কিং-এ খাবার অর্ডার`,
         text: msg,
@@ -203,7 +203,7 @@ export const VIRAL_COPY_MATRIX: Record<
     bn: (ctx, url) => {
       const total = ctx.orderTotalRupees || 0;
       const amountText = total > 0 ? `₹${total}-এর ` : "";
-      const msg = `*আমি অর্ডার কিং-এ ${amountText}খাবার অর্ডার করেছি।*\n\nআসল রেস্তোরাঁ দামে সরাসরি হোম ডেলিভারি: ${url}`;
+      const msg = `*আমি অর্ডার কিং-এ ${amountText}খাবার অর্ডার করেছি।*\n\nলাইভ অর্ডার ট্র্যাকিং সহ হোম ডেলিভারি: ${url}`;
       return {
         title: `অর্ডার কিং খাবার ডেলিভারি`,
         text: msg,
@@ -213,7 +213,7 @@ export const VIRAL_COPY_MATRIX: Record<
     as: (ctx, url) => {
       const total = ctx.orderTotalRupees || 0;
       const amountText = total > 0 ? `₹${total} মূল্যৰ ` : "";
-      const msg = `*মই অৰ্ডাৰ কিঙত ${amountText}আহাৰ অৰ্ডাৰ কৰিলোঁ।*\n\nৰেস্তোৰাঁৰ মূল দামত পোনে পোনে ডেলিভাৰী: ${url}`;
+      const msg = `*মই অৰ্ডাৰ কিঙত ${amountText}আহাৰ অৰ্ডাৰ কৰিলোঁ।*\n\nলাইভ অৰ্ডাৰ ট্ৰেকিং সহ ডেলিভাৰী: ${url}`;
       return {
         title: `অৰ্ডাৰ কিং খাদ্য ডেলিভাৰী`,
         text: msg,
@@ -223,7 +223,7 @@ export const VIRAL_COPY_MATRIX: Record<
     hi: (ctx, url) => {
       const total = ctx.orderTotalRupees || 0;
       const amountText = total > 0 ? `₹${total} का ` : "";
-      const msg = `*मैंने ऑर्डर किंग से ${amountText}खाना ऑर्डर किया है।*\n\nअसली रेस्टोरेंट रेट पर सीधी डिलीवरी: ${url}`;
+      const msg = `*मैंने ऑर्डर किंग से ${amountText}खाना ऑर्डर किया है।*\n\nलाइव ऑर्डर ट्रैकिंग के साथ डिलीवरी: ${url}`;
       return {
         title: `ऑर्डर किंग से खाना ऑर्डर`,
         text: msg,
@@ -233,7 +233,7 @@ export const VIRAL_COPY_MATRIX: Record<
     en: (ctx, url) => {
       const total = ctx.orderTotalRupees || 0;
       const amountText = total > 0 ? ` worth ₹${total}` : "";
-      const msg = `*I just placed an order${amountText} on OrderKing.*\n\nLive GPS order tracking and direct kitchen menu prices: ${url}`;
+      const msg = `*I just placed an order${amountText} on OrderKing.*\n\nOrder online with live order tracking: ${url}`;
       return {
         title: `Live Order on OrderKing`,
         text: msg,

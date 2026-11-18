@@ -77,13 +77,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "",
       theme: "emerald",
       orderKingHeadline: "OrderKing",
-      orderKingTagline: "Order group meals, platters, and restaurant dishes at menu pricing.",
+      orderKingTagline: "Order group meals, platters, and restaurant dishes online.",
       orderKingCta: "Open OrderKing - FOODS",
-      orderKingHighlight: "0% Menu Markup",
+      orderKingHighlight: "Itemized Billing",
       kingPayHeadline: "KingPay",
       kingPayTagline: "Split bills, pay shop QR codes via UPI, and manage vehicle renewals.",
       kingPayCta: "Open KingPay",
-      kingPayHighlight: "Bill Split · Instant UPI · Vehicle Garage",
+      kingPayHighlight: "Bill Split · Direct UPI · Vehicle Garage",
     };
   }
 
@@ -97,13 +97,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "",
       theme: "gold",
       orderKingHeadline: "OrderKing",
-      orderKingTagline: "Order from verified local kitchens with transparent itemized bills.",
+      orderKingTagline: "Order from local restaurants with itemized GST bills.",
       orderKingCta: "Open OrderKing - FOODS",
-      orderKingHighlight: "Transparent Itemized Pricing",
+      orderKingHighlight: "Itemized Pricing",
       kingPayHeadline: "KingPay",
-      kingPayTagline: "Pay electricity and broadband bills, recharge FASTag, and check vehicle challans.",
+      kingPayTagline: "Direct UPI payments, vehicle links, and bill splitting.",
       kingPayCta: "Open KingPay",
-      kingPayHighlight: "BBPS Utility Bills · Instant UPI",
+      kingPayHighlight: "Direct UPI · Vehicle Garage",
     };
   }
 
@@ -121,9 +121,9 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       orderKingCta: "Open OrderKing - FOODS",
       orderKingHighlight: "Live Route Tracking",
       kingPayHeadline: "KingPay",
-      kingPayTagline: "Scan and pay at local restaurants or shops with instant UPI settlement.",
+      kingPayTagline: "Scan and pay at local restaurants or shops via NPCI UPI.",
       kingPayCta: "Open KingPay",
-      kingPayHighlight: "Scan & Pay · 0% Charges",
+      kingPayHighlight: "Scan & Pay · Direct UPI",
     };
   }
 
@@ -137,13 +137,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "",
       theme: "amber",
       orderKingHeadline: "OrderKing",
-      orderKingTagline: "Order fresh lunch thalis, bowls, and local specials at restaurant prices.",
+      orderKingTagline: "Order lunch thalis, bowls, and local specials online.",
       orderKingCta: "Open OrderKing - FOODS",
-      orderKingHighlight: "0% Menu Markup",
+      orderKingHighlight: "Live Order Tracking",
       kingPayHeadline: "KingPay",
-      kingPayTagline: "Scan merchant QR codes for fast UPI checkout.",
+      kingPayTagline: "Scan merchant QR codes for UPI checkout.",
       kingPayCta: "Open KingPay",
-      kingPayHighlight: "1-Tap Scan & Pay · Instant UPI",
+      kingPayHighlight: "Scan & Pay · Direct UPI",
     };
   }
 
@@ -156,13 +156,13 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
       icon: "",
       theme: "crimson",
       orderKingHeadline: "OrderKing",
-      orderKingTagline: "Order dinner dishes directly from local kitchens with live GPS tracking.",
+      orderKingTagline: "Order dinner dishes from local restaurants with live tracking.",
       orderKingCta: "Open OrderKing - FOODS",
-      orderKingHighlight: "0% Menu Markup · Live GPS Tracking",
+      orderKingHighlight: "Live Order Tracking",
       kingPayHeadline: "KingPay",
-      kingPayTagline: "Split dinner bills and pay any merchant QR code directly via NPCI UPI.",
+      kingPayTagline: "Split dinner bills and pay merchant QR codes via NPCI UPI.",
       kingPayCta: "Open KingPay",
-      kingPayHighlight: "Bill Split · Instant UPI",
+      kingPayHighlight: "Bill Split · Direct UPI",
     };
   }
 
@@ -174,12 +174,12 @@ export function getCurrentFestiveContext(customDate?: Date): FestiveContext {
     icon: "",
     theme: "gold",
     orderKingHeadline: "OrderKing",
-    orderKingTagline: "Order from local kitchens at direct menu prices with live delivery tracking.",
+    orderKingTagline: "Order from local restaurants with itemized billing and live delivery tracking.",
     orderKingCta: "Open OrderKing - FOODS",
-    orderKingHighlight: "0% Menu Markup · Direct Kitchen Pricing",
+    orderKingHighlight: "Itemized Billing · Live Tracking",
     kingPayHeadline: "KingPay",
-    kingPayTagline: "Scan shop QR codes, check vehicle challans, and pay utility bills.",
+    kingPayTagline: "Scan shop QR codes, check vehicle portals, and split bills.",
     kingPayCta: "Open KingPay",
-    kingPayHighlight: "UPI Payments · Vehicle Garage · BBPS Bills",
+    kingPayHighlight: "UPI Payments · Vehicle Garage",
   };
 }

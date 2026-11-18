@@ -10,7 +10,7 @@ interface VehicleGarageHubProps {
 }
 
 export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner }: VehicleGarageHubProps) {
-  const handleFastag = () => window.open("https://paytm.com/fastag-recharge?utm_source=orderking_affiliate&utm_medium=garage_renewal&utm_campaign=silent_bypass_8&aff_id=orderking_pay", "_blank");
+  const handleFastag = () => window.open("https://paytm.com/fastag-recharge", "_blank");
   const handleInsurance = () => window.open(buildMotorInsuranceAffiliateUrl("policybazaar", "GENERAL"), "_blank");
   const handleAcko = () => window.open(buildMotorInsuranceAffiliateUrl("acko", "GENERAL"), "_blank");
   const handleChallan = () => window.open("https://echallan.parivahan.gov.in/index/accused-challan", "_blank");
@@ -23,9 +23,9 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
           <Car className="size-10" />
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 px-4 py-1.5 text-xs font-black text-red-500 ring-1 ring-red-500/40 mb-4">
-          <AlertTriangle className="size-4 animate-pulse" />
-          <span>MoRTH Radar Active</span>
+        <div className="inline-flex items-center gap-2 rounded-full bg-indigo-500/10 px-4 py-1.5 text-xs font-black text-indigo-600 dark:text-indigo-300 ring-1 ring-indigo-500/30 mb-4">
+          <Car className="size-4" />
+          <span>External RTO &amp; Vehicle Portals</span>
         </div>
 
         <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4">

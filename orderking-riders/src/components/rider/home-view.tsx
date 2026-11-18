@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ConfirmDialog } from "./confirm-dialog";
 import { MapPane } from "./map-pane";
 import { DeliveryActions } from "./delivery-actions";
 import { CoolingOffBanner } from "./cooling-off-banner";
@@ -45,12 +44,10 @@ import {
 } from "@/lib/rider/shift-slots";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
-import { calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
 
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
-import { RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { toggleSunlightMode } from "@/lib/fleet/device-health";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
@@ -75,8 +72,6 @@ export function HelmetVerificationModal({
   onVerified: (photoUrl: string) => void;
 }) {
   const [photo, setPhoto] = useState<string | null>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verificationPassed, setVerificationPassed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [usingStream, setUsingStream] = useState(false);
@@ -117,7 +112,7 @@ export function HelmetVerificationModal({
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
         setPhoto(dataUrl);
-        runAiVerification(dataUrl);
+        validateCapture(dataUrl);
       }
     }
   };
@@ -129,26 +124,21 @@ export function HelmetVerificationModal({
     reader.onload = () => {
       if (typeof reader.result === "string") {
         setPhoto(reader.result);
-        runAiVerification(reader.result);
+        validateCapture(reader.result);
       }
     };
     reader.readAsDataURL(file);
   };
 
-  const runAiVerification = (photoData: string) => {
-    setIsVerifying(true);
+  const validateCapture = (photoData: string) => {
     if (!photoData.startsWith("data:image/") || photoData.length < 500) {
-      setIsVerifying(false);
       toast.error("Invalid image capture. Please retake front-camera photo with BIS helmet.");
       return;
     }
-    setIsVerifying(false);
-    setVerificationPassed(true);
-    toast.success("Safety Compliance Verified: BIS Helmet & OrderKing Bag verified.");
+    toast.success("Helmet & Delivery Bag selfie captured.");
     onVerified(photoData);
     onClose();
     setPhoto(null);
-    setVerificationPassed(false);
   };
 
   if (!isOpen) return null;
@@ -212,37 +202,19 @@ export function HelmetVerificationModal({
             </div>
           )}
 
-          {/* AI Scanning Effect Overlay */}
-          {isVerifying && (
-            <div className="absolute inset-0 bg-primary/20 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2">
-              <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              <span className="text-xs font-bold text-white tracking-wide">
-                Verifying Helmet &amp; Bag Photo...
-              </span>
-            </div>
-          )}
-
-          {verificationPassed && (
-            <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2">
-              <CheckCircle2 className="size-12 text-emerald-400 animate-bounce" />
-              <span className="text-xs font-bold text-emerald-200">
-                Helmet &amp; Bag Verified!
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Verification Checklist */}
         <div className="rounded-lg bg-muted/30 p-2.5 text-xs space-y-1.5 border border-border/60">
-          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
             <CheckCircle2 className="size-3.5" />
             <span>BIS / ISI Certified Helmet Strapped</span>
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
             <CheckCircle2 className="size-3.5" />
             <span>OrderKing Thermal Bag on Shoulders</span>
           </div>
-          <div className="flex items-center gap-1.5 text-emerald-400 font-semibold text-[11px]">
+          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
             <CheckCircle2 className="size-3.5" />
             <span>Clear Face Visibility (No Mask / Dark Visor)</span>
           </div>
@@ -261,7 +233,6 @@ export function HelmetVerificationModal({
           {usingStream && !photo ? (
             <Button
               onClick={snapVideo}
-              disabled={isVerifying}
               className="w-full text-xs font-bold gap-2 bg-primary py-2.5"
             >
               <Camera className="size-4" />
@@ -270,7 +241,6 @@ export function HelmetVerificationModal({
           ) : (
             <Button
               onClick={() => fileInputRef.current?.click()}
-              disabled={isVerifying}
               className="w-full text-xs font-bold gap-2 bg-primary py-2.5"
             >
               <Camera className="size-4" />
@@ -290,7 +260,7 @@ export function HomeView() {
   const [home, setHome] = useState<Home | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [confirm, setConfirm] = useState<"online" | "offline" | "decline" | null>(null);
+  const [confirm, setConfirm] = useState<"decline" | null>(null);
   const [declineReason, setDeclineReason] = useState("");
   const [now, setNow] = useState(Date.now());
   const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
@@ -308,7 +278,6 @@ export function HomeView() {
   });
 
   const [bookedSlotsByDay, setBookedSlotsByDay] = useState<Record<string, string[]>>({});
-  const [sosOpen, setSosOpen] = useState(false);
 
   const todayIso = getIsoDateOffset(0);
   const tomorrowIso = getIsoDateOffset(1);
@@ -503,7 +472,7 @@ export function HomeView() {
 
   const status = home.active ? "BUSY" : home.rider.status;
   const remaining = home.offer
-    ? Math.min(30, Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000)))
+    ? Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000))
     : 0;
   const onlineMs = home.onlineSince ? now - new Date(home.onlineSince).getTime() : 0;
   const kyc = home.rider.kycStatus;
@@ -703,24 +672,17 @@ export function HomeView() {
           </p>
         ) : null}
 
-        {(() => {
-          const tier1Bonus = calculateTier1MilestoneBonus(home.completedToday);
-          const totalEarningsPaise = (home.todayEarningsPaise || 0) + tier1Bonus.bonusPaise;
-          return (
-            <dl className="grid grid-cols-3 gap-2 text-center">
-              <Stat
-                label={t("todayEarnings")}
-                value={formatPaise(totalEarningsPaise)}
-                subtext={tier1Bonus.bonusPaise > 0 ? `+₹${tier1Bonus.bonusRupees} Milestone` : undefined}
-              />
-              <Stat label={t("completed")} value={String(home.completedToday)} />
-              <Stat
-                label={t("onlineFor")}
-                value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
-              />
-            </dl>
-          );
-        })()}
+        <dl className="grid grid-cols-3 gap-2 text-center">
+          <Stat
+            label={t("todayEarnings")}
+            value={formatPaise(home.todayEarningsPaise || 0)}
+          />
+          <Stat label={t("completed")} value={String(home.completedToday)} />
+          <Stat
+            label={t("onlineFor")}
+            value={status === "OFFLINE" ? "—" : formatDuration(onlineMs)}
+          />
+        </dl>
 
         {/* Mandatory Pre-Shift Safety & Camera Check */}
         <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
@@ -832,7 +794,7 @@ export function HomeView() {
                 onComplete={() => setOfflineModalOpen(true)}
               />
               <div className="flex items-center justify-between px-1 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   Online · Ready for orders
                 </span>
@@ -843,7 +805,7 @@ export function HomeView() {
             <div className="rounded-xl border border-orange-500/40 bg-orange-500/10 p-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-orange-500 animate-ping" />
-                <span className="text-xs font-bold text-orange-400">
+                <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
                   On Trip
                 </span>
               </div>
@@ -915,7 +877,7 @@ export function HomeView() {
         </section>
       ) : status === "ONLINE" ? (
         <section className="space-y-3">
-          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3.5">
+          <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3.5">
             <div className="flex items-center gap-2.5">
               <span className="relative flex size-3">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -1010,15 +972,6 @@ export function HomeView() {
 
       
 
-      <ConfirmDialog
-        open={confirm === "online"}
-        title={t("confirmGoOnline")}
-        body={t("confirmGoOnlineBody")}
-        confirmLabel={t("goOnline")}
-        cancelLabel={t("stayOffline")}
-        onConfirm={() => void go("ONLINE")}
-        onCancel={() => setConfirm(null)}
-      />
       {/* Mandatory Operational Reason Flow for Going Offline */}
       {offlineModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-4 sm:items-center backdrop-blur-xs animate-in fade-in duration-150">
@@ -1088,7 +1041,7 @@ export function HomeView() {
         </div>
       ) : null}
       {confirm === "decline" && home.offer ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-fg/40 p-4 sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-xs p-4 sm:items-center">
           <div className="w-full max-w-md rounded-xl bg-card p-5">
             <h2 className="font-display text-xl">{t("declineConfirm")}</h2>
             <Label className="mt-3 block">{t("declineReason")}</Label>
@@ -1136,16 +1089,6 @@ export function HomeView() {
         isOpen={selfieModalOpen}
         onClose={() => setSelfieModalOpen(false)}
         onVerified={handleHelmetVerified}
-      />
-
-      {/* Fleet Emergency Safety Sheet */}
-      <RiderEmergencySafetySheet
-        isOpen={sosOpen}
-        onClose={() => setSosOpen(false)}
-        deliveryId={home?.active?.id ?? null}
-        riderName={home?.rider?.fullName ?? user?.displayName ?? "OrderKing Partner"}
-        riderPhone={home?.rider?.phone ?? "Fleet Registered"}
-        defaultGps={riderPos}
       />
     </div>
   );
@@ -1204,7 +1147,10 @@ function OfferCard({
   const routeKm = Math.max(offer.estimatedTotalRouteKm, offer.approxDistanceKm, 0);
 
   // 30-second countdown timer calculations
-  const maxTimerSec = 30;
+  const offerDurationSec = Math.round(
+    (new Date(offer.expiresAt).getTime() - new Date(offer.createdAt).getTime()) / 1000,
+  );
+  const maxTimerSec = Math.max(30, Number.isFinite(offerDurationSec) ? offerDurationSec : 45);
   const timerPct = Math.min(100, Math.max(0, (remaining / maxTimerSec) * 100));
   const isUrgent = remaining <= 10;
   const isCritical = remaining <= 5;

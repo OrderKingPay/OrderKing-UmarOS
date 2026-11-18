@@ -304,7 +304,7 @@ export function TravelQuotationModal({
                 rows={2}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="e.g. Need 4-bed family room near Haram; or 2AC confirmed tatkal; or 5-star hotel"
+                placeholder="e.g. Need 4-bed family room near Haram, direct flight dates, or 5-star hotel"
                 className="w-full rounded-xl border border-slate-700 bg-slate-800/90 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:border-orange-400 focus:outline-hidden resize-none"
               />
             </div>
