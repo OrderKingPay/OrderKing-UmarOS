@@ -516,7 +516,7 @@ export function SelfServeLandingModule() {
               <Input
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                placeholder="e.g. State Bank of India / HDFC Bank"
+                placeholder="Enter settlement bank name"
                 className="mt-1 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
               />
             </div>

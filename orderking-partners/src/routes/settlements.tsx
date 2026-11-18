@@ -193,7 +193,7 @@ function SettlementsPage() {
     const nextIfsc = (bankIfsc || String(r?.bank_ifsc ?? "")).trim().toUpperCase();
 
     if (!nextAcct || !validateIfsc(nextIfsc)) {
-      setBankMsg("Please provide a valid bank account number and 11-character IFSC code (e.g. HDFC0001234).");
+      setBankMsg("Enter a valid bank account number and 11-character IFSC code.");
       return;
     }
 
@@ -482,7 +482,7 @@ function SettlementsPage() {
                 <Input
                   value={bankAccount || String(r?.bank_account ?? "")}
                   onChange={(e) => setBankAccount(e.target.value)}
-                  placeholder="e.g. 50100234567890"
+                  placeholder="Enter bank account number"
                   className="h-10 text-xs bg-white border-gray-300 text-gray-900 font-mono rounded-xl"
                 />
               </div>
@@ -492,7 +492,7 @@ function SettlementsPage() {
                   <Input
                     value={bankIfsc || String(r?.bank_ifsc ?? "")}
                     onChange={(e) => setBankIfsc(e.target.value.toUpperCase().slice(0, 11))}
-                    placeholder="e.g. HDFC0001234"
+                    placeholder="Enter 11-character IFSC code"
                     className="h-10 text-xs bg-white border-gray-300 text-gray-900 font-mono uppercase rounded-xl"
                   />
                 </div>

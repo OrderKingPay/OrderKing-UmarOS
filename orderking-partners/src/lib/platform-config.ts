@@ -118,7 +118,7 @@ export const platformConfig = {
     legalCompanyName: "Order King Foods Private Limited",
     domain: "orderking.in",
     notificationSenderName: "Order King",
-    invoiceFooter: "Thank you for cooking with Order King.",
+    invoiceFooter: "Order King Partner | GSTIN: 18AFXPH9838M1Z9 | SAC 996331",
     logo: "/brand/logo.svg",
     darkLogo: "/brand/logo-dark.svg",
     lightLogo: "/brand/logo-light.svg",

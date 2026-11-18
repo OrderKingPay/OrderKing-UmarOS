@@ -240,7 +240,7 @@ function PromotionsPage() {
             >
               <UtensilsCrossed className="size-3.5" />
               <span>Table QR Dine-In Ordering Kit</span>
-              <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[9px] font-mono text-emerald-300">
+              <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-mono text-emerald-800">
                 Dine-In Desk
               </span>
             </button>
@@ -266,7 +266,7 @@ function PromotionsPage() {
                       <h2 className="font-display text-base font-bold text-gray-900">
                         Recommended Promotions &amp; Discounts
                       </h2>
-                      <span className="rounded-md border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono uppercase text-orange-300">
+                      <span className="rounded-md border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] font-mono uppercase text-orange-800">
                         Insights
                       </span>
                     </div>
@@ -292,7 +292,7 @@ function PromotionsPage() {
               </div>
 
               {playbookAppliedNotice ? (
-                <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2.5 text-xs text-emerald-300">
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-emerald-300 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-900">
                   <span className="flex items-center gap-2">
                     <CheckCircle2 className="size-4 shrink-0 text-emerald-400" />
                     {playbookAppliedNotice}
@@ -300,7 +300,7 @@ function PromotionsPage() {
                   <button
                     type="button"
                     onClick={() => setPlaybookAppliedNotice(null)}
-                    className="text-[11px] font-mono underline text-emerald-200 hover:text-gray-900"
+                    className="text-[11px] font-mono underline text-emerald-700 hover:text-gray-900"
                   >
                     Dismiss
                   </button>
@@ -326,7 +326,7 @@ function PromotionsPage() {
                   <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-emerald-400">
+                        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-mono font-semibold text-emerald-700">
                           12:00 – 15:00 IST
                         </span>
                         <span className="text-[11px] font-mono text-gray-500 tabular">
@@ -338,7 +338,7 @@ function PromotionsPage() {
                         Working professionals and solo diners look for single-serve thalis, bowls, or main + beverage bundles with predictable pricing under ₹249.
                       </p>
                       <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
-                        <span className="font-semibold text-emerald-400">Recommended Setup:</span> Flat ₹40 Off on orders above ₹199 (caps discount at ≤20% of food value).
+                        <span className="font-semibold text-emerald-700">Recommended Setup:</span> Flat ₹40 Off on orders above ₹199 (caps discount at ≤20% of food value).
                       </div>
                     </div>
                     <Button
@@ -364,7 +364,7 @@ function PromotionsPage() {
                   <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="rounded-md border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-orange-300">
+                        <span className="rounded-md border border-orange-200 bg-orange-50 px-2 py-0.5 text-[10px] font-mono font-semibold text-orange-700">
                           16:00 – 18:30 IST
                         </span>
                         <span className="text-[11px] font-mono text-gray-500 tabular">
@@ -376,7 +376,7 @@ function PromotionsPage() {
                         Utilize idle kitchen prep line hours between lunch and dinner by pairing quick-prep starters, chaat, or rolls with hot/cold beverages.
                       </p>
                       <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
-                        <span className="font-semibold text-orange-300">Recommended Setup:</span> 15% Off up to ₹45 on ₹149+ minimum order to drive high-frequency afternoon orders.
+                        <span className="font-semibold text-orange-700">Recommended Setup:</span> 15% Off up to ₹45 on ₹149+ minimum order to drive high-frequency afternoon orders.
                       </div>
                     </div>
                     <Button
@@ -403,7 +403,7 @@ function PromotionsPage() {
                   <div className="flex flex-col justify-between rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-300">
+                        <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-[10px] font-mono font-semibold text-indigo-700">
                           19:00 – 22:30 IST
                         </span>
                         <span className="text-[11px] font-mono text-gray-500 tabular">
@@ -415,7 +415,7 @@ function PromotionsPage() {
                         Households ordering dinner add multiple mains, breads, and desserts when incentivized with a clear step-up basket threshold.
                       </p>
                       <div className="rounded-lg border border-gray-200/90 bg-white/70 p-2 text-[11px] text-gray-700">
-                        <span className="font-semibold text-indigo-300">Recommended Setup:</span> Flat ₹90 Off on orders above ₹499 to lift AOV while keeping discount ≤18%.
+                        <span className="font-semibold text-indigo-700">Recommended Setup:</span> Flat ₹90 Off on orders above ₹499 to lift AOV while keeping discount ≤18%.
                       </div>
                     </div>
                     <Button
@@ -450,7 +450,7 @@ function PromotionsPage() {
                   </div>
                   <Link
                     to="/menu"
-                    className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline"
+                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 underline"
                   >
                     Open Dish Studio (/menu)
                   </Link>
@@ -464,7 +464,7 @@ function PromotionsPage() {
                         <Camera className="size-3.5 text-emerald-400" />
                         4:3 Studio Dish Photos
                       </span>
-                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-emerald-400 tabular">
+                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-emerald-700 tabular">
                         {itemsWithPhotoCount}/{totalMenuCount} dishes
                       </span>
                     </div>
@@ -484,12 +484,12 @@ function PromotionsPage() {
                         <Layers className="size-3.5 text-orange-400" />
                         Clear Portion Sizing
                       </span>
-                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-orange-300 tabular">
+                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-orange-700 tabular">
                         {itemsWithPortionCount}/{totalMenuCount} dishes
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      Specify gram/ml weight or serving count (e.g. &ldquo;Serves 1 · 250g&rdquo; or &ldquo;Family Pack · Serves 4&rdquo;) to eliminate ordering hesitation and portion complaints.
+                      Specify gram/ml weight or serving count (&ldquo;Serves 1 · 250g&rdquo; or &ldquo;Family Pack · Serves 4&rdquo;) to prevent portion disputes.
                     </p>
                   </div>
 
@@ -500,7 +500,7 @@ function PromotionsPage() {
                         <TrendingUp className="size-3.5 text-indigo-400" />
                         Beverage &amp; Dessert Add-ons
                       </span>
-                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-indigo-300 tabular">
+                      <span className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[11px] font-mono text-indigo-700 tabular">
                         {itemsWithAddonsCount}/{totalMenuCount} paired ({activeAddonsCount} add-ons)
                       </span>
                     </div>
@@ -558,7 +558,7 @@ function PromotionsPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 <div
                   className={`rounded-xl border p-3.5 space-y-1.5 ${kind === "percent"
-                      ? "border-emerald-500/40 bg-emerald-950/15"
+                      ? "border-emerald-300 bg-emerald-50/70"
                       : "border-gray-200 bg-gray-50"
                     }`}
                 >
@@ -589,7 +589,7 @@ function PromotionsPage() {
 
                 <div
                   className={`rounded-xl border p-3.5 space-y-1.5 ${kind === "fixed"
-                      ? "border-emerald-500/40 bg-emerald-950/15"
+                      ? "border-emerald-300 bg-emerald-50/70"
                       : "border-gray-200 bg-gray-50"
                     }`}
                 >
@@ -658,12 +658,12 @@ function PromotionsPage() {
                   <div className="text-[10px] text-gray-400 mt-0.5">Credited to your PAN Form 16A</div>
                 </div>
 
-                <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-3">
-                  <div className="text-[10px] font-mono text-emerald-400">NET MERCHANT TAKE-HOME</div>
-                  <div className="text-base font-bold text-emerald-400 mt-1 tabular">
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+                  <div className="text-[10px] font-mono text-emerald-700">NET MERCHANT TAKE-HOME</div>
+                  <div className="text-base font-bold text-emerald-700 mt-1 tabular">
                     {formatINR(simSettlement.restaurantPayablePaise)}
                   </div>
-                  <div className="text-[10px] text-emerald-300/80 mt-0.5">Settled to your bank</div>
+                  <div className="text-[10px] text-emerald-700 mt-0.5">Settled to your bank</div>
                 </div>
               </div>
             </Card>

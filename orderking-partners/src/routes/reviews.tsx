@@ -15,6 +15,7 @@ import {
   type CustomerComplaintRecord,
 } from "@/lib/server/api-more";
 import { formatINR } from "@/lib/money";
+import { toast } from "sonner";
 import {
   AlertTriangle,
   Bike,
@@ -160,7 +161,7 @@ function ReviewsPage() {
       setDisputeNotes("");
       await qc.invalidateQueries({ queryKey: ["complaints"] });
     } catch (err) {
-      alert(`Error submitting dispute: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Error submitting dispute: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setDisputing(false);
     }
@@ -600,7 +601,7 @@ function ReviewCard({
       setTimeout(() => setSavedSuccess(false), 3000);
       onSaved();
     } catch (err) {
-      alert(`Failed to save reply: ${err instanceof Error ? err.message : "Unknown error"}`);
+      toast.error(`Failed to save reply: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setSaving(false);
     }

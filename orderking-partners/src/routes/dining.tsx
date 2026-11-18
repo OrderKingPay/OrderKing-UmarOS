@@ -121,10 +121,10 @@ function DiningPage() {
                 <div>
                   <h1 className="font-display text-xl sm:text-2xl font-bold text-gray-900 flex flex-wrap items-center gap-2">
                     Order King Dining &amp; Table Reservations
-                    <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300">
+                    <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
                       {dineInCommissionDisplay} MERCHANT COMMISSION
                     </span>
-                    <span className="rounded-full bg-orange-500/20 border border-orange-500/40 px-2.5 py-0.5 text-[10px] font-bold text-orange-300">
+                    <span className="rounded-full bg-orange-50 border border-orange-200 px-2.5 py-0.5 text-[10px] font-bold text-orange-800">
                       5% GUEST CONVENIENCE FEE
                     </span>
                   </h1>
@@ -144,7 +144,7 @@ function DiningPage() {
                 className={cn(
                   "flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition border",
                   autoAcceptBookings
-                    ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/70"
+                    ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
                     : "bg-gray-100/80 border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                 )}
                 title="Toggle Auto-Accept Bookings"
@@ -155,7 +155,7 @@ function DiningPage() {
                   <ToggleLeft className="size-4 text-gray-500" />
                 )}
                 <span>Auto-Accept Bookings:</span>
-                <span className={autoAcceptBookings ? "text-emerald-400 font-extrabold" : "text-gray-500"}>
+                <span className={autoAcceptBookings ? "text-emerald-700 font-extrabold" : "text-gray-500"}>
                   {autoAcceptBookings ? "ON" : "MANUAL"}
                 </span>
               </button>
@@ -205,54 +205,54 @@ function DiningPage() {
             </div>
 
             {/* 2. Total Pre-Booking Cover Charges Collected */}
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-3.5 space-y-1">
-              <div className="flex items-center justify-between text-emerald-400 text-xs font-semibold">
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-emerald-800 text-xs font-semibold">
                 <span>Cover Charges Collected</span>
                 <DollarSign className="size-4 text-emerald-400" />
               </div>
               <div className="font-display text-2xl font-black text-gray-900">
                 ₹{totalDeposits.toLocaleString("en-IN")}
               </div>
-              <div className="text-[11px] text-emerald-300/80">
+              <div className="text-[11px] text-emerald-700">
                 Advance deposits held for guest arrival
               </div>
             </div>
 
             {/* 3. Live Platform Revenue Ledger (5% Platform Fee) */}
-            <div className="rounded-2xl border border-orange-500/30 bg-orange-950/20 p-3.5 space-y-1">
-              <div className="flex items-center justify-between text-orange-400 text-xs font-semibold">
+            <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-orange-800 text-xs font-semibold">
                 <span>5% Guest Platform Fee</span>
                 <Sparkles className="size-4 text-orange-400" />
               </div>
-              <div className="font-display text-2xl font-black text-orange-400">
+              <div className="font-display text-2xl font-black text-orange-700">
                 ₹{totalPlatformFee.toLocaleString("en-IN")}
               </div>
-              <div className="text-[11px] text-orange-300/80">
+              <div className="text-[11px] text-orange-700">
                 Guest booking concierge (0% restaurant fee)
               </div>
             </div>
 
             {/* 4. Net Restaurant Settlement Payable */}
-            <div className="rounded-2xl border border-indigo-500/30 bg-indigo-950/20 p-3.5 space-y-1">
-              <div className="flex items-center justify-between text-indigo-400 text-xs font-semibold">
+            <div className="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-3.5 space-y-1">
+              <div className="flex items-center justify-between text-indigo-800 text-xs font-semibold">
                 <span>Net Restaurant Credit</span>
                 <Receipt className="size-4 text-indigo-400" />
               </div>
-              <div className="font-display text-2xl font-black text-indigo-300">
+              <div className="font-display text-2xl font-black text-indigo-700">
                 ₹{totalNetPayable.toLocaleString("en-IN")}
               </div>
-              <div className="text-[11px] text-indigo-300/80">
+              <div className="text-[11px] text-indigo-700">
                 100% credited against dine-in table bills
               </div>
             </div>
           </div>
 
           {/* ORDER KING RESTAURATEUR COMMITMENT STRIP */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-950/30 px-4 py-3 text-xs text-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-gray-800">
             <div className="flex items-center gap-2.5">
               <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
               <span>
-                <strong className="text-emerald-300">Table Reservations:</strong> {dineInCommissionDisplay} commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
+                <strong className="text-emerald-800">Table Reservations:</strong> {dineInCommissionDisplay} commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
               </span>
             </div>
             <div className="flex items-center gap-3 text-[11px] font-medium text-gray-500 shrink-0">
@@ -460,8 +460,8 @@ function DiningPage() {
                   />
                 </div>
 
-                <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-3.5 text-[11px] text-orange-300 space-y-1.5">
-                  <div className="font-bold flex items-center gap-1.5 text-orange-200">
+                <div className="rounded-xl border border-orange-200 bg-orange-50 p-3.5 text-[11px] text-orange-800 space-y-1.5">
+                  <div className="font-bold flex items-center gap-1.5 text-orange-900">
                     <ShieldCheck className="size-3.5 text-orange-400" /> Order King Table Reservation Management
                   </div>
                   <p className="text-gray-700 leading-relaxed">

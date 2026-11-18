@@ -228,7 +228,7 @@ export const PARTNER_ACADEMY_MODULES: SopModule[] = [
   {
     id: "sop-dispute-arbitration",
     category: "DISPUTES",
-    title: "Customer Dispute Arbitration Playbook",
+    title: "Customer Dispute Arbitration Protocol",
     subtitle: "Spill liability allocation, missing item deductions & taste complaint defense",
     badge: "100% Payout Protection",
     summary:

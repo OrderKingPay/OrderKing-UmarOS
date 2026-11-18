@@ -79,10 +79,8 @@ function Login() {
     return "";
   });
   const [otpCode, setOtpCode] = useState("");
-  const [, setWhatsAppUrl] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const [, setProviderNotice] = useState<string | null>(null);
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -184,8 +182,6 @@ function Login() {
       if (!res?.success && res?.success !== undefined) {
         throw new Error("SMS was not delivered.");
       }
-      if (res.providerNotice) setProviderNotice(res.providerNotice);
-
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
@@ -539,6 +535,17 @@ function Login() {
                   <div className="pt-2 flex flex-col gap-2 border-t border-gray-100">
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <span>Didn&apos;t receive the SMS code?</span>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          disabled={working}
+                          onClick={() => void handleSendOtp("whatsapp")}
+                          className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline disabled:opacity-50"
+                        >
+                          <MessageCircle className="size-3.5" />
+                          <span>WhatsApp OTP</span>
+                        </button>
+                      </div>
                       {canResend ? (
                         <button
                           type="button"

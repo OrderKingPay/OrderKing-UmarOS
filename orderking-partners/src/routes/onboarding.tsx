@@ -629,13 +629,13 @@ function OnboardingPage() {
                     <Input
                       value={form.lat}
                       onChange={(e) => updateField("lat", e.target.value)}
-                      placeholder="Latitude (e.g. 26.1445)"
+                      placeholder="Outlet latitude"
                       className="bg-white border-gray-300 text-gray-900 text-xs font-mono h-11"
                     />
                     <Input
                       value={form.lng}
                       onChange={(e) => updateField("lng", e.target.value)}
-                      placeholder="Longitude (e.g. 91.7362)"
+                      placeholder="Outlet longitude"
                       className="bg-white border-gray-300 text-gray-900 text-xs font-mono h-11"
                     />
                   </div>

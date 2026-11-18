@@ -1354,7 +1354,7 @@ function MenuPage() {
               type="text"
               value={searchFilter}
               onChange={(e) => setSearchFilter(e.target.value)}
-              placeholder="Search dishes by name, description, or portion tag (e.g. Butter Naan, Paneer, Biryani)..."
+              placeholder="Search dishes by name, description, or portion tag..."
               className="w-full pl-9 pr-8 py-2 bg-background border border-border rounded-lg text-xs sm:text-sm placeholder:text-muted focus:outline-none focus:border-emerald-500 font-sans"
             />
             {searchFilter && (
@@ -2331,7 +2331,7 @@ function MenuPage() {
                   <div>
                     <Label>Serving Size &amp; Portion</Label>
                     <Input
-                      placeholder="e.g. Serves 1-2 (350g)"
+                      placeholder="Portion size or serving weight"
                       value={editor.servingSize}
                       onChange={(e) => setEditor({ ...editor, servingSize: e.target.value })}
                     />
@@ -2739,10 +2739,10 @@ function MenuPage() {
                 {/* Pre-Attested or Manual Authenticity Attestation */}
                 {editor.imageUrl ? (
                   editor.aiGenerated ? (
-                    <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-3 flex items-start gap-2.5">
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 flex items-start gap-2.5">
                       <CheckCircle2 className="size-4 text-emerald-700 shrink-0 mt-0.5" />
                       <div className="space-y-0.5 text-xs">
-                        <span className="font-bold text-emerald-300 block">
+                        <span className="font-bold text-emerald-800 block">
                           Dish Photo Presentation
                         </span>
                         <span className="text-gray-700 block leading-relaxed">
@@ -2751,7 +2751,7 @@ function MenuPage() {
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-xl border border-orange-500/40 bg-orange-950/25 p-3">
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-3">
                       <label className="flex items-start gap-2.5 cursor-pointer">
                         <input
                           type="checkbox"
@@ -2762,7 +2762,7 @@ function MenuPage() {
                           }
                         />
                         <div className="space-y-1">
-                          <span className="block text-xs font-bold text-orange-300">
+                          <span className="block text-xs font-bold text-orange-800">
                             Menu Presentation Confirmation
                           </span>
                           <span className="block text-xs text-gray-800 leading-relaxed">
@@ -2900,7 +2900,7 @@ function MenuPage() {
                   {editor.variants.map((v, i) => (
                     <div key={i} className="grid grid-cols-[1fr_140px_auto] items-center gap-2">
                       <Input
-                        placeholder="Variant name (e.g. Regular, Half, Full)"
+                        placeholder="Variant name"
                         value={v.name}
                         onChange={(e) => {
                           const variants = [...editor.variants];
@@ -3128,7 +3128,7 @@ function MenuPage() {
                                 updated[grpIdx] = { ...group, title: e.target.value };
                                 setEditor({ ...editor, modifierGroups: updated });
                               }}
-                              placeholder="Group Title (e.g. Choose Crust, Toppings)"
+                              placeholder="Modifier group title"
                               className="h-8 text-xs font-semibold bg-white border-gray-300 text-gray-900"
                             />
                           </div>
@@ -3246,7 +3246,7 @@ function MenuPage() {
                                     updated[grpIdx].options[optIdx] = { ...opt, name: e.target.value };
                                     setEditor({ ...editor, modifierGroups: updated });
                                   }}
-                                  placeholder="Option Name (e.g. Extra Cheese)"
+                                  placeholder="Option name"
                                   className="h-7 text-xs bg-white border-gray-200 text-gray-800 flex-1"
                                 />
                                 <div className="flex items-center gap-1 text-xs">

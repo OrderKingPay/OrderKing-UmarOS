@@ -161,7 +161,7 @@ function AnalyticsPage() {
             <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">DELIVERED</span>
-                <span className="font-bold text-emerald-400 text-sm tabular">{completedOrders}</span>
+                <span className="font-bold text-emerald-700 text-sm tabular">{completedOrders}</span>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">CANCELLED</span>
@@ -193,11 +193,11 @@ function AnalyticsPage() {
                   {q.data ? formatINR(q.data.promotions.restaurantFundedPaise) : "—"}
                 </span>
               </div>
-              <div className="rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5">
-                <span className="text-[10px] font-mono text-emerald-400 block">
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-2.5">
+                <span className="text-[10px] font-mono text-emerald-700 block">
                   {t("promotions.platformFunded")} (Reimbursed)
                 </span>
-                <span className="font-bold text-emerald-400 text-sm tabular">
+                <span className="font-bold text-emerald-700 text-sm tabular">
                   {q.data ? formatINR(q.data.promotions.platformFundedPaise) : "—"}
                 </span>
               </div>

@@ -49,7 +49,7 @@ export function InStoreMarketingKit({
   return (
     <div className="space-y-5">
       {/* Top Value Banner */}
-      <Card className="border border-emerald-500/30 bg-emerald-950/20 p-5 space-y-3">
+      <Card className="border border-emerald-200 bg-emerald-50/70 p-5 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -57,15 +57,15 @@ export function InStoreMarketingKit({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-display font-bold text-base text-white">
-                  In-Store Viral Customer Acquisition &amp; Table QR Kit
+                <h3 className="font-display font-bold text-base text-gray-900">
+                  Physical Table QR Ordering &amp; Print Kit
                 </h3>
-                <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-300">
+                <span className="rounded bg-emerald-100 border border-emerald-200 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-800">
                   {dineInCommissionDisplay} COMMISSION DINE-IN
                 </span>
               </div>
               <p className="text-xs text-gray-700 mt-0.5">
-                Turn your dine-in guests into high-frequency repeat customers. Print branded Table Tent QR cards and counter standees encouraging diners to order and earn instant cashbacks on Order King.
+                Generate printable Table QR cards and counter standees linked directly to your live outlet menu and KDS.
               </p>
             </div>
           </div>
@@ -84,7 +84,7 @@ export function InStoreMarketingKit({
               onClick={handlePrint}
               className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold"
             >
-              <Printer className="mr-1.5 size-3.5" /> Print Marketing Kit
+              <Printer className="mr-1.5 size-3.5" /> Print Table QR Kit
             </Button>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function InStoreMarketingKit({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <Card className="border-gray-200 bg-white p-5 space-y-4">
           <div>
-            <h4 className="font-semibold text-sm text-white">1. Select Marketing Format</h4>
+            <h4 className="font-semibold text-sm text-gray-900">1. Select Print Format</h4>
             <p className="text-xs text-gray-500 mt-0.5">Choose the print material format for your outlet:</p>
           </div>
 
@@ -129,7 +129,7 @@ export function InStoreMarketingKit({
                 onClick={() => setSelectedFormat(fmt.id as any)}
                 className={`w-full rounded-xl border p-3 text-left transition ${
                   selectedFormat === fmt.id
-                    ? "border-emerald-500 bg-emerald-950/30 text-white"
+                    ? "border-emerald-600 bg-emerald-50 text-emerald-950"
                     : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-300"
                 }`}
               >

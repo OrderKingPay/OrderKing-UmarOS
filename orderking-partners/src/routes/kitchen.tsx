@@ -342,7 +342,7 @@ export function KitchenPage({
             type="button"
             onClick={() => handleSetThrottle(0)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 0 && !kitchenPaused
-                ? "bg-[#E23744] text-gray-900 shadow-xs"
+                ? "bg-[#E23744] text-white shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
               }`}
           >
@@ -352,7 +352,7 @@ export function KitchenPage({
             type="button"
             onClick={() => handleSetThrottle(10)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 10 && !kitchenPaused
-                ? "bg-orange-600 text-gray-900 shadow-xs"
+                ? "bg-orange-600 text-white shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
               }`}
           >
@@ -362,7 +362,7 @@ export function KitchenPage({
             type="button"
             onClick={() => handleSetThrottle(15)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 15 && !kitchenPaused
-                ? "bg-orange-600 text-gray-900 shadow-xs"
+                ? "bg-orange-600 text-white shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
               }`}
           >
@@ -372,7 +372,7 @@ export function KitchenPage({
             type="button"
             onClick={() => handleSetThrottle(30)}
             className={`rounded-lg px-2 py-1 text-xs font-bold transition ${throttleBuffer === 30 && !kitchenPaused
-                ? "bg-rose-600 text-gray-900 shadow-xs"
+                ? "bg-rose-600 text-white shadow-xs"
                 : "bg-surface border border-line text-muted hover:text-foreground"
               }`}
           >

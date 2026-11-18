@@ -772,7 +772,7 @@ function SupportPage() {
                   <Input
                     value={newOrderId}
                     onChange={(e) => setNewOrderId(e.target.value)}
-                    placeholder="e.g. ord_live_101"
+                    placeholder="Enter Order ID (optional)"
                     className="text-xs rounded-xl border-gray-300"
                   />
                 </div>
@@ -783,7 +783,7 @@ function SupportPage() {
                 <Input
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  placeholder="Summary of the issue (e.g. Transit spillage on order #1042)"
+                  placeholder="Enter concise issue summary"
                   required
                   className="text-xs rounded-xl border-gray-300"
                 />

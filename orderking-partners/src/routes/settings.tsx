@@ -507,7 +507,7 @@ function SettingsPage() {
                         <Button
                           size="sm"
                           onClick={() => handleSwitchOutlet(m.restaurantId, m.restaurantName)}
-                          className="w-full h-8 text-xs bg-gray-100 hover:bg-[#E23744] hover:text-gray-900 text-gray-800 transition"
+                          className="w-full h-8 text-xs bg-gray-100 hover:bg-[#E23744] hover:text-white text-gray-800 transition"
                         >
                           <ArrowRightLeft className="mr-1.5 size-3.5" />
                           Switch to This Location
@@ -541,7 +541,7 @@ function SettingsPage() {
                   <Button
                     size="sm"
                     onClick={() => void handleSelfHealOutlet()}
-                    className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs shrink-0"
+                    className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs shrink-0"
                   >
                     <Wrench className="mr-1.5 size-3.5" />
                     Restore Online &amp; Reset Prep Time
@@ -982,7 +982,7 @@ function SettingsPage() {
                       variant="secondary"
                       disabled={testingChannel === "sms"}
                       onClick={() => void handleTestNotification("sms")}
-                      className="w-full text-xs border-gray-300 hover:border-orange-500/50 hover:bg-orange-950/40"
+                      className="w-full text-xs border-gray-300 hover:border-orange-400 hover:bg-orange-50"
                     >
                       <Send className="mr-1.5 size-3.5 text-orange-700" />
                       {testingChannel === "sms" ? "Dispatching SMS..." : "Send Test SMS Alert"}
@@ -1060,7 +1060,7 @@ function SettingsPage() {
                     size="sm"
                     disabled={notifSaving}
                     onClick={() => void handleSaveKingAiNotifications()}
-                    className="bg-[#E23744] hover:bg-[#d32f2f] text-gray-900 text-xs font-semibold px-4"
+                    className="bg-[#E23744] hover:bg-[#d32f2f] text-white text-xs font-semibold px-4"
                   >
                     {notifSaving ? "Saving Notification Preferences..." : "Save Notification Preferences"}
                   </Button>

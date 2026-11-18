@@ -378,7 +378,7 @@ function OrdersPage() {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by Order # (e.g. 1042), Customer Locality, or Dish Name..."
+              placeholder="Search by order number, locality, or dish name..."
               className="pl-9 h-10 text-xs bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] rounded-xl"
             />
           </div>
