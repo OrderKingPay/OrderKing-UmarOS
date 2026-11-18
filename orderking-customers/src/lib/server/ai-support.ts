@@ -23,92 +23,94 @@ export type ResolutionResult = {
   ticketId?: string;
 };
 
-export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((d: { orderId: string; issueType: SupportIssueType; details?: string }) => d)
-  .handler(async ({ context, data }: any): Promise<ResolutionResult> => {
-    if (!context?.userId) throw new Error("Please sign in to report an order issue.");
-    const allowed = ["where_order", "cancel_order", "missing_item", "food_spilled", "food_cold", "payment_issue", "general_inquiry"];
-    if (!allowed.includes(data?.issueType)) throw new Error("Invalid support issue type.");
-    if (typeof data.orderId !== "string" || !data.orderId.trim()) throw new Error("An order is required.");
-    if (data.details != null && (typeof data.details !== "string" || data.details.length > 2000)) {
-      throw new Error("Keep support details within 2,000 characters.");
-    }
-    const sql = await getSql();
-    const rows = await sql<{ id: string; public_id: string; status: string }>`
-      select id, public_id, status from orders where id = ${data.orderId} and user_id = ${context.userId}
-    `;
-    const order = rows[0];
-    if (!order) throw new Error("Order not found or access denied.");
+export async function diagnoseAndResolveOrderHandler({ context, data }: any): Promise<ResolutionResult> {
+  if (!context?.userId) throw new Error("Please sign in to report an order issue.");
+  const allowed = ["where_order", "cancel_order", "missing_item", "food_spilled", "food_cold", "payment_issue", "general_inquiry"];
+  if (!allowed.includes(data?.issueType)) throw new Error("Invalid support issue type.");
+  if (typeof data.orderId !== "string" || !data.orderId.trim()) throw new Error("An order is required.");
+  if (data.details != null && (typeof data.details !== "string" || data.details.length > 2000)) {
+    throw new Error("Keep support details within 2,000 characters.");
+  }
+  const sql = await getSql();
+  const rows = await sql<{ id: string; public_id: string; status: string }>`
+    select id, public_id, status from orders where id = ${data.orderId} and user_id = ${context.userId}
+  `;
+  const order = rows[0];
+  if (!order) throw new Error("Order not found or access denied.");
 
-    if (data.issueType === "where_order") {
-      const statusText =
-        order.status === "placed"
-          ? "placed and awaiting restaurant confirmation"
-          : order.status === "confirmed"
-            ? "confirmed and currently being prepared by the kitchen"
-            : order.status === "cooking"
-              ? "in the kitchen being freshly cooked"
-              : order.status === "ready"
-                ? "packed and ready for delivery partner pickup"
-                : order.status === "dispatched"
-                  ? "out for delivery with our delivery partner"
-                  : order.status === "delivered"
-                    ? "successfully delivered"
-                    : order.status;
-
-      return {
-        ok: true,
-        orderId: order.id,
-        issueType: data.issueType,
-        actionTaken: "STATUS_REPORT",
-        title: "Order Status",
-        explanation: `Order #${order.public_id} is ${statusText}. Track live updates on the order page.`,
-      };
-    }
-
-    const ticketId = newId("tkt");
-    const detailMsg = data.details?.trim() || "Order support request";
-    await sql`
-      insert into support_tickets (id, user_id, order_id, topic, message, status)
-      values (${ticketId}, ${context.userId}, ${order.id}, ${data.issueType}, ${detailMsg}, 'open')
-    `;
-
-    try {
-      await sql`
-        insert into tickets (
-          id, org_id, queue, category, status, priority, subject,
-          customer_id, order_id, sla_minutes, opened_at, data_mode
-        ) values (
-          ${ticketId}, 'org_orderking', 'customer', ${data.issueType},
-          'OPEN', ${data.issueType === 'cancel_order' || data.issueType === 'food_spilled' || data.issueType === 'missing_item' ? 'HIGH' : 'NORMAL'},
-          ${`Customer report: ${data.issueType} on order #${order.public_id}`},
-          ${context.userId}, ${order.id}, 30, now(), 'ACTUAL'
-        )
-        on conflict (id) do nothing
-      `;
-      await sql`
-        insert into ticket_messages (
-          id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at
-        ) values (
-          ${newId("tm")}, ${ticketId}, 'org_orderking', 'public', 'customer', null, ${detailMsg}, now()
-        )
-        on conflict (id) do nothing
-      `;
-    } catch (syncErr) {
-      console.warn("[customer ticket central sync warning]:", syncErr);
-    }
+  if (data.issueType === "where_order") {
+    const statusText =
+      order.status === "placed"
+        ? "placed and awaiting restaurant confirmation"
+        : order.status === "confirmed"
+          ? "confirmed and currently being prepared by the kitchen"
+          : order.status === "cooking"
+            ? "in the kitchen being freshly cooked"
+            : order.status === "ready"
+              ? "packed and ready for delivery partner pickup"
+              : order.status === "dispatched"
+                ? "out for delivery with our delivery partner"
+                : order.status === "delivered"
+                  ? "successfully delivered"
+                  : order.status;
 
     return {
       ok: true,
       orderId: order.id,
       issueType: data.issueType,
-      actionTaken: "REQUEST_RECORDED",
-      title: data.issueType === "cancel_order" ? "Cancellation Request Received" : "Support Ticket Created",
-      explanation: `Ticket #${ticketId} has been created for order #${order.public_id}. Our team is reviewing it and will notify you shortly.`,
-      ticketId,
+      actionTaken: "STATUS_REPORT",
+      title: "Order Status",
+      explanation: `Order #${order.public_id} is ${statusText}. Track live updates on the order page.`,
     };
-  });
+  }
+
+  const ticketId = newId("tkt");
+  const detailMsg = data.details?.trim() || "Order support request";
+  await sql`
+    insert into support_tickets (id, user_id, order_id, topic, message, status)
+    values (${ticketId}, ${context.userId}, ${order.id}, ${data.issueType}, ${detailMsg}, 'open')
+  `;
+
+  try {
+    await sql`
+      insert into tickets (
+        id, org_id, queue, category, status, priority, subject,
+        customer_id, order_id, sla_minutes, opened_at, data_mode
+      ) values (
+        ${ticketId}, 'org_orderking', 'customer', ${data.issueType},
+        'OPEN', ${data.issueType === 'cancel_order' || data.issueType === 'food_spilled' || data.issueType === 'missing_item' ? 'HIGH' : 'NORMAL'},
+        ${`Customer report: ${data.issueType} on order #${order.public_id}`},
+        ${context.userId}, ${order.id}, 30, now(), 'ACTUAL'
+      )
+      on conflict (id) do nothing
+    `;
+    await sql`
+      insert into ticket_messages (
+        id, ticket_id, org_id, visibility, author_type, author_employee_id, body, created_at
+      ) values (
+        ${newId("tm")}, ${ticketId}, 'org_orderking', 'public', 'customer', null, ${detailMsg}, now()
+      )
+      on conflict (id) do nothing
+    `;
+  } catch (syncErr) {
+    console.warn("[customer ticket central sync warning]:", syncErr);
+  }
+
+  return {
+    ok: true,
+    orderId: order.id,
+    issueType: data.issueType,
+    actionTaken: "REQUEST_RECORDED",
+    title: data.issueType === "cancel_order" ? "Cancellation Request Received" : "Support Ticket Created",
+    explanation: `Ticket #${ticketId} has been created for order #${order.public_id}. Our team is reviewing it and will notify you shortly.`,
+    ticketId,
+  };
+}
+
+export const diagnoseAndResolveOrder = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { orderId: string; issueType: SupportIssueType; details?: string }) => d)
+  .handler(diagnoseAndResolveOrderHandler);
 
 export type TicketMessageView = {
   id: string;
@@ -209,10 +211,7 @@ export type AiChatMessage = {
   actionChip?: { label: string; issueType: SupportIssueType };
 };
 
-export const askAiSupportAssistant = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .validator((d: { query: string; orderId?: string }) => d)
-  .handler(async ({ context, data }: any): Promise<{ reply: string; links?: { title: string; url: string; phone?: string; badge?: string }[]; actionChip?: { label: string; issueType: SupportIssueType } }> => {
+export async function askAiSupportAssistantHandler({ context, data }: any): Promise<{ reply: string; links?: { title: string; url: string; phone?: string; badge?: string }[]; actionChip?: { label: string; issueType: SupportIssueType } }> {
     if (!context?.userId) throw new Error("Please sign in to ask about your account.");
     if (typeof data?.query !== "string" || !data.query.trim() || data.query.length > 1200) {
       throw new Error("Enter a question within 1,200 characters.");
@@ -309,4 +308,9 @@ Instruction:
         { title: "WhatsApp Support", url: "https://wa.me/919395065587?text=Hi%20OrderKing%20Support" },
       ],
     };
-  });
+}
+
+export const askAiSupportAssistant = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: { query: string; orderId?: string }) => d)
+  .handler(askAiSupportAssistantHandler);

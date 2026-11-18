@@ -1,7 +1,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Tag, Utensils } from "lucide-react";
+import { Tag, Utensils } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useT } from "@/components/providers";
 import { listPromos } from "@/lib/server/account";
@@ -51,7 +51,7 @@ function OffersPage() {
           <div className="mt-8 space-y-3.5">
             <div className="flex items-center gap-2">
               <Utensils className="size-4 text-orange-600" />
-              <h2 className="font-display text-lg font-black text-stone-900">Partner Kitchen Deals</h2>
+              <h2 className="font-display text-lg font-black text-stone-900">Restaurant Deals</h2>
             </div>
             <ul className="space-y-3">
               {serverPromos.map((p) => (

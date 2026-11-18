@@ -370,7 +370,7 @@ export function CategoryGridSection({ section }: { section: LayoutSection }) {
             {section.title || "Inspiration for your order"}
           </h2>
           <p className="text-xs text-gray-500 font-medium">
-            Explore curated dishes &amp; authentic kitchens
+            Dishes and restaurants
           </p>
         </div>
         <Link

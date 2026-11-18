@@ -63,10 +63,10 @@ export function ResilientModalFallback({
 
         <div className="space-y-1">
           <h3 id="degraded-network-title" className="text-base font-black text-stone-900 tracking-tight">
-            Seamless Recovery
+            Module Reload Required
           </h3>
           <p className="text-xs text-stone-600 leading-relaxed max-w-xs mx-auto">
-            {componentName} could not be loaded due to a bundle update or network hiccup. Your active order and cart remain 100% secure.
+            {componentName} could not be loaded due to an app update or network interruption. Your active order and cart data remain saved.
           </p>
         </div>
 

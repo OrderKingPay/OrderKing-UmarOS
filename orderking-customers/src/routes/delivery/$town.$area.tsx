@@ -230,7 +230,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
           .map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
           .join(" ");
 
-    const canonicalUrl = `https://orderking.in/delivery/${data.town.toLowerCase()}/${data.area.toLowerCase()}`;
+    const canonicalUrl = `https://orderkingpay.com/delivery/${data.town.toLowerCase()}/${data.area.toLowerCase()}`;
     const topCuisines = Array.from(cuisineSet).slice(0, 4).join(", ") || "Biryani, Indian";
     const totalOutlets = cards.length;
 
@@ -256,10 +256,10 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
             position: idx + 1,
             item: {
               "@type": ["Restaurant", "FoodEstablishment"],
-              "@id": `https://orderking.in/r/${card.slug}#restaurant`,
+              "@id": `https://orderkingpay.com/r/${card.slug}#restaurant`,
               name: card.name,
-              url: `https://orderking.in/r/${card.slug}`,
-              image: card.coverImage || "https://orderking.in/icon-512.png",
+              url: `https://orderkingpay.com/r/${card.slug}`,
+              image: card.coverImage || "https://orderkingpay.com/icon-512.png",
               servesCuisine: (card.cuisineSummary || "").split(",").map((s) => s.trim()),
               priceRange: "₹100 - ₹500",
               ...(card.ratingAvg != null && (card.ratingCount ?? 0) > 0
@@ -316,13 +316,13 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
           "@type": "BreadcrumbList",
           "@id": `${canonicalUrl}#breadcrumb`,
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://orderking.in" },
-            { "@type": "ListItem", position: 2, name: "Delivery", item: "https://orderking.in/search" },
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://orderkingpay.com" },
+            { "@type": "ListItem", position: 2, name: "Delivery", item: "https://orderkingpay.com/search" },
             {
               "@type": "ListItem",
               position: 3,
               name: city.name,
-              item: `https://orderking.in/delivery/${data.town.toLowerCase()}/all`,
+              item: `https://orderkingpay.com/delivery/${data.town.toLowerCase()}/all`,
             },
             { "@type": "ListItem", position: 4, name: areaDisplayName, item: canonicalUrl },
           ],
@@ -351,7 +351,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
         description,
         keywords,
         canonicalUrl,
-        ogImage: "https://orderking.in/og.jpg",
+        ogImage: "https://orderkingpay.com/og.jpg",
       },
       jsonLd: JSON.stringify(jsonLd),
     };
@@ -466,16 +466,13 @@ function DeliveryTownAreaPage() {
               <span className="inline-flex items-center gap-1 rounded-full bg-[#E23744]/10 px-3 py-1 text-xs font-bold text-[#E23744]">
                 <MapPin className="size-3.5" /> {area.name}, {town.name}
               </span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-700">
-                <ShieldCheck className="size-3.5" /> 0% Menu Markup
-              </span>
             </div>
 
             <h1 className="text-2xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
               Food Delivery in {area.name}, {town.name}
             </h1>
             <p className="mt-2 text-sm sm:text-base text-gray-600 leading-relaxed">
-              Order meals online with hyperlocal delivery, live GPS tracking, and direct restaurant menu prices.
+              Order meals online with hyperlocal delivery, live GPS tracking, and itemized billing.
             </p>
 
             {area.isTownLevelFallback && (
@@ -583,10 +580,10 @@ function DeliveryTownAreaPage() {
             About Online Food Delivery in {area.name}, {town.name}
           </h3>
           <p>
-            Order food in {area.name}, {town.name} directly from verified local restaurants and cloud kitchens across {town.name} with live order tracking and direct dine-in menu pricing.
+            Order food in {area.name}, {town.name} from local restaurants and kitchens across {town.name} with live order tracking and itemized billing.
           </p>
           <p>
-            Payment options in {area.name} include Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and King Pay with instant rewards on qualifying orders.
+            Payment options in {area.name} include Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and King Pay.
           </p>
         </article>
       </main>

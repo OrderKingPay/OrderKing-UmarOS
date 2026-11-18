@@ -289,7 +289,7 @@ function SettingsPage() {
     surfaceColor: "#071712",
     fontFamily: "Inter / Plus Jakarta Sans",
     logoText: "OrderKing",
-    tagline: "Order like a King.",
+    tagline: "",
     compactMode: false,
     radiusPx: 16,
     themeMode: "light" as "light" | "dark",
@@ -367,7 +367,7 @@ function SettingsPage() {
         surfaceColor: data.brand.surfaceColor || "#071712",
         fontFamily: data.brand.fontFamily || "Inter / Plus Jakarta Sans",
         logoText: data.brand.logoText || "OrderKing",
-        tagline: data.brand.tagline || "Order like a King.",
+        tagline: data.brand.tagline ?? "",
         compactMode: Boolean(data.brand.compactMode ?? false),
         radiusPx: data.brand.radiusPx !== undefined ? Number(data.brand.radiusPx) : 16,
         themeMode: data.brand.themeMode === "dark" ? "dark" : "light",
@@ -1440,18 +1440,18 @@ function SettingsPage() {
                 </div>
               </div>
 
-              {/* Sub-Category 1B: Corner Radius, Compact Density, Typography & Tagline */}
+              {/* Sub-Category 1B: Corner Radius, Compact Density & Typography */}
               <div className="rounded-xl border border-slate-200 p-4 space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="text-sm font-bold text-slate-900">
-                    Sub-Category 1B · Corner Geometry, Compact Density, Font Family &amp; Brand Tagline
+                    Sub-Category 1B · Corner Geometry, Compact Density &amp; Font Family
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Control card border radius (`radiusPx`), UI density mode, typography pair, and public brand tagline.
+                    Control card border radius (`radiusPx`), UI density mode, typography pair, and brand logo text.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-mono uppercase tracking-wider text-slate-600">
                       Corner Radius ({brandState.radiusPx}px)
@@ -1468,7 +1468,7 @@ function SettingsPage() {
                     />
                     <div className="flex justify-between text-[10px] font-mono text-slate-400">
                       <span>0px Sharp</span>
-                      <span>16px Royal</span>
+                      <span>16px Standard</span>
                       <span>28px Pill</span>
                     </div>
                   </div>
@@ -1496,12 +1496,6 @@ function SettingsPage() {
                     title="Brand Logo Text"
                     value={brandState.logoText}
                     onChange={(v: string) => setBrandState((p) => ({ ...p, logoText: v }))}
-                  />
-
-                  <TextInputRow
-                    title="Brand Tagline"
-                    value={brandState.tagline}
-                    onChange={(v: string) => setBrandState((p) => ({ ...p, tagline: v }))}
                   />
                 </div>
 

@@ -882,7 +882,7 @@ export function TravelPage() {
                   </div>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-                  Direct Airline Portal Redirect · Zero Markup
+                  Direct Airline Portal Redirect
                 </span>
               </div>
 

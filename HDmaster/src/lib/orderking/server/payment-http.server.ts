@@ -3,7 +3,6 @@ import { getSql } from "@/lib/db";
 import { createRazorpayOrder, fetchRazorpayPayment, verifyCheckoutSignature, verifyWebhookSignature } from "@/lib/orderking/payments/razorpay.server";
 import { nid } from "./workspace.server";
 import { kingpayLedgerEngine } from "@/lib/orderking/finance/kingpay-ledger-engine";
-import Stripe from "stripe";
 import { z } from "zod";
 
 function json(body: unknown, status = 200) {
@@ -118,48 +117,11 @@ export async function handlePaymentHttp(request: Request, params: Record<string,
 
     if (method === "POST" && path === "webhook") {
       const raw = await request.text();
-      const stripeSignature = request.headers.get("stripe-signature");
       const razorpaySignature = request.headers.get("x-razorpay-signature");
 
       const sql = await getSql();
 
-      if (stripeSignature) {
-        const stripeSecret = process.env.STRIPE_WEBHOOK_SECRET;
-        if (!stripeSecret) return json({ error: "Stripe webhook secret missing" }, 500);
-        
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", { apiVersion: "2026-08-26.dahlia" });
-        let event;
-        try {
-          event = stripe.webhooks.constructEvent(raw, stripeSignature, stripeSecret);
-        } catch (err: any) {
-          return json({ error: `Webhook Error: ${err.message}` }, 400);
-        }
-
-        const inserted = await sql.query<{ id: string }>(
-          `insert into payment_webhook_events (id,gateway,gateway_event_id,event_type,payload_json,signature)
-           values ($1,'STRIPE',$2,$3,$4,$5)
-           on conflict (gateway,gateway_event_id) do nothing returning id`,
-          [nid("pwe"), event.id, event.type, raw, stripeSignature],
-        );
-        if (!inserted[0]) return json({ ok: true, duplicate: true });
-
-        try {
-          if (event.type === "payment_intent.succeeded") {
-            const pi = event.data.object as Stripe.PaymentIntent;
-            // Stripe stores amount in cents, which is compatible with paise conceptually,
-            // but we treat amount conceptually. Gateway order ID is pi.id for intents created by us.
-            await markPaymentCaptured(pi.id, pi.id, pi.amount, "card");
-          } else if (event.type === "payment_intent.payment_failed") {
-            const pi = event.data.object as Stripe.PaymentIntent;
-            await markPaymentFailed(pi.id, pi.id, pi.last_payment_error?.message || null);
-          }
-          await sql.query(`update payment_webhook_events set processed_at=now(), processing_error=null where gateway='STRIPE' and gateway_event_id=$1`, [event.id]);
-        } catch (error) {
-          await sql.query(`update payment_webhook_events set processing_error=$1 where gateway='STRIPE' and gateway_event_id=$2`, [error instanceof Error ? error.message : String(error), event.id]);
-          throw error;
-        }
-        return json({ ok: true });
-      } else if (razorpaySignature) {
+      if (razorpaySignature) {
         if (!verifyWebhookSignature(raw, razorpaySignature)) return json({ error: "Invalid webhook signature" }, 401);
         const payload = JSON.parse(raw) as {
           id?: string;

@@ -333,9 +333,11 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
               <span className="text-lg font-black text-slate-900 font-mono">
                 {formatPaise(ticket.fareBreakdown.totalCheckoutPaise)}
               </span>
-              <span className="text-[10px] font-bold text-emerald-600 block mt-0.5">
-                Saved ₹{(ticket.fareBreakdown.instantSavingsPaise / 100).toFixed(0)} vs OTAs
-              </span>
+              {ticket.fareBreakdown.instantSavingsPaise > 0 && (
+                <span className="text-[10px] font-bold text-emerald-600 block mt-0.5">
+                  Discount applied: ₹{(ticket.fareBreakdown.instantSavingsPaise / 100).toFixed(0)}
+                </span>
+              )}
             </div>
           </div>
 
@@ -345,7 +347,7 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
               <ShieldCheck className="size-4 text-emerald-600" />
               {ticket.mode === "train"
                 ? "Indian Railways IRCTC Cancellation & TDR Policy"
-                : "Cancellation & Instant Refund Policy"}
+                : "Cancellation & Refund Policy"}
             </span>
             {ticket.mode === "train" ? (
               <>

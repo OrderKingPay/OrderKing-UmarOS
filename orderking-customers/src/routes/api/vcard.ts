@@ -17,7 +17,7 @@ export const Route = createFileRoute("/api/vcard")({
           "TITLE:Hyperlocal Delivery & Customer Support",
           `TEL;TYPE=CELL,VOICE,WA;VALUE=uri:tel:${phone}`,
           "EMAIL;TYPE=WORK:support@orderking.in",
-          "URL:https://orderking.in",
+          "URL:https://orderkingpay.com",
           "NOTE:Official OrderKing customer support contact for order tracking, kitchen updates, and inquiries.",
           "X-WA-BIZ-DESCRIPTION:Official OrderKing Customer Support for Karimganj & Barak Valley",
           "END:VCARD",

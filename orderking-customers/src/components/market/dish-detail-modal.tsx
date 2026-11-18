@@ -3,18 +3,13 @@ import {
   X,
   Plus,
   Minus,
-  Sparkles,
-  ShieldCheck,
   Flame,
-  Clock,
-  Heart,
   ChefHat,
   Share2,
-  Utensils,
-  Activity,
   Check,
+  SlidersHorizontal,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
 import type { MenuItemView } from "@/lib/market-types";
@@ -88,19 +83,15 @@ export function DishDetailModal({
   const [specialInstructions, setSpecialInstructions] = useState("");
   const [isCopied, setIsCopied] = useState(false);
 
+  useEffect(() => {
+    setQuantity(1);
+    setSpecialInstructions("");
+  }, [dish?.id, open]);
+
   if (!dish) return null;
 
-  const originalPricePaise = Math.round((dish.basePricePaise * 1.25) / 100) * 100;
-  const savingsPaise = originalPricePaise - dish.basePricePaise;
-  const discountPercent = Math.round((savingsPaise / originalPricePaise) * 100);
   const hasCustomizations = dish.variants.length > 0 || dish.addonGroups.length > 0;
   const photoUrl = getAppetizingDishImage(dish);
-
-  // Nutritional estimates
-  const calories = dish.veg ? 320 : 460;
-  const protein = dish.veg ? "14g" : "28g";
-  const carbs = dish.veg ? "48g" : "36g";
-  const fats = dish.veg ? "8g" : "14g";
 
   const handleShare = () => {
     const url = typeof window !== "undefined" ? window.location.href : "";
@@ -163,19 +154,14 @@ export function DishDetailModal({
             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/80 via-transparent to-black/30 pointer-events-none" />
 
             {/* Badges on bottom of hero photo */}
-            <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/70 backdrop-blur-md border border-orange-400/40 px-3 py-1 text-xs font-bold text-orange-300 shadow-md">
-                <Sparkles className="size-3 text-orange-400" />
-                <span>Chef&apos;s Signature Recipe</span>
-              </span>
-
-              {dish.bestseller && (
+            {dish.bestseller && (
+              <div className="absolute bottom-3 left-4 right-4 flex flex-wrap items-center gap-2">
                 <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-orange-400 px-3 py-1 text-xs font-black text-zinc-950 shadow-md">
                   <Flame className="size-3 fill-zinc-950" />
                   <span>Bestseller</span>
                 </span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Scrollable Dish Details Section */}
@@ -187,7 +173,7 @@ export function DishDetailModal({
                 {dish.veg ? (
                   <span
                     className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-emerald-600 bg-white shadow-2xs"
-                    title="100% Pure Vegetarian"
+                    title="Vegetarian"
                   >
                     <span className="size-2 rounded-full bg-emerald-600" />
                   </span>
@@ -209,39 +195,21 @@ export function DishDetailModal({
               </Dialog.Title>
             </div>
 
-            {/* Pricing Section with Strike-through Original Price and Transparent Taxes */}
-            <div className="rounded-2xl border border-orange-400/30 bg-gradient-to-r from-orange-500/10 via-orange-400/5 to-orange-500/10 p-3.5 space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-baseline gap-2.5">
-                  <span className="font-display text-2xl font-black text-zinc-950 dark:text-zinc-50 tabular-nums">
-                    {formatPaise(dish.basePricePaise, { locale })}
-                  </span>
-                  <span className="text-sm font-bold text-zinc-400 line-through tabular-nums">
-                    {formatPaise(originalPricePaise, { locale })}
-                  </span>
-                  <span className="rounded-lg bg-emerald-600 text-white font-extrabold text-xs px-2 py-0.5 shadow-xs">
-                    {discountPercent}% OFF
-                  </span>
-                </div>
-
-                <span className="text-xs font-bold text-orange-700 dark:text-orange-300 flex items-center gap-1">
-                  <Clock className="size-3.5 text-orange-600" />
-                  <span>15-20 min prep</span>
-                </span>
-              </div>
-
-              {/* Transparent Taxes & Zero Hidden Charge Guarantee */}
-              <div className="flex items-center gap-2 pt-1 border-t border-orange-400/20 text-[11px] text-zinc-600 dark:text-zinc-300 font-medium">
-                <ShieldCheck className="size-3.5 text-emerald-600 shrink-0" />
-                <span>Inclusive of all GST taxes · Zero hidden charges · 0 platform fee</span>
-              </div>
+            {/* Menu Price */}
+            <div className="flex items-center justify-between rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3">
+              <span className="font-display text-2xl font-black text-zinc-950 dark:text-zinc-50 tabular-nums">
+                {formatPaise(dish.basePricePaise, { locale })}
+              </span>
+              <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                Taxes &amp; delivery calculated at checkout
+              </span>
             </div>
 
             {/* Description */}
             {dish.description && (
               <div className="space-y-1">
                 <h4 className="text-xs font-extrabold uppercase tracking-wider text-zinc-400">
-                  About this Dish
+                  About this dish
                 </h4>
                 <p className="text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
                   {dish.description}
@@ -249,47 +217,17 @@ export function DishDetailModal({
               </div>
             )}
 
-            {/* Nutrition & Macro Ribbon */}
-            <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-850 p-3.5 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                <span className="flex items-center gap-1.5">
-                  <Activity className="size-4 text-emerald-600" />
-                  <span>Estimated Nutritional Value</span>
-                </span>
-                <span className="text-zinc-400 font-normal">Per Serving (Serves 1-2)</span>
-              </div>
-
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="rounded-xl bg-white dark:bg-zinc-800 p-2 shadow-2xs border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase">Calories</span>
-                  <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">{calories} kcal</span>
-                </div>
-                <div className="rounded-xl bg-white dark:bg-zinc-800 p-2 shadow-2xs border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase">Protein</span>
-                  <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">{protein}</span>
-                </div>
-                <div className="rounded-xl bg-white dark:bg-zinc-800 p-2 shadow-2xs border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase">Carbs</span>
-                  <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">{carbs}</span>
-                </div>
-                <div className="rounded-xl bg-white dark:bg-zinc-800 p-2 shadow-2xs border border-zinc-200/60 dark:border-zinc-700/60">
-                  <span className="block text-[10px] font-bold text-zinc-400 uppercase">Fats</span>
-                  <span className="text-xs font-black text-zinc-900 dark:text-zinc-100">{fats}</span>
-                </div>
-              </div>
-            </div>
-
             {/* Chef Cooking Instruction Input */}
             <div className="space-y-1.5">
               <label htmlFor="dish-notes" className="text-xs font-extrabold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                 <ChefHat className="size-3.5 text-orange-500" />
-                <span>Special Instructions for Kitchen (Optional)</span>
+                <span>Cooking Instructions (Optional)</span>
               </label>
               <input
                 id="dish-notes"
                 value={specialInstructions}
                 onChange={(e) => setSpecialInstructions(e.target.value)}
-                placeholder="e.g. Less spicy, extra gravy, no cutlery needed..."
+                placeholder="e.g. Less spicy, extra gravy, no onion..."
                 className="w-full h-10 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 text-xs font-medium focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
               />
             </div>
@@ -297,7 +235,7 @@ export function DishDetailModal({
             {/* Customization Note if variants or addons exist */}
             {hasCustomizations && (
               <div className="rounded-xl bg-orange-50 dark:bg-orange-950/20 border border-orange-300/50 p-2.5 text-xs text-orange-950 dark:text-orange-200 font-medium flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><Sparkles className="size-3.5 text-orange-500" /> This dish has customizable portions &amp; gourmet add-ons.</span>
+                <span className="flex items-center gap-1.5"><SlidersHorizontal className="size-3.5 text-orange-500" /> Select portion size and add-ons in the next step.</span>
                 <span className="font-extrabold text-[11px] uppercase tracking-wide text-orange-700 dark:text-orange-300">
                   Customisable
                 </span>

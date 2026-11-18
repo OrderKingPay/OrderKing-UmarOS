@@ -10,18 +10,17 @@ import { Input } from "@/components/ui/input";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { formatPaise, calculateRestaurantWaitPayPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { createTicketFn, getDeliveryFn } from "@/lib/server/rider-fns";
+import { createTicketFn, getDeliveryFn, postLocationFn } from "@/lib/server/rider-fns";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
 import type { GeoPoint, TicketTopic } from "@/lib/rider/types";
 import { ArrowLeft, HelpCircle } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
 
 export const Route = createFileRoute("/delivery/$id")({
   beforeLoad: ({ context }) => {
     if (!context?.sessionUser) throw redirect({ to: "/login" });
   },
-  component: Page
+  component: Page,
 });
 
 const TRIP_TICKET_TOPICS: ReadonlyArray<{ topic: TicketTopic; label: string }> = [
@@ -35,7 +34,6 @@ const TRIP_TICKET_TOPICS: ReadonlyArray<{ topic: TicketTopic; label: string }> =
 function Page() {
   const { id } = Route.useParams();
   const { t } = useI18n();
-  const { payout, surge } = useRiderCustomization();
   const [pack, setPack] = useState<Awaited<ReturnType<typeof getDeliveryFn>> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [riderPos, setRiderPos] = useState<GeoPoint | null>(null);
@@ -56,8 +54,7 @@ function Page() {
     load();
   }, [load]);
 
-  // Quad-Party Real-Time WebSocket Synchronization (Council Specialist f5a2c465)
-  // Subscribes to Supabase Realtime on this delivery order for instant (<200ms) updates
+  // Real-Time WebSocket Synchronization on this delivery order
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -77,7 +74,7 @@ function Page() {
           () => {
             if (cancelled) return;
             load();
-          }
+          },
         )
         .subscribe();
     } catch (err) {
@@ -99,6 +96,26 @@ function Page() {
     pack?.delivery.riderId,
     id,
   );
+
+  const recenterGps = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const nextPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        setRiderPos(nextPos);
+        void postLocationFn({
+          data: {
+            lat: nextPos.lat,
+            lng: nextPos.lng,
+            accuracyM: pos.coords.accuracy ?? null,
+            deliveryId: id,
+          },
+        }).catch(() => undefined);
+      },
+      () => undefined,
+      { enableHighAccuracy: true, timeout: 6000 },
+    );
+  }, [id]);
 
   async function submitTripIssue() {
     if (!pack) return;
@@ -141,12 +158,12 @@ function Page() {
   const kitchenWaitMins =
     d?.arrivedRestaurantAt && endWaitTime
       ? Math.max(
-        0,
-        Math.floor(
-          (endWaitTime - new Date(d.arrivedRestaurantAt).getTime()) /
-          60_000,
-        ),
-      )
+          0,
+          Math.floor(
+            (endWaitTime - new Date(d.arrivedRestaurantAt).getTime()) /
+              60_000,
+          ),
+        )
       : 0;
   const waitBonusPaise = calculateRestaurantWaitPayPaise(kitchenWaitMins, 6, 100);
 
@@ -176,8 +193,8 @@ function Page() {
                 d.state === "DELIVERED"
                   ? "online"
                   : d.state === "RIDER_CANCELLED" ||
-                    d.state === "ORDER_CANCELLED" ||
-                    d.state === "DELIVERY_FAILED"
+                      d.state === "ORDER_CANCELLED" ||
+                      d.state === "DELIVERY_FAILED"
                     ? "offline"
                     : "busy"
               }
@@ -194,6 +211,7 @@ function Page() {
             dropLabel={d.customer.area}
             navigateLabel={t("mapsOpen")}
             deliveryState={d.state}
+            onRecenter={recenterGps}
           />
 
           <DeliveryActions
@@ -202,7 +220,7 @@ function Page() {
             onChanged={load}
           />
 
-          {/* Clean Order Details & Earning Summary */}
+          {/* Order Details & Earning Summary */}
           <Card className="space-y-3">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
@@ -299,7 +317,7 @@ function Page() {
             </div>
             <Link
               to="/assistant"
-              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-xs hover:bg-primary/90 transition"
+              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#c92d39] transition"
             >
               Get Help
             </Link>

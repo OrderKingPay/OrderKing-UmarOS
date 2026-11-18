@@ -127,8 +127,8 @@ function Login() {
       }
 
       // Synchronize Better Auth 90-day administrative session
-      const email = res.email || `${cleanPhone}@phone.orderkingpay.com`;
-      const password = res.password || `OK_${cleanPhone}!9A`;
+      const email = res.email;
+      const password = res.password;
 
       const signInRes = await authClient.signIn.email({
         email,
@@ -192,7 +192,7 @@ function Login() {
       }
       setPhoneSession({
         id: email,
-        phone: email.startsWith("91") ? email.slice(2, 12) : "9395065587",
+        phone: email.startsWith("91") ? email.slice(2, 12) : "",
         email,
         name: name || email.split("@")[0] || "Operator",
         role: "admin",
@@ -471,7 +471,7 @@ function Login() {
 
         <div className="mt-6 pt-4 border-t border-[#1E283D] flex items-center justify-center gap-1.5 text-[11px] text-slate-500">
           <ShieldCheck className="size-3.5 text-emerald-400" />
-          <span>OrderKing Pay (Assam - 788710) · GSTIN 18AFXPH9838M1Z9</span>
+          <span>Orderkingpay (Assam - 788710) · GSTIN 18AFXPH9838M1Z9</span>
         </div>
       </div>
     </main>

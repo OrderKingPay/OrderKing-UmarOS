@@ -46,8 +46,8 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
   const originUrl = typeof window !== "undefined" ? window.location.origin : "https://www.orderkingpay.com";
   const shareUrl = `${originUrl}/?src=invite${referralCode ? `&ref=${encodeURIComponent(String(referralCode ?? ""))}` : ""}`;
 
-  // Attractive, natural gift message for WhatsApp
-  const giftMessage = `Order hot food on OrderKing — fresh from local kitchens in Karimganj, Silchar & Badarpur! Check out the menu: ${shareUrl}`;
+  // Factual invite message for WhatsApp
+  const giftMessage = `Order food on OrderKing: ${shareUrl}`;
 
   const handleWhatsAppShare = () => {
     const waUrl = `https://wa.me/?text=${encodeURIComponent(String(giftMessage ?? ""))}`;
@@ -86,16 +86,13 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
                 <Sparkles className="size-2.5 text-orange-600" />
                 Invite friends
               </span>
-              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-                Local Kitchens
-              </span>
             </div>
 
             <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight leading-snug">
-              Share OrderKing with friends
+              Share OrderKing
             </h3>
             <p className="text-xs text-gray-600 line-clamp-2 max-w-md">
-              Share OrderKing with friends and family to order delicious food together.
+              Send your invite link via WhatsApp or copy it to share.
             </p>
           </div>
         </div>

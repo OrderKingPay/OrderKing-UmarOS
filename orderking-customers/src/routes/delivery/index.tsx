@@ -6,7 +6,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "assam",
     name: "Assam",
-    tagline: "Barak Valley & Brahmaputra Valley Express",
+    region: "Barak Valley & Brahmaputra Valley",
     hubs: [
       { name: "Karimganj", slug: "karimganj", popularAreas: ["Station Road", "Charbazar", "Main Road"] },
       { name: "Silchar", slug: "silchar", popularAreas: ["Tarapur", "Park Road", "Ambicapatty"] },
@@ -18,7 +18,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "west-bengal",
     name: "West Bengal",
-    tagline: "Greater Kolkata & North Bengal Hubs",
+    region: "Kolkata & North Bengal",
     hubs: [
       { name: "Kolkata", slug: "kolkata", popularAreas: ["Salt Lake", "Park Street", "BBD Bagh"] },
       { name: "Siliguri", slug: "siliguri", popularAreas: ["Sevoke Road", "Hill Cart Road"] },
@@ -28,7 +28,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "karnataka",
     name: "Karnataka",
-    tagline: "Silicon Valley & Tech Corridors",
+    region: "Bengaluru & Mysuru",
     hubs: [
       { name: "Bengaluru", slug: "bengaluru", popularAreas: ["Koramangala", "Indiranagar", "HSR Layout"] },
       { name: "Mysuru", slug: "mysuru", popularAreas: ["Gokulam", "Vijayanagar"] },
@@ -37,7 +37,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "maharashtra",
     name: "Maharashtra",
-    tagline: "Financial Capital & Metros",
+    region: "Mumbai & Pune",
     hubs: [
       { name: "Mumbai", slug: "mumbai", popularAreas: ["Bandra West", "Andheri", "Colaba"] },
       { name: "Pune", slug: "pune", popularAreas: ["Koregaon Park", "Kothrud", "Viman Nagar"] },
@@ -46,7 +46,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "delhi-ncr",
     name: "Delhi NCR",
-    tagline: "National Capital Region",
+    region: "National Capital Region",
     hubs: [
       { name: "Delhi", slug: "delhi", popularAreas: ["Connaught Place", "Hauz Khas", "Lajpat Nagar"] },
       { name: "Noida", slug: "noida", popularAreas: ["Sector 18", "Sector 62"] },
@@ -56,7 +56,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "tripura",
     name: "Tripura",
-    tagline: "Northeast Frontier",
+    region: "Agartala & North Tripura",
     hubs: [
       { name: "Agartala", slug: "agartala", popularAreas: ["Battala", "City Centre", "Akhaura Road"] },
       { name: "Dharmanagar", slug: "dharmanagar", popularAreas: ["Bazar Area", "Station Road"] },
@@ -65,7 +65,7 @@ const INDIAN_STATES_AND_HUBS = [
   {
     slug: "meghalaya",
     name: "Meghalaya",
-    tagline: "Shillong Plateau & Hills",
+    region: "East Khasi Hills",
     hubs: [
       { name: "Shillong", slug: "shillong", popularAreas: ["Police Bazar", "Laitumkhrah"] },
     ],
@@ -74,10 +74,10 @@ const INDIAN_STATES_AND_HUBS = [
 
 export const Route = createFileRoute("/delivery/")({
   head: () => {
-    const pageUrl = "https://orderking.in/delivery";
-    const title = "Food Delivery Directory Across India | OrderKing";
+    const pageUrl = "https://orderkingpay.com/delivery";
+    const title = "Food Delivery Directory | OrderKing";
     const desc =
-      "Explore local food delivery across Assam, West Bengal, Karnataka, Delhi, and PAN-India on OrderKing. Genuine kitchen menus, reliable local delivery, and fast dispatch.";
+      "Browse food delivery zones and listed restaurants by city and area on OrderKing.";
     return {
       meta: [
         { title },
@@ -86,7 +86,7 @@ export const Route = createFileRoute("/delivery/")({
         { property: "og:description", content: desc },
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
-        { property: "og:image", content: "https://orderking.in/icon-512.png" },
+        { property: "og:image", content: "https://orderkingpay.com/icon-512.png" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: desc },
@@ -101,29 +101,25 @@ function DeliveryDirectoryPage() {
   return (
     <CustomerShell>
       <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* Hero Section */}
-        <div className="mb-10 text-center sm:text-left">
+        {/* Header */}
+        <div className="mb-8 text-center sm:text-left">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <MapPin className="size-3.5" />
-            <span>Hyperlocal Organic Food Network · All 28 States &amp; 8 UTs</span>
+            <span>Delivery Zones Directory</span>
           </div>
-          <h1 className="mt-3 font-display text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
-            Find Food Delivery Near You in India
+          <h1 className="mt-3 font-display text-2xl font-black text-foreground sm:text-3xl md:text-4xl">
+            Food Delivery Locations
           </h1>
-          <p className="mt-3 max-w-2xl text-sm text-muted sm:text-base">
-            OrderKing brings genuine kitchen pricing to your doorstep. Zero aggregator commission markups,
-            25–30 minute express delivery, and transparent direct billing on every single meal.
+          <p className="mt-2 max-w-2xl text-sm text-muted">
+            Select a city or locality to view active restaurants, menus, delivery fees, and GST-itemized checkout.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-4 text-xs font-medium text-foreground">
+          <div className="mt-4 flex flex-wrap gap-3 text-xs font-medium text-foreground">
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
               <ShieldCheck className="size-4 text-emerald-500" /> FSSAI-Licensed Kitchens
             </span>
             <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <Sparkles className="size-4 text-orange-500" /> ₹0 Hidden Packaging Surcharges
-            </span>
-            <span className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5">
-              <Utensils className="size-4 text-primary" /> Direct Kitchen Pricing
+              <Utensils className="size-4 text-primary" /> Itemized GST Billing
             </span>
           </div>
         </div>
@@ -137,7 +133,7 @@ function DeliveryDirectoryPage() {
             >
               <div className="border-b border-border/60 pb-3">
                 <h2 className="font-display text-lg font-bold text-foreground">{state.name}</h2>
-                <p className="text-xs text-muted">{state.tagline}</p>
+                <p className="text-xs text-muted">{state.region}</p>
               </div>
 
               <div className="mt-4 flex flex-1 flex-col gap-3">

@@ -51,7 +51,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
   aria: {
     id: "aria",
     name: "Aria",
-    tagline: "Global Tech Executive · Charismatic, clear & highly persuasive",
+    tagline: "English · Standard clear voice",
     pitch: 1.18,
     rate: 1.05,
     recommendedLanguages: ["en-US", "en-GB", "en-IN", "es-ES", "fr-FR", "de-DE"],
@@ -66,7 +66,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
   priya: {
     id: "priya",
     name: "Priya",
-    tagline: "Indian Founder Voice · Crisp bilingual Hindi & English deal-closer",
+    tagline: "Hindi & English · Bilingual Indian voice",
     pitch: 1.20,
     rate: 1.06,
     recommendedLanguages: ["en-IN", "hi-IN", "ur-IN", "te-IN", "ta-IN"],
@@ -81,7 +81,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
   ananya: {
     id: "ananya",
     name: "Ananya",
-    tagline: "Bengal & Northeast Operations · Warm, melodious Bengali & Sylheti native",
+    tagline: "Bengali & Assamese · Regional voice",
     pitch: 1.22,
     rate: 1.04,
     recommendedLanguages: ["bn-IN", "as-IN", "en-IN"],
@@ -96,7 +96,7 @@ export const VOICE_PERSONAS: Record<VoicePersonaId, VoicePersona> = {
   zara: {
     id: "zara",
     name: "Zara",
-    tagline: "International Multilingual Strategist · Sophisticated & resonant",
+    tagline: "Multilingual · International voice",
     pitch: 1.16,
     rate: 1.02,
     recommendedLanguages: ["en-GB", "es-ES", "fr-FR", "de-DE", "ar-SA", "zh-CN", "ja-JP"],

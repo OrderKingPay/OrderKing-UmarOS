@@ -1782,7 +1782,7 @@ const SIXTEEN_SPECIALIST_TEAMS = [
   {
     id: "team-10",
     name: "Team 10: B2B SaaS Sales Deck & ROI Calculator",
-    role: "Shows restaurants and franchises exact savings vs 30% commission apps.",
+    role: "Models multi-unit restaurant margin and platform commission economics.",
     worldId: "b2b" as WorldId,
     tabId: "sales-deck",
   },

@@ -1,12 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
-import { Route } from "../routes/api/search";
-
-vi.mock("@/lib/db", () => ({
-  getSql: async () => { throw new Error("Database unavailable in test"); },
-}));
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 describe("Search must never invent restaurants", () => {
   it.each(["", "&q=Biryani", "&q=Dosa"])("fails closed when catalog database is unavailable (%s)", async (query) => {
+    vi.resetModules();
+    vi.doMock("@/lib/db", () => ({
+      getSql: async () => { throw new Error("Database unavailable in test"); },
+    }));
+    const { Route } = await import("../routes/api/search");
     const handler = (Route.options as any)?.server?.handlers?.GET;
     expect(handler).toBeDefined();
     const url = "http://localhost:8082/api/search?lat=28.6315&lng=77.2167" + query;
@@ -18,5 +18,6 @@ describe("Search must never invent restaurants", () => {
     expect(data.deliveryAvailable).toBe(false);
     expect(data.restaurants).toEqual([]);
     expect(data.dishes).toEqual([]);
+    vi.doUnmock("@/lib/db");
   });
 });

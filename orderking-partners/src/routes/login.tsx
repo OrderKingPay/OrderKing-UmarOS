@@ -484,7 +484,6 @@ function Login() {
                         setOtpStep("phone");
                         setError(null);
                         setOtpCode("");
-                        setProviderNotice(null);
                       }}
                       className="text-xs font-bold text-[#E23744] hover:underline"
                     >

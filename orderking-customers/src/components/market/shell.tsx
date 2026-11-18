@@ -56,11 +56,12 @@ import { isDeliveryActiveInLocation } from "@/lib/geo/geofence-guard";
 
 const SEARCH_PLACEHOLDERS = [
   "rolls",
-  "game night",
-  "Restaurant name or a dish...",
   "biryani",
+  "Restaurant name or a dish...",
   "pizza",
   "momos",
+  "dosa",
+  "burger",
 ];
 
 export const SOVEREIGN_ECOSYSTEM_TABS = [
@@ -118,6 +119,7 @@ export function CustomerShell({
   const location = useLocationStore((s) => s.location);
   const isDeliveryActive = location ? isDeliveryActiveInLocation(location.lat, location.lng, location.cityId) : true;
   const items = useCartStore((s) => s.items) ?? [];
+  const cartRestaurantName = useCartStore((s) => s.restaurantName);
   const count = cartCount(items);
   const path = useRouterState({ select: (s) => s.location?.pathname }) || "";
   const isDark = explicitDark ?? (
@@ -318,7 +320,7 @@ export function CustomerShell({
               {/* Super-App Link (Flights, Trains, AI Tutor) */}
               <Link
                 to="/travel"
-                title="KingPay Super-App (Flights, Trains, AI Tutor)"
+                title="KingPay (Flights, Trains, AI Tutor)"
                 aria-label="Flights, Trains, AI Tutor"
                   className={cn(
                     "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
@@ -414,13 +416,13 @@ export function CustomerShell({
                         />
                         <div className="flex flex-col min-w-0">
                           <span className="text-xs font-black text-gray-950 truncate">
-                            {user.displayName || "Valued Customer"}
+                            {user.displayName || "Customer"}
                           </span>
                           <span className="text-[10px] text-gray-500 truncate">
-                            {user.primaryEmail || "Authenticated Patron"}
+                            {user.primaryEmail || "Signed in"}
                           </span>
                           <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 mt-0.5">
-                            <Crown className="size-2.5 fill-amber-500 text-amber-600" /> Verified Patron
+                            <Crown className="size-2.5 fill-amber-500 text-amber-600" /> Verified Account
                           </span>
                         </div>
                       </div>
@@ -605,8 +607,8 @@ export function CustomerShell({
                     <span className="text-xs font-black uppercase tracking-wider text-amber-200 leading-none">
                       {count === 1 ? t("cart.item") : t("cart.items")} added
                     </span>
-                    <span className="text-[10px] text-stone-400 font-medium mt-0.5">
-                      View final total in your cart
+                    <span className="text-[10px] text-stone-400 font-medium mt-0.5 truncate max-w-[150px]">
+                      {cartRestaurantName || "OrderKing Cart"}
                     </span>
                   </div>
                 </div>

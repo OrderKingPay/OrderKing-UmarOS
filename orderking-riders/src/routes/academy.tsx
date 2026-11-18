@@ -144,19 +144,19 @@ function RiderAcademyPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-2xl px-4 py-6 space-y-6 text-slate-100">
+      <div className="mx-auto max-w-2xl px-4 py-6 space-y-6 text-foreground">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-white flex items-center gap-2">
+            <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
               <BookOpen className="size-6 text-primary" />
               <span>Rider Academy</span>
             </h1>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Short 1-minute training modules for high service quality and safety.
             </p>
           </div>
-          <Badge className="bg-[#E23744]/20 text-primary border-primary/40 text-xs px-3 py-1">
+          <Badge className="bg-[#E23744]/15 text-primary border-primary/40 text-xs px-3 py-1">
             {completedCount}/{ACADEMY_MODULES.length} Completed
           </Badge>
         </div>
@@ -164,12 +164,12 @@ function RiderAcademyPage() {
         {/* Progress Bar */}
         <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
           <div className="flex items-center justify-between text-xs font-semibold">
-            <span className="text-slate-300">Training Progress</span>
+            <span className="text-foreground">Training Progress</span>
             <span className="text-primary font-mono">{progressPercent}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-card overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-orange-500 to-emerald-400 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-orange-500 to-emerald-500 transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -188,25 +188,25 @@ function RiderAcademyPage() {
                 onClick={() => setActiveModule(mod.id)}
                 className={`rounded-xl border p-3.5 text-left transition-all ${
                   isSelected
-                    ? "border-primary bg-muted text-white shadow-lg shadow-orange-500/10"
-                    : "border-border bg-card text-slate-300 hover:border-slate-700"
+                    ? "border-primary bg-muted text-foreground shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-primary/40"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E23744]/20 text-primary" : "bg-slate-800 text-slate-400"}`}>
+                  <div className={`p-2 rounded-lg ${isSelected ? "bg-[#E23744]/15 text-primary" : "bg-muted text-muted-foreground"}`}>
                     <Icon className="size-4" />
                   </div>
                   {isDone ? (
-                    <CheckCircle2 className="size-4 text-emerald-400" />
+                    <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
                   ) : (
-                    <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                    <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                       <Clock className="size-3" />
                       {mod.duration}
                     </span>
                   )}
                 </div>
                 <div className="text-xs font-bold line-clamp-1">{mod.title}</div>
-                <div className="text-[10px] text-slate-400 mt-0.5">{mod.category}</div>
+                <div className="text-[10px] text-muted-foreground mt-0.5">{mod.category}</div>
               </button>
             );
           })}
@@ -219,7 +219,7 @@ function RiderAcademyPage() {
               <div className="text-[10px] font-bold text-primary uppercase tracking-wider">
                 {selected.category} · {selected.duration}
               </div>
-              <h2 className="text-base font-bold text-white mt-0.5">{selected.title}</h2>
+              <h2 className="text-base font-bold text-foreground mt-0.5">{selected.title}</h2>
             </div>
             <Button
               type="button"
@@ -227,7 +227,7 @@ function RiderAcademyPage() {
               onClick={() => toggleComplete(selected.id)}
               className={`rounded-xl text-xs font-bold ${
                 completed[selected.id]
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
+                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/25"
                   : "bg-[#E23744] hover:bg-[#c92d39] text-white"
               }`}
             >
@@ -236,12 +236,12 @@ function RiderAcademyPage() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wide">
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">
               Key Guidelines
             </h3>
             <ul className="space-y-2">
               {selected.points.map((pt, i) => (
-                <li key={i} className="flex items-start gap-2.5 text-xs text-slate-300">
+                <li key={i} className="flex items-start gap-2.5 text-xs text-muted-foreground">
                   <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-primary">
                     {i + 1}
                   </span>
@@ -251,14 +251,14 @@ function RiderAcademyPage() {
             </ul>
           </div>
 
-          <div className="rounded-xl border border-orange-500/20 bg-orange-500/5 p-3.5 space-y-2">
-            <h4 className="text-xs font-bold text-orange-300 flex items-center gap-1.5">
+          <div className="rounded-xl border border-orange-500/30 bg-orange-500/5 p-3.5 space-y-2">
+            <h4 className="text-xs font-bold text-orange-700 dark:text-orange-300 flex items-center gap-1.5">
               <ShieldCheck className="size-4 text-primary" />
               <span>Safety &amp; Compliance Rule</span>
             </h4>
             <ul className="space-y-1.5">
               {selected.keyRules.map((rule, idx) => (
-                <li key={idx} className="text-xs text-slate-300 pl-5 relative before:absolute before:left-1.5 before:top-2 before:size-1.5 before:rounded-full before:bg-orange-400">
+                <li key={idx} className="text-xs text-muted-foreground pl-5 relative before:absolute before:left-1.5 before:top-2 before:size-1.5 before:rounded-full before:bg-orange-500">
                   {rule}
                 </li>
               ))}

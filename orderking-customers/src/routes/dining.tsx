@@ -86,7 +86,7 @@ function DiningPage() {
               </div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 <CheckCircle2 className="size-4" />
-                <span>Zero Booking Markups</span>
+                <span>Direct Venue Confirmation</span>
               </div>
             </div>
 
@@ -97,7 +97,7 @@ function DiningPage() {
                 </div>
                 <h3 className="text-sm font-bold text-fg">For Restaurant Partners</h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  Join our verified dine-out catalog with 0% intermediary booking fees. Reach active diners in your area.
+                  List your dine-in seating and accept table requests directly through the partner portal.
                 </p>
                 <a
                   href="https://partner.orderking.app"
@@ -131,9 +131,9 @@ function DiningPage() {
                 <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/20 text-sky-700 dark:text-sky-300 font-bold">
                   <Utensils className="size-5" />
                 </div>
-                <h3 className="text-sm font-bold text-fg">Immediate Doorstep Food</h3>
+                <h3 className="text-sm font-bold text-fg">Food Delivery</h3>
                 <p className="text-xs text-muted leading-relaxed">
-                  Hungry now? Browse our live menu catalog for fast, hot contactless delivery from top local kitchens.
+                  Browse live menus for doorstep food delivery from local restaurants.
                 </p>
                 <Link
                   to="/"

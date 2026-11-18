@@ -99,7 +99,7 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
 
       <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500 pt-1">
         <ShieldCheck className="size-3 text-emerald-600" />
-        <span>FSSAI &amp; GST Compliant SafeInteger Pricing</span>
+        <span>Itemized GST-compliant bill</span>
       </div>
     </div>
   );

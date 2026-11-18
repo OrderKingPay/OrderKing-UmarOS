@@ -2197,56 +2197,6 @@ export async function liveBoard(ctx: AccessContext) {
   };
 }
 
-export async function tickSimulation(ws: Workspace) {
-  requirePermission(ws.ctx, "modify_orders");
-  const flags = await loadRuntimeFlags(ws.ctx.orgId);
-  const sql = await getSql();
-  const advancing = await sql.query<{ id: string; status: string }>(
-    `select id, status from orders
-     where org_id=$1 and status in ('PENDING','CONFIRMED','PREPARING','READY','RIDER_ASSIGNED','PICKED_UP','ON_THE_WAY','ARRIVING')
-     order by placed_at asc limit 3`,
-    [ws.ctx.orgId],
-  );
-  const nextMap: Record<string, string> = {
-    PENDING: "CONFIRMED",
-    CONFIRMED: "PREPARING",
-    PREPARING: "READY",
-    READY: "RIDER_ASSIGNED",
-    RIDER_ASSIGNED: "PICKED_UP",
-    PICKED_UP: "ON_THE_WAY",
-    ON_THE_WAY: "ARRIVING",
-    ARRIVING: "DELIVERED",
-  };
-  for (const o of advancing) {
-    const to = nextMap[o.status];
-    if (!to) continue;
-    if (to === "PICKED_UP" && isFlagEnabled(flags, "qr_pickup") === false && isFlagEnabled(flags, "delivery_otp")) {
-      // OTP is required in settings; simulation still advances but records the gate.
-    }
-    try {
-      assertTransition(o.status as OrderStatus, to as OrderStatus);
-    } catch {
-      continue;
-    }
-    await sql.query(`update orders set status=$2 where id=$1`, [o.id, to]);
-    await sql.query(
-      `insert into order_events (id, org_id, order_id, from_status, to_status, action, note)
-       values ($1,$2,$3,$4,$5,'sim.tick',$6)`,
-      [
-        nid("ev"),
-        ws.ctx.orgId,
-        o.id,
-        o.status,
-        to,
-        isFlagEnabled(flags, "delivery_otp") && to === "DELIVERED"
-          ? "clock advance (delivery OTP flag ON)"
-          : "clock advance",
-      ],
-    );
-  }
-  return { advanced: advancing.length, label: "ACTUAL" as const, flagsHonored: ["delivery_otp", "live_tracking", "cod"] };
-}
-
 export async function profitability(ctx: AccessContext) {
   requirePermission(ctx, "view_finance");
   const sql = await getSql();

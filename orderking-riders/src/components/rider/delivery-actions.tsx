@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardMeta, CardTitle } from "@/components/ui/card";
+import { Card, CardMeta } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { compressImage, errorMessage, newIdempotencyKey } from "@/lib/client/errors";
@@ -10,10 +10,9 @@ import { deliveryActionFn, triggerMaskedCallFn } from "@/lib/server/rider-fns";
 import { TERMINAL_DELIVERY_STATES, type CashReconciliation, type Delivery } from "@/lib/rider/types";
 import { enqueueRiderOfflineAction, getRiderNetworkSpeed } from "@/lib/rider/rider-low-network";
 import { getTwoWheelerNavigationUris } from "@/lib/rider/maps";
-import { AlertTriangle, Camera, Check, CheckCircle2, Clock3, Compass, Hash, MessageSquare, Phone, QrCode, RotateCcw, ShieldAlert, ShieldCheck, Siren, Store, X } from "lucide-react";
+import { AlertTriangle, Camera, Check, CheckCircle2, Clock3, Compass, MessageSquare, Phone, QrCode, RotateCcw, ShieldAlert, Siren, Store, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ConfirmDialog } from "./confirm-dialog";
 import { SwipeSlider } from "./swipe-slider";
 import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { JUSTIFIED_OPERATIONAL_REASONS, isJustifiedOperationalReason } from "@/lib/rider/discipline";
@@ -39,7 +38,7 @@ export function DeliveryActions({
   const [now, setNow] = useState(Date.now());
   const [billPhoto, setBillPhoto] = useState<string | null>(null);
   const [podPhoto, setPodPhoto] = useState<string | null>(null);
-  const [isCalling, setIsCalling] = useState(false);
+  const [callingTarget, setCallingTarget] = useState<"CUSTOMER" | "RESTAURANT" | null>(null);
   const [sosOpen, setSosOpen] = useState(false);
   const [handoverTab, setHandoverTab] = useState<"OTP" | "QR">("OTP");
   const [qrVerified, setQrVerified] = useState(false);
@@ -53,14 +52,18 @@ export function DeliveryActions({
     return cleaned;
   }
 
-  async function handleMaskedCustomerCall() {
-    setIsCalling(true);
+  async function handleMaskedCall(recipientType: "CUSTOMER" | "RESTAURANT") {
+    setCallingTarget(recipientType);
     try {
-      toast.info("Connecting via OrderKing Cloud Telephony Bridge...");
+      toast.info(
+        recipientType === "RESTAURANT"
+          ? "Connecting to restaurant via OrderKing Cloud Telephony..."
+          : "Connecting via OrderKing Cloud Telephony Bridge...",
+      );
       const res = await triggerMaskedCallFn({
         data: {
           deliveryId: delivery.id,
-          recipientType: "CUSTOMER",
+          recipientType,
         },
       });
       if (!res?.virtualProxyNumber) {
@@ -73,7 +76,7 @@ export function DeliveryActions({
     } catch (err) {
       toast.error(errorMessage(err, "Unable to initiate masked call."));
     } finally {
-      setIsCalling(false);
+      setCallingTarget(null);
     }
   }
 
@@ -362,15 +365,15 @@ export function DeliveryActions({
         {d.customer.contactAllowed ? (
           <button
             type="button"
-            disabled={pending || isCalling}
-            onClick={() => void handleMaskedCustomerCall()}
+            disabled={pending || callingTarget !== null}
+            onClick={() => void handleMaskedCall("CUSTOMER")}
             className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70 disabled:opacity-50"
             title="Call Customer"
           >
             <span className="mb-0.5 flex size-5 items-center justify-center">
-              {isCalling ? <Clock3 className="size-4 animate-spin" /> : <Phone className="size-4" />}
+              {callingTarget === "CUSTOMER" ? <Clock3 className="size-4 animate-spin" /> : <Phone className="size-4" />}
             </span>
-            <span>{isCalling ? "Calling..." : "Call"}</span>
+            <span>{callingTarget === "CUSTOMER" ? "Calling..." : "Call"}</span>
             <span className="text-[10px] text-muted-foreground font-mono">
               •••• {d.customer.contactMasked ? d.customer.contactMasked.replace(/\D/g, "").slice(-4) : "••••"}
             </span>
@@ -402,16 +405,19 @@ export function DeliveryActions({
           <span className="text-[10px]">Chat</span>
         </a>
 
-        <a
-          href="tel:18001000"
-          className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70"
+        <button
+          type="button"
+          disabled={pending || callingTarget !== null}
+          onClick={() => void handleMaskedCall("RESTAURANT")}
+          className="flex flex-col items-center justify-center rounded-lg border border-border bg-muted/30 p-2 text-center text-xs font-medium text-primary transition hover:bg-muted/70 disabled:opacity-50"
+          title="Call Restaurant via Cloud Telephony"
         >
           <span className="mb-0.5 flex size-5 items-center justify-center">
-            <Store className="size-4" />
+            {callingTarget === "RESTAURANT" ? <Clock3 className="size-4 animate-spin" /> : <Store className="size-4" />}
           </span>
-          <span>Restaurant</span>
-          <span className="text-[10px] text-muted-foreground">Call</span>
-        </a>
+          <span>{callingTarget === "RESTAURANT" ? "Calling..." : "Restaurant"}</span>
+          <span className="text-[10px] text-muted-foreground">Masked Call</span>
+        </button>
 
         <button
           type="button"
@@ -535,13 +541,13 @@ export function DeliveryActions({
             />
           </div>
 
-          {/* Mandatory Restaurant Paper Bill / Receipt Photo Capture */}
+          {/* Optional Restaurant Paper Bill / Receipt Photo Capture */}
           <div className="rounded-xl border border-border bg-card p-3 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <Camera className="size-4 text-primary" />
                 <span className="text-xs font-bold text-foreground">
-                  Mandatory Paper Bill Verification
+                  Paper Bill Photo (Optional)
                 </span>
               </div>
               {billPhoto ? (
@@ -549,8 +555,8 @@ export function DeliveryActions({
                   <CheckCircle2 className="size-3.5" /> Receipt Attached
                 </span>
               ) : (
-                <span className="rounded bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
-                  Photo Required to Swipe
+                <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                  Optional
                 </span>
               )}
             </div>

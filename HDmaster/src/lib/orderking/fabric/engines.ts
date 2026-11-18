@@ -16,40 +16,29 @@ export const EconomicsSchemas = {
   }),
 };
 
-// Registering authentic endpoints in the Universal Connector Fabric
+// Fail-closed: fabric routes never fabricate ledger transactions or tax mutations in memory.
+// Authentic transfers execute through PostgreSQL double-entry APIs under /api/v1/kingpay/* and /api/v1/admin/settings.
 
-// KingPay Engine
 fabric.registerRoute(
   'POST',
   '/api/fabric/kingpay/transfer',
-  { schema: { body: KingPaySchemas.Transfer }, requiredRole: 'USER' },
-  async (req, ctx) => {
+  { schema: { body: KingPaySchemas.Transfer }, requiredRole: 'ADMIN' },
+  async () => {
     return {
-      status: 200,
-      data: {
-        message: 'Funds transferred successfully via KingPay Engine',
-        transactionId: `TX_${Date.now()}`,
-        amount: req.body!.amount,
-        currency: req.body!.currency,
-      },
+      status: 501,
+      error: 'Direct fabric transfer disabled. Use authenticated PostgreSQL double-entry ledger APIs.',
     };
   }
 );
 
-// Economics Engine (Founder-level only)
 fabric.registerRoute(
   'POST',
   '/api/fabric/economics/update-tax',
   { schema: { body: EconomicsSchemas.UpdateTaxRate }, requiredRole: 'FOUNDER' },
-  async (req, ctx) => {
+  async () => {
     return {
-      status: 200,
-      data: {
-        message: 'Tax rate updated via Economics Engine',
-        newRate: req.body!.newRate,
-        region: req.body!.region,
-        updatedBy: ctx.userId,
-      },
+      status: 501,
+      error: 'Direct fabric tax update disabled. Use authenticated /api/v1/admin/settings endpoint.',
     };
   }
 );

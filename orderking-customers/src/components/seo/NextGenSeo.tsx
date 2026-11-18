@@ -3,7 +3,7 @@ import { useLocation } from '@tanstack/react-router';
 
 export function NextGenSeo({ config }: { config: any }) {
   const location = useLocation();
-  const currentUrl = `https://orderking.in${location.pathname}`;
+  const currentUrl = `https://orderkingpay.com${location.pathname}`;
   
   const segments = location.pathname.split('/').filter(Boolean);
   let city = 'India';
@@ -44,7 +44,7 @@ export function NextGenSeo({ config }: { config: any }) {
               "@type": ["Restaurant", "FoodEstablishment"],
               "name": restaurantName,
               "url": currentUrl,
-              "image": config?.brand?.ogImageUrl || "https://orderking.in/logo.jpg",
+              "image": config?.brand?.ogImageUrl || "https://orderkingpay.com/logo.jpg",
               "telephone": supportTelephone,
               "priceRange": "₹₹",
               "servesCuisine": "Indian, Multi-Cuisine",
@@ -74,7 +74,7 @@ export function NextGenSeo({ config }: { config: any }) {
       {
         "@type": "FoodEstablishment",
         "name": isRestaurant ? restaurantName : "OrderKing Local Delivery",
-        "image": config?.brand?.ogImageUrl || "https://orderking.in/logo.jpg",
+        "image": config?.brand?.ogImageUrl || "https://orderkingpay.com/logo.jpg",
         "url": currentUrl,
         "telephone": supportTelephone,
         "priceRange": "₹₹",
@@ -87,10 +87,10 @@ export function NextGenSeo({ config }: { config: any }) {
       },
       {
         "@type": "WebSite",
-        "url": "https://orderking.in",
+        "url": "https://orderkingpay.com",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://orderking.in/search?q={search_term_string}",
+          "target": "https://orderkingpay.com/search?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }

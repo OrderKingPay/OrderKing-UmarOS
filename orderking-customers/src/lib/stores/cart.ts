@@ -68,11 +68,26 @@ const supabaseStorage: StateStorage = {
   },
 };
 
+export type ScheduledSlot = {
+  date: string;
+  timeSlot: string;
+};
+
+export type PreferredPaymentMethod =
+  | "COD"
+  | "UPI_SANDBOX"
+  | "RAZORPAY_ONLINE"
+  | "KING_PAY"
+  | "DIRECT_UPI";
+
 type State = {
   restaurantId: string | null;
   restaurantName: string;
   coupon: string;
   items: CartItem[];
+  kitchenInstructions: string;
+  scheduledSlot: ScheduledSlot | null;
+  preferredPaymentMethod: PreferredPaymentMethod | null;
   setRestaurant: (id: string, name: string) => void;
   addItem: (restaurantId: string, restaurantName: string, item: CartItem) => "ok" | "replace";
   replaceAndAdd: (restaurantId: string, restaurantName: string, item: CartItem) => void;
@@ -82,6 +97,9 @@ type State = {
   addAddonToItem: (itemKey: string, addonId: string) => void;
   removeAddonFromItem: (itemKey: string, addonId: string) => void;
   setCoupon: (code: string) => void;
+  setKitchenInstructions: (instructions: string) => void;
+  setScheduledSlot: (slot: ScheduledSlot | null) => void;
+  setPreferredPaymentMethod: (method: PreferredPaymentMethod | null) => void;
   clear: () => void;
 };
 
@@ -92,6 +110,9 @@ export const useCartStore = create<State>()(
       restaurantName: "",
       coupon: "",
       items: [],
+      kitchenInstructions: "",
+      scheduledSlot: null,
+      preferredPaymentMethod: null,
       setRestaurant: (id, name) => set({ restaurantId: id, restaurantName: name }),
       addItem: (restaurantId, restaurantName, item) => {
         const cur = get();
@@ -104,7 +125,14 @@ export const useCartStore = create<State>()(
         return "ok";
       },
       replaceAndAdd: (restaurantId, restaurantName, item) => {
-        set({ restaurantId, restaurantName, items: [item], coupon: "" });
+        set({
+          restaurantId,
+          restaurantName,
+          items: [item],
+          coupon: "",
+          kitchenInstructions: "",
+          scheduledSlot: null,
+        });
       },
       replaceCart: (restaurantId, restaurantName, lines) => {
         set({
@@ -112,6 +140,8 @@ export const useCartStore = create<State>()(
           restaurantName,
           items: lines.map(toCartItem),
           coupon: "",
+          kitchenInstructions: "",
+          scheduledSlot: null,
         });
       },
       updateQty: (key, quantity) => {
@@ -147,7 +177,19 @@ export const useCartStore = create<State>()(
         });
       },
       setCoupon: (code) => set({ coupon: code }),
-      clear: () => set({ restaurantId: null, restaurantName: "", items: [], coupon: "" }),
+      setKitchenInstructions: (instructions) => set({ kitchenInstructions: instructions }),
+      setScheduledSlot: (slot) => set({ scheduledSlot: slot }),
+      setPreferredPaymentMethod: (method) => set({ preferredPaymentMethod: method }),
+      clear: () =>
+        set({
+          restaurantId: null,
+          restaurantName: "",
+          items: [],
+          coupon: "",
+          kitchenInstructions: "",
+          scheduledSlot: null,
+          preferredPaymentMethod: null,
+        }),
     }),
     { 
       name: "marketplace-cart",

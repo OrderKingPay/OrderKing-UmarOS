@@ -146,22 +146,22 @@ export interface EcosystemCmsConfig {
 
 export const DEFAULT_ECOSYSTEM_CMS: EcosystemCmsConfig = {
   // 1. Homepage & Global Branding
-  homepageHeroText: "From local master kitchens to your doorstep.",
-  homepageHeroSubtitle: "Authentic culinary selections, zero artificial markup, and community-first delivery.",
-  brandTagline: "Fast Delivery · Honest Prices · Genuine Quality",
-  searchPlaceholderText: "Search restaurants, regional specialties, dishes, or groceries...",
-  deliveryLocationPrompt: "Delivering fresh to your location",
-  badgeGuaranteeText: "100% Hygiene-Inspected Kitchens & Tamper-Evident Packaging",
-  closedHoursNoticeText: "Partner kitchens are currently offline for resting hours. Dispatch opens at 06:00 AM.",
+  homepageHeroText: "Order Food Online",
+  homepageHeroSubtitle: "Local restaurant menus, itemized GST billing, and live delivery tracking.",
+  brandTagline: "",
+  searchPlaceholderText: "Search restaurants, dishes, or cuisines...",
+  deliveryLocationPrompt: "Select delivery location",
+  badgeGuaranteeText: "FSSAI-Licensed Partner Kitchens",
+  closedHoursNoticeText: "Partner kitchens are currently closed. Next dispatch opens at 06:00 AM.",
 
-  // 2. Surge Protection & Competitive Pricing
-  zeroSurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
-  tier1SurgeWarningText: "Zero Dynamic Surge Guarantee: Our delivery fees are strictly fixed regardless of peak hours or bad weather.",
-  surgeDisclaimerSubtext: "Unlike aggregator surge models, restaurant menu rates remain authentic without inflated commission markups.",
-  transparentFeeHeader: "Complete Operational Fee Transparency",
-  freeDeliveryThresholdNotice: "Free delivery unlocked for orders above ₹399",
-  platformFeeDescription: "Direct operational pass-through fee supporting local rider partner dispatch safety.",
-  packagingFeeDisclaimer: "Mandatory food-grade tamper-evident container packaging tariff.",
+  // 2. Delivery Fees & Billing Disclosures
+  zeroSurgeWarningText: "Standard delivery fee schedule applies based on distance and active zone configuration.",
+  tier1SurgeWarningText: "Standard delivery fee schedule applies based on distance and active zone configuration.",
+  surgeDisclaimerSubtext: "Menu prices, delivery fees, packaging charges, and applicable GST are itemized before checkout.",
+  transparentFeeHeader: "Itemized Bill & Fee Breakdown",
+  freeDeliveryThresholdNotice: "Delivery fee waiver threshold configured per restaurant or active offer.",
+  platformFeeDescription: "Platform handling fee as configured in settlement settings.",
+  packagingFeeDisclaimer: "Restaurant packaging charge as set by the merchant partner.",
 
   // 3. KingPay Fintech & Payment Switch
   kingPayOfflineMessage: "KingPay digital wallet switch is undergoing scheduled reserve settlement maintenance. Instant UPI and card rails remain fully active.",

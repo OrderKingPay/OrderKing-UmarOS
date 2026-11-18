@@ -42,7 +42,7 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(shellCode).toContain("<Plane");
       expect(shellCode).toContain("<Train");
       expect(shellCode).toContain("<GraduationCap");
-      expect(shellCode).toContain('title="KingPay Super-App (Flights, Trains, AI Tutor)"');
+      expect(shellCode).toContain('title="KingPay (Flights, Trains, AI Tutor)"');
       expect(shellCode).toContain('to="/travel"');
     });
 
@@ -59,8 +59,8 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
       expect(shellCode).not.toContain("100% Free Delivery");
       expect(shellCode).not.toContain("Cheapest in India");
       expect(shellCode).not.toContain("Save ₹40-₹80");
-      expect(shellCode).not.toContain("OrderKing VIP"); // sanitized to "Verified Patron"
-      expect(shellCode).toContain("Verified Patron");
+      expect(shellCode).not.toContain("OrderKing VIP"); // sanitized to "Verified Account"
+      expect(shellCode).toContain("Verified Account");
     });
 
     it("applies GPU hardware-acceleration and CSS containment to sticky header", () => {

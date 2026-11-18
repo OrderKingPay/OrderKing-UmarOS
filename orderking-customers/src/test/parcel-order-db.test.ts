@@ -12,14 +12,25 @@ vi.mock("@tanstack/react-start", () => ({
   },
 }));
 
+vi.mock("@tanstack/start-client-core", () => ({
+  createServerFn: () => {
+    const builder: any = {
+      middleware: () => builder,
+      validator: () => builder,
+      handler: (handler: any) => handler,
+    };
+    return builder;
+  },
+}));
+
 vi.mock("@tanstack/react-start/server", () => ({
   getRequest: () => null,
 }));
 
 import { getSql } from "../lib/db";
 import {
-  prepareParcelRazorpayOrder,
-  submitParcelOrder,
+  prepareParcelRazorpayOrderHandler,
+  submitParcelOrderHandler,
 } from "../lib/server/parcel-order";
 
 describe("Parcel Order Database Storage & Server RPC Integration", () => {
@@ -29,7 +40,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
     delete process.env.RAZORPAY_KEY_ID;
     delete process.env.RAZORPAY_KEY_SECRET;
     try {
-      await expect(prepareParcelRazorpayOrder({
+      await expect(prepareParcelRazorpayOrderHandler({
         data: {
           distanceKm: 5.0,
           packageType: "DOCUMENTS",
@@ -71,7 +82,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
         idempotencyKey: testKey,
       };
 
-      const result = await submitParcelOrder({ data: submission });
+      const result = await submitParcelOrderHandler({ data: submission });
 
       expect(result.success).toBe(true);
       expect(result.orderId).toMatch(/^ord_/);
@@ -159,7 +170,7 @@ describe("Parcel Order Database Storage & Server RPC Integration", () => {
         },
       };
 
-      await expect(submitParcelOrder({ data: submission })).rejects.toThrow(
+      await expect(submitParcelOrderHandler({ data: submission })).rejects.toThrow(
         /(Secure online parcel payment is unavailable|Payment signature verification failed)/
       );
     },

@@ -54,7 +54,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
       expect(payload.riderName).toBe("Rahul Sharma");
       expect(payload.riderPhone).toBe("+919876543210");
       expect(payload.dialerTarget).toBe("112");
-      expect(payload.helplineTarget).toBe("18001000");
+      expect(payload.helplineTarget).toBe("+919395065587");
     });
 
     it("generates valid Google Maps, WhatsApp, and SMS beacon URLs with coordinate encoding", () => {
@@ -106,7 +106,7 @@ describe("Supreme Tier-1 Rider Superpowers & Fleet Safety Test Suite", () => {
 
       expect(minimalPayload.incidentId).toBeDefined();
       expect(minimalPayload.dialerTarget).toBe("112");
-      expect(minimalPayload.helplineTarget).toBe("18001000");
+      expect(minimalPayload.helplineTarget).toBe("+919395065587");
       expect(minimalPayload.accuracyM).toBe(5);
       expect(minimalPayload.deliveryId).toBeNull();
     });

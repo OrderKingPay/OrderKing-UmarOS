@@ -29,7 +29,7 @@ export function getRestaurantSeoMeta(restaurant: RestaurantDetail | null | undef
 
   const dynamicKeywords = `${cleanName}, ${cleanName} menu, ${cleanName} online order, ${cleanName} ${area}, food delivery near me, order food online near me, restaurants near me, online food delivery in ${area}, best food delivery near me, late night food delivery near me, veg food delivery near me, direct delivery alternative, aggregator alternative, OrderKing delivery, food order near me, ${cuisine} near me`;
 
-  const canonicalUrl = `https://orderking.in/r/${slug}`;
+  const canonicalUrl = `https://orderkingpay.com/r/${slug}`;
 
   return {
     dynamicTitle,
@@ -77,7 +77,7 @@ export function buildRestaurantJsonLd(
       }
     }
   }
-  if (dishImages.length === 0) dishImages.push("https://orderking.in/icon-512.png");
+  if (dishImages.length === 0) dishImages.push("https://orderkingpay.com/icon-512.png");
 
   // Calculate dynamic price range from menu items
   let minPrice = 100;
@@ -228,19 +228,19 @@ export function buildRestaurantJsonLd(
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://orderking.in",
+        item: "https://orderkingpay.com",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Food Delivery Near Me",
-        item: "https://orderking.in/search",
+        item: "https://orderkingpay.com/search",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: restaurantArea,
-        item: `https://orderking.in/search?q=${encodeURIComponent(String(restaurantArea ?? ""))}`,
+        item: `https://orderkingpay.com/search?q=${encodeURIComponent(String(restaurantArea ?? ""))}`,
       },
       {
         "@type": "ListItem",

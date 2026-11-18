@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle, CardMeta } from "@/components/ui/card";
 import {
   RIDER_AFFILIATE_PARTNERS,
   getTrustTier,
-  type TrustTier,
 } from "@/lib/rider/affiliate-ecosystem";
 import {
-  BatteryCharging,
-  Calendar,
   CheckCircle2,
   Coffee,
   Copy,
@@ -20,13 +17,10 @@ import {
   Flower2,
   Fuel,
   Gift,
-  HeartPulse,
   Hospital,
   MapPin,
   Phone,
-  QrCode,
   ShieldCheck,
-  Sparkles,
   X,
   Zap,
 } from "lucide-react";
@@ -35,51 +29,15 @@ import { toast } from "sonner";
 export const PERIOD_LEAVE_STORAGE_KEY = "ok_rider_female_leave_v1";
 
 export function TpaCardQrCode({ value }: { value: string }) {
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(value)}`;
   return (
-    <svg
-      viewBox="0 0 100 100"
-      className="size-20 sm:size-24 rounded-lg bg-white p-1.5 shadow-xs shrink-0"
-      fill="currentColor"
-      aria-label={`QR Code for ${value}`}
-    >
-      <rect width="100" height="100" fill="white" />
-      {/* Top Left Position Square */}
-      <rect x="10" y="10" width="24" height="24" fill="#0f172a" rx="3" />
-      <rect x="14" y="14" width="16" height="16" fill="white" rx="2" />
-      <rect x="18" y="18" width="8" height="8" fill="#0f172a" rx="1" />
-      {/* Top Right Position Square */}
-      <rect x="66" y="10" width="24" height="24" fill="#0f172a" rx="3" />
-      <rect x="70" y="14" width="16" height="16" fill="white" rx="2" />
-      <rect x="74" y="18" width="8" height="8" fill="#0f172a" rx="1" />
-      {/* Bottom Left Position Square */}
-      <rect x="10" y="66" width="24" height="24" fill="#0f172a" rx="3" />
-      <rect x="14" y="70" width="16" height="16" fill="white" rx="2" />
-      <rect x="18" y="74" width="8" height="8" fill="#0f172a" rx="1" />
-      {/* Matrix data cells */}
-      <rect x="38" y="12" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="48" y="12" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="42" y="22" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="52" y="22" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="12" y="42" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="22" y="42" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="32" y="38" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="42" y="38" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="52" y="38" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="62" y="42" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="72" y="42" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="82" y="42" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="38" y="52" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="48" y="52" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="58" y="52" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="38" y="66" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="48" y="66" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="66" y="66" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="78" y="66" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="42" y="78" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="54" y="78" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="68" y="78" width="6" height="6" fill="#0f172a" rx="1" />
-      <rect x="82" y="78" width="6" height="6" fill="#0f172a" rx="1" />
-    </svg>
+    <img
+      src={qrUrl}
+      alt={`Partner Welfare QR for ${value}`}
+      width={88}
+      height={88}
+      className="size-20 sm:size-24 rounded-lg bg-white p-1.5 shadow-xs shrink-0 object-contain"
+    />
   );
 }
 
@@ -97,12 +55,10 @@ export function PeriodLeaveModal({
   const tomorrowStr = tomorrowDate.toISOString().slice(0, 10);
 
   const [selectedOption, setSelectedOption] = useState<"2days" | "today" | "tomorrow">("2days");
-  const [submitting, setSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
   const handleClaim = () => {
-    setSubmitting(false);
     const claimedDates =
       selectedOption === "2days"
         ? [todayStr, tomorrowStr]
@@ -110,7 +66,7 @@ export function PeriodLeaveModal({
           ? [todayStr]
           : [tomorrowStr];
     onClaimed(claimedDates);
-    toast.success("Period leave approved for 2 days. Ratings and tier standing are preserved.");
+    toast.success(`Period leave logged (${claimedDates.join(", ")}). Ratings and tier standing preserved.`);
     onClose();
   };
 
@@ -119,7 +75,7 @@ export function PeriodLeaveModal({
       <div className="relative w-full max-w-md rounded-2xl border border-rose-500/30 bg-card p-5 text-foreground shadow-2xl space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-rose-500/20 text-rose-400">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-rose-500/20 text-rose-500">
               <Flower2 className="size-5" />
             </span>
             <div>
@@ -127,7 +83,7 @@ export function PeriodLeaveModal({
                 Female Partner Period Leave
               </h3>
               <p className="text-xs text-muted-foreground">
-                Tier-1 Safety Model · 2 Days/Month Menstrual Welfare
+                Up to 2 Days/Month · Penalty-Free Rest Policy
               </p>
             </div>
           </div>
@@ -135,24 +91,24 @@ export function PeriodLeaveModal({
             type="button"
             onClick={onClose}
             className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            aria-label="Close period leave modal"
           >
             <X className="size-4" />
           </button>
         </div>
 
-        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-200 leading-relaxed space-y-1">
-          <p className="font-semibold text-rose-300">
-            Welfare Protection Policy
+        <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs leading-relaxed space-y-1">
+          <p className="font-semibold text-foreground">
+            Standing Protection Policy
           </p>
-          <p className="text-[11px] text-rose-200/90">
-            Take time off during your cycle without any penalty. No impact on your acceptance rate, streak multipliers, or tier ranking.
+          <p className="text-[11px] text-muted-foreground">
+            Take rest days during your cycle with no impact on your acceptance rate, active streak, or partner tier standing.
           </p>
         </div>
 
-        {/* Leave Dates Selection */}
         <div className="space-y-2">
           <label className="text-xs font-bold text-foreground block">
-            Select Period Leave Duration
+            Select Leave Duration
           </label>
           <div className="space-y-2">
             <button
@@ -165,13 +121,13 @@ export function PeriodLeaveModal({
             >
               <div className="space-y-0.5">
                 <span className="text-xs font-bold block text-foreground">
-                  2 Consecutive Days (Recommended)
+                  2 Consecutive Days
                 </span>
                 <span className="text-[11px] text-muted-foreground">
-                  {todayStr} and {tomorrowStr} · Full 48-Hour Recovery Window
+                  {todayStr} and {tomorrowStr}
                 </span>
               </div>
-              <span className="font-mono text-xs text-rose-400 font-bold">2 Days</span>
+              <span className="font-mono text-xs text-rose-500 font-bold">2 Days</span>
             </button>
 
             <button
@@ -186,28 +142,27 @@ export function PeriodLeaveModal({
                 <span className="text-xs font-bold block text-foreground">Today Only</span>
                 <span className="text-[11px] text-muted-foreground">{todayStr}</span>
               </div>
-              <span className="font-mono text-xs text-rose-400 font-bold">1 Day</span>
+              <span className="font-mono text-xs text-rose-500 font-bold">1 Day</span>
             </button>
           </div>
         </div>
 
-        {/* Benefits Checklist */}
         <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-xs space-y-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Included Welfare Provisions:
+            Policy Terms:
           </span>
           <div className="space-y-1.5 text-[11px]">
             <div className="flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
-              <span>₹350/day rest stipend credited directly to partner wallet</span>
+              <span>Acceptance rate &amp; cancellation score unaffected</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
-              <span>Streak &amp; Gold/Diamond Tier rank frozen without loss</span>
+              <span>Partner tier rank preserved across leave dates</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <CheckCircle2 className="size-3.5 text-emerald-500 shrink-0" />
-              <span>24x7 Doctor tele-consultation on call via MediBuddy OPD</span>
+              <span>24x7 Safety &amp; Welfare Desk: +91-9395065587</span>
             </div>
           </div>
         </div>
@@ -218,11 +173,10 @@ export function PeriodLeaveModal({
           </Button>
           <Button
             onClick={handleClaim}
-            disabled={submitting}
             className="w-2/3 text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white gap-1.5"
           >
             <Flower2 className="size-3.5" />
-            <span>{submitting ? "Processing..." : "Confirm & Claim Leave"}</span>
+            <span>Confirm Leave</span>
           </Button>
         </div>
       </div>
@@ -234,27 +188,32 @@ export function TpaHealthCardModal({
   isOpen,
   onClose,
   riderName = "Delivery Partner",
+  riderId,
 }: {
   isOpen: boolean;
   onClose: () => void;
   riderName?: string;
+  riderId?: string;
 }) {
   if (!isOpen) return null;
 
+  const partnerCode = riderId ? `OK-${riderId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8).toUpperCase()}` : "PENDING-KYC";
+  const qrPayload = `ORDERKINGPAY|PARTNER:${partnerCode}|NAME:${riderName}|GSTIN:18AFXPH9838M1Z9|SUPPORT:+919395065587`;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg rounded-2xl border border-primary/30 bg-[#0f172a] p-5 text-foreground shadow-2xl space-y-4">
+      <div className="relative w-full max-w-lg rounded-2xl border border-border bg-card p-5 text-foreground shadow-2xl space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
+            <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
               <ShieldCheck className="size-5" />
             </span>
             <div>
               <h3 className="text-base font-bold text-foreground">
-                Digital TPA Cashless Hospital Card
+                Statutory Partner Welfare &amp; Insurance ID
               </h3>
               <p className="text-xs text-muted-foreground">
-                Medi Assist TPA · 10,000+ Network Hospitals
+                Code on Social Security, 2020 · Orderkingpay (GSTIN: 18AFXPH9838M1Z9)
               </p>
             </div>
           </div>
@@ -262,114 +221,108 @@ export function TpaHealthCardModal({
             type="button"
             onClick={onClose}
             className="rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+            aria-label="Close welfare card modal"
           >
             <X className="size-4" />
           </button>
         </div>
 
-        {/* Realistic Digital TPA Hospital E-Card */}
-        <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-950/90 via-[#0a231c] to-[#0d1f2d] p-5 text-white shadow-xl space-y-4">
-          {/* Card Top Brand */}
+        <div className="relative overflow-hidden rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-950 via-[#0a231c] to-[#0d1f2d] p-5 text-white shadow-xl space-y-4">
           <div className="flex items-start justify-between border-b border-emerald-500/30 pb-3">
             <div>
               <span className="text-[10px] uppercase font-mono tracking-widest text-emerald-400 block font-bold">
-                OrderKing Delivery Fleet Health Shield
+                Orderkingpay · Assam - 788710
               </span>
               <h4 className="text-sm font-black text-white">
-                Medi Assist TPA Cashless Hospitalization Card
+                Partner On-Duty Accidental &amp; Medical Cover
               </h4>
             </div>
             <span className="rounded-md bg-emerald-500/20 border border-emerald-400/40 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-              Cashless Active
+              {riderId ? "Active" : "KYC Required"}
             </span>
           </div>
 
-          {/* Card Body */}
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-2 text-xs">
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 block">
-                  Beneficiary Partner Name
+                  Beneficiary Partner
                 </span>
                 <span className="font-bold text-sm text-white">{riderName}</span>
               </div>
               <div className="grid grid-cols-2 gap-3 text-[11px]">
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 block">
-                    Policy Number
+                    Partner ID
                   </span>
                   <span className="font-mono font-bold text-emerald-200">
-                    OK-TPA-2026-94821
+                    {partnerCode}
                   </span>
                 </div>
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 block">
-                    TPA Member ID
+                    Entity GSTIN
                   </span>
                   <span className="font-mono font-bold text-emerald-200">
-                    MA-TPA-882941
+                    18AFXPH9838M1Z9
                   </span>
                 </div>
               </div>
               <div>
                 <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 block">
-                  Cashless Hospital Cover
+                  Statutory Coverage
                 </span>
-                <span className="font-mono text-base font-extrabold text-emerald-400">
-                  ₹2,00,000 Cashless + ₹10,00,000 Accident
+                <span className="font-mono text-sm font-extrabold text-emerald-400">
+                  ₹10,00,000 Accident · ₹1,00,000 Medical
                 </span>
               </div>
             </div>
 
-            {/* Scannable QR Code */}
             <div className="flex flex-col items-center gap-1 shrink-0">
-              <TpaCardQrCode value="OK-TPA-2026-94821|MA-TPA-882941" />
-              <span className="text-[9px] font-mono text-emerald-300/80">Scan at Hospital</span>
+              <TpaCardQrCode value={qrPayload} />
+              <span className="text-[9px] font-mono text-emerald-300/80">Partner Verification QR</span>
             </div>
           </div>
 
-          {/* Card Footer */}
           <div className="border-t border-emerald-500/30 pt-3 flex items-center justify-between text-[10px] text-emerald-200/80 font-mono">
-            <span>Valid: 2026 – 2027 · Pan-India</span>
-            <span className="flex items-center gap-1 font-bold text-emerald-300">
-              <Phone className="size-3" /> TPA Desk: 1800-425-4033
-            </span>
+            <span>Code on Social Security, 2020</span>
+            <a href="tel:+919395065587" className="flex items-center gap-1 font-bold text-emerald-300 hover:underline">
+              <Phone className="size-3" /> +91-9395065587
+            </a>
           </div>
         </div>
 
-        {/* Hospital Admission Instructions */}
         <div className="rounded-xl border border-border/60 bg-muted/30 p-3 text-xs space-y-1.5 text-muted-foreground">
-          <p className="font-bold text-foreground">Hospital Cashless Admission Procedure:</p>
+          <p className="font-bold text-foreground">Emergency Claim &amp; Support Procedure:</p>
           <p className="text-[11px] leading-relaxed">
-            1. Present this QR code or Member ID at the hospital TPA / Insurance desk.<br />
-            2. Hospital desk scans policy details and submits pre-authorization.<br />
-            3. Medi Assist approves cashless sanction within 30 minutes. No out-of-pocket cash required.
+            1. In case of an on-duty accident, dial 112 / 108 first and trigger SOS inside the app.<br />
+            2. Contact OrderKing Fleet Welfare Desk at +91-9395065587 with Partner ID {partnerCode}.<br />
+            3. Submit hospital admission slip and KYC details for claim coordination.
           </p>
         </div>
 
         <div className="flex gap-2">
           <Button
             onClick={() => {
-              const cardData = `ORDERKING DELIVERY PARTNER — TPA CASHLESS HEALTH CARD
-Statutory Entity: Orderkingpay (GSTIN: 18AFXPH9838M1Z9)
-Insurer: New India Assurance · Medi Assist TPA
-Policy Number: OK-TPA-2026-94821
-TPA Member ID: MA-TPA-882941
+              const cardData = `ORDERKING DELIVERY PARTNER — STATUTORY WELFARE & INSURANCE ID
+Statutory Entity: Orderkingpay, Hailakandi / Karimganj, Assam - 788710
+GSTIN: 18AFXPH9838M1Z9
+Partner ID: ${partnerCode}
 Partner Name: ${riderName || "Delivery Partner"}
-Cashless Hospital Cover: ₹2,00,000 Cashless + ₹10,00,000 Personal Accident
-Valid Period: 2026 – 2027 (Pan-India)
-TPA Emergency Desk: 1800-425-4033
-Hospital Procedure: Present this ID at the network hospital TPA / Insurance desk for 30-min cashless pre-authorization.`;
+Statutory Framework: Code on Social Security, 2020 (Chapter IX)
+Coverage: ₹10,00,000 Accidental Death & Disability | ₹1,00,000 Emergency Hospitalization
+24x7 Fleet Welfare Desk: +91-9395065587
+National Emergency: 112 (Police/SOS) | 108 (Ambulance)`;
               const blob = new Blob([cardData], { type: "text/plain;charset=utf-8" });
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
               a.href = url;
-              a.download = `OrderKing_TPA_Health_Card_${(riderName || "Partner").replace(/\\s+/g, "_")}.txt`;
+              a.download = `OrderKing_Welfare_Card_${partnerCode}.txt`;
               document.body.appendChild(a);
               a.click();
               document.body.removeChild(a);
               URL.revokeObjectURL(url);
-              toast.success("TPA Cashless Card downloaded successfully.");
+              toast.success("Partner Welfare ID copy downloaded.");
             }}
             variant="outline"
             className="w-1/2 text-xs font-semibold gap-1.5"
@@ -379,7 +332,7 @@ Hospital Procedure: Present this ID at the network hospital TPA / Insurance desk
           </Button>
           <Button
             onClick={onClose}
-            className="w-1/2 text-xs font-bold bg-primary"
+            className="w-1/2 text-xs font-bold bg-primary text-white"
           >
             Done
           </Button>
@@ -394,9 +347,11 @@ type CategoryFilter = "ALL" | "EV" | "FUEL" | "INSURANCE" | "FEMALE_WELFARE" | "
 export function RiderBenefitsHub({
   lifetimeDeliveries = 0,
   riderName,
+  riderId,
 }: {
   lifetimeDeliveries?: number;
   riderName?: string;
+  riderId?: string;
 }) {
   const [filter, setFilter] = useState<CategoryFilter>("ALL");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -416,6 +371,8 @@ export function RiderBenefitsHub({
   });
 
   const trustTier = getTrustTier(lifetimeDeliveries);
+  const partnerCode = riderId ? `OK-${riderId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8).toUpperCase()}` : "PENDING-KYC";
+  const qrPayload = `ORDERKINGPAY|PARTNER:${partnerCode}|NAME:${riderName || "Delivery Partner"}|GSTIN:18AFXPH9838M1Z9|SUPPORT:+919395065587`;
 
   const handlePeriodLeaveClaimed = (dates: string[]) => {
     const claim = { dates, claimedAt: new Date().toLocaleDateString() };
@@ -423,29 +380,28 @@ export function RiderBenefitsHub({
     try {
       window.localStorage.setItem(PERIOD_LEAVE_STORAGE_KEY, JSON.stringify(claim));
     } catch {
-      // Ignore
+      // Ignore storage failures
     }
   };
 
   function copyCode(code: string) {
     navigator.clipboard?.writeText(code);
     setCopiedCode(code);
-    toast.success(`Coupon code ${code} copied to clipboard!`);
+    toast.success(`Partner code ${code} copied.`);
     setTimeout(() => setCopiedCode(null), 3000);
   }
 
   return (
     <div className="space-y-4">
-      {/* Hero Banner */}
-      <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-emerald-500/10 via-primary/5 to-orange-500/10 p-4 sm:p-5">
+      <Card className="relative overflow-hidden border-border p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-white">
                 <Gift className="size-4" />
               </span>
               <h2 className="font-display text-lg font-bold text-foreground">
-                Partner Benefits &amp; Affiliate Hub
+                Partner Welfare &amp; Benefits
               </h2>
               <span className="inline-flex items-center gap-1 rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
                 <Crown className="size-3" />
@@ -453,38 +409,39 @@ export function RiderBenefitsHub({
               </span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Exclusive corporate discounts on EV rentals, battery swapping, HPCL/IOCL fuel cashback, ₹10 Lakh accident insurance, Medi Assist TPA Cashless &amp; female partner period leave.
+              Statutory Code on Social Security 2020 cover, fleet partner programs, payout schedule, and Assam partner rest hubs.
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/80 bg-card/80 p-3 text-center sm:text-right shrink-0">
+          <div className="rounded-xl border border-border bg-muted/30 p-3 text-center sm:text-right shrink-0">
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block">
-              Estimated Annual Savings
+              COD Cash Limit ({trustTier.tier})
             </span>
-            <span className="font-mono text-xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              ₹23,800+
+            <span className="font-mono text-lg font-extrabold text-foreground">
+              ₹{trustTier.floatingCashLimitInr.toLocaleString("en-IN")}
             </span>
-            <span className="text-[10px] text-muted-foreground block">per active partner/yr</span>
+            <span className="text-[10px] text-muted-foreground block">
+              {lifetimeDeliveries} lifetime deliveries
+            </span>
           </div>
         </div>
 
-        {/* Filter Pills */}
         <div className="mt-4 flex flex-wrap gap-1.5 border-t border-border/60 pt-3">
           {[
-            { id: "ALL", label: "All Benefits" },
-            { id: "EV", label: "EV Rental & Swap" },
-            { id: "FUEL", label: "Fuel Cashback" },
-            { id: "INSURANCE", label: "TPA Cashless & Health" },
-            { id: "FEMALE_WELFARE", label: "Female Partner Welfare" },
-            { id: "CASHOUT", label: "On-Demand Payout" },
-            { id: "REST_POINTS", label: "Rest Points" },
+            { id: "ALL", label: "All" },
+            { id: "INSURANCE", label: "Insurance & Welfare" },
+            { id: "FEMALE_WELFARE", label: "Period Leave" },
+            { id: "CASHOUT", label: "Payout Rules" },
+            { id: "REST_POINTS", label: "Assam Hubs" },
+            { id: "EV", label: "EV Partners" },
+            { id: "FUEL", label: "Fuel Programs" },
           ].map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => setFilter(cat.id as CategoryFilter)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition ${filter === cat.id
-                  ? "bg-primary text-primary-foreground shadow-xs"
+                  ? "bg-primary text-white shadow-xs"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted"
                 }`}
             >
@@ -494,122 +451,7 @@ export function RiderBenefitsHub({
         </div>
       </Card>
 
-      {/* 1. EV RENTAL & BATTERY SWAP SECTION */}
-      {(filter === "ALL" || filter === "EV") && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Zap className="size-4 text-emerald-600" />
-              <span>EV Rental &amp; Battery Swapping Partners (15% Corporate Discount)</span>
-            </h3>
-            <Badge tone="online" className="text-[10.5px]">Fleet Program</Badge>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {RIDER_AFFILIATE_PARTNERS.evPartners.map((ev) => (
-              <Card key={ev.id} className="flex flex-col justify-between border-border/70 p-4 space-y-3">
-                <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h4 className="font-bold text-sm text-foreground">{ev.name}</h4>
-                      <p className="text-xs text-muted-foreground">{ev.service}</p>
-                    </div>
-                    <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                      15% OFF
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {ev.description}
-                  </p>
-
-                  <div className="rounded-lg bg-muted/40 p-2 text-xs border border-border/60 flex items-center justify-between">
-                    <span className="text-muted-foreground">Estimated Benefit:</span>
-                    <strong className="font-mono text-emerald-600 dark:text-emerald-400">
-                      {ev.savingsMonthly}
-                    </strong>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-2 border-t border-border/60">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground font-mono">Code: {ev.promoCode}</span>
-                    <button
-                      type="button"
-                      onClick={() => copyCode(ev.promoCode)}
-                      className="text-primary hover:underline flex items-center gap-1 font-semibold"
-                    >
-                      {copiedCode === ev.promoCode ? (
-                        <CheckCircle2 className="size-3.5 text-emerald-600 inline" />
-                      ) : (
-                        <Copy className="size-3.5 inline" />
-                      )}
-                      <span>{copiedCode === ev.promoCode ? "Copied" : "Copy Code"}</span>
-                    </button>
-                  </div>
-
-                  <a
-                    href={ev.deepLink}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition"
-                  >
-                    <span>Claim 15% on Partner App</span>
-                    <ExternalLink className="size-3.5" />
-                  </a>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 2. FUEL CASHBACK & FLEET PETROCARD SECTION */}
-      {(filter === "ALL" || filter === "FUEL") && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
-              <Fuel className="size-4 text-orange-500" />
-              <span>Fuel Fleet Petrocard Integration</span>
-            </h3>
-            <Badge tone="online" className="text-[10.5px]">PetroCard Tariff</Badge>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {RIDER_AFFILIATE_PARTNERS.fuelPartners.map((fuel) => (
-              <Card key={fuel.id} className="border-border/70 p-4 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h4 className="font-bold text-sm text-foreground">{fuel.name}</h4>
-                    <p className="text-xs text-muted-foreground">{fuel.service}</p>
-                  </div>
-                  <span className="rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-700 dark:text-orange-400">
-                    {fuel.discount}
-                  </span>
-                </div>
-
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {fuel.description}
-                </p>
-
-                <div className="rounded-lg bg-muted/40 p-2.5 text-xs border border-border/60 flex items-center justify-between">
-                  <span className="text-muted-foreground">Estimated Savings:</span>
-                  <strong className="font-mono text-emerald-600 dark:text-emerald-400">
-                    {fuel.savingsMonthly}
-                  </strong>
-                </div>
-
-                <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Card Format: Virtual &amp; Physical</span>
-                  <span className="font-semibold text-primary">{fuel.claimText}</span>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 3. CODE ON SOCIAL SECURITY 2020 INSURANCE & OPD SECTION */}
+      {/* 1. CODE ON SOCIAL SECURITY 2020 INSURANCE & WELFARE SECTION */}
       {(filter === "ALL" || filter === "INSURANCE" || filter === "FEMALE_WELFARE") && (
         <Card className="border-border/70 p-4 sm:p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
@@ -619,7 +461,7 @@ export function RiderBenefitsHub({
               </span>
               <div>
                 <CardTitle className="text-base">
-                  Group Accidental Insurance &amp; Health OPD Protection
+                  On-Duty Accidental Insurance &amp; Social Security
                 </CardTitle>
                 <CardMeta>
                   {RIDER_AFFILIATE_PARTNERS.insurance.statute} · Chapter IX Gig Worker Welfare
@@ -627,7 +469,7 @@ export function RiderBenefitsHub({
               </div>
             </div>
             <Badge tone="online" className="shrink-0">
-              Active Partner Insurance
+              GSTIN: 18AFXPH9838M1Z9
             </Badge>
           </div>
 
@@ -636,37 +478,37 @@ export function RiderBenefitsHub({
               <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
                 Accidental Death Cover
               </span>
-              <p className="font-mono text-lg font-black text-foreground">
+              <p className="font-mono text-base font-black text-foreground">
                 {RIDER_AFFILIATE_PARTNERS.insurance.accidentalDeathCover}
               </p>
-              <p className="text-[11px] text-muted-foreground">Directly payable to registered nominee</p>
+              <p className="text-[11px] text-muted-foreground">Payable to registered nominee</p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-1">
               <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
                 Total Disability Cover
               </span>
-              <p className="font-mono text-lg font-black text-foreground">
+              <p className="font-mono text-base font-black text-foreground">
                 {RIDER_AFFILIATE_PARTNERS.insurance.disabilityCover}
               </p>
-              <p className="text-[11px] text-muted-foreground">Permanent disability livelihood protection</p>
+              <p className="text-[11px] text-muted-foreground">Permanent disability protection</p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-1">
               <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
-                Health OPD Subscription
+                Emergency Medical Cover
               </span>
-              <p className="font-mono text-lg font-black text-emerald-600 dark:text-emerald-400">
-                {RIDER_AFFILIATE_PARTNERS.insurance.opdHealthCard}
+              <p className="font-mono text-base font-black text-emerald-600 dark:text-emerald-400">
+                {RIDER_AFFILIATE_PARTNERS.insurance.hospitalizationCover}
               </p>
               <p className="text-[11px] text-muted-foreground">
-                Tele-consultation benefit + pharmacy discount
+                On-duty accidental hospitalization
               </p>
             </div>
           </div>
 
-          {/* Digital TPA Cashless Hospital Card with Scannable QR Code */}
-          <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950/80 via-[#0a231c] to-[#0f172a] p-4 text-white shadow-lg space-y-3">
+          {/* Statutory Partner Welfare ID Card with Real QR */}
+          <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950 via-[#0a231c] to-[#0f172a] p-4 text-white shadow-lg space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-500/30 pb-2.5">
               <div className="flex items-center gap-2">
                 <span className="flex size-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400">
@@ -674,15 +516,15 @@ export function RiderBenefitsHub({
                 </span>
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wide text-emerald-300">
-                    Digital TPA Cashless Hospital Card
+                    Partner Welfare &amp; Insurance ID
                   </h4>
                   <span className="text-[11px] text-emerald-100/70 font-mono">
-                    Policy: OK-TPA-2026-94821 · Medi Assist
+                    ID: {partnerCode} · Support: +91-9395065587
                   </span>
                 </div>
               </div>
               <Badge tone="online" className="bg-emerald-500/20 text-emerald-300 border-emerald-400/30 shrink-0">
-                10,000+ Cashless Hospitals
+                Orderkingpay Assam
               </Badge>
             </div>
 
@@ -690,54 +532,54 @@ export function RiderBenefitsHub({
               <div className="space-y-1.5 text-xs text-left w-full sm:w-auto">
                 <div>
                   <span className="text-[10px] uppercase tracking-wider text-emerald-400/80 block">
-                    Beneficiary Member
+                    Beneficiary Partner
                   </span>
                   <span className="font-bold text-sm text-white">
                     {riderName || "OrderKing Delivery Partner"}
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-emerald-200">
-                  <span>Member ID: <strong>MA-TPA-882941</strong></span>
-                  <span>Limit: <strong>₹2,00,000 Cashless</strong></span>
+                  <span>Partner ID: <strong>{partnerCode}</strong></span>
+                  <span>Accident Cover: <strong>₹10,00,000</strong></span>
                 </div>
                 <p className="text-[11px] text-emerald-100/80">
-                  Present QR code at any network hospital admission desk for instantaneous pre-authorization.
+                  Show this Partner ID and QR code when coordinating emergency medical claims with OrderKing Fleet Desk (+91-9395065587).
                 </p>
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
-                <TpaCardQrCode value="OK-TPA-2026-94821|MA-TPA-882941" />
+                <TpaCardQrCode value={qrPayload} />
                 <Button
                   onClick={() => setTpaModalOpen(true)}
                   className="text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-black shrink-0"
                   size="sm"
                 >
-                  View Full Card
+                  View Full ID
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Female Partner Menstrual Health Leave (Tier-1 Welfare Standard) */}
-          <div className="rounded-xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-pink-500/5 to-purple-500/10 p-4 space-y-2.5">
+          {/* Female Partner Period Leave */}
+          <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4 space-y-2.5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <span className="flex size-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-400">
+                <span className="flex size-7 items-center justify-center rounded-lg bg-rose-500/20 text-rose-500">
                   <Flower2 className="size-4" />
                 </span>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">
-                    Female Delivery Partner Welfare: Period Leave (2 Days/Month)
+                    Female Delivery Partner Period Leave (2 Days/Month)
                   </h4>
                   <p className="text-[11px] text-muted-foreground">
-                    Tier-1 Operational Policy · Paid rest allowance with preserved tier standing
+                    Penalty-free rest leave with preserved acceptance rate and tier standing
                   </p>
                 </div>
               </div>
               {claimedPeriodLeave ? (
                 <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="size-3" />
-                  Leave Claimed ({claimedPeriodLeave.dates.join(", ")})
+                  Leave Logged ({claimedPeriodLeave.dates.join(", ")})
                 </span>
               ) : (
                 <Button
@@ -746,7 +588,7 @@ export function RiderBenefitsHub({
                   className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shrink-0 gap-1.5"
                 >
                   <Flower2 className="size-3.5" />
-                  <span>Claim Period Leave</span>
+                  <span>Log Period Leave</span>
                 </Button>
               )}
             </div>
@@ -754,28 +596,23 @@ export function RiderBenefitsHub({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px] pt-1 border-t border-border/50 text-muted-foreground">
               <span>2 Days / Calendar Month</span>
               <span>No rating or streak penalty</span>
-              <span>₹350/day wallet rest stipend</span>
+              <span>Tier standing preserved</span>
             </div>
-          </div>
-
-          <div className="rounded-xl bg-muted/20 p-3 text-xs text-muted-foreground leading-relaxed border border-border/50">
-            <strong className="text-foreground">Partner Clinic &amp; Tele-health Network: </strong>
-            {RIDER_AFFILIATE_PARTNERS.insurance.opdPartners}. Digital prescriptions generated in 15 minutes.
           </div>
         </Card>
       )}
 
-      {/* 4. INSTANT CASHOUT CONVENIENCE SECTION */}
+      {/* 2. PAYOUT SCHEDULE SECTION */}
       {(filter === "ALL" || filter === "CASHOUT") && (
         <Card className="border-border/70 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CreditCard className="size-4 text-primary" />
               <CardTitle className="text-sm font-bold">
-                On-Demand Mid-Shift Payout vs Scheduled Weekly Settlement
+                Payout Schedule &amp; On-Demand Withdrawal
               </CardTitle>
             </div>
-            <Badge tone="online">NPCI IMPS Rail</Badge>
+            <Badge tone="online">NPCI IMPS / NEFT</Badge>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -784,31 +621,31 @@ export function RiderBenefitsHub({
                 1. Scheduled Weekly Payout
               </span>
               <p className="text-muted-foreground">
-                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. Zero fees or commissions deducted.
+                {RIDER_AFFILIATE_PARTNERS.instantCashout.scheduledSettlement}. Zero processing fee.
               </p>
             </div>
 
             <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-1">
               <span className="font-bold text-foreground">
-                2. On-Demand Mid-Shift Payout
+                2. On-Demand Early Withdrawal
               </span>
               <p className="text-muted-foreground">
-                Withdraw accrued earnings on-demand before Wednesday for a flat convenience fee of ₹10 via NPCI IMPS rail.
+                Withdraw settled earnings before Wednesday for a flat ₹10 IMPS transfer fee (₹5 for Gold, ₹0 for Diamond).
               </p>
             </div>
           </div>
         </Card>
       )}
 
-      {/* 5. REST POINTS & CHARGING ZONES SECTION */}
+      {/* 3. ASSAM REST POINTS & CHARGING HUBS */}
       {(filter === "ALL" || filter === "REST_POINTS") && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
               <Coffee className="size-4 text-orange-600" />
-              <span>Designated Rider Rest Points &amp; Fast Charging Hubs</span>
+              <span>OrderKing Assam Partner Hubs &amp; Rest Points</span>
             </h3>
-            <Badge tone="online" className="text-[10.5px]">Partner Hub Amenities</Badge>
+            <Badge tone="online" className="text-[10.5px]">Assam Operations</Badge>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -836,10 +673,114 @@ export function RiderBenefitsHub({
         </div>
       )}
 
+      {/* 4. EV RENTAL & BATTERY SWAP SECTION */}
+      {(filter === "ALL" || filter === "EV") && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
+              <Zap className="size-4 text-emerald-600" />
+              <span>EV Rental &amp; Battery Swapping Programs</span>
+            </h3>
+            <Badge tone="online" className="text-[10.5px]">Partner Codes</Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {RIDER_AFFILIATE_PARTNERS.evPartners.map((ev) => (
+              <Card key={ev.id} className="flex flex-col justify-between border-border/70 p-4 space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="font-bold text-sm text-foreground">{ev.name}</h4>
+                      <p className="text-xs text-muted-foreground">{ev.service}</p>
+                    </div>
+                    <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      15% OFF
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {ev.description}
+                  </p>
+                </div>
+
+                <div className="space-y-2 pt-2 border-t border-border/60">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground font-mono">Code: {ev.promoCode}</span>
+                    <button
+                      type="button"
+                      onClick={() => copyCode(ev.promoCode)}
+                      className="text-primary hover:underline flex items-center gap-1 font-semibold"
+                    >
+                      {copiedCode === ev.promoCode ? (
+                        <CheckCircle2 className="size-3.5 text-emerald-600 inline" />
+                      ) : (
+                        <Copy className="size-3.5 inline" />
+                      )}
+                      <span>{copiedCode === ev.promoCode ? "Copied" : "Copy Code"}</span>
+                    </button>
+                  </div>
+
+                  <a
+                    href={ev.deepLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white hover:bg-[#c92d39] transition"
+                  >
+                    <span>Visit Partner Site</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 5. FUEL CASHBACK & FLEET PETROCARD SECTION */}
+      {(filter === "ALL" || filter === "FUEL") && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-foreground">
+              <Fuel className="size-4 text-orange-500" />
+              <span>Fuel Fleet Petrocard Programs</span>
+            </h3>
+            <Badge tone="online" className="text-[10.5px]">PetroCard</Badge>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {RIDER_AFFILIATE_PARTNERS.fuelPartners.map((fuel) => (
+              <Card key={fuel.id} className="border-border/70 p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-bold text-sm text-foreground">{fuel.name}</h4>
+                    <p className="text-xs text-muted-foreground">{fuel.service}</p>
+                  </div>
+                  <span className="rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-700 dark:text-orange-400">
+                    {fuel.discount}
+                  </span>
+                </div>
+
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {fuel.description}
+                </p>
+
+                <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">Enrollment</span>
+                  <a href="tel:+919395065587" className="font-semibold text-primary hover:underline">
+                    {fuel.claimText}
+                  </a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       <TpaHealthCardModal
         isOpen={tpaModalOpen}
         onClose={() => setTpaModalOpen(false)}
         riderName={riderName}
+        riderId={riderId}
       />
       <PeriodLeaveModal
         isOpen={periodLeaveModalOpen}

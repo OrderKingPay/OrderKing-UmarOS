@@ -82,16 +82,13 @@ export function CancellationGraceWindow({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-display text-base font-black text-rose-950">
-                Order Cancelled · 100% Refund Issued
+                Order Cancelled · Full Refund Issued
               </h3>
-              <span className="rounded-full bg-rose-100 border border-rose-300 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-rose-800">
-                Zero Dispute
-              </span>
             </div>
             <p className="text-xs text-stone-600 mt-0.5">
               {paymentMethod === "COD"
                 ? "Cancelled before kitchen confirmation. No collection required."
-                : `₹${(totalPaise / 100).toFixed(2)} refunded instantly to your KingPay Wallet/UPI.`}
+                : `₹${(totalPaise / 100).toFixed(2)} refunded to your original payment method.`}
             </p>
           </div>
         </div>
@@ -121,7 +118,7 @@ export function CancellationGraceWindow({
                 </span>
               </div>
               <p className="text-[11px] text-stone-600 mt-0.5">
-                The restaurant kitchen is preparing your dishes with fresh ingredients.
+                The restaurant is preparing your order.
               </p>
             </div>
           </div>
@@ -183,8 +180,8 @@ export function CancellationGraceWindow({
               </span>
             </div>
             <p className="text-xs text-stone-600 mt-1 max-w-md">
-              Changed your mind or placed by mistake? Cancel within the grace window for an
-              <span className="font-extrabold text-stone-900"> instant 100% refund</span>. Zero cancellation fees, zero kitchen dispute.
+              Changed your mind or placed by mistake? Cancel within the grace window for a
+              <span className="font-extrabold text-stone-900"> full refund</span> with no cancellation fee.
             </p>
           </div>
         </div>
@@ -203,12 +200,12 @@ export function CancellationGraceWindow({
             {isCancelling ? (
               <>
                 <RefreshCw className="size-4 animate-spin" />
-                <span>Processing 100% Refund...</span>
+                <span>Processing Refund...</span>
               </>
             ) : (
               <>
                 <Zap className="size-4" />
-                <span>Cancel Order (100% Refund)</span>
+                <span>Cancel Order (Full Refund)</span>
               </>
             )}
           </Button>
@@ -225,7 +222,7 @@ export function CancellationGraceWindow({
               </div>
               <div>
                 <h3 className="font-display text-lg font-black text-stone-900">
-                  Cancel Order with 100% Refund?
+                  Cancel Order for Full Refund?
                 </h3>
                 <p className="text-xs text-stone-600">
                   {countdown.secondsRemaining}s remaining in grace window
@@ -236,11 +233,10 @@ export function CancellationGraceWindow({
             <div className="rounded-2xl bg-orange-50 border border-orange-200 p-3.5 text-xs text-orange-950 space-y-1.5">
               <p className="font-bold flex items-center gap-1.5">
                 <ShieldCheck className="size-4 text-orange-700" />
-                <span>OrderKing Cancellation Protection</span>
+                <span>Grace Window Cancellation</span>
               </p>
               <p className="text-stone-700">
-                100% of {formatPaise(totalPaise, { locale })} will be credited back instantly without
-                human intervention or restaurant disputes.
+                {formatPaise(totalPaise, { locale })} will be refunded to your original payment method.
               </p>
             </div>
 

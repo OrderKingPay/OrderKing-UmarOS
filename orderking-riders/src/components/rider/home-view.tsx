@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/db-cloud";
-import { getCurrentEcosystemShift, getShiftRemainingMinutes, checkThreatZoneIntersections } from "@orderking/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardMeta, CardTitle } from "@/components/ui/card";
@@ -7,49 +6,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage, newIdempotencyKey, withRetry } from "@/lib/client/errors";
-import {
-  calculateRiderPayout,
-  formatPaise,
-  calculateRestaurantWaitPayPaise,
-  STATUTORY_BASE_DISTANCE_KM,
-  STATUTORY_BASE_FARE_PAISE,
-  STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-} from "@/lib/rider/money";
+import { formatPaise } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import {
-  createTicketFn,
   getHomeFn,
-  getPerformanceFn,
   postLocationFn,
   respondOfferFn,
   setStatusFn,
 } from "@/lib/server/rider-fns";
-import type { DispatchOffer, GeoPoint, RiderPerformance } from "@/lib/rider/types";
+import type { DispatchOffer, GeoPoint } from "@/lib/rider/types";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import {
   ArrowRight,
-  Calculator,
   CalendarClock,
   Camera,
   CheckCircle2,
   Clock3,
-  ExternalLink,
-  Gift,
   MapPin,
-  Radio,
   RotateCcw,
-  ShieldAlert,
   ShieldCheck,
   Store,
   Sun,
-  Target,
-  UserCheck,
   Volume2,
   VolumeX,
-  Wallet,
   X,
-  Zap,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -64,19 +45,15 @@ import {
 } from "@/lib/rider/shift-slots";
 import { useDutyLocation } from "./use-duty-location";
 import { useGpsHeartbeat } from "@/lib/hooks/use-gps-heartbeat";
-import { calculateDailyMilestoneProgress, calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
+import { calculateTier1MilestoneBonus } from "@/lib/rider/gig-engine";
 
 import { SwipeSlider } from "./swipe-slider";
 import { useDispatchAudioAlert } from "@/lib/rider/dispatch-audio";
 import { useRiderCustomization } from "@/lib/rider/use-rider-customization";
-import { EmergencySosButton, RiderEmergencySafetySheet } from "./rider-emergency-sos";
+import { RiderEmergencySafetySheet } from "./rider-emergency-sos";
 import { toggleSunlightMode } from "@/lib/fleet/device-health";
 
 type Home = Awaited<ReturnType<typeof getHomeFn>>;
-
-
-const READINESS_STORAGE_KEY = "ok_rider_readiness_v1";
-const DEFAULT_COD_BLOCK_THRESHOLD_PAISE = 150000; // ₹1,500.00 statutory COD platform limit
 
 export const MANDATORY_OFFLINE_REASONS = [
   "End of shift",
@@ -85,16 +62,6 @@ export const MANDATORY_OFFLINE_REASONS = [
   "Bad weather",
   "Personal emergency",
 ] as const;
-
-type ReadinessState = {
-  helmetWorn: boolean;
-  thermalBagClean: boolean;
-  batteryAndGpsActive: boolean;
-  documentsAndFuelReady: boolean;
-};
-
-
-
 
 const HELMET_SELFIE_STORAGE_KEY = "ok_rider_helmet_selfie_v1";
 
@@ -250,7 +217,7 @@ export function HelmetVerificationModal({
             <div className="absolute inset-0 bg-primary/20 backdrop-blur-xs flex flex-col items-center justify-center p-4 space-y-2">
               <div className="size-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
               <span className="text-xs font-bold text-white tracking-wide">
-                AI Biometric &amp; Helmet Scanning...
+                Verifying Helmet &amp; Bag Photo...
               </span>
             </div>
           )}
@@ -318,10 +285,9 @@ export function HelmetVerificationModal({
 
 export function HomeView() {
   const { t } = useI18n();
-  const { sdui, payout, surge, weather, cod } = useRiderCustomization();
+  const { surge, cod } = useRiderCustomization();
   const user = useCurrentUser();
   const [home, setHome] = useState<Home | null>(null);
-  const [performance, setPerformance] = useState<RiderPerformance | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [confirm, setConfirm] = useState<"online" | "offline" | "decline" | null>(null);
@@ -340,51 +306,12 @@ export function HomeView() {
     }
     return false;
   });
-  const [driverReadinessConfirmed, setDriverReadinessConfirmed] = useState<boolean>(() => {
-    try {
-      return window.localStorage.getItem("ok_driver_readiness_v1") === "true";
-    } catch {
-      return false;
-    }
-  });
 
-  function toggleDriverReadiness() {
-    const next = !driverReadinessConfirmed;
-    setDriverReadinessConfirmed(next);
-    try {
-      window.localStorage.setItem("ok_driver_readiness_v1", String(next));
-      if (next) {
-        window.localStorage.setItem(
-          READINESS_STORAGE_KEY,
-          JSON.stringify({
-            helmetWorn: true,
-            thermalBagClean: true,
-            batteryAndGpsActive: true,
-            documentsAndFuelReady: true,
-          }),
-        );
-      }
-    } catch {
-      // Ignore storage errors
-    }
-    if (next) {
-      toast.success("Driver readiness verified: Safety gear, bag, and GPS telemetry active for dispatch.");
-    } else {
-      toast.info("Driver readiness check reset.");
-    }
-  }
-
-  const [selectedShiftDay, setSelectedShiftDay] = useState<"today" | "tomorrow">("today");
   const [bookedSlotsByDay, setBookedSlotsByDay] = useState<Record<string, string[]>>({});
-  const [codNote, setCodNote] = useState("");
-  const [codTicketRef, setCodTicketRef] = useState<string | null>(null);
-  const [codSubmitting, setCodSubmitting] = useState(false);
-  const [externalDepositOpen, setExternalDepositOpen] = useState(false);
   const [sosOpen, setSosOpen] = useState(false);
 
   const todayIso = getIsoDateOffset(0);
   const tomorrowIso = getIsoDateOffset(1);
-  const activeShiftDateIso = selectedShiftDay === "today" ? todayIso : tomorrowIso;
 
   useEffect(() => {
     try {
@@ -416,7 +343,6 @@ export function HomeView() {
     const verifiedTime = new Date().toLocaleTimeString();
     setHelmetSelfie(photoUrl);
     setHelmetVerifiedAt(verifiedTime);
-    setDriverReadinessConfirmed(true);
     try {
       window.localStorage.setItem("ok_driver_readiness_v1", "true");
       window.localStorage.setItem(
@@ -426,7 +352,6 @@ export function HomeView() {
     } catch {
       // Ignore
     }
-    // Seamlessly transition online upon selfie verification
     void go("ONLINE");
   }
 
@@ -438,23 +363,6 @@ export function HomeView() {
     } catch {
       // Ignore
     }
-  }
-
-  function toggleSlotBooking(slotId: string) {
-    setBookedSlotsByDay((prev) => {
-      const current = prev[activeShiftDateIso] ?? [];
-      const exists = current.includes(slotId);
-      const nextForDay = exists ? current.filter((id) => id !== slotId) : [...current, slotId];
-      try {
-        window.localStorage.setItem(
-          `${BOOKED_GIGS_STORAGE_KEY}_${activeShiftDateIso}`,
-          JSON.stringify(nextForDay),
-        );
-      } catch {
-        // Ignore storage errors
-      }
-      return { ...prev, [activeShiftDateIso]: nextForDay };
-    });
   }
 
   const load = useCallback(async () => {
@@ -472,7 +380,6 @@ export function HomeView() {
 
   useEffect(() => {
     void load();
-    void getPerformanceFn().then(setPerformance).catch(() => undefined);
     const id = window.setInterval(() => void load(), 5000);
     return () => window.clearInterval(id);
   }, [load]);
@@ -585,8 +492,6 @@ export function HomeView() {
     );
   }
 
-  const isVerified = home.rider.kycStatus === "VERIFIED" || (home.rider.kycStatus as string) === "APPROVED";
-
   const status = home.active ? "BUSY" : home.rider.status;
   const remaining = home.offer
     ? Math.min(30, Math.max(0, Math.ceil((new Date(home.offer.expiresAt).getTime() - now) / 1000)))
@@ -595,13 +500,7 @@ export function HomeView() {
   const kyc = home.rider.kycStatus;
   const allReady = Boolean(helmetSelfie);
 
-  const activeDayBookedSlots = bookedSlotsByDay[activeShiftDateIso] ?? [];
-  const nextBookedSlot = OPERATIONAL_SHIFT_SLOTS.find((s) => activeDayBookedSlots.includes(s.id));
-  const bookedHoursTotal = OPERATIONAL_SHIFT_SLOTS.filter((s) =>
-    activeDayBookedSlots.includes(s.id),
-  ).reduce((sum, s) => sum + s.durationHours, 0);
-
-  // Floating Cash (COD In-Hand) metrics - connected to dynamic platform tokens (₹2,000 hard lock, ₹1,600 soft warning)
+  // Floating Cash (COD In-Hand) metrics connected to platform config
   const unreconciledPaise =
     (home as { cashSummary?: { unreconciledPaise?: number } }).cashSummary?.unreconciledPaise ??
     home.pendingCashPaise ??
@@ -609,14 +508,7 @@ export function HomeView() {
   const codBlockThresholdPaise =
     (home as { config?: { codBlockThresholdPaise?: number } }).config?.codBlockThresholdPaise ??
     cod.hardLockPaise;
-  const codSoftWarningPaise = cod.softWarningPaise;
-  const codUsagePct = Math.min(
-    100,
-    Math.round((unreconciledPaise / Math.max(1, codBlockThresholdPaise)) * 100),
-  );
   const isCodBlocked = unreconciledPaise >= codBlockThresholdPaise;
-  const isCodNearLimit =
-    unreconciledPaise >= codSoftWarningPaise || codUsagePct >= cod.warningThresholdPct;
 
   async function go(statusNext: "ONLINE" | "OFFLINE", reasonArg?: string) {
     if (statusNext === "ONLINE") {
@@ -627,7 +519,7 @@ export function HomeView() {
       }
       if (isCodBlocked) {
         toast.error(
-          `COD Floating Limit Exceeded: Un-deposited cash of ${formatPaise(unreconciledPaise)} exceeds the ₹1,500 platform ceiling. Please deposit cash to go online.`,
+          `COD Floating Limit Exceeded: Un-deposited cash of ${formatPaise(unreconciledPaise)} exceeds the ${formatPaise(codBlockThresholdPaise)} platform ceiling. Please deposit cash to go online.`,
         );
         return;
       }
@@ -674,16 +566,14 @@ export function HomeView() {
     }
   }
 
-  const [gpsPinging, setGpsPinging] = useState(false);
-
   const triggerManualGpsPing = () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       toast.error("Geolocation is not supported on this device.");
       return;
     }
-    setGpsPinging(true);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
+        setRiderPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         try {
           await postLocationFn({
             data: {
@@ -694,16 +584,13 @@ export function HomeView() {
             },
           });
           toast.success(
-            `GPS Ping synchronized (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`
+            `GPS synced (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`
           );
         } catch {
           toast.error("GPS telemetry sync failed");
-        } finally {
-          setGpsPinging(false);
         }
       },
       (err) => {
-        setGpsPinging(false);
         toast.error(`GPS Error: ${err.message}`);
       },
       { enableHighAccuracy: true, timeout: 6000 }
@@ -732,30 +619,6 @@ export function HomeView() {
       respondingOfferRef.current = false;
       setPending(false);
       setConfirm(null);
-    }
-  }
-
-  async function submitCodReconciliationRequest() {
-    if (unreconciledPaise <= 0) return;
-    setCodSubmitting(true);
-    try {
-      const ticket = await createTicketFn({
-        data: {
-          topic: "CASH_DISPUTE",
-          message:
-            codNote.trim() ||
-            `COD Floating Cash Deposit / Reconciliation request for ${formatPaise(unreconciledPaise)} in-hand balance.`,
-          deliveryId: home?.active?.id ?? null,
-          idempotencyKey: newIdempotencyKey(),
-        },
-      });
-      setCodTicketRef(ticket.id.slice(0, 8));
-      setCodNote("");
-      await load();
-    } catch (e) {
-      setError(errorMessage(e, t("actionNotConfirmed")));
-    } finally {
-      setCodSubmitting(false);
     }
   }
 
@@ -1033,6 +896,7 @@ export function HomeView() {
             dropLabel={home.active.customer.area}
             navigateLabel={t("mapsOpen")}
             deliveryState={home.active.state}
+            onRecenter={triggerManualGpsPing}
           />
           <DeliveryActions
             delivery={home.active}
@@ -1079,7 +943,7 @@ export function HomeView() {
           <MapPane
             mode="heatmap"
             current={riderPos}
-            initialHeatmap={true}
+            onRecenter={triggerManualGpsPing}
           />
         </section>
       ) : (
@@ -1095,7 +959,7 @@ export function HomeView() {
             <MapPane
               mode="heatmap"
               current={riderPos}
-              initialHeatmap={true}
+              onRecenter={triggerManualGpsPing}
             />
           </div>
         </Card>
@@ -1325,19 +1189,12 @@ function OfferCard({
   onDecline: () => void;
 }) {
   const { t } = useI18n();
-  const { payout, surge } = useRiderCustomization();
+  const { surge } = useRiderCustomization();
   const { muted, toggleMute } = useDispatchAudioAlert(true, remaining);
 
   const routeKm = Math.max(offer.estimatedTotalRouteKm, offer.approxDistanceKm, 0);
-  const extraKm = Math.max(0, routeKm - payout.baseDistanceKm);
-  const distanceComponentPaise = Math.max(0, offer.expectedPayoutPaise - payout.baseFarePaise);
-  const hasPickupCoords =
-    offer.pickupLocation.lat !== 0 || offer.pickupLocation.lng !== 0;
-  const mapsPickupUrl = hasPickupCoords
-    ? `https://www.google.com/maps/dir/?api=1&destination=${offer.pickupLocation.lat},${offer.pickupLocation.lng}&travelmode=two-wheeler`
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${offer.restaurant.name} ${offer.restaurant.address || offer.restaurant.area}`)}`;
 
-  // 30-second countdown timer calculations (Tier-1 standard)
+  // 30-second countdown timer calculations
   const maxTimerSec = 30;
   const timerPct = Math.min(100, Math.max(0, (remaining / maxTimerSec) * 100));
   const isUrgent = remaining <= 10;

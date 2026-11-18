@@ -126,12 +126,12 @@ export function JoinFleetPage() {
                 Join Our Delivery Fleet
               </h1>
               <p className="max-w-2xl text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                Drive your EV scooter, motorcycle, or cycle with OrderKing. Enjoy daily/weekly instant UPI settlements, zero platform onboarding fee, and accidental insurance cover under the Code on Social Security 2020.
+                Deliver with your EV scooter, motorcycle, or bicycle on OrderKing. Scheduled UPI payout settlements, itemized trip earnings, and social security onboarding under the Code on Social Security 2020.
               </p>
               <div className="flex flex-wrap gap-2 pt-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-[11px] font-bold text-zinc-300">
                   <Coins className="size-3.5 text-orange-400" />
-                  Earn ₹18,000 – ₹35,000/mo
+                  Itemized Per-Trip Payouts
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-[11px] font-bold text-zinc-300">
                   <Clock className="size-3.5 text-emerald-400" />
@@ -139,7 +139,7 @@ export function JoinFleetPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3 py-1 text-[11px] font-bold text-zinc-300">
                   <ShieldCheck className="size-3.5 text-blue-400" />
-                  ₹5 Lakh Accidental Cover
+                  Code on Social Security 2020
                 </span>
               </div>
             </div>
@@ -376,7 +376,7 @@ export function JoinFleetPage() {
                 <ul className="space-y-3 text-xs text-zinc-300">
                   <li className="flex items-start gap-2.5">
                     <CheckCircle className="size-4 shrink-0 text-emerald-400 mt-0.5" />
-                    <span><strong>Daily &amp; Weekly Payouts:</strong> Direct UPI or bank transfer with full transparency and zero hidden deductions.</span>
+                    <span><strong>Daily &amp; Weekly Payouts:</strong> Direct UPI or bank transfer with itemized payout statements.</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <CheckCircle className="size-4 shrink-0 text-emerald-400 mt-0.5" />

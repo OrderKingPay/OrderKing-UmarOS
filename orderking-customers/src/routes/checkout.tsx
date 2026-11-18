@@ -69,8 +69,6 @@ import { useCartStore } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { newId } from "@/lib/ids";
 import { createRazorpayOrder } from "@/lib/server/razorpay-order";
-import { WhatsAppShare } from "@/components/market/whatsapp-share";
-import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
 import { AudioVoiceNote } from "@/components/market/audio-voice-note";
 import { useVoiceNoteStore } from "@/lib/stores/voice-notes";
 import { CheckoutPageSkeleton } from "@/components/skeletons/route-skeletons";
@@ -124,9 +122,21 @@ function CheckoutPage() {
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const { user, isPending } = useCurrentUserState();
-  const { restaurantId, restaurantName, items, coupon, clear } = useCartStore();
+  const {
+    restaurantId,
+    restaurantName,
+    items,
+    coupon,
+    kitchenInstructions,
+    scheduledSlot,
+    setScheduledSlot,
+    preferredPaymentMethod,
+    clear,
+  } = useCartStore();
   const location = useLocationStore((s) => s.location);
-  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY" | "DIRECT_UPI">("RAZORPAY_ONLINE");
+  const [method, setMethod] = useState<"COD" | "UPI_SANDBOX" | "RAZORPAY_ONLINE" | "KING_PAY" | "DIRECT_UPI">(
+    preferredPaymentMethod ?? "RAZORPAY_ONLINE"
+  );
   const [preferredUpiApp, setPreferredUpiApp] = useState<string>("UPI QR");
   const [directUpiModalOpen, setDirectUpiModalOpen] = useState(false);
   const [directUpiTxnRef, setDirectUpiTxnRef] = useState<string>("");
@@ -144,7 +154,6 @@ function CheckoutPage() {
   const [busy, setBusy] = useState(false);
   const [locationPickerOpen, setLocationPickerOpen] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [scheduledSlot, setScheduledSlot] = useState<{ date: string; timeSlot: string } | null>(null);
   const navigate = useNavigate();
 
   const DELIVERY_INSTRUCTIONS = [
@@ -217,7 +226,8 @@ function CheckoutPage() {
   const isCodEligible = totalPayable > 0 && totalPayable <= codMaxPaise && !isLateNight;
   const isKingPaySufficient = walletBalancePaise >= totalPayable && totalPayable > 0;
 
-  const submit = async () => {
+  const submit = async (confirmedUpiRef?: string) => {
+    const activeUpiRef = confirmedUpiRef || directUpiTxnRef;
     if (!restaurantId || !quote.data) return;
     if (!restaurantOpen) {
       toast.error("This restaurant is currently closed and not accepting orders.");
@@ -257,11 +267,20 @@ function CheckoutPage() {
       if (deliveryVoiceNoteText) {
         orderNotes = `${orderNotes} ${deliveryVoiceNoteText}`.trim();
       }
+      if (kitchenInstructions.trim()) {
+        orderNotes = `[Kitchen: ${kitchenInstructions.trim()}] ${orderNotes}`.trim();
+      }
+      if (scheduledSlot) {
+        orderNotes = `[Scheduled: ${scheduledSlot.date} ${scheduledSlot.timeSlot}] ${orderNotes}`.trim();
+      }
       if (noCutlery) {
         orderNotes = `[No Cutlery Needed] ${orderNotes}`.trim();
       }
       if (forSomeoneElse && recipientName.trim()) {
         orderNotes = `[Deliver to: ${recipientName.trim()}${recipientPhone.trim() ? ` (${recipientPhone.trim()})` : ""}] ${orderNotes}`.trim();
+      }
+      if (method === "DIRECT_UPI" && activeUpiRef) {
+        orderNotes = `[UPI Ref: ${activeUpiRef}] ${orderNotes}`.trim();
       }
 
       const placeFinalOrder = async (
@@ -385,7 +404,7 @@ function CheckoutPage() {
           setBusy(false);
         });
         rzp.open();
-      } else if (method === "DIRECT_UPI" && !directUpiTxnRef) {
+      } else if (method === "DIRECT_UPI" && !activeUpiRef) {
         setDirectUpiModalOpen(true);
         setBusy(false);
         return;
@@ -495,36 +514,6 @@ function CheckoutPage() {
                     {location.line1 || "Please provide your detailed street address & landmark"}
                   </p>
                 </div>
-
-                {/* Interactive Route Map Preview Visualization */}
-                <div className="rounded-2xl border border-zinc-900/10 dark:border-zinc-800 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-4 text-white shadow-inner relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <Bike className="size-28" />
-                  </div>
-
-                  <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-xs text-orange-400 font-extrabold uppercase tracking-wider">
-                        <Sparkles className="size-3.5" />
-                        <span>Live Delivery Route Preview</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs font-medium text-zinc-300">
-                        <span>{restaurantName || "Kitchen"}</span>
-                        <span className="text-orange-400">┈┈┈┈┈┈</span>
-                        <span>{location.label || "Your Location"}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-xl bg-orange-400/20 border border-orange-400/40 px-2.5 py-1 text-xs font-black text-orange-300">
-                        {scheduledSlot ? scheduledSlot.timeSlot : "Live Route"}
-                      </span>
-                      <span className="text-[11px] font-mono text-zinc-400">
-                        [{location.lat.toFixed(2)}, {location.lng.toFixed(2)}]
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </section>
 
               {/* Delivery Timing & Scheduling Section */}
@@ -539,7 +528,7 @@ function CheckoutPage() {
                         {scheduledSlot ? `Scheduled: ${scheduledSlot.date} (${scheduledSlot.timeSlot})` : "Standard Delivery"}
                       </span>
                       <span className="block text-xs text-zinc-500">
-                        {scheduledSlot ? "Order will be prepared fresh right before your chosen slot" : "ETA confirmed upon kitchen acceptance"}
+                        {scheduledSlot ? "Delivery window included with order instructions" : "ETA confirmed upon kitchen acceptance"}
                       </span>
                     </div>
                   </div>
@@ -555,8 +544,8 @@ function CheckoutPage() {
                 </div>
               </section>
 
-              {/* Kitchen & Zone Availability Banner */}
-              {!restaurantOpen ? (
+              {/* Closed Restaurant Alert (shown only when closed) */}
+              {!restaurantOpen && (
                 <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 shadow-sm">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/20 text-rose-600 font-bold">
                     <AlertCircle className="size-5" />
@@ -566,24 +555,7 @@ function CheckoutPage() {
                       Restaurant Outside Operating Hours
                     </h3>
                     <p className="text-xs text-rose-600/80 dark:text-rose-300/80 mt-0.5">
-                      {restaurantName || "This kitchen"} is currently closed and not accepting new checkout requests.
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-4 shadow-sm">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 font-black">
-                    <Check className="size-5 stroke-[2.5]" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-                      <span>Verified Kitchen &amp; Delivery Zone</span>
-                      <span className="text-[10px] rounded-full bg-emerald-500/20 px-2 py-0.2 font-black">
-                        LIVE
-                      </span>
-                    </h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                      OrderKing connects with {restaurantName || "kitchen"} via active dispatch network. Real-time integer-paise quote from database.
+                      {restaurantName || "This kitchen"} is currently closed and not accepting new orders.
                     </p>
                   </div>
                 </div>
@@ -652,7 +624,7 @@ function CheckoutPage() {
                         Don&apos;t send plastic cutlery
                       </span>
                       <span className="block text-xs text-zinc-500">
-                        Help reduce single-use plastic waste. Thank you for protecting nature.
+                        Skip single-use plastic cutlery with this order
                       </span>
                     </div>
                   </div>
@@ -723,7 +695,7 @@ function CheckoutPage() {
                         />
                       </div>
                       <span className="block text-xs text-zinc-500">
-                        Transparent micro-donation · Direct hunger relief program
+                        Optional ₹2 contribution
                       </span>
                     </div>
                   </div>
@@ -884,10 +856,6 @@ function CheckoutPage() {
                     <CreditCard className="size-4 text-orange-600" />
                     <span>Select Payment Method</span>
                   </h2>
-                  <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">
-                    <ShieldCheck className="size-3.5" />
-                    Zero Extra Fees
-                  </span>
                 </div>
 
                 {/* Direct NPCI UPI Intent link & Live Dynamic BharatQR */}
@@ -957,7 +925,7 @@ function CheckoutPage() {
                           amountInRupees: totalPayable / 100,
                           currency: "INR",
                           transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
-                          transactionNote: `OrderKing Feast ${restaurantName || ""}`.trim().slice(0, 50),
+                          transactionNote: `OrderKing Order ${restaurantName || ""}`.trim().slice(0, 50),
                           merchantCategoryCode: "5812",
                           mode: "02",
                         })}
@@ -976,7 +944,7 @@ function CheckoutPage() {
                             amountInRupees: totalPayable / 100,
                             currency: "INR",
                             transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
-                            transactionNote: `OrderKing Feast`,
+                            transactionNote: `OrderKing Order`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "tez://upi/pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
@@ -992,7 +960,7 @@ function CheckoutPage() {
                             amountInRupees: totalPayable / 100,
                             currency: "INR",
                             transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
-                            transactionNote: `OrderKing Feast`,
+                            transactionNote: `OrderKing Order`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "phonepe://pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
@@ -1008,7 +976,7 @@ function CheckoutPage() {
                             amountInRupees: totalPayable / 100,
                             currency: "INR",
                             transactionRef: `OKUPI-${Date.now().toString().slice(-6)}`,
-                            transactionNote: `OrderKing Feast`,
+                            transactionNote: `OrderKing Order`,
                             merchantCategoryCode: "5812",
                           }).replace(/^upi:\/\/pay/, "paytmmp://pay")}
                           className="flex flex-col items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-surface p-2 transition hover:border-orange-400 no-underline"
@@ -1072,7 +1040,7 @@ function CheckoutPage() {
                       </div>
 
                       <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-                        Atomic ledger debit with row-level transaction safety. 0% gateway drop rate.
+                        Pay directly from your KingPay wallet balance.
                       </p>
                     </div>
                   </label>
@@ -1248,8 +1216,8 @@ function CheckoutPage() {
                       <div className="flex items-center gap-1.5">
                         <span className="font-semibold text-zinc-800 dark:text-zinc-200">Food Total</span>
                         <BillTooltip
-                          title="Kitchen Food Bill"
-                          text="Sum of all ordered delicacies from the master kitchen menu at genuine restaurant prices without aggregator markups."
+                          title="Item Total"
+                          text="Sum of ordered items from the restaurant menu."
                         />
                       </div>
                       <span className="tabular-nums font-bold text-zinc-950 dark:text-zinc-50">
@@ -1281,8 +1249,8 @@ function CheckoutPage() {
                         <div className="flex items-center gap-1.5">
                           <span className="text-zinc-700 dark:text-zinc-300">Kitchen Packaging</span>
                           <BillTooltip
-                            title="Tamper-Proof Packaging"
-                            text="Set directly by the kitchen for spill-proof, food-grade, tamper-evident thermal packaging."
+                            title="Restaurant Packaging"
+                            text="Packaging charge set by the restaurant."
                           />
                         </div>
                         <span className="tabular-nums font-semibold text-zinc-800 dark:text-zinc-200">
@@ -1544,10 +1512,7 @@ function CheckoutPage() {
                 </div>
               </section>
 
-              {/* Gamified Referral Loop */}
-              <ReferralGamifiedLoop source="checkout" className="my-6" />
-
-              {/* 4. PROMINENT GOLDEN PLACE ORDER BUTTON */}
+              {/* 4. PROMINENT PLACE ORDER BUTTON */}
               <div className="sticky bottom-4 z-40">
                 <button
                   type="button"
@@ -1577,14 +1542,10 @@ function CheckoutPage() {
                 </button>
               </div>
 
-              {/* Security Trust Microcopy */}
-              <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-500 font-medium pt-2">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="size-3.5 text-emerald-600" />
-                  RBI &amp; NPCI Compliant
-                </span>
-                <span>•</span>
-                <span>Full Refund on Kitchen Cancellation</span>
+              {/* Statutory Microcopy */}
+              <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500 font-medium pt-2">
+                <ShieldCheck className="size-3.5 text-emerald-600" />
+                <span>Orderkingpay · GSTIN 18AFXPH9838M1Z9</span>
               </div>
             </>
           )}
@@ -1614,7 +1575,7 @@ function CheckoutPage() {
             orderNotes={restaurantName || "OrderKing Kitchen"}
             onPaymentConfirmed={(txnRef) => {
               setDirectUpiTxnRef(txnRef);
-              void submit();
+              void submit(txnRef);
             }}
           />
 

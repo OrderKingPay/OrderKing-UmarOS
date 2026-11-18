@@ -320,11 +320,11 @@ function PredictiveSearchPage() {
               </button>
             </form>
 
-            {/* ZERO-TYPING MULTILINGUAL QUICK CHIPS BAR */}
+            {/* QUICK DISH CHIPS BAR */}
             <div className="flex items-center gap-1.5 overflow-x-auto pt-2 pb-0.5 scrollbar-none select-none">
               <span className="text-[9.5px] font-black uppercase tracking-wider text-orange-950/70 shrink-0 flex items-center gap-0.5 pr-0.5">
                 <Sparkles className="size-2.5 text-orange-600" />
-                <span>Zero-Typing:</span>
+                <span>Popular:</span>
               </span>
               {[
                 { name: "Biryani", query: "Biryani", regional: "बिरयानी / বিরিয়ানি" },
@@ -362,9 +362,8 @@ function PredictiveSearchPage() {
                 <div className="p-2 border-b border-orange-100 flex items-center justify-between text-[11px] font-black uppercase text-orange-950/70 bg-orange-50/60 px-3 py-1.5">
                   <span className="flex items-center gap-1.5">
                     <Sparkles className="size-3 text-orange-600" />
-                    <span>Instant Suggestions</span>
+                    <span>Suggestions</span>
                   </span>
-                  <span>150ms Debounced</span>
                 </div>
                 <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
                   {suggestions.map((sug) => {
@@ -778,34 +777,6 @@ function PredictiveSearchPage() {
             )
           )}
         </div>
-
-        {/* 5. FLOATING BOTTOM CART BAR (Tier-1 Parity 1-tap checkout transition) */}
-        {totalCartCount > 0 && (
-          <div className="fixed bottom-3 inset-x-3 sm:inset-x-auto sm:right-6 sm:w-96 z-40 animate-in slide-in-from-bottom-4 duration-300">
-            <Link
-              to="/cart"
-              className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white px-4 py-3 shadow-[0_8px_24px_rgba(5,150,105,0.4)] border border-emerald-400/50 hover:brightness-105 active:scale-98 transition no-underline"
-            >
-              <div className="flex items-center gap-2.5">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-white/20 text-white font-black text-sm">
-                  {totalCartCount}
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-wide leading-none">
-                    Item added to cart
-                  </p>
-                  <p className="text-[11px] text-emerald-100 font-medium truncate max-w-[180px]">
-                    from {cartRestaurantName || "Kitchen"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 font-black text-sm">
-                <span>View Cart</span>
-                <ArrowRight className="size-4" />
-              </div>
-            </Link>
-          </div>
-        )}
 
         {/* 6. VOICE SEARCH MODAL */}
         <VoiceSearchDialog

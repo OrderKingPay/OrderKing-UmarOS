@@ -34,7 +34,7 @@ export interface ParcelRazorpayResponse {
 /**
  * Core handler to prepare a server-authoritative Razorpay payment order for courier delivery.
  */
-async function prepareParcelRazorpayOrderHandler({
+export async function prepareParcelRazorpayOrderHandler({
   data,
 }: {
   data: ParcelRazorpayRequest;
@@ -106,7 +106,7 @@ export const prepareParcelRazorpayOrder = createServerFn({ method: "POST" })
 /**
  * Core handler to submit a point-to-point parcel/courier order directly into PostgreSQL orders table.
  */
-async function submitParcelOrderHandler({
+export async function submitParcelOrderHandler({
   data,
 }: {
   data: ParcelOrderSubmission;

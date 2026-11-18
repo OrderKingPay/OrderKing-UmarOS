@@ -90,7 +90,7 @@ describe("OrderKing Rider App: Benefits Hub & Polite Dynamic Floating Cash", () 
       verifyNoPunitiveLanguage(msg.headline + " " + msg.greetingAndStatus + " " + msg.suggestedAction);
     });
 
-    it("generates tea-break focused empathic message when 100% limit is reached", () => {
+    it("generates clear, non-punitive message when 100% COD limit is reached", () => {
       const msg = getPoliteFloatingCashMessage({
         currentBalancePaise: 200000, // ₹2,000 / ₹2,000 = 100%
         lifetimeDeliveries: 15,
@@ -99,9 +99,10 @@ describe("OrderKing Rider App: Benefits Hub & Polite Dynamic Floating Cash", () 
 
       expect(msg.tone).toBe("LIMIT_REACHED");
       expect(msg.badgeTone).toBe("busy");
-      expect(msg.headline).toContain("Incredible hustle today, Amit!");
-      expect(msg.suggestedAction).toContain("tea break");
-      expect(msg.chaiBreakEncouragement).toContain("Chai break time");
+      expect(msg.headline).toContain("Amit");
+      expect(msg.headline).toContain("COD holding limit");
+      expect(msg.suggestedAction).toContain("UPI");
+      expect(msg.chaiBreakEncouragement).toContain("Prepaid online deliveries remain active");
       expect(msg.prepaidOrdersUninterruptedNotice).toContain(
         "Prepaid online deliveries remain active and unpaused",
       );

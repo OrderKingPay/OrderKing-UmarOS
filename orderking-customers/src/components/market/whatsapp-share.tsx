@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Share2, Copy, Check, Sparkles, Users, Gift, Flame, ArrowRight } from "lucide-react";
+import { Share2, Copy, Check, Gift } from "lucide-react";
 import { toast } from "sonner";
 
 interface WhatsAppShareProps {
@@ -24,10 +24,10 @@ export function WhatsAppShare({
   const [copied, setCopied] = useState(false);
 
   const getShareData = () => {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://orderkingpay.com";
     
     if (variant === "restaurant") {
-      const restName = restaurantName || "OrderKing Partner Kitchen";
+      const restName = restaurantName || "OrderKing Restaurant";
       const restUrl = restaurantSlug ? `${origin}/r/${restaurantSlug}?ref=${referralCode}` : `${origin}?ref=${referralCode}`;
       const message = `Order from *${restName}*${cuisine ? ` (${cuisine})` : ""} on OrderKing:\n${restUrl}`;
       return {
@@ -112,7 +112,6 @@ export function WhatsAppShare({
             </div>
             <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-1.5">
               <span>Share {restaurantName ? `"${restaurantName}"` : "this menu"} on WhatsApp</span>
-              <Sparkles className="size-3.5 text-orange-400" />
             </h3>
             <p className="text-xs text-muted max-w-md">
               Send this menu to your WhatsApp group so friends can browse and order together.

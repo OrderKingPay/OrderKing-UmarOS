@@ -7,8 +7,10 @@ interface WorkMarketplaceControlCenterProps {
   workers: WorkerProfile[];
 }
 
-export function WorkMarketplaceControlCenter({ jobs, workers }: WorkMarketplaceControlCenterProps) {
+export function WorkMarketplaceControlCenter({ jobs, workers, onDispatch }: WorkMarketplaceControlCenterProps & { onDispatch?: (jobId: string, workerIds: string[]) => void }) {
   const [selectedCategory, setSelectedCategory] = useState<JobCategory>(JobCategory.WFH);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
+  const [dispatchedIds, setDispatchedIds] = useState<Record<string, boolean>>({});
   
   const matcher = useMemo(() => new AIWorkMatcher(), []);
 
@@ -91,7 +93,7 @@ export function WorkMarketplaceControlCenter({ jobs, workers }: WorkMarketplaceC
                     <h3 className="font-semibold text-lg leading-tight">{job.title}</h3>
                     {job.hourlyRate && (
                       <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                        ${job.hourlyRate}/hr
+                        ₹{job.hourlyRate}/hr
                       </span>
                     )}
                   </div>
@@ -161,9 +163,25 @@ export function WorkMarketplaceControlCenter({ jobs, workers }: WorkMarketplaceC
                   )}
                 </div>
                 
-                <div className="p-3 border-t bg-muted/30">
-                  <button className="w-full py-2 bg-primary text-primary-foreground text-sm font-semibold rounded-md hover:bg-primary/90 transition-colors shadow-sm">
-                    Review Matches & Dispatch
+                <div className="p-3 border-t bg-muted/30 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setExpandedJobId(expandedJobId === job.id ? null : job.id)}
+                    className="flex-1 py-2 border border-border bg-background text-foreground text-xs font-semibold rounded-md hover:bg-muted transition-colors"
+                  >
+                    {expandedJobId === job.id ? 'Hide Matches' : `Inspect (${matches.length})`}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={matches.length === 0 || dispatchedIds[job.id]}
+                    onClick={() => {
+                      const topIds = sortedMatches.slice(0, 3).map((m) => m.worker.id);
+                      setDispatchedIds((prev) => ({ ...prev, [job.id]: true }));
+                      onDispatch?.(job.id, topIds);
+                    }}
+                    className="flex-1 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-md hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50"
+                  >
+                    {dispatchedIds[job.id] ? 'Dispatched' : 'Dispatch Top Matches'}
                   </button>
                 </div>
               </div>

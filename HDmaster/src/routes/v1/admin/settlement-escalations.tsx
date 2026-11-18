@@ -1,5 +1,7 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { verifyAdminSessionFn } from '@/lib/auth/server-session';
 
 export const Route = createFileRoute('/v1/admin/settlement-escalations')({
@@ -15,15 +17,44 @@ export const Route = createFileRoute('/v1/admin/settlement-escalations')({
 });
 
 function SettlementEscalations() {
+  const qc = useQueryClient();
+  const [adjustingBatchId, setAdjustingBatchId] = useState<string | null>(null);
+  const [deductionPaise, setDeductionPaise] = useState<string>("0");
+
   const { data, isLoading } = useQuery({
     queryKey: ['escalated-settlements'],
     queryFn: async () => {
-      // In a real app, this hits a dedicated server function.
-      // For this implementation, we execute the fetch to match the backend structure perfectly.
       const res = await fetch('/api/finance/escalations');
       if (!res.ok) return [];
       return res.json();
     }
+  });
+
+  const actionMutation = useMutation({
+    mutationFn: async (payload: { batchId: string; action: 'ADJUST' | 'FORCE_RESOLVE'; adjustmentPaise?: number }) => {
+      const res = await fetch('/api/finance/escalations', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || `Escalation action failed (HTTP ${res.status})`);
+      }
+      return res.json();
+    },
+    onSuccess: (_data, vars) => {
+      toast.success(
+        vars.action === 'FORCE_RESOLVE'
+          ? `Batch ${vars.batchId} resolved and queued for T+1 settlement.`
+          : `Deductions adjusted for batch ${vars.batchId}.`
+      );
+      setAdjustingBatchId(null);
+      void qc.invalidateQueries({ queryKey: ['escalated-settlements'] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Settlement escalation update failed');
+    },
   });
 
   return (
@@ -84,12 +115,57 @@ function SettlementEscalations() {
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-slate-800 flex justify-end gap-3">
-                    <button className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors">
-                      Adjust Deductions
-                    </button>
-                    <button className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-lg shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all">
-                      Force Resolve (Founder Only)
+                  <div className="mt-6 pt-6 border-t border-slate-800 flex flex-wrap items-center justify-end gap-3">
+                    {adjustingBatchId === batch.batch_id ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={deductionPaise}
+                          onChange={(e) => setDeductionPaise(e.target.value)}
+                          placeholder="Adjustment (paise)"
+                          className="w-40 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-white font-mono"
+                        />
+                        <button
+                          type="button"
+                          disabled={actionMutation.isPending}
+                          onClick={() =>
+                            actionMutation.mutate({
+                              batchId: batch.batch_id,
+                              action: 'ADJUST',
+                              adjustmentPaise: Number(deductionPaise) || 0,
+                            })
+                          }
+                          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          Save Adjustment
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setAdjustingBatchId(null)}
+                          className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAdjustingBatchId(batch.batch_id);
+                          setDeductionPaise("0");
+                        }}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-lg transition-colors"
+                      >
+                        Adjust Deductions
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={actionMutation.isPending}
+                      onClick={() => actionMutation.mutate({ batchId: batch.batch_id, action: 'FORCE_RESOLVE' })}
+                      className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-lg shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all disabled:opacity-50"
+                    >
+                      {actionMutation.isPending ? 'Processing...' : 'Force Resolve (Admin)'}
                     </button>
                   </div>
                 </div>

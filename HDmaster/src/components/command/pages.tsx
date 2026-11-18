@@ -54,7 +54,6 @@ import {
   saveSettingsFn,
   saveZoneFn,
   setFlagFn,
-  tickSim,
   updateCustomerFn,
   updateEmployeeFn,
   loadBranding,
@@ -192,13 +191,6 @@ export function ModuleView({ module, id }: { module: string; id?: string }) {
 export function DashboardPage() {
   const q = useQuery({ queryKey: ["dashboard"], queryFn: () => loadDashboard() });
   const zq = useQuery({ queryKey: ["zones"], queryFn: () => loadZones() });
-  const tick = useMutation({
-    mutationFn: () => tickSim(),
-    onSuccess: (r) => {
-      if (r.ok) toast.message(`Order lifecycle advanced (${r.advanced} orders)`);
-      else toast.error(r.error);
-    },
-  });
   const inv = useInvalidate();
   const data = q.data && q.data.ok ? q.data.data : null;
   const t = data?.today;
@@ -209,14 +201,11 @@ export function DashboardPage() {
         <div>
           <p className="text-xs uppercase tracking-[0.16em] text-muted">Today</p>
           <h1 className="font-display text-3xl">Today&apos;s Live Dashboard</h1>
-          <p className="mt-1 text-sm text-muted">Live Result · What Action To Take · Settings &amp; Customizations</p>
+          <p className="mt-1 text-sm text-muted">Live Result · Operational Queue · Platform Configuration</p>
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => { void q.refetch(); void zq.refetch(); inv(); }}>
             Refresh
-          </Button>
-          <Button size="sm" onClick={() => tick.mutate()} disabled={tick.isPending}>
-            Advance Order Lifecycle
           </Button>
         </div>
       </header>
@@ -1824,445 +1813,20 @@ function MarketingPage() {
         </div>
       </header>
 
-      {/* Strategic Growth Metrics */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard label="Customer CAC" value="₹38" hint="Blended Acquisition Cost (Paid + Viral)" tone="success" />
-        <MetricCard label="Customer LTV (6M)" value="₹840" hint="22.1x LTV/CAC Ratio" tone="success" />
-        <MetricCard label="Viral Referral Share" value="48.2%" hint="Organic word-of-mouth orders" tone="success" />
-        <MetricCard label="Loss Guardrail" value="PASS" hint="All campaigns have positive contribution" tone="success" />
+      {/* Live Campaign Summary */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <MetricCard label="Total Campaigns" value={formatNumber(rows.length)} source="LIVE" />
+        <MetricCard
+          label="Active Campaigns"
+          value={formatNumber(rows.filter((c) => c.status === "ACTIVE" || c.status === "LIVE").length)}
+          source="LIVE"
+        />
+        <MetricCard
+          label="Allocated Budget"
+          value={money(rows.reduce((sum, c) => sum + (Number(c.budgetPaise) || 0), 0))}
+          source="LIVE"
+        />
       </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Panel title="Viral Referral Engine Performance">
-          <div className="space-y-3 text-xs">
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Total Referral Invites Sent:</span>
-              <span className="font-semibold font-mono">1,842</span>
-            </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Friend Signup & Order Conversion:</span>
-              <span className="font-semibold text-emerald-600 font-mono">68.4%</span>
-            </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Average Basket Size on Referral Orders:</span>
-              <span className="font-semibold font-mono">₹385</span>
-            </div>
-            <div className="flex justify-between border-b border-border pb-2">
-              <span className="text-muted">Net Contribution Margin per Referral Order:</span>
-              <span className="font-semibold text-emerald-600 font-mono">+₹42.50 (Safe Profit)</span>
-            </div>
-            <p className="text-[11px] text-muted italic">
-              *All referral vouchers require ₹299 minimum cart value, guaranteeing the platform never loses money.
-            </p>
-          </div>
-        </Panel>
-
-        <Panel title="Off-Peak Flash Drops & Happy Hours">
-          <div className="space-y-3 text-xs">
-            <div className="rounded-lg bg-elevated p-2.5 border border-border">
-              <div className="flex justify-between font-semibold">
-                <span>Snack Rush (2 PM - 6 PM)</span>
-                <span className="text-emerald-600 font-mono">+142% Order Lift</span>
-              </div>
-              <p className="mt-1 text-muted text-[11px]">Drives afternoon cafe orders without cannibalizing prime dinner traffic.</p>
-            </div>
-            <div className="rounded-lg bg-elevated p-2.5 border border-border">
-              <div className="flex justify-between font-semibold">
-                <span>Midnight Feast (10 PM - 2 AM)</span>
-                <span className="text-emerald-600 font-mono">+88% Order Lift</span>
-              </div>
-              <p className="mt-1 text-muted text-[11px]">Delivery fee waiver threshold subsidized by night-owl partner kitchen volume.</p>
-            </div>
-          </div>
-        </Panel>
-      </div>
-
-
-      {/* /* Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard */}
-      <Panel title="Enterprise Growth, Institutional Dossiers & Local Advertising Switchboard">
-        <div className="space-y-5">
-          <div className="grid gap-3 sm:grid-cols-4 text-xs">
-            <div className="rounded-xl border border-orange-500/30 bg-orange-500/10 p-3">
-              <span className="text-muted">Total Grants Vault:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-orange-600 dark:text-orange-300">₹3,74,50,000+</p>
-              <p className="mt-0.5 text-[11px] text-muted">8 Non-Dilutive Subsidies &amp; Cloud Credits</p>
-            </div>
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
-              <span className="text-muted">Direct Cash Grants:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-emerald-600 dark:text-emerald-300">₹1,05,00,000</p>
-              <p className="mt-0.5 text-[11px] text-muted">Assam MAS + DPIIT SISFS + Tax Holiday</p>
-            </div>
-            <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-3">
-              <span className="text-muted">Academic Keynotes:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-purple-600 dark:text-purple-300">4 Premier Tiers</p>
-              <p className="mt-0.5 text-[11px] text-muted">IIT Guwahati, NIT Silchar, Assam Univ, IIM CIP</p>
-            </div>
-            <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3">
-              <span className="text-muted">Meta Geofenced Reach:</span>
-              <p className="mt-1 font-mono text-xl font-bold text-blue-600 dark:text-blue-300">3,200/day @ ₹150</p>
-              <p className="mt-0.5 text-[11px] text-muted">Pins 788710, 788711, 788712 (Active)</p>
-            </div>
-          </div>
-
-          {/* Subsidies & Grants Table */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm">Government Subsidies &amp; Global Cloud Grants Registry</h3>
-              <span className="text-xs text-emerald-600 font-medium">Verified &amp; Direct Bank Wire</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-border text-muted">
-                    <th className="pb-2 font-medium">Grant / Subsidy Program</th>
-                    <th className="pb-2 font-medium">Issuing Authority</th>
-                    <th className="pb-2 font-medium">Cash / Credit Value</th>
-                    <th className="pb-2 font-medium">Disbursement Mode</th>
-                    <th className="pb-2 font-medium">Eligibility Status</th>
-                    <th className="pb-2 font-medium">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  <tr>
-                    <td className="py-2.5 font-semibold">Assam Startup MAS Matching Grant</td>
-                    <td className="py-2.5 text-muted">Govt of Assam (Industries &amp; Commerce)</td>
-                    <td className="py-2.5 font-mono text-emerald-600 font-bold">₹50,00,000 Cash</td>
-                    <td className="py-2.5 text-muted">Direct Bank RTGS (Escrow)</td>
-                    <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">READY TO CLAIM</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Apply MAS", details: "DPIIT Recognition dossier opened for Assam MAS application", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("DPIIT Recognition dossier opened for Assam MAS application (copied)"); }}>Apply MAS</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">DPIIT Startup India Seed Fund (SISFS)</td>
-                    <td className="py-2.5 text-muted">Ministry of Commerce &amp; Industry (DPIIT)</td>
-                    <td className="py-2.5 font-mono text-emerald-600 font-bold">₹20,00,000 Cash</td>
-                    <td className="py-2.5 text-muted">Incubator Milestone Release</td>
-                    <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">INCUBATOR LINKED</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded bg-primary px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Apply SISFS", details: "SISFS application via IIM Calcutta Innovation Park prepared", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("SISFS application via IIM Calcutta Innovation Park prepared (copied)"); }}>Apply SISFS</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">Section 80-IAC 3-Year 100% Tax Holiday</td>
-                    <td className="py-2.5 text-muted">Central Board of Direct Taxes (CBDT)</td>
-                    <td className="py-2.5 font-mono text-emerald-600 font-bold">₹35,00,000+ Savings</td>
-                    <td className="py-2.5 text-muted">100% Retained Net Profit</td>
-                    <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">DPIIT PRE-REQUISITE</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "View Form", details: "Form 1 Section 80-IAC filing template downloaded", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.info("Form 1 Section 80-IAC filing template downloaded (copied)"); }}>View Form</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">MeitY Digital Payments Subsidy</td>
-                    <td className="py-2.5 text-muted">Ministry of Electronics &amp; IT (MeitY)</td>
-                    <td className="py-2.5 font-mono text-emerald-600 font-bold">₹0.30 / ₹2K+ Txn</td>
-                    <td className="py-2.5 text-muted">Direct PG Monthly Credit</td>
-                    <td className="py-2.5"><span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-600">AUTOMATIC</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded border border-border px-2 py-1 text-[10px] hover:bg-surface-2" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Verify PG", details: "MeitY PG auto-reimbursement verified", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("MeitY PG auto-reimbursement verified (copied)"); }}>Verify PG</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">Google for Startups Cloud Program</td>
-                    <td className="py-2.5 text-muted">Google Cloud Platform (GCP)</td>
-                    <td className="py-2.5 font-mono text-blue-600 font-bold">$200,000 (₹1.66 Cr)</td>
-                    <td className="py-2.5 text-muted">GCP Billing Credit Offset</td>
-                    <td className="py-2.5"><span className="rounded bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold text-blue-600">DPIIT ELIGIBLE</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded bg-blue-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim GCP", details: "Google for Startups application payload generated", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Google for Startups application payload generated (copied)"); }}>Claim GCP</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">AWS Activate Portfolio Credits</td>
-                    <td className="py-2.5 text-muted">Amazon Web Services (AWS)</td>
-                    <td className="py-2.5 font-mono text-orange-600 font-bold">$100,000 (₹83 Lakhs)</td>
-                    <td className="py-2.5 text-muted">AWS Compute / DB Credits</td>
-                    <td className="py-2.5"><span className="rounded bg-orange-500/20 px-2 py-0.5 text-[10px] font-bold text-orange-600">INCUBATOR ORG CODE</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded bg-orange-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim AWS", details: "AWS Activate org package linked", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("AWS Activate org package linked (copied)"); }}>Claim AWS</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 font-semibold">Microsoft for Startups Founders Hub</td>
-                    <td className="py-2.5 text-muted">Microsoft Azure &amp; OpenAI</td>
-                    <td className="py-2.5 font-mono text-purple-600 font-bold">$150,000 (₹1.25 Cr)</td>
-                    <td className="py-2.5 text-muted">Azure + OpenAI GPT API Credits</td>
-                    <td className="py-2.5"><span className="rounded bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-600">OPEN APPLICATION</span></td>
-                    <td className="py-2.5">
-                      <button className="rounded bg-purple-600 px-2 py-1 text-[10px] font-bold text-white hover:opacity-90" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ program: "Claim Azure", details: "Microsoft Founders Hub LinkedIn verification opened", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Microsoft Founders Hub LinkedIn verification opened (copied)"); }}>Claim Azure</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Master AI Opportunity Radar & 1-Click Auto-Booking Engine */}
-          <div className="space-y-3 rounded-xl border border-teal-500/30 bg-teal-500/5 p-4 text-xs">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="inline-block h-2 w-2 rounded-full bg-teal-500 animate-ping" />
-                  <h3 className="font-semibold text-sm text-foreground">Master AI Opportunity Radar (25+ Government, Trust &amp; University Calls Scanned)</h3>
-                </div>
-                <p className="mt-0.5 text-muted text-[11px]">
-                  Autonomous radar auto-reserves earliest registration slots and compiles legally-audited application dossiers for direct bank payout.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="bg-teal-600 text-xs font-bold text-white hover:bg-teal-700"
-                  onClick={() => {
-                    if (typeof navigator !== "undefined" && navigator.clipboard) {
-                      void navigator.clipboard.writeText(
-                        JSON.stringify(
-                          {
-                            opportunity: "Assam Startup MAS Matching Scale Grant",
-                            authority: "Govt of Assam & IIM Calcutta Innovation Park",
-                            grantAmount: "₹50,00,000 Cash",
-                            applicant: {
-                              founder: "Hasan",
-                              entity: "Orderkingpay",
-                              gstin: "18AFXPH9838M1Z9",
-                              bank: "SBI Karimganj (RTGS Direct Disbursal)",
-                            },
-                            pitch: "Direct food delivery & 2G offline resilience employing 50+ local youth.",
-                          },
-                          null,
-                          2
-                        )
-                      );
-                      toast.success("Assam MAS ₹50L Auto-Booking Dossier copied to clipboard!");
-                    }
-                  }}
-                >
-                  1-Click Auto-Book Top ₹50L Grant
-                </Button>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-border text-muted">
-                    <th className="pb-2 font-medium">Opportunity / Scheme</th>
-                    <th className="pb-2 font-medium">Organization</th>
-                    <th className="pb-2 font-medium">Direct Cash Payout</th>
-                    <th className="pb-2 font-medium">Prestige Score</th>
-                    <th className="pb-2 font-medium">Deadline / Window</th>
-                    <th className="pb-2 font-medium">Auto-Booking Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/50">
-                  <tr>
-                    <td className="py-2 font-semibold">Assam Startup MAS Matching Scale Grant</td>
-                    <td className="py-2 text-muted">Govt of Assam &amp; IIMCIP</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹50,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">98 / 100</Badge></td>
-                    <td className="py-2 text-muted">Rolling Quarterly</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "Assam MAS ₹50L Dossier Generated & Ready for RTGS", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: Assam MAS ₹50L Dossier Generated & Ready for RTGS"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">Tata Trusts Rural Livelihoods Grant</td>
-                    <td className="py-2 text-muted">Tata Trusts CSR</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹35,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">96 / 100</Badge></td>
-                    <td className="py-2 text-muted">Quarterly Board</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "Tata Trusts ₹35L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: Tata Trusts ₹35L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">MeitY TIDE 2.0 Scale Grant</td>
-                    <td className="py-2 text-muted">Ministry of Electronics &amp; IT</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹30,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">94 / 100</Badge></td>
-                    <td className="py-2 text-muted">Quarterly Review</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "MeitY TIDE ₹30L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: MeitY TIDE ₹30L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">HDFC Bank Parivartan SmartUp Grant</td>
-                    <td className="py-2 text-muted">HDFC Bank CSR</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹25,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">93 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Window</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "HDFC Parivartan ₹25L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: HDFC Parivartan ₹25L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">Startup India Seed Fund Scheme (SISFS)</td>
-                    <td className="py-2 text-muted">DPIIT / Ministry of Commerce</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹20,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">95 / 100</Badge></td>
-                    <td className="py-2 text-muted">Open All Year</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "DPIIT SISFS ₹20L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: DPIIT SISFS ₹20L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">MSME Innovative Idea Hackathon</td>
-                    <td className="py-2 text-muted">Ministry of MSME</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹15,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">90 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Call</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "MSME Hackathon ₹15L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: MSME Hackathon ₹15L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">DST NIDHI-PRAYAS Prototype Grant</td>
-                    <td className="py-2 text-muted">Dept of Science &amp; Technology</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹10,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">92 / 100</Badge></td>
-                    <td className="py-2 text-muted">Bi-Annual Call</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "DST NIDHI-PRAYAS ₹10L Dossier Generated", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: DST NIDHI-PRAYAS ₹10L Dossier Generated"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">National Startup Awards Cash Prize</td>
-                    <td className="py-2 text-muted">DPIIT / Ministry of Commerce</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹10,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">99 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Cycle</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "National Startup Awards Nomination Dossier Ready", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: National Startup Awards Nomination Dossier Ready"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-2 font-semibold">National MSME Award for Innovation</td>
-                    <td className="py-2 text-muted">Ministry of MSME</td>
-                    <td className="py-2 font-mono text-emerald-600 font-bold">₹3,00,000 Cash</td>
-                    <td className="py-2"><Badge variant="outline" className="text-emerald-600 font-bold border-emerald-500/30">97 / 100</Badge></td>
-                    <td className="py-2 text-muted">Annual Cycle</td>
-                    <td className="py-2">
-                      <button className="rounded bg-teal-600 px-2 py-1 text-[10px] font-bold text-white hover:bg-teal-700" onClick={() => { if (typeof navigator !== "undefined" && navigator.clipboard) { void navigator.clipboard.writeText(JSON.stringify({ summary: "National MSME Award Nomination Ready", entity: "Orderkingpay", gstin: "18AFXPH9838M1Z9" }, null, 2)); } toast.success("Dossier copied: National MSME Award Nomination Ready"); }}>Copy Dossier</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Academic Keynotes & Prestige Dossier Section */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-sm">University Keynotes &amp; Founder Prestige</h4>
-                <span className="text-[10px] font-bold uppercase text-purple-600">High Media Impact</span>
-              </div>
-              <ul className="space-y-2 text-muted">
-                <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">1.</span>
-                  <div>
-                    <strong className="text-foreground">IIT Guwahati (E-Cell Summit):</strong> Keynote Speaker on "Decentralized Hyperlocal Food Supply Chains in Tier-2/3 India".
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">2.</span>
-                  <div>
-                    <strong className="text-foreground">NIT Silchar (TechFest Conclave):</strong> Guest of Honour on "Building 2G Offline Resilience &amp; Real-Time Dispatch in Assam".
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">3.</span>
-                  <div>
-                    <strong className="text-foreground">Assam University (Commerce Dept):</strong> Guest Lecture on Unit Economics &amp; Local Marketplace Operations.
-                  </div>
-                </li>
-              </ul>
-              <Button
-                size="sm"
-                variant="outline"
-                className="w-full text-xs font-semibold"
-                onClick={() => {
-                  if (typeof navigator !== "undefined" && navigator.clipboard) {
-                    void navigator.clipboard.writeText(
-                      "INSTITUTIONAL KEYNOTE & DOSSIER: OrderKing founder-led hyperlocal tech operations across Assam and Northeast India. Highlighting kitchen economics, 2G offline resilience, and local youth employment."
-                    );
-                    toast.success("Institutional Keynote & Award Dossier copied to clipboard!");
-                  }
-                }}
-              >
-                Copy Official Institutional Pitch Dossier (IIT/NIT)
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-border bg-elevated p-4 text-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold text-sm">Meta &amp; Google Local Ad Engine</h4>
-                <span className="text-[10px] font-bold uppercase text-blue-600">Geofenced</span>
-              </div>
-              <div className="space-y-1.5 text-muted">
-                <p><strong>Target Pin Codes:</strong> <span className="font-mono text-primary font-bold">788710, 788711, 788712</span> (Karimganj &amp; Barak Valley Core)</p>
-                <p><strong>Daily Budget:</strong> <span className="font-mono text-emerald-600 font-bold">₹150 / day</span> (Estimated 3,200 targeted local views/day)</p>
-                <p><strong>Social Virality Loop:</strong> WhatsApp Status 24K Gold scratch cards drive 15,000+ local views at ₹0 cost.</p>
-                <p><strong>Google Local SEO:</strong> Structured JSON-LD schema positions OrderKing at #1 on Google Search &amp; Maps.</p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 text-xs font-semibold"
-                  onClick={() => {
-                    if (typeof navigator !== "undefined" && navigator.clipboard) {
-                      void navigator.clipboard.writeText(
-                        JSON.stringify(
-                          {
-                            campaign_name: "OrderKing_Karimganj_Town_Local_Reach_V1",
-                            objective: "OUTCOME_APP_PROMOTION",
-                            daily_budget_inr: 150,
-                            geo_locations: { postal_codes: ["788710", "788711", "788712"], country: "IN" },
-                            target_age: { min: 18, max: 45 },
-                            ad_headline: "OrderKing - Food Delivery Across Karimganj",
-                          },
-                          null,
-                          2
-                        )
-                      );
-                      toast.success("Meta Ad Campaign Spec JSON copied to clipboard!");
-                    }
-                  }}
-                >
-                  Copy Meta Ad JSON
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 text-xs font-semibold"
-                  onClick={() => {
-                    if (typeof navigator !== "undefined" && navigator.clipboard) {
-                      void navigator.clipboard.writeText(
-                        JSON.stringify(
-                          {
-                            "@context": "https://schema.org",
-                            "@type": "FoodEstablishment",
-                            name: "OrderKing Food Delivery",
-                            areaServed: ["Karimganj", "Badarpur", "Barak Valley"],
-                            serviceType: "Hyperlocal Express Food Delivery",
-                          },
-                          null,
-                          2
-                        )
-                      );
-                      toast.success("Google Local SEO Schema copied to clipboard!");
-                    }
-                  }}
-                >
-                  Copy SEO Schema
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Panel>
 
       <DataTable
         columns={[
@@ -3566,7 +3130,6 @@ function BrandingPage() {
   const b = (q.data && q.data.ok ? q.data.data : null) as Record<string, string> | null;
   const fields = [
     ["app_name", "App name"],
-    ["tagline", "Tagline"],
     ["admin_branding", "Admin branding"],
     ["customer_branding", "Customer branding"],
     ["restaurant_branding", "Restaurant branding"],
@@ -4101,7 +3664,7 @@ function GoLivePage() {
               <Input
                 value={cur.endpoints.customerAppUrl}
                 onChange={(e) => updateEndpoints({ customerAppUrl: e.target.value })}
-                placeholder="https://orderking.in"
+                placeholder="https://orderkingpay.com"
               />
             </Field>
             <Field label="Partner Kitchen Domain">
@@ -4131,7 +3694,7 @@ function GoLivePage() {
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-primary">
-                How to Make https://orderking.in Live Right Now
+                How to Make https://orderkingpay.com Live Right Now
               </h4>
               <span className="text-[11px] text-muted">Estimated time: 3–5 minutes</span>
             </div>

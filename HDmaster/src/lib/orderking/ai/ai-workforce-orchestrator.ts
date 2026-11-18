@@ -137,8 +137,8 @@ export class AiWorkforceOrchestrator {
       },
       {
         role: "RESTAURANT_SUCCESS_AI",
-        displayName: "Order King Spark Restaurant Advisor",
-        description: "Partners with local restaurants for 0% commission savings, menu optimization, and growth.",
+        displayName: "Order King Restaurant Advisor",
+        description: "Assists restaurant partners with menu catalog hygiene, prep-time calibration, and settlement reconciliation.",
         allowedDomains: ["GROWTH", "OPERATIONS"],
         maxAutonomousFinancialLimitInr: 0,
         assignedTools: ["menu_optimizer", "aggregator_loss_calculator", "pitch_generator"],

@@ -37,7 +37,7 @@ export const DEFAULT_BRAND_CONFIG = {
   surfaceColor: "#071712",
   fontFamily: "Inter / Plus Jakarta Sans",
   logoText: "OrderKing",
-  tagline: "Order like a King.",
+  tagline: "",
   compactMode: false,
   radiusPx: 16,
   themeMode: "light" as "light" | "dark",

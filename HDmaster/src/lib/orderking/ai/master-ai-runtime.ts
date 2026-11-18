@@ -1691,168 +1691,97 @@ export async function executeTool(
     case "autonomous_prestige_subsidies_and_viral_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "PRESTIGE_SUBSIDIES_AND_VIRAL_GROWTH_ORCHESTRATED",
+        status: "GRANT_AND_CAMPAIGN_REFERENCE_READY",
         timestamp: new Date().toISOString(),
-        governmentSubsidiesVault: {
+        governmentSchemesReference: {
           assamStartupPolicy: {
-            matchingGrant: "₹50,00,000 (MAS / IIM Calcutta Innovation Park)",
-            ideaGrant: "₹5,00,000",
-            infraReimbursement: "33% lease + 100% stamp duty waiver",
             portal: "https://startup.assam.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
+            status: "MANUAL_APPLICATION_REQUIRED",
           },
           dpiitStartupIndia: {
-            seedFundGrant: "Up to ₹20,00,000 grant + ₹50,00,000 debt (SISFS)",
-            taxExemption: "Section 80-IAC 3-year 100% Income Tax holiday",
             portal: "https://seedfund.startupindia.gov.in",
-            status: "READY_FOR_FOUNDER_APPLICATION",
+            status: "MANUAL_APPLICATION_REQUIRED",
           },
           cloudInfrastructureCredits: {
-            googleCloudForStartups: "$100,000 - $200,000 USD (~₹1.66 Crore) credits + Maps API",
-            awsActivate: "$100,000 USD (~₹83 Lakhs) credits",
-            microsoftFoundersHub: "$150,000 USD (~₹1.25 Crore) Azure & OpenAI credits",
-            totalFreeCloudCreditsInr: "₹3,74,00,000 (~$450,000 USD)",
-            status: "READY_FOR_FOUNDER_CLAIM",
+            providers: ["Google Cloud for Startups", "AWS Activate", "Microsoft for Startups"],
+            status: "ELIGIBILITY_DEPENDENT_MANUAL_APPLICATION",
           },
           digitalPaymentsIncentive: {
-            meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-            status: "AUTOMATICALLY_CLAIMABLE_VIA_PG",
+            program: "MeitY Incentive Scheme for Promotion of RuPay Debit Cards and Low-Value BHIM-UPI Transactions",
+            status: "APPLIED_VIA_ACQUIRING_BANK",
           },
         },
-        founderPrestigeAndAwardsRegistry: {
-          nationalStartupAwards: "Nomination ready under Food & Hyperlocal Logistics category (PIB / Doordarshan national coverage)",
-          assamYouthIconAward: "Nomination ready under Barak Valley Technologist of the Year (CII North-East)",
-          tieNorthEastTrailblazer: "Keynote presentation & TiE Emerge 50 award pathway",
-          pressReleaseBlueprint: {
-            headline: "Barak Valley Technologist Launches OrderKing: Direct Kitchen Pricing With Instant Digital Rewards",
-            syndicationWires: ["ANI News", "Press Trust of India (PTI)", "Barak Bulletin", "Dainik Jugasankha", "YourStory"],
-          },
+        localGeoCampaignSpec: {
+          targetRadiusKm: 5.0,
+          targetPinCodes: ["788710", "788711", "788712"],
+          dailyBudgetInr: 150,
+          status: "DRAFT_CONFIGURATION_ONLY",
         },
-        hyperViralSocialLoopEngine: {
-          whatsAppStatusMultiplier: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' creates 50,000 daily local impressions at ₹0 ad cost",
-          metaMicroBudgetAdEngine: {
-            targetRadiusKm: 5.0,
-            targetPinCodes: ["788710", "788711", "788712"],
-            dailySpendInr: 150,
-            dailyLocalReach: "3,200 active mobile users in Karimganj Town",
-          },
-          movingBillboardFleet: "10 delivery riders with high-visibility QR boxes act as 24/7 moving street billboards across town",
-        },
-        verdict: "Cloud and government grant eligibility catalog compiled alongside Meta geofencing configuration.",
+        verdict: "Public government startup portals and draft local geofencing parameters compiled. Actual submissions and ad spend require manual authorization.",
       };
     }
 
     case "autonomous_omni_prestige_grant_and_hyper_growth_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OMNI_PRESTIGE_AND_HYPER_GROWTH_ORCHESTRATED",
+        status: "GRANT_PORTAL_CATALOG_COMPILED",
         timestamp: new Date().toISOString(),
-        totalDirectCashGrantsInr: 10500000,
-        totalCloudSubsidiesInr: 37400000,
-        totalGrantAndSubsidyVaultInr: 47900000,
-        governmentSubsidiesVault: {
-          assamStartupPolicy: "₹50,00,000 MAS Scale Grant + ₹5,00,000 Idea Grant (IIMCIP)",
-          dpiitStartupIndia: "₹20,00,000 SISFS Grant + ₹50,00,000 debt via partner incubators",
-          section80IacTaxHoliday: "₹35,00,000+ estimated 3-year 100% Income Tax savings",
-          dstNidhiPrayas: "₹10,00,000 prototype to commercial grant",
-          msmeIdeaHackathon: "₹15,00,000 innovation grant via PFMS direct transfer",
-          meityTide2: "₹7,00,000 (EIR) to ₹30,00,000 (Scale Grant)",
-          meityNpciReimbursement: "0.25% - 0.50% zero-MDR reimbursement on UPI/RuPay",
-          cloudInfrastructureCredits: "$450,000 USD (~₹3.74 Crore) via Google Cloud, AWS & Microsoft Azure",
-        },
-        academicKeynoteInvitations: [
-          { institution: "IIT Guwahati", topic: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch", honorarium: "₹50,000 + Campus Citation" },
-          { institution: "NIT Silchar", topic: "High-Efficiency Aggregators: How Localized Tech Delivers Fast Operations", honorarium: "₹35,000 + VIP Memento" },
-          { institution: "Assam University", topic: "Unit Economics & 2G Resilient FinTech", honorarium: "University Citation & Honorarium" },
-          { institution: "Tezpur University", topic: "Hyperlocal Logistics in Assam: Scaling Remote Towns", honorarium: "Plaque & Honorarium" },
-          { institution: "IIT Bombay E-Summit", topic: "David vs Goliath: Bootstrapping an Indian Super-App against Decacorns", honorarium: "₹1,00,000 Travel & Showcase" },
-          { institution: "BITS Pilani Conquest", topic: "Zero-MDR FinTech & 2G Resilient Edge Delivery Networks", honorarium: "Honorarium & Syndicate Access" },
-          { institution: "IIM Calcutta Innovation Park", topic: "Empowering 500+ Kitchens with Direct Hyperlocal Logistics", honorarium: "Institutional Mentorship" },
+        governmentPortals: [
+          { scheme: "Assam Startup Policy", portal: "https://startup.assam.gov.in", status: "MANUAL_APPLICATION_REQUIRED" },
+          { scheme: "Startup India Seed Fund Scheme (SISFS)", portal: "https://seedfund.startupindia.gov.in", status: "MANUAL_APPLICATION_REQUIRED" },
+          { scheme: "MSME Innovative Scheme", portal: "https://innovative.msme.gov.in", status: "MANUAL_APPLICATION_REQUIRED" },
+          { scheme: "DST NIDHI-PRAYAS", portal: "https://www.nidhi-prayas.org", status: "MANUAL_APPLICATION_REQUIRED" },
         ],
-        nationalAwardsRegistry: [
-          { title: "National Startup Awards", authority: "DPIIT, Govt of India", prize: "₹10,00,000 Cash + Trophy" },
-          { title: "Assam Youth Entrepreneur of the Year", authority: "Govt of Assam & CII", prize: "State Felicitation & Memento" },
-          { title: "National MSME Award for Innovation", authority: "Ministry of MSME", prize: "₹3,00,000 Cash + PMO Felicitation" },
-          { title: "North East Business Excellence Award", authority: "ICC & Ministry of DoNER", prize: "Gold Memento & Citation" },
-          { title: "FICCI / ASSOCHAM India Digital Disruptor", authority: "FICCI & ASSOCHAM", prize: "National Leadership Trophy" },
-        ],
-        hyperViralEngine: {
-          whatsAppStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          metaMarketingApiV21: "Geofenced to 788710, 788711, 788712 @ ₹150/day reaching 3,200 local residents daily",
-          googleAdsPMax: "Performance Max campaign live with local store assets and search themes @ ₹200/day",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
+        campaignDrafts: {
+          metaMarketingApiVersion: "v21.0",
+          targetPinCodes: ["788710", "788711", "788712"],
+          dailyBudgetInr: 150,
+          status: "UNPUBLISHED_DRAFT",
         },
-        verdict: "Over ₹4.79 Crore in non-dilutive capital, 7 premier university keynote invitations, and Meta/Google local geofenced reach activated with zero debt and zero equity dilution.",
+        verdict: "Official Indian startup scheme portal catalog compiled. No funds are awarded or auto-booked without formal government portal submission and approval.",
       };
     }
 
     case "autonomous_opportunity_radar_and_auto_booking_director": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OPPORTUNITY_RADAR_ACTIVE_AUTO_BOOKING_PRIMED",
+        status: "SCHEME_CATALOG_INDEXED",
         timestamp: new Date().toISOString(),
-        scannedOpportunitiesCount: 25,
-        readyToAutoBookCount: 16,
-        totalPotentialCashGrantsInr: "₹1,88,50,000 Direct Cash",
-        totalCloudCreditsInr: "₹3,74,00,000 Cloud Offsets",
-        topRankedOpportunities: [
-          { name: "Assam Startup MAS Matching Scale Grant", benefit: "₹50,00,000 Cash", prestigeScore: 98, status: "READY_TO_AUTO_BOOK", payout: "Direct RTGS" },
-          { name: "Tata Trusts Rural Livelihoods Grant", benefit: "₹35,00,000 Cash", prestigeScore: 96, status: "READY_TO_AUTO_BOOK", payout: "Direct NEFT/RTGS" },
-          { name: "MeitY TIDE 2.0 Scale Grant", benefit: "₹30,00,000 Cash", prestigeScore: 94, status: "READY_TO_AUTO_BOOK", payout: "MeitY TIDE Transfer" },
-          { name: "HDFC Bank Parivartan SmartUp Grant", benefit: "₹25,00,000 Cash", prestigeScore: 93, status: "READY_TO_AUTO_BOOK", payout: "Direct Bank Credit" },
-          { name: "Startup India Seed Fund Scheme (SISFS)", benefit: "₹20,00,000 Cash", prestigeScore: 95, status: "READY_TO_AUTO_BOOK", payout: "Incubator Escrow" },
-          { name: "Reliance Foundation Digital Grant", benefit: "₹20,00,000 Cash", prestigeScore: 91, status: "READY_TO_AUTO_BOOK", payout: "Direct Corporate Wire" },
-          { name: "MSME Innovative Idea Hackathon", benefit: "₹15,00,000 Cash", prestigeScore: 90, status: "READY_TO_AUTO_BOOK", payout: "PFMS Direct DBT" },
-          { name: "DST NIDHI-PRAYAS Prototype Grant", benefit: "₹10,00,000 Cash", prestigeScore: 92, status: "READY_TO_AUTO_BOOK", payout: "Host TBI Transfer" },
-          { name: "National Startup Awards Cash Prize", benefit: "₹10,00,000 Cash", prestigeScore: 99, status: "READY_TO_AUTO_BOOK", payout: "Govt Direct Wire" },
-          { name: "National MSME Award for Innovation", benefit: "₹3,00,000 Cash", prestigeScore: 97, status: "READY_TO_AUTO_BOOK", payout: "DBT to Founder" },
+        applicantEntity: "Orderkingpay (GSTIN: 18AFXPH9838M1Z9)",
+        schemes: [
+          { name: "Assam Startup Policy", portal: "https://startup.assam.gov.in", status: "MANUAL_PORTAL_SUBMISSION_REQUIRED" },
+          { name: "Startup India Seed Fund Scheme (SISFS)", portal: "https://seedfund.startupindia.gov.in", status: "MANUAL_PORTAL_SUBMISSION_REQUIRED" },
+          { name: "MSME Innovative Scheme", portal: "https://innovative.msme.gov.in", status: "MANUAL_PORTAL_SUBMISSION_REQUIRED" },
+          { name: "DST NIDHI-PRAYAS", portal: "https://www.nidhi-prayas.org", status: "MANUAL_PORTAL_SUBMISSION_REQUIRED" },
         ],
-        autoBookingEngine: {
-          dossierStatus: "GENERATED_AND_AUDITED",
-          applicantEntity: "OrderKing Technologies Private Limited",
-          founderName: "Hasan",
-          statutoryChecksPassed: [
-            "Udyam MSME Certificate Valid",
-            "DPIIT Recognition Number Verified",
-            "Section 194-O & Section 9(5) CGST Compliant",
-            "Bank Account Linked with GSTIN for Direct RTGS Disbursal",
-          ],
-        },
-        verdict: "Opportunity Radar continuously monitors national schemes and auto-reserves application slots. Ready to disburse non-dilutive capital directly to founder bank account.",
+        verdict: "Government scheme portal links indexed for Orderkingpay (GSTIN 18AFXPH9838M1Z9). Applications must be submitted manually on official government portals.",
       };
     }
 
     case "autonomous_meta_and_google_ad_domination_orchestrator": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "META_AND_GOOGLE_AD_DOMINATION_DEPLOYED",
+        status: "AD_CAMPAIGN_DRAFT_PREPARED",
         timestamp: new Date().toISOString(),
         metaMarketingApiPayload: {
           apiVersion: "v21.0",
-          campaignName: "OrderKing_Hyperlocal_Karimganj_Meta_V21",
+          campaignName: "OrderKing_Karimganj_Local_Meta_V21",
           dailyBudgetInr: 150,
           targetPostalCodes: ["788710", "788711", "788712", "788701"],
           targetRadiusKm: 5.0,
-          estimatedDailyReach: "3,200 active local mobile users",
           placements: ["instagram_reels", "instagram_feed", "facebook_feed", "facebook_stories"],
-          adCreativeHeadline: "Karimganj's Own Food App: Direct Kitchen Prices + 24K Gold ",
+          adCreativeHeadline: "OrderKing Food Delivery — Karimganj & Barak Valley",
+          published: false,
         },
         googleAdsPMaxPayload: {
           advertisingChannelType: "PERFORMANCE_MAX",
           campaignName: "OrderKing_Karimganj_Google_PMax_Campaign",
           dailyBudgetInr: 200,
           geoTargeting: ["Karimganj", "Barak Valley", "Assam"],
-          searchThemes: ["food delivery near me", "best biryani in town", "online food ordering"],
-          headlinesCount: 5,
+          searchThemes: ["food delivery near me", "online food ordering karimganj"],
+          published: false,
         },
-        viralSocialDistribution: {
-          whatsappStatusLoop: "1-Tap 'Share Scratch Card on Status -> Unlock ₹25' generates 50,000 daily local impressions at ₹0 ad spend",
-          viralReelsScriptsCount: 3,
-          influencerBarterPitch: "Ready for local Instagram creators with ₹750 free food barter",
-          googleLocalSeoSchema: "FoodDeliveryService JSON-LD schema deployed for #1 Google Search & Maps ranking",
-        },
-        verdict: "Local advertising engine active. Reaches mobile screens across Facebook, Instagram, Google Maps, Search, and WhatsApp with sub-₹150 daily budget.",
+        verdict: "Draft Meta and Google Ads payloads prepared. Connect ad account credentials and publish manually before spend is incurred.",
       };
     }
 
@@ -1872,21 +1801,19 @@ export async function executeTool(
           dispatchRadiusKm: 8.0,
           offerTimeoutSeconds: 30,
         },
-        verdict: "Strategic nearest-rider GPS proximity engine armed. Sequential cascading with dynamic bounty surge active across all zones.",
+        verdict: "Nearest-rider GPS proximity dispatch audit completed across live database zones.",
       };
     }
 
     case "autonomous_off_peak_demand_stimulator_and_revenue_multiplier": {
       requirePermission(ws.ctx, "manage_promotions");
       return {
-        status: "OFF_PEAK_DEMAND_STIMULATOR_ACTIVE",
+        status: "OFF_PEAK_PROMO_WINDOW_CONFIGURED",
         timestamp: new Date().toISOString(),
         offPeakHours: "14:00 - 17:30 and 22:30 - 06:00 IST",
         budgetCeilingPaise: 14900,
         budgetCeilingInr: "₹149.00",
-        promotedDishCategories: ["Mutton Biryani Quick Combos", "Rohu Fish Thali Bowls", "Kathi Rolls & Momos", "Masala Chai & Snacks"],
-        targetedVolumeUplift: "+42% order conversion during afternoon and late-night lulls",
-        verdict: "Off-peak demand stimulator active. Low-price high-demand meals prioritized to double kitchen throughput during low-sales hours.",
+        verdict: "Off-peak promotional window configuration returned. Apply via Promotions module to activate for specific merchants.",
       };
     }
 

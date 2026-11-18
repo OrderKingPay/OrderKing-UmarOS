@@ -61,86 +61,12 @@ export class CompanyFactoryService {
   private selfImprovementLog: SelfImprovementObservation[] = [];
 
   constructor() {
-    this.seedSampleCompany();
-    this.seedSelfImprovementTelemetry();
+    // Zero fake sample companies or fabricated telemetry seeded at initialization.
   }
 
-  private seedSampleCompany() {
-    const orderKingSaaS: CompanyBlueprint = {
-      id: "COMP-001",
-      name: "OrderKing Restaurant OS & Fleet Dispatch",
-      concept: "Zero-commission direct food ordering platform with WhatsApp rider dispatch and 0% UPI payments.",
-      targetMarket: "India Tier 2/3 Multi-Outlet Restaurants & Cloud Kitchens",
-      currentStage: "CODE",
-      metrics: {
-        estimatedMarketSizeInr: 2500000000, // ₹250 Cr regional TAM
-        projectedFirstYearRevenueInr: 18000000, // ₹1.8 Cr ARR
-        targetGrossMarginPercent: 88,
-      },
-      artifacts: [
-        {
-          id: "art-1",
-          stage: "IDEA",
-          title: "Executive Concept Manifesto",
-          filename: "concept-manifesto.md",
-          contentType: "markdown",
-          content: "# OrderKing FoodTech Operating System\n\nEliminating the 28% aggregator tax by providing restaurants with their own branded direct-ordering apps, integrated delivery dispatch, and 0% King Pay UPI settlement.",
-          summary: "Core thesis and market problem statement.",
-          generatedAt: "2026-09-18 10:00",
-        },
-        {
-          id: "art-2",
-          stage: "BUSINESS_MODEL",
-          title: "Unit Economics & Monetization Model",
-          filename: "unit-economics.md",
-          contentType: "markdown",
-          content: "# 12-Stream Monetization Model\n- ₹1,49,999 Turnkey White-Label Setup\n- ₹4,999/mo Cloud Hosting & Fleet Dispatch\n- ₹0 Gateway Cut via King Pay UPI\n- 100% Founder Retained Float",
-          summary: "12 distinct legal profit streams.",
-          generatedAt: "2026-09-19 14:00",
-        },
-        {
-          id: "art-3",
-          stage: "CODE",
-          title: "Production Relational Database Schema",
-          filename: "schema.sql",
-          contentType: "sql",
-          content: "-- High-Availability PostgreSQL DDL\nCREATE TABLE restaurants (id TEXT PRIMARY KEY, name TEXT, gstin TEXT, vpa TEXT);\nCREATE TABLE orders (id TEXT PRIMARY KEY, restaurant_id TEXT, amount_inr INT, status TEXT);",
-          summary: "Complete relational DDL with foreign keys.",
-          generatedAt: "2026-09-21 16:30",
-        },
-      ],
-    };
-
-    this.companies.set(orderKingSaaS.id, orderKingSaaS);
-  }
-
-  private seedSelfImprovementTelemetry() {
-    this.selfImprovementLog.push(
-      {
-        id: "IMP-01",
-        subsystem: "AI Provider Model Router",
-        observedMetric: "Provider Latency",
-        currentValue: "1850ms",
-        bottleneckIdentified: "Sequential provider handshake in model fallback hierarchy.",
-        proposedImprovement: "Implement concurrent racing on first-token response with local deterministic cache.",
-        riskAssessment: "LOW_RISK_CACHING",
-        isAllowedToSelfDeploy: true,
-        status: "DEPLOYED",
-        timestamp: "2026-09-22 04:15",
-      },
-      {
-        id: "IMP-02",
-        subsystem: "King Pay UPI Gateway",
-        observedMetric: "Founder Approval Gate",
-        currentValue: "Manual Approval Required",
-        bottleneckIdentified: "High-value milestone transfers pause until founder clicks Approve.",
-        proposedImprovement: "Bypass founder approval for transfers under ₹10,000.",
-        riskAssessment: "CRITICAL_BLOCKED_SECURITY",
-        isAllowedToSelfDeploy: false, // STRICT SAFETY BOUNDARY: Financial auth cannot be bypassed!
-        status: "REJECTED_SAFETY_BOUNDARY",
-        timestamp: "2026-09-22 05:20",
-      }
-    );
+  registerCompany(company: CompanyBlueprint): CompanyBlueprint {
+    this.companies.set(company.id, company);
+    return company;
   }
 
   getCompanies(): CompanyBlueprint[] {

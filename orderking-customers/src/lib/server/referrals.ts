@@ -42,7 +42,7 @@ export const getReferralStats = createServerFn({ method: "GET" })
 
     return {
       referralCode,
-      shareUrl: `https://orderking.in/?ref=${referralCode}`,
+      shareUrl: `https://orderkingpay.com/?ref=${referralCode}`,
       totalInvited,
       totalEarnedPaise,
       rewardPerFriendPaise: 2_500, // ₹25 wallet credit for referrer (drives repeat order)

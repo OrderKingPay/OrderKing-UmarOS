@@ -15,6 +15,16 @@ vi.mock("@tanstack/react-start", () => ({
     return builder;
   },
 }));
+vi.mock("@tanstack/start-client-core", () => ({
+  createServerFn: () => {
+    const builder: any = {
+      middleware: () => builder,
+      validator: () => builder,
+      handler: (handler: any) => handler,
+    };
+    return builder;
+  },
+}));
 vi.mock("@/lib/auth/middleware", () => ({ authMiddleware: {} }));
 vi.mock("@/lib/db", () => ({ getSql: sql }));
 vi.mock("../lib/server/load-config", () => ({ loadConfig: vi.fn(async () => ({

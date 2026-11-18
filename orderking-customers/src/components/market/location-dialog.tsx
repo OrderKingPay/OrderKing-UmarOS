@@ -75,7 +75,7 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
       { name: "Bandra West", zoneId: "mum-bandra", tag: "Coastal, Seafood & Cafes", lat: 19.0600, lng: 72.8336 },
       { name: "Juhu", zoneId: "mum-juhu", tag: "Street Food & Fine Dine", lat: 19.1075, lng: 72.8263 },
       { name: "Colaba", zoneId: "mum-colaba", tag: "Heritage Cafes & Deli", lat: 18.9067, lng: 72.8147 },
-      { name: "Powai", zoneId: "mum-powai", tag: "Gourmet Cloud Kitchens", lat: 19.1176, lng: 72.9060 },
+      { name: "Powai", zoneId: "mum-powai", tag: "Cloud Kitchens", lat: 19.1176, lng: 72.9060 },
     ],
   },
   {
@@ -110,7 +110,7 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
     areas: [
       { name: "Jubilee Hills", zoneId: "hyd-jubilee", tag: "Nizami Dum Biryani & Kebabs", lat: 17.4319, lng: 78.4073 },
       { name: "Banjara Hills", zoneId: "hyd-banjara", tag: "Fine Dining & Irani Chai", lat: 17.4156, lng: 78.4350 },
-      { name: "Hitec City", zoneId: "hyd-hitec", tag: "Fast Gourmet & Asian Bowls", lat: 17.4474, lng: 78.3762 },
+      { name: "Hitec City", zoneId: "hyd-hitec", tag: "Quick Service & Asian", lat: 17.4474, lng: 78.3762 },
       { name: "Gachibowli", zoneId: "hyd-gachi", tag: "Late Night Delivery & Rolls", lat: 17.4401, lng: 78.3489 },
     ],
   },
@@ -132,7 +132,7 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
     gradient: "from-teal-500 to-emerald-600",
     areas: [
       { name: "Nungambakkam", zoneId: "chn-nungam", tag: "Traditional Chettinad & Seafood", lat: 13.0604, lng: 80.2405 },
-      { name: "Anna Nagar", zoneId: "chn-anna", tag: "Gourmet Grills & Filter Kaapi", lat: 13.0850, lng: 80.2101 },
+      { name: "Anna Nagar", zoneId: "chn-anna", tag: "Grills & South Indian", lat: 13.0850, lng: 80.2101 },
       { name: "T. Nagar", zoneId: "chn-tnagar", tag: "Pure Veg Tiffin & Sweets", lat: 13.0418, lng: 80.2341 },
     ],
   },

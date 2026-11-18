@@ -93,4 +93,28 @@ describe("Reporting & AI Document Workspace Engine", () => {
     assert.ok(md.includes("### Data Trust Attribution Summary"));
     assert.ok(md.includes("| Metric | Value | Attribution | Source |"));
   });
+
+  test("enforces zero fabricated fallback numbers when live telemetry is absent", () => {
+    const daily = ReportingDocumentEngine.generateReport("DAILY_FOUNDER_BRIEFING");
+    const dailyOrders = daily.sections[0]?.metrics?.find((m) => m.key === "orders_today");
+    assert.equal(dailyOrders?.value, 0);
+
+    const pl = ReportingDocumentEngine.generateReport("FINANCE_PL");
+    const gmvMetric = pl.sections[0]?.metrics?.find((m) => m.key === "gross_merchandise_value");
+    assert.equal(gmvMetric?.value, "₹0");
+
+    const settlement = ReportingDocumentEngine.generateReport("RESTAURANT_SETTLEMENT_STATEMENT", {
+      restaurantId: "REST-LIVE-1",
+      customData: {
+        restaurantName: "Barak Kitchen",
+        ordersFulfilled: 10,
+        foodSubtotal: 10000,
+        packagingCharges: 200,
+        commissionRatePct: 10,
+      },
+    });
+    const netDisbursement = settlement.sections[1]?.metrics?.find((m) => m.key === "net_bank_disbursement");
+    // 10200 gross - 1000 comm - 180 GST on comm - 100 TCS - 100 TDS = 8820.00
+    assert.equal(netDisbursement?.value, "₹8,820.00");
+  });
 });

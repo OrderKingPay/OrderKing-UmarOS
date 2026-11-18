@@ -117,7 +117,7 @@ function RiderRootLayout() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const isPublic = location === "/login" || location === "/terms" || location === "/privacy" || location.startsWith("/api");
+    const isPublic = location === "/login" || location === "/benefits" || location === "/terms" || location === "/privacy" || location.startsWith("/api");
     const hasCookie = document.cookie.includes("orderking_rider_session");
     const hasStorage = Boolean(window.localStorage.getItem("orderking_rider_session") || window.localStorage.getItem("orderking_user"));
     if (!isPublic && !hasCookie && !hasStorage) {

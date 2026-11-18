@@ -38,7 +38,7 @@ export function GroupOrderingModal({
   const shareUrl = groupSessionId
     ? typeof window !== "undefined"
       ? `${window.location.origin}/group-order/${groupSessionId}`
-      : `https://orderking.in/group-order/${groupSessionId}`
+      : `https://orderkingpay.com/group-order/${groupSessionId}`
     : "";
 
   const handleCopyLink = () => {

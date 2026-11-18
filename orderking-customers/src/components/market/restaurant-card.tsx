@@ -1,13 +1,45 @@
+import { useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Clock, Star, Utensils, Flame, Sparkles } from "lucide-react";
+import { Clock, Star, Utensils, Flame, Sparkles, Heart } from "lucide-react";
+import { toast } from "sonner";
 import { formatPaiseCompact } from "@/lib/money";
 import type { RestaurantCard } from "@/lib/market-types";
 import { useT } from "@/components/providers";
+import { useCurrentUserState } from "@/lib/auth/use-current-user";
+import { toggleFavourite } from "@/lib/server/account";
 
-/** Trigger subtle haptic click on card selection */
+const FAV_STORAGE_KEY = "ok_fav_restaurants";
+
+function readLocalFavs(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = window.localStorage.getItem(FAV_STORAGE_KEY);
+    if (!raw) return new Set();
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? new Set(parsed.map(String)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function writeLocalFavs(ids: Set<string>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(FAV_STORAGE_KEY, JSON.stringify([...ids]));
+  } catch {
+    /* ignore storage limits */
+  }
+}
+
+/** Trigger subtle haptic click on card selection if enabled in preferences */
 function hapticTap() {
   try {
-    if (typeof window !== "undefined" && typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
+    if (
+      typeof window !== "undefined" &&
+      window.localStorage.getItem("ok_pref_haptics") !== "false" &&
+      typeof navigator !== "undefined" &&
+      typeof navigator.vibrate === "function"
+    ) {
       navigator.vibrate(8);
     }
   } catch {
@@ -18,6 +50,33 @@ function hapticTap() {
 export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
   const { lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
+  const { user } = useCurrentUserState();
+  const [isFav, setIsFav] = useState(false);
+
+  useEffect(() => {
+    setIsFav(readLocalFavs().has(restaurant.id));
+  }, [restaurant.id]);
+
+  const handleToggleFav = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hapticTap();
+    const next = !isFav;
+    setIsFav(next);
+    const favs = readLocalFavs();
+    if (next) favs.add(restaurant.id);
+    else favs.delete(restaurant.id);
+    writeLocalFavs(favs);
+
+    if (user?.id) {
+      try {
+        await toggleFavourite({ data: { restaurantId: restaurant.id } });
+      } catch {
+        /* local preference remains active */
+      }
+    }
+    toast.success(next ? `Saved ${restaurant.name} to favourites` : `Removed ${restaurant.name} from favourites`);
+  };
 
   const numRatingAvg =
     restaurant.ratingAvg != null
@@ -90,8 +149,8 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
             </span>
           )}
 
-          {/* Pure Veg / Non-Veg - FSSAI Compliant Badges */}
-          {restaurant.vegOnly ? (
+          {/* Pure Veg - FSSAI Compliant Badge (only shown for Pure Veg kitchens, matching Zomato) */}
+          {restaurant.vegOnly && (
             <span
               className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-emerald-400/60"
               style={{
@@ -107,24 +166,19 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
               </span>
               Pure Veg
             </span>
-          ) : (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-extrabold tracking-tight shadow-md border border-orange-950/60"
-              style={{
-                background: "linear-gradient(135deg, rgba(30,15,10,0.95), rgba(50,25,15,0.92))",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                color: "#fecdd3",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(251,113,133,0.35)",
-              }}
-            >
-              <span className="size-3 rounded-[3px] border-[1.5px] border-rose-400 flex items-center justify-center bg-white/95">
-                <span className="size-1.5 rounded-full bg-rose-600" />
-              </span>
-              Non-Veg
-            </span>
           )}
         </div>
+
+        {/* ─── Top-Right Favourite Heart Toggle (Zomato 1:1) ─── */}
+        <button
+          type="button"
+          onClick={(e) => void handleToggleFav(e)}
+          aria-label={isFav ? `Remove ${restaurant.name} from favourites` : `Save ${restaurant.name} to favourites`}
+          aria-pressed={isFav}
+          className="absolute right-2.5 top-2.5 z-20 flex size-8 items-center justify-center rounded-full bg-black/45 backdrop-blur-sm text-white hover:bg-black/65 transition active:scale-90 border border-white/25 cursor-pointer"
+        >
+          <Heart className={`size-4 transition-colors ${isFav ? "fill-[#E23744] text-[#E23744]" : "text-white"}`} />
+        </button>
 
         {/* ─── Closed Overlay ─── */}
         {!restaurant.open && (
@@ -136,17 +190,17 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
           </div>
         )}
 
-        {/* ─── Offer Ribbon (Top Right) with Pulsing Fire Icon ─── */}
+        {/* ─── Offer Ribbon (Bottom Right, above gradient) ─── */}
         {restaurant.hasOffer && restaurant.offerLabel && (
-          <div className="absolute top-2.5 right-0 z-10">
+          <div className="absolute bottom-2.5 right-2.5 z-10">
             <div
-              className="rounded-l-xl px-2.5 sm:px-3 py-1 text-[10.5px] font-black text-white shadow-lg flex items-center gap-1.5 border-l border-y border-orange-200/40"
+              className="rounded-lg px-2.5 py-1 text-[10.5px] font-black text-white shadow-lg flex items-center gap-1.5 border border-orange-200/40"
               style={{
                 background: "linear-gradient(135deg, #ef4444 0%, #f97316 55%, #c2410c 100%)",
                 boxShadow: "0 4px 14px rgba(232, 93, 4, 0.45)",
               }}
             >
-              <Flame className="size-3.5 fill-orange-200 text-orange-100 animate-pulse shrink-0" />
+              <Flame className="size-3.5 fill-orange-200 text-orange-100 shrink-0" />
               <span className="truncate max-w-[125px] sm:max-w-[170px] uppercase tracking-wide">
                 {restaurant.offerLabel}
               </span>
@@ -228,12 +282,6 @@ export function KitchenCard({ restaurant }: { restaurant: RestaurantCard }) {
         <div className="flex items-center justify-between pt-1.5 border-t border-gray-100 text-xs">
           <div className="flex items-center gap-1.5 text-gray-500 truncate max-w-[65%]">
             <span className="truncate">{restaurant.zoneName || "Local Delivery Area"}</span>
-            {restaurant.vegOnly && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-800 bg-emerald-50 border border-emerald-300 rounded px-1.5 py-[1px] shrink-0">
-                <span className="size-1.5 rounded-full bg-emerald-600" />
-                Pure Veg
-              </span>
-            )}
             {restaurant.fssaiLicenseNumber && (
               <span
                 className="inline-flex items-center text-[9.5px] font-bold text-stone-600 bg-stone-100 border border-stone-200/90 rounded px-1.5 py-[1px] shrink-0"

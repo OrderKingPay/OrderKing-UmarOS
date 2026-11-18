@@ -61,15 +61,15 @@ export function createEmergencyDistressPayload(
 ): EmergencyDistressPayload {
   const incidentId = params.incidentId || `SOS-${Date.now().toString().slice(-6)}`;
   const timestamp = Date.now();
-  const lat = Number(params.lat) || 26.1445;
-  const lng = Number(params.lng) || 91.7362;
+  const lat = Number.isFinite(params.lat) ? Number(params.lat) : 0;
+  const lng = Number.isFinite(params.lng) ? Number(params.lng) : 0;
   const accuracyM = params.accuracyM ?? 5;
   const audioBeaconActive = Boolean(params.audioBeaconActive);
   const deliveryId = params.deliveryId ?? null;
   const riderName = params.riderName || "OrderKing Delivery Partner";
   const riderPhone = params.riderPhone || "Fleet Registered";
   const dialerTarget = params.dialerTarget || "112";
-  const helplineTarget = "18001000";
+  const helplineTarget = "+919395065587";
 
   const googleMapsUrl = `https://www.google.com/maps?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
   const distressMessage = `EMERGENCY DISTRESS ALERT (${incidentId}): I am OrderKing Rider ${riderName} (${riderPhone}) and need immediate assistance. Live Location: ${googleMapsUrl}${audioBeaconActive ? " [Audio Beacon ACTIVE]" : ""}${deliveryId ? ` (Trip #${deliveryId})` : ""}`;
@@ -154,7 +154,7 @@ export function EmergencySosButton({
  * Comprehensive Emergency Safety Sheet / Modal
  * Features:
  * - 1-tap dialer to Emergency Police / Ambulance (tel:112, tel:108)
- * - 1-tap dialer to OrderKing 24x7 Fleet Safety Helpline (tel:18001000)
+ * - 1-tap dialer to OrderKing 24x7 Fleet Safety Helpline (tel:+919395065587)
  * - Live GPS Coordinate Broadcast (with copy + SMS + WhatsApp beacons)
  * - Audio recording safety beacon toggle with real-time timer
  */
@@ -196,20 +196,26 @@ export function RiderEmergencySafetySheet({
           });
         },
         () => {
-          setGpsLocation({
-            lat: defaultGps?.lat ?? 26.1445,
-            lng: defaultGps?.lng ?? 91.7362,
-            accuracyM: 8,
-          });
+          if (defaultGps) {
+            setGpsLocation({
+              lat: defaultGps.lat,
+              lng: defaultGps.lng,
+              accuracyM: 15,
+            });
+          } else {
+            setGpsLocation(null);
+          }
         },
         { enableHighAccuracy: true, timeout: 6000 }
       );
-    } else {
+    } else if (defaultGps) {
       setGpsLocation({
-        lat: defaultGps?.lat ?? 26.1445,
-        lng: defaultGps?.lng ?? 91.7362,
-        accuracyM: 10,
+        lat: defaultGps.lat,
+        lng: defaultGps.lng,
+        accuracyM: 15,
       });
+    } else {
+      setGpsLocation(null);
     }
   };
 
@@ -258,9 +264,9 @@ export function RiderEmergencySafetySheet({
 
     const payload = createEmergencyDistressPayload({
       incidentId,
-      lat: gpsLocation?.lat ?? 26.1445,
-      lng: gpsLocation?.lng ?? 91.7362,
-      accuracyM: gpsLocation?.accuracyM ?? 5,
+      lat: gpsLocation?.lat ?? defaultGps?.lat ?? 0,
+      lng: gpsLocation?.lng ?? defaultGps?.lng ?? 0,
+      accuracyM: gpsLocation?.accuracyM ?? 0,
       audioBeaconActive,
       deliveryId,
       riderName,
@@ -317,9 +323,12 @@ export function RiderEmergencySafetySheet({
   };
 
   const copyLiveCoordinates = () => {
-    const coordsText = gpsLocation
-      ? `${gpsLocation.lat.toFixed(5)}, ${gpsLocation.lng.toFixed(5)}`
-      : "26.14450, 91.73620";
+    if (!gpsLocation) {
+      toast.error("GPS fix not acquired yet. Tap Refresh GPS and allow location permission.");
+      refreshGps();
+      return;
+    }
+    const coordsText = `${gpsLocation.lat.toFixed(5)}, ${gpsLocation.lng.toFixed(5)}`;
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(coordsText).then(() => {
         setCopied(true);
@@ -331,9 +340,9 @@ export function RiderEmergencySafetySheet({
 
   const currentPayload = createEmergencyDistressPayload({
     incidentId: incidentId || "SOS-000000",
-    lat: gpsLocation?.lat ?? 26.1445,
-    lng: gpsLocation?.lng ?? 91.7362,
-    accuracyM: gpsLocation?.accuracyM ?? 5,
+    lat: gpsLocation?.lat ?? defaultGps?.lat ?? 0,
+    lng: gpsLocation?.lng ?? defaultGps?.lng ?? 0,
+    accuracyM: gpsLocation?.accuracyM ?? 0,
     audioBeaconActive,
     deliveryId,
     riderName,
@@ -475,11 +484,11 @@ export function RiderEmergencySafetySheet({
 
                 {/* 24x7 OrderKing Helpline */}
                 <a
-                  href="tel:18001000"
+                  href="tel:+919395065587"
                   className="flex items-center justify-center gap-2 rounded-xl border border-border bg-muted p-2.5 text-xs font-semibold text-foreground hover:bg-muted/80 transition"
                 >
                   <PhoneCall className="size-3.5 text-[#e5a93c]" />
-                  <span>OrderKing 24x7 Fleet Safety Helpline (1800-100-ORDER)</span>
+                  <span>OrderKing 24x7 Fleet Safety Helpline (+91-9395065587)</span>
                 </a>
               </div>
 
@@ -490,29 +499,39 @@ export function RiderEmergencySafetySheet({
                     <Navigation className="size-3.5 text-primary" />
                     <span>Live GPS Coordinate Broadcast</span>
                   </span>
-                  <span className="flex items-center gap-1 font-mono text-[10px] text-emerald-400">
+                  <button
+                    type="button"
+                    onClick={refreshGps}
+                    className="flex items-center gap-1 font-mono text-[10px] text-emerald-400 hover:underline"
+                  >
                     <Radio className="size-3 animate-pulse" />
-                    <span>Broadcasting ±{gpsLocation?.accuracyM ?? 5}m</span>
-                  </span>
+                    <span>{gpsLocation ? `Locked ±${gpsLocation.accuracyM}m` : "Refresh GPS"}</span>
+                  </button>
                 </div>
 
                 <div className="rounded-lg bg-black/60 p-2.5 font-mono text-xs text-slate-300 space-y-1 border border-white/5">
-                  <div className="flex items-center justify-between">
-                    <span>
-                      Latitude:{" "}
-                      <strong className="text-white">
-                        {gpsLocation ? gpsLocation.lat.toFixed(5) : "26.14450"}
-                      </strong>
-                    </span>
-                    <span>
-                      Longitude:{" "}
-                      <strong className="text-white">
-                        {gpsLocation ? gpsLocation.lng.toFixed(5) : "91.73620"}
-                      </strong>
-                    </span>
-                  </div>
+                  {gpsLocation ? (
+                    <div className="flex items-center justify-between">
+                      <span>
+                        Latitude:{" "}
+                        <strong className="text-white">
+                          {gpsLocation.lat.toFixed(5)}
+                        </strong>
+                      </span>
+                      <span>
+                        Longitude:{" "}
+                        <strong className="text-white">
+                          {gpsLocation.lng.toFixed(5)}
+                        </strong>
+                      </span>
+                    </div>
+                  ) : (
+                    <p className="text-amber-300">
+                      GPS fix unavailable — enable location permission and tap Refresh GPS
+                    </p>
+                  )}
                   <p className="text-[10px] text-muted-foreground font-sans">
-                    Auto-refreshed via device GPS
+                    Live coordinates from device GPS
                   </p>
                 </div>
 

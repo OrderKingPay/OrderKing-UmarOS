@@ -85,13 +85,13 @@ export const GOVERNMENT_GRANT_DOSSIERS: GrantDossier[] = [
     ],
     applicationSections: [
       {
-        sectionTitle: "1. Company & Founder Identity",
+        sectionTitle: "1. Company & Entity Identity",
         fields: [
-          { label: "Entity Legal Name", value: "OrderKing Technologies Private Limited" },
+          { label: "Entity Legal Name", value: "Orderkingpay" },
+          { label: "GSTIN", value: "18AFXPH9838M1Z9" },
           { label: "Trade / Brand Name", value: "OrderKing (OrderKing Foods & KingPay)" },
-          { label: "Founder / Managing Director", value: "Hasan (Founder & Chief Architect)" },
-          { label: "Registered Headquarters", value: "Karimganj Town, District: Sribhumi / Karimganj, Assam - 788710" },
-          { label: "Target Operational Region", value: "Barak Valley (Karimganj, Hailakandi, Silchar) expanding across Assam" },
+          { label: "Registered Headquarters", value: "Karimganj / Hailakandi, Assam - 788710" },
+          { label: "Target Operational Region", value: "Barak Valley (Karimganj, Hailakandi, Silchar) and Assam" },
         ],
       },
       {
@@ -216,107 +216,87 @@ export const ACADEMIC_KEYNOTE_PITCHES: KeynoteProposal[] = [
     institution: "Indian Institute of Technology (IIT) Guwahati",
     recipientTitle: "Faculty In-Charge & Convener, Entrepreneurship Cell (E-Cell)",
     recipientEmail: "ecell@iitg.ac.in",
-    eventForum: "Udgam Annual Entrepreneurship Summit / Keynote Lecture Series",
-    keynoteTitle: "Rural-First Hyperlocal Logistics & Autonomous AI Dispatch in Tier-2/3 India",
-    honorariumAndPerks: "₹50,000 Honorarium + Campus Citation, Plaque & VIP Guest Accommodation",
-    subjectLine: "Keynote Lecture Proposal: Rural-First Hyperlocal AI Logistics by OrderKing Founder (Hasan)",
+    eventForum: "Annual Entrepreneurship Summit / Guest Lecture Series",
+    keynoteTitle: "Hyperlocal Logistics & Edge Architecture for Tier-2/3 Towns in Northeast India",
+    honorariumAndPerks: "Standard Institutional Travel & Honorarium (if applicable)",
+    subjectLine: "Guest Lecture Proposal: Hyperlocal Food Delivery & Payments Engineering — OrderKing",
     emailBody: `Respected Faculty In-Charge & E-Cell Conveners,
 IIT Guwahati,
 
-I hope this email finds you well.
+We write from Orderkingpay (https://orderkingpay.com, GSTIN: 18AFXPH9838M1Z9), operating a hyperlocal food delivery and digital payments platform in Barak Valley, Assam.
 
-My name is Hasan, Founder and Chief Architect of OrderKing (https://orderking.in), an autonomous hyperlocal food and fintech super-app operating out of Karimganj / Barak Valley, Assam.
+We would be glad to share an engineering talk covering:
+1. Nearest-rider proximity dispatch and routing for Tier-2/3 road networks.
+2. Section 9(5) CGST and integer-paise double-entry settlement architecture.
+3. Offline-resilient PWA and SMS OTP workflows for constrained mobile networks.
 
-While decacorn aggregators focus exclusively on metro tier-1 hubs, we have engineered an offline-resilient, 2G-tolerant logistics and dispatch network that solves the deep challenges of Tier-2 and Tier-3 Northeast India:
-1. Algorithmic Nearest-Rider Cascading Dispatch that eliminates deadhead mileage on unpaved roads.
-2. 0% Food Price Inflation preserving local small restaurant margins.
-3. 24K Digital Gold round-up savings embedded directly into UPI micro-transactions.
+Please let us know if this topic fits an upcoming technical session or workshop.
 
-I would be honored to deliver an interactive Keynote Session at IIT Guwahati's upcoming Udgam Summit on the topic:
-"Rural-First Hyperlocal Logistics & Autonomous AI Dispatch: Bootstrapping Scalable Deep-Tech in Northeast India".
-
-We would also be delighted to demonstrate our live production system, share architectural learnings on low-latency edge systems, and offer summer internship / project opportunities to talented IIT Guwahati students.
-
-Looking forward to your favorable response.
-
-Warm regards,
-
-Hasan
-Founder & Chief Architect, OrderKing Technologies
-Website: https://orderking.in
-Karimganj / Sribhumi, Assam`,
+Regards,
+Engineering & Operations Team
+Orderkingpay (OrderKing)
+https://orderkingpay.com`,
   },
   {
     id: "nit_silchar",
     institution: "National Institute of Technology (NIT) Silchar",
     recipientTitle: "Head, Center for Innovation & Entrepreneurship (CIE)",
     recipientEmail: "cie@nits.ac.in",
-    eventForum: "NIT Silchar Innovation & Startup Conclave",
-    keynoteTitle: "Overthrowing Bloatware: How Localized Tech Beats Multinational Monopolies",
-    honorariumAndPerks: "₹35,00,000 / ₹35,000 Honorarium + VIP Tech Memento & State Felicitation",
-    subjectLine: "Keynote Proposal & Barak Valley Tech Spotlight: OrderKing Founder Hasan at NIT Silchar",
+    eventForum: "NIT Silchar Innovation & Engineering Conclave",
+    keynoteTitle: "Engineering Low-Latency Hyperlocal Delivery & Settlement Systems",
+    honorariumAndPerks: "Standard Institutional Travel & Honorarium (if applicable)",
+    subjectLine: "Technical Workshop Proposal: Hyperlocal Delivery Architecture — OrderKing",
     emailBody: `Respected Head of Center for Innovation & Entrepreneurship,
 NIT Silchar,
 
-Greetings from Karimganj.
+We write to propose a technical workshop for faculty and students at NIT Silchar on building production food delivery and payment systems in Barak Valley.
 
-I am writing to propose a Keynote Address and Technical Workshop for the faculty and students of NIT Silchar.
+Key topics:
+- TypeScript, PostgreSQL, and Cloudflare edge deployment patterns.
+- Nearest-rider dispatch and real-time order state machines.
+- Double-entry accounting and GST/TCS/TDS statutory settlement pipelines.
 
-As a technology venture originating in Barak Valley, OrderKing (https://orderking.in) has developed an edge delivery and micro-payments platform focused on local delivery efficiency, driver retention, and merchant profitability.
-
-Topic: "Engineering Edge Architectures: Building High-Performance Hyperlocal Platforms in Tier-2/3 Markets"
-Key Takeaways for Students:
-- How to design sub-100ms distributed architectures using TypeScript, Nitro, and edge databases.
-- Solving the "cold start" logistics problem with algorithmic proximity dispatch.
-- Why building for Bharat (Barak Valley & Northeast) is India's next ₹10,000 Crore opportunity.
-
-We would be glad to coordinate with your team for the date and session logistics.
+We would be glad to coordinate dates and session format with your team.
 
 Sincerely,
-
-Hasan
-Founder & Chief Architect, OrderKing
-Website: https://orderking.in`,
+Engineering & Operations Team
+Orderkingpay (OrderKing)
+https://orderkingpay.com`,
   },
   {
     id: "assam_university",
     institution: "Assam University, Silchar",
     recipientTitle: "Dean, School of Technology & Head, Dept. of Computer Science",
     recipientEmail: "dean.sot@aus.ac.in",
-    eventForum: "State Tech Conclave & Industry-Academia MoU",
-    keynoteTitle: "Zero-Loss Economics: 2G Resilient FinTech & Hyperlocal Order Infrastructure",
-    honorariumAndPerks: "University Citation, Felicitation Plaque & Official Honorarium",
-    subjectLine: "Guest Lecture & Industry MoU: OrderKing Hyperlocal Super-App Founder Hasan",
+    eventForum: "Industry-Academia Technical Seminar",
+    keynoteTitle: "Resilient Hyperlocal Commerce & Payment Infrastructure in Assam",
+    honorariumAndPerks: "Standard Institutional Collaboration",
+    subjectLine: "Guest Lecture & Internship Collaboration — Orderkingpay (OrderKing)",
     emailBody: `Respected Dean, School of Technology,
 Assam University, Silchar,
 
-It is a privilege to connect with you.
+Orderkingpay operates a hyperlocal food delivery and digital payments platform serving Barak Valley, Assam.
 
-OrderKing is a Barak Valley-founded technology platform dedicated to advancing local commerce, food distribution, and micro-savings across Assam. 
+We would like to propose a technical guest lecture on resilient edge logistics and double-entry financial systems, alongside project internship opportunities for computer science students.
 
-We would like to propose:
-1. A Keynote Guest Lecture on "Zero-Loss Economics: 2G Resilient FinTech & Hyperlocal Order Infrastructure".
-2. An institutional collaboration / MoU providing live project internships in cloud computing, GPS logistics, and frontend engineering for Assam University students.
+Please let us know a convenient time to discuss.
 
-Please let us know your available time window for an exploratory discussion.
-
-Warm regards,
-
-Hasan
-Founder & Chief Architect, OrderKing Technologies
-https://orderking.in`,
+Regards,
+Engineering & Operations Team
+Orderkingpay (OrderKing)
+https://orderkingpay.com`,
   },
 ];
 
 // ============================================================================
-// 3. META MARKETING API v21.0 & GOOGLE PMAX CAMPAIGN PAYLOADS
+// 3. META MARKETING API v21.0 & GOOGLE PMAX CAMPAIGN CONFIG TEMPLATES
 // ============================================================================
 export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
   metaMarketingApiJson: {
     campaign_spec: {
       name: "OrderKing_Karimganj_Local_Campaign",
       objective: "OUTCOME_APP_INSTALLS_AND_TRAFFIC",
-      status: "ACTIVE",
+      status: "PAUSED",
       special_ad_categories: [],
       daily_budget_cents: 15000, // ₹150.00 INR per day
     },
@@ -339,15 +319,15 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
       },
       age_min: 18,
       age_max: 55,
-      publisher_platforms: ["facebook", "instagram", "audience_network", "messenger"],
-      facebook_positions: ["feed", "story"],
-      instagram_positions: ["stream", "story", "reels"],
+      publisher_platforms: ["facebook", "instagram"],
+      facebook_positions: ["feed"],
+      instagram_positions: ["stream", "reels"],
     },
     ad_creative: {
-      title: "OrderKing - Karimganj Direct Food App",
-      body: "Authentic Food at Direct Kitchen Rates! Order Mutton Biryani, Fish Thali & Momos at exact restaurant prices + Earn 24K Digital Gold rewards on every order.",
+      title: "OrderKing Food Delivery — Karimganj",
+      body: "Order food online from verified local restaurants in Karimganj with live order tracking and UPI/COD checkout.",
       call_to_action_type: "ORDER_NOW",
-      link: "https://orderking.in",
+      link: "https://orderkingpay.com",
     },
   },
   googlePMaxAssetGroup: {
@@ -357,110 +337,29 @@ export const META_GOOGLE_CAMPAIGN_KITS: MetaGoogleCampaignKit = {
     location_ids: ["1007787"], // Assam, India
     headlines: [
       "OrderKing Food Delivery",
-      "Authentic Menu Pricing",
-      "Karimganj Local Food App",
-      "Hot Biryani in 20 Mins",
-      "Win 24K Gold Every Order",
+      "Karimganj Restaurant Delivery",
+      "Live Order Tracking",
+      "UPI & COD Checkout",
     ],
     long_headlines: [
-      "Order Food at Dine-in Prices in Karimganj on OrderKing",
-      "Karimganj's Fastest Food Delivery & Utility Bill App",
+      "Order Food Online from Verified Local Restaurants on OrderKing",
     ],
     descriptions: [
-      "Order royal dum biryani, homestyle thalis and snacks with zero price inflation. 20-min delivery.",
-      "Support local Karimganj restaurants. Pay dine-in prices and earn real 24K gold rewards.",
+      "Browse local restaurant menus, track deliveries live, and pay via UPI or cash on delivery.",
     ],
     call_to_action: "ORDER_NOW",
-    final_urls: ["https://orderking.in"],
+    final_urls: ["https://orderkingpay.com"],
   },
-  viralReelsScripts: [
-    {
-      title: "Reel 1: Direct Kitchen Pricing & Menu Transparency (Bengali / English)",
-      hook: "Did you know you are paying ₹100 extra on every single food order in Karimganj?",
-      durationSeconds: 30,
-      language: "Bengali & English",
-      scenes: [
-        {
-          timestamp: "0:00 - 0:05",
-          visual: "Side-by-side comparison of dine-in menu pricing vs typical marked-up delivery pricing.",
-          audioScript: "Stop! If you order food online in Karimganj, check this out right now.",
-        },
-        {
-          timestamp: "0:05 - 0:15",
-          visual: "Zoom into screen comparison showing exact dine-in rates on OrderKing.",
-          audioScript: "Check menu price parity directly on OrderKing — same item price as in-store.",
-        },
-        {
-          timestamp: "0:15 - 0:25",
-          visual: "Customer scratches digital scratch card on OrderKing app, showing 'Won 10mg 24K Gold'.",
-          audioScript: "Plus, on every single order, you get a digital scratch card with REAL 24K Gold rewards!",
-        },
-        {
-          timestamp: "0:25 - 0:30",
-          visual: "Tap 'Order Now' button pointing to https://orderking.in with OrderKing crown logo.",
-          audioScript: "Order fresh food directly from local kitchens on orderking.in.",
-        },
-      ],
-      callToAction: "Click the link below or visit orderking.in to order now!",
-    },
-    {
-      title: "Reel 2: The 20-Minute Hot Food Challenge",
-      hook: "Can we get piping hot Dum Biryani delivered to Central Bazaar in under 20 minutes?",
-      durationSeconds: 28,
-      language: "Bengali & Hindi",
-      scenes: [
-        {
-          timestamp: "0:00 - 0:04",
-          visual: "Creator starts stopwatch on phone and taps 1-Click Order on OrderKing.",
-          audioScript: "Order placed on OrderKing! Timer starts now.",
-        },
-        {
-          timestamp: "0:04 - 0:18",
-          visual: "Split screen: Kitchen packing handi biryani + OrderKing rider picking up via nearest-rider dispatch.",
-          audioScript: "Our rider is already at the restaurant because OrderKing uses nearest-rider smart GPS dispatch!",
-        },
-        {
-          timestamp: "0:18 - 0:28",
-          visual: "Rider arrives at doorstep. Steam comes out of biryani handi. Stopwatch reads 17 mins 42 secs.",
-          audioScript: "17 minutes! Piping hot and steaming. Stop waiting 50 minutes — switch to OrderKing!",
-        },
-      ],
-      callToAction: "Order hot & fast at orderking.in!",
-    },
-    {
-      title: "Reel 3: Supporting Local Karimganj Home Kitchens",
-      hook: "Meet the mother whose handmade fish thalis are taking Karimganj by storm.",
-      durationSeconds: 35,
-      language: "Bengali",
-      scenes: [
-        {
-          timestamp: "0:00 - 0:08",
-          visual: "Authentic home kitchen in Karimganj cooking traditional Rohu mustard fish curry.",
-          audioScript: "This is Rina Aunty. She makes the most delicious homestyle fish thali in Karimganj.",
-        },
-        {
-          timestamp: "0:08 - 0:20",
-          visual: "She holds OrderKing partner tablet, receiving orders seamlessly with direct customer pricing.",
-          audioScript: "Big apps charged her 30% commission, but OrderKing empowered her to start her online kitchen with zero hassles.",
-        },
-        {
-          timestamp: "0:20 - 0:35",
-          visual: "Customer enjoying the thali with family. OrderKing app shown on phone.",
-          audioScript: "Support our local mothers and home cooks. Eat fresh, homestyle food every day on OrderKing.",
-        },
-      ],
-      callToAction: "Support local kitchens at orderking.in",
-    },
-  ],
+  viralReelsScripts: [],
   whatsAppStatusViralCopy: {
-    headline: "Just won 10mg Real 24K Gold on OrderKing!",
-    body: "Ordered fresh Biryani from a local kitchen at restaurant menu prices on OrderKing: https://orderking.in",
-    statusText: "Ordered on OrderKing Got exact restaurant price + won 24K Gold! Check it out: https://orderking.in",
+    headline: "OrderKing Food Delivery",
+    body: "Order from local restaurants in Karimganj at https://orderkingpay.com",
+    statusText: "Order local restaurant food online: https://orderkingpay.com",
   },
 };
 
 // ============================================================================
-// 4. WEBSITE (https://orderking.in) PRODUCTION DNS & GO-LIVE SPECIFICATION
+// 4. WEBSITE (https://orderkingpay.com) PRODUCTION DNS & GO-LIVE SPECIFICATION
 // ============================================================================
 export const DOMAIN_GOLIVE_CONFIG: DomainGoLiveKit = {
   domain: "orderking.in",

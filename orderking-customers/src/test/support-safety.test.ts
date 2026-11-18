@@ -9,6 +9,9 @@ vi.mock("@tanstack/react-start", () => ({
 vi.mock("@tanstack/start-client-core", () => ({
   createServerFn: () => { const b: any = { middleware: () => b, validator: () => b, handler: (h: any) => h }; return b; },
 }));
+vi.mock("@tanstack/start-storage-context", () => ({
+  getStartContext: () => ({}),
+}));
 vi.mock("@/lib/auth/middleware", () => ({ authMiddleware: {} }));
 vi.mock("@/lib/db", () => ({
   getSql: async () => async (strings: TemplateStringsArray, ...values: unknown[]) => {
@@ -18,9 +21,9 @@ vi.mock("@/lib/db", () => ({
     return [];
   },
 }));
-import { diagnoseAndResolveOrder } from "../lib/server/ai-support";
+import { diagnoseAndResolveOrderHandler } from "../lib/server/ai-support";
 const request = (issueType: string, context = { userId: "user-one" }) =>
-  (diagnoseAndResolveOrder as any)({ context, data: { orderId: "order-one", issueType, details: "Customer report" } });
+  diagnoseAndResolveOrderHandler({ context, data: { orderId: "order-one", issueType, details: "Customer report" } });
 beforeEach(() => {
   state.queries.length = 0;
   state.order = { id: "order-one", public_id: "OK-1", status: "PREPARING", placed_at: new Date(Date.now()-60*60000).toISOString(), total_paise: 20000, restaurant_id: "r-one" };
@@ -77,10 +80,10 @@ vi.mock("@/lib/ai/providers/gemini-provider", () => ({
 }));
 describe("support guidance during a provider outage", () => {
   it.each(["Where is my late order?", "Can I get a refund?", "Is KingPay Later available?"])("does not invent completed financial actions: %s", async query => {
-    const { askAiSupportAssistant } = await import("../lib/server/ai-support");
+    const { askAiSupportAssistantHandler } = await import("../lib/server/ai-support");
     const errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
     try {
-      const result = await (askAiSupportAssistant as any)({ context: { userId: "user-one" }, data: { query } });
+      const result = await askAiSupportAssistantHandler({ context: { userId: "user-one" }, data: { query } });
       expect(result.reply).not.toMatch(/₹50|₹2,500|100%|instant.*refund|automatically disburses|0% interest/i);
       expect(state.queries.filter(q => /insert|update|delete/i.test(q.sql))).toEqual([]);
       expect(result.reply.length).toBeGreaterThan(30);

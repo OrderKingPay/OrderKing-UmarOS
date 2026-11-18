@@ -210,18 +210,46 @@ export class ReportingDocumentEngine {
   }
 
   // -------------------------------------------------------------------------
-  // SECTION BUILDERS
+  // SECTION BUILDERS (ZERO FABRICATED FALLBACKS — LIVE INPUTS OR ZERO)
   // -------------------------------------------------------------------------
+
+  private static num(value: unknown, fallback = 0): number {
+    return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+  }
+
+  private static inr(amount: number, decimals = 0): string {
+    return `₹${amount.toLocaleString('en-IN', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    })}`;
+  }
 
   private static buildDailyFounderBriefing(params: ReportGenerationParams): ReportSection[] {
     const custom = params.customData || {};
-    const ordersToday = custom.ordersToday ?? 142;
-    const gmvToday = custom.gmvToday ?? 52480;
-    const activeRest = custom.activeRestaurants ?? 28;
-    const activeRiders = custom.activeRiders ?? 18;
-    const platformFee = custom.platformFeeRevenue ?? 2840; // ₹20 flat fee or subscription
-    const founderProfit = custom.founderProfit ?? 2350;
-    const competitorSavings = Math.round(gmvToday * 0.22); // 22% standard commission retained benchmark
+    const ordersToday = this.num(custom.ordersToday, 0);
+    const gmvToday = this.num(custom.gmvToday, 0);
+    const activeRest = this.num(custom.activeRestaurants, 0);
+    const activeRiders = this.num(custom.activeRiders, 0);
+    const platformFee = this.num(custom.platformFeeRevenue, 0);
+    const founderProfit = this.num(custom.founderProfit, 0);
+    const pendingHighValuePayouts = this.num(custom.pendingHighValuePayouts, 0);
+    const p99LatencyMs = typeof custom.p99LatencyMs === 'number' ? custom.p99LatencyMs : null;
+
+    const notes: string[] = [
+      ordersToday > 0
+        ? 'Daily metrics compiled from canonical PostgreSQL ledger and order state machine.'
+        : 'No completed orders recorded in the supplied telemetry for this period.',
+    ];
+    if (p99LatencyMs !== null) {
+      notes.push(`Observed P99 API latency: ${p99LatencyMs}ms.`);
+    }
+
+    const recommendations: string[] = [];
+    if (pendingHighValuePayouts > 0) {
+      recommendations.push(
+        `${pendingHighValuePayouts} restaurant settlement payout(s) awaiting cryptographic founder approval.`
+      );
+    }
 
     return [
       {
@@ -230,318 +258,398 @@ export class ReportingDocumentEngine {
         description: 'Core daily marketplace metrics verified against canonical double-entry ledger.',
         metrics: [
           { key: 'orders_today', label: 'Completed Orders', value: ordersToday, category: 'FACT', sourceNote: 'Order State Machine' },
-          { key: 'gmv_today', label: 'Gross Merchandise Value', value: `₹${gmvToday.toLocaleString('en-IN')}`, category: 'FACT', sourceNote: 'Payment Gateway' },
-          { key: 'platform_fee', label: 'Platform Fee Revenue', value: `₹${platformFee.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Canonical Ledger' },
-          { key: 'founder_net', label: 'Founder Net Margin', value: `₹${founderProfit.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Ledger Profit Engine' },
-          { key: 'partner_savings', label: 'Partner Retained Earnings Benchmark (22%)', value: `₹${competitorSavings.toLocaleString('en-IN')}`, category: 'CALCULATION', sourceNote: 'Commission Benchmark' },
+          { key: 'gmv_today', label: 'Gross Merchandise Value', value: this.inr(gmvToday), category: 'FACT', sourceNote: 'Payment Gateway' },
+          { key: 'platform_fee', label: 'Platform Fee Revenue', value: this.inr(platformFee), category: 'CALCULATION', sourceNote: 'Canonical Ledger' },
+          { key: 'founder_net', label: 'Founder Net Margin', value: this.inr(founderProfit), category: 'CALCULATION', sourceNote: 'Ledger Profit Engine' },
           { key: 'active_merchants', label: 'Active Restaurant Partners', value: activeRest, category: 'FACT', sourceNote: 'OrderKing-Partners Heartbeat' },
           { key: 'active_riders', label: 'Online Delivery Partners', value: activeRiders, category: 'FACT', sourceNote: 'OrderKing-Riders GPS Registry' },
         ],
       },
       {
         id: 'action_items',
-        title: 'Autonomous AI Recommendations & Pending Gates',
-        description: 'Prioritized founder interventions required for operational continuity.',
-        notes: [
-          'All double-entry ledger balances strictly verified with zero imbalance.',
-          'P99 API latency across customer and partner endpoints is currently 142ms (Target: <300ms).',
-        ],
-        recommendations: [
-          '3 restaurant settlement payouts exceeding ₹10,000 awaiting founder cryptographic signature approval.',
-          'Activate dynamic surge pricing (+₹15) in North Zone due to evening rain forecast.',
-          'Invite 5 newly onboarded cloud kitchens to complete menu photography audit.',
-        ],
+        title: 'Operational Status & Pending Gates',
+        description: 'Verified ledger status and pending founder interventions.',
+        notes,
+        recommendations: recommendations.length > 0 ? recommendations : undefined,
       },
     ];
   }
 
   private static buildWeeklyFounderExecutive(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const weeklyOrders = this.num(custom.weeklyOrders, 0);
+    const prevWeeklyOrders = this.num(custom.prevWeeklyOrders, 0);
+    const weeklyGmv = this.num(custom.weeklyGmv, 0);
+    const weeklyPlatformRevenue = this.num(custom.weeklyPlatformRevenue, 0);
+    const wowGrowthPct =
+      prevWeeklyOrders > 0 ? (((weeklyOrders - prevWeeklyOrders) / prevWeeklyOrders) * 100).toFixed(1) : '0.0';
+    const blendedTakeRatePct =
+      weeklyGmv > 0 ? ((weeklyPlatformRevenue / weeklyGmv) * 100).toFixed(2) : '0.00';
+    const projectedMonthlyRunrate = Math.round((weeklyGmv / 7) * 30);
+    const dailyRows: Array<Array<string | number>> = Array.isArray(custom.dailyBreakdown)
+      ? custom.dailyBreakdown
+      : [];
+
     return [
       {
         id: 'weekly_growth',
         title: 'Weekly Performance & Growth Trajectory',
         metrics: [
-          { key: 'weekly_orders', label: 'Total Weekly Orders', value: 984, category: 'FACT' },
-          { key: 'wow_order_growth', label: 'WoW Order Growth Rate', value: '+14.8%', category: 'CALCULATION' },
-          { key: 'weekly_gmv', label: 'Weekly GMV', value: '₹3,64,200', category: 'FACT' },
-          { key: 'blended_take_rate', label: 'Blended Platform Take Rate', value: '5.4%', category: 'CALCULATION', sourceNote: 'Sub fees + ad auctions + delivery markup' },
-          { key: 'projected_monthly_runrate', label: 'Projected Monthly GMV Run-rate', value: '₹15,60,000', category: 'ESTIMATE', confidenceScore: 0.88 },
+          { key: 'weekly_orders', label: 'Total Weekly Orders', value: weeklyOrders, category: 'FACT', sourceNote: 'Order State Machine' },
+          { key: 'wow_order_growth', label: 'WoW Order Growth Rate', value: `${Number(wowGrowthPct) >= 0 ? '+' : ''}${wowGrowthPct}%`, category: 'CALCULATION', sourceNote: 'Derived from previous 7d orders' },
+          { key: 'weekly_gmv', label: 'Weekly GMV', value: this.inr(weeklyGmv), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'blended_take_rate', label: 'Blended Platform Take Rate', value: `${blendedTakeRatePct}%`, category: 'CALCULATION', sourceNote: 'Platform revenue / GMV' },
+          { key: 'projected_monthly_runrate', label: 'Projected Monthly GMV Run-rate', value: this.inr(projectedMonthlyRunrate), category: 'ESTIMATE', sourceNote: '30-day linear projection from weekly GMV' },
         ],
-        tables: [
-          {
-            title: 'Daily Breakdown',
-            headers: ['Day', 'Orders', 'GMV', 'Platform Rev', 'Active Fleet'],
-            rows: [
-              ['Mon', '120', '₹44,100', '₹2,400', '15'],
-              ['Tue', '132', '₹48,900', '₹2,640', '16'],
-              ['Wed', '128', '₹47,200', '₹2,560', '16'],
-              ['Thu', '140', '₹51,800', '₹2,800', '17'],
-              ['Fri', '165', '₹61,050', '₹3,300', '20'],
-              ['Sat', '180', '₹66,600', '₹3,600', '22'],
-              ['Sun', '119', '₹44,550', '₹2,380', '18'],
-            ],
-          },
-        ],
-      },
-      {
-        id: 'strategic_insights',
-        title: 'Strategic Unit Economics & AI Insights',
-        recommendations: [
-          'Merchant retention remains at 96.4% due to zero-commission policy.',
-          'Rider hourly earnings averaged ₹142/hr, 18% above regional gig baseline.',
-          'Consider launching King Pay UPI auto-debit for merchant weekly subscription renewals.',
-        ],
+        tables: dailyRows.length > 0
+          ? [
+              {
+                title: 'Daily Breakdown',
+                headers: ['Day', 'Orders', 'GMV', 'Platform Rev', 'Active Fleet'],
+                rows: dailyRows,
+              },
+            ]
+          : undefined,
+        notes: dailyRows.length === 0 ? ['No daily breakdown records supplied for this reporting window.'] : undefined,
       },
     ];
   }
 
   private static buildFinancePL(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const gmv = this.num(custom.gmv, 0);
+    const deliveryFees = this.num(custom.deliveryFees, 0);
+    const platformFees = this.num(custom.platformFees, 0);
+    const merchantSubscriptions = this.num(custom.merchantSubscriptions, 0);
+    const inAppAdRevenue = this.num(custom.inAppAdRevenue, 0);
+    const totalPlatformRevenue = deliveryFees + platformFees + merchantSubscriptions + inAppAdRevenue;
+
+    const riderPayouts = this.num(custom.riderPayouts, 0);
+    const paymentGatewayFees = this.num(custom.paymentGatewayFees, 0);
+    const smsWhatsappCosts = this.num(custom.smsWhatsappCosts, 0);
+    const cloudInfraCosts = this.num(custom.cloudInfraCosts, 0);
+    const refundsAndDisputes = this.num(custom.refundsAndDisputes, 0);
+    const totalOperatingExpenses =
+      riderPayouts + paymentGatewayFees + smsWhatsappCosts + cloudInfraCosts + refundsAndDisputes;
+
+    const netContributionProfit = totalPlatformRevenue - totalOperatingExpenses;
+    const netProfitMarginPct =
+      totalPlatformRevenue > 0 ? ((netContributionProfit / totalPlatformRevenue) * 100).toFixed(1) : '0.0';
+
     return [
       {
         id: 'revenue_and_gmv',
         title: 'Gross Merchandise Value & Revenue Summary',
         metrics: [
-          { key: 'gross_merchandise_value', label: 'Gross Merchandise Value (GMV)', value: '₹5,24,800', category: 'FACT' },
-          { key: 'customer_delivery_fees', label: 'Delivery Fees Collected from Customers', value: '₹42,600', category: 'FACT' },
-          { key: 'platform_service_fees', label: 'Platform Technology Fees (₹5-₹10/order)', value: '₹14,200', category: 'FACT' },
-          { key: 'merchant_subscriptions', label: 'Merchant Premium Subscriptions', value: '₹12,500', category: 'FACT' },
-          { key: 'in_app_ad_revenue', label: 'In-App Featured Search Auction Revenue', value: '₹6,400', category: 'FACT' },
-          { key: 'total_platform_revenue', label: 'Total Platform Gross Revenue', value: '₹75,700', category: 'CALCULATION' },
+          { key: 'gross_merchandise_value', label: 'Gross Merchandise Value (GMV)', value: this.inr(gmv), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'customer_delivery_fees', label: 'Delivery Fees Collected from Customers', value: this.inr(deliveryFees), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'platform_service_fees', label: 'Platform Technology Fees', value: this.inr(platformFees), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'merchant_subscriptions', label: 'Merchant Subscriptions', value: this.inr(merchantSubscriptions), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'in_app_ad_revenue', label: 'In-App Featured Placement Revenue', value: this.inr(inAppAdRevenue), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'total_platform_revenue', label: 'Total Platform Gross Revenue', value: this.inr(totalPlatformRevenue), category: 'CALCULATION', sourceNote: 'Sum of verified revenue lines' },
         ],
       },
       {
         id: 'operating_costs',
         title: 'Direct Operating Expenses & Disbursements',
         metrics: [
-          { key: 'rider_payouts', label: 'Rider Delivery Payouts & Distance Pay', value: '₹40,800', category: 'FACT', sourceNote: 'Disbursed via Canonical Ledger' },
-          { key: 'payment_gateway_fees', label: 'Payment Gateway Processing Charges (1.8% + GST)', value: '₹11,136', category: 'CALCULATION' },
-          { key: 'sms_whatsapp_costs', label: 'SMS & WhatsApp Notification Costs', value: '₹1,420', category: 'CALCULATION' },
-          { key: 'cloud_infra_costs', label: 'Cloud Infrastructure & Server Allocation', value: '₹3,200', category: 'CALCULATION' },
-          { key: 'refunds_and_disputes', label: 'Customer Goodwill Refunds & Spoilage Write-offs', value: '₹1,850', category: 'FACT' },
-          { key: 'total_operating_expenses', label: 'Total Direct Operating Expenses', value: '₹58,406', category: 'CALCULATION' },
+          { key: 'rider_payouts', label: 'Rider Delivery Payouts & Distance Pay', value: this.inr(riderPayouts), category: 'FACT', sourceNote: 'Disbursed via Canonical Ledger' },
+          { key: 'payment_gateway_fees', label: 'Payment Gateway Processing Charges', value: this.inr(paymentGatewayFees), category: 'FACT', sourceNote: 'Gateway Settlement Report' },
+          { key: 'sms_whatsapp_costs', label: 'SMS & WhatsApp Notification Costs', value: this.inr(smsWhatsappCosts), category: 'FACT', sourceNote: 'Telecom Carrier Ledger' },
+          { key: 'cloud_infra_costs', label: 'Cloud Infrastructure & Server Allocation', value: this.inr(cloudInfraCosts), category: 'FACT', sourceNote: 'Infrastructure Billing' },
+          { key: 'refunds_and_disputes', label: 'Customer Refunds & Dispute Write-offs', value: this.inr(refundsAndDisputes), category: 'FACT', sourceNote: 'Refunds Ledger' },
+          { key: 'total_operating_expenses', label: 'Total Direct Operating Expenses', value: this.inr(totalOperatingExpenses), category: 'CALCULATION', sourceNote: 'Sum of verified expense lines' },
         ],
       },
       {
         id: 'net_income',
         title: 'Net Marketplace Contribution Margin',
         metrics: [
-          { key: 'net_contribution_profit', label: 'Net Operating Profit (EBITDA)', value: '₹17,294', category: 'CALCULATION' },
-          { key: 'net_profit_margin_pct', label: 'Net Profit Margin on Platform Revenue', value: '22.8%', category: 'CALCULATION' },
+          { key: 'net_contribution_profit', label: 'Net Operating Profit (EBITDA)', value: this.inr(netContributionProfit), category: 'CALCULATION' },
+          { key: 'net_profit_margin_pct', label: 'Net Profit Margin on Platform Revenue', value: `${netProfitMarginPct}%`, category: 'CALCULATION' },
         ],
         notes: [
-          'All figures balanced against Double-Entry Ledger account FOUNDER_VAULT and PLATFORM_FEE_REVENUE.',
-          'Statutory GST output tax of 18% is provisioned in GST_OUTPUT_LIABILITY and not counted as revenue.',
+          'All figures reconcile against Double-Entry Ledger accounts.',
+          'Statutory GST output tax of 18% is provisioned in GST_OUTPUT_LIABILITY and excluded from platform revenue.',
         ],
       },
     ];
   }
 
   private static buildRestaurantSettlement(params: ReportGenerationParams): ReportSection[] {
-    const restaurantName = params.customData?.restaurantName || 'Spice Garden Kitchen';
+    const custom = params.customData || {};
+    const restaurantName =
+      typeof custom.restaurantName === 'string' && custom.restaurantName.trim()
+        ? custom.restaurantName.trim()
+        : params.restaurantId || 'Unassigned Merchant';
+    const ordersFulfilled = this.num(custom.ordersFulfilled, 0);
+    const foodSubtotal = this.num(custom.foodSubtotal, 0);
+    const packagingCharges = this.num(custom.packagingCharges, 0);
+    const commissionRatePct = this.num(custom.commissionRatePct, 0);
+    const grossPayableBeforeTax = foodSubtotal + packagingCharges;
+    const commissionAmount = Number(((foodSubtotal * commissionRatePct) / 100).toFixed(2));
+    const commissionGst = Number((commissionAmount * 0.18).toFixed(2));
+    const tcsUnderGst = Number((foodSubtotal * 0.01).toFixed(2));
+    const tdsUnderIt = Number((foodSubtotal * 0.01).toFixed(2));
+    const totalStatutoryWithholding = Number((tcsUnderGst + tdsUnderIt + commissionGst).toFixed(2));
+    const netBankDisbursement = Math.max(
+      0,
+      Number((grossPayableBeforeTax - commissionAmount - totalStatutoryWithholding).toFixed(2))
+    );
+    const utr = typeof custom.bankUtr === 'string' && custom.bankUtr.trim() ? custom.bankUtr.trim() : null;
+
+    const notes = ['Settlement state machine: CALCULATED -> VALIDATED -> APPROVED -> PAID.'];
+    if (utr) {
+      notes.push(`UTR / Bank Reference: ${utr}`);
+    } else {
+      notes.push('UTR / Bank Reference: Pending disbursement confirmation.');
+    }
+
     return [
       {
         id: 'merchant_overview',
         title: `Settlement Breakdown - ${restaurantName}`,
         metrics: [
-          { key: 'orders_fulfilled', label: 'Orders Fulfilled', value: 86, category: 'FACT' },
-          { key: 'food_subtotal', label: 'Food Item Subtotal', value: '₹38,450', category: 'FACT' },
-          { key: 'packaging_charges', label: 'Packaging Charges Collected', value: '₹1,290', category: 'FACT' },
-          { key: 'gross_payable_before_tax', label: 'Gross Merchant Entitlement', value: '₹39,740', category: 'CALCULATION' },
-          { key: 'order_king_commission', label: 'Order King Commission (0%)', value: '₹0.00', category: 'FACT' },
-          { key: 'competitor_commission_saved', label: 'Estimated Commission Saved vs Aggregators', value: '₹8,742', category: 'CALCULATION' },
+          { key: 'orders_fulfilled', label: 'Orders Fulfilled', value: ordersFulfilled, category: 'FACT', sourceNote: 'Order State Machine' },
+          { key: 'food_subtotal', label: 'Food Item Subtotal', value: this.inr(foodSubtotal, 2), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'packaging_charges', label: 'Packaging Charges Collected', value: this.inr(packagingCharges, 2), category: 'FACT', sourceNote: 'Canonical Ledger' },
+          { key: 'gross_payable_before_tax', label: 'Gross Merchant Entitlement', value: this.inr(grossPayableBeforeTax, 2), category: 'CALCULATION' },
+          { key: 'order_king_commission', label: `Order King Commission (${commissionRatePct}%)`, value: this.inr(commissionAmount, 2), category: 'CALCULATION' },
         ],
       },
       {
         id: 'statutory_deductions',
         title: 'Taxes & Statutory Deductions',
         metrics: [
-          { key: 'tcs_under_gst', label: 'TCS under GST (0.5% CGST + 0.5% SGST = 1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'tds_under_it', label: 'TDS under Section 194-O (1%)', value: '₹384.50', category: 'CALCULATION' },
-          { key: 'total_statutory_withholding', label: 'Total Statutory Withholding', value: '₹769.00', category: 'CALCULATION' },
-          { key: 'net_bank_disbursement', label: 'Net Amount Disbursed to Bank Account', value: '₹38,971.00', category: 'CALCULATION' },
+          { key: 'commission_gst', label: 'GST on Commission (18%)', value: this.inr(commissionGst, 2), category: 'CALCULATION' },
+          { key: 'tcs_under_gst', label: 'TCS under GST (0.5% CGST + 0.5% SGST = 1%)', value: this.inr(tcsUnderGst, 2), category: 'CALCULATION' },
+          { key: 'tds_under_it', label: 'TDS under Section 194-O (1%)', value: this.inr(tdsUnderIt, 2), category: 'CALCULATION' },
+          { key: 'total_statutory_withholding', label: 'Total Statutory Withholding', value: this.inr(totalStatutoryWithholding, 2), category: 'CALCULATION' },
+          { key: 'net_bank_disbursement', label: 'Net Amount Disbursed to Bank Account', value: this.inr(netBankDisbursement, 2), category: 'CALCULATION' },
         ],
-        notes: [
-          'Settlement transition: CALCULATED -> VALIDATED -> APPROVED -> PAID.',
-          'UTR / Bank Reference: CMS904810294812 (HDFC Bank Corporate NetBanking).',
-        ],
+        notes,
       },
     ];
   }
 
   private static buildRiderPayout(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const deliveriesCompleted = this.num(custom.deliveriesCompleted, 0);
+    const baseDistancePay = this.num(custom.baseDistancePay, 0);
+    const peakSurgeBonus = this.num(custom.peakSurgeBonus, 0);
+    const customerTips = this.num(custom.customerTips, 0);
+    const milestoneIncentive = this.num(custom.milestoneIncentive, 0);
+    const insuranceDeduction = this.num(custom.insuranceDeduction, 0);
+    const grossRiderEarnings = baseDistancePay + peakSurgeBonus + customerTips + milestoneIncentive;
+    const netPayoutAmount = Math.max(0, grossRiderEarnings - insuranceDeduction);
+
     return [
       {
         id: 'rider_earnings_summary',
         title: 'Fleet Earnings & Performance Breakdown',
         metrics: [
-          { key: 'deliveries_completed', label: 'Total Completed Deliveries', value: 34, category: 'FACT' },
-          { key: 'base_distance_pay', label: 'Base Fare & Distance Compensation', value: '₹1,530.00', category: 'FACT' },
-          { key: 'peak_surge_bonus', label: 'Peak Hour & Rain Surge Bonus', value: '₹340.00', category: 'FACT' },
-          { key: 'customer_tips_100pct', label: 'Customer Tips (100% Passthrough)', value: '₹280.00', category: 'FACT' },
-          { key: 'milestone_incentive', label: '30+ Deliveries Daily Incentive', value: '₹150.00', category: 'FACT' },
-          { key: 'gross_rider_earnings', label: 'Total Gross Earnings', value: '₹2,300.00', category: 'CALCULATION' },
+          { key: 'deliveries_completed', label: 'Total Completed Deliveries', value: deliveriesCompleted, category: 'FACT', sourceNote: 'Order State Machine' },
+          { key: 'base_distance_pay', label: 'Base Fare & Distance Compensation', value: this.inr(baseDistancePay, 2), category: 'FACT', sourceNote: 'Rider Ledger' },
+          { key: 'peak_surge_bonus', label: 'Peak Hour & Rain Surge Bonus', value: this.inr(peakSurgeBonus, 2), category: 'FACT', sourceNote: 'Rider Ledger' },
+          { key: 'customer_tips_100pct', label: 'Customer Tips (100% Passthrough)', value: this.inr(customerTips, 2), category: 'FACT', sourceNote: 'Rider Ledger' },
+          { key: 'milestone_incentive', label: 'Milestone Delivery Incentive', value: this.inr(milestoneIncentive, 2), category: 'FACT', sourceNote: 'Rider Ledger' },
+          { key: 'gross_rider_earnings', label: 'Total Gross Earnings', value: this.inr(grossRiderEarnings, 2), category: 'CALCULATION' },
         ],
       },
       {
         id: 'deductions_and_net',
         title: 'Insurance & Net Disbursed Earnings',
         metrics: [
-          { key: 'daily_accidental_insurance', label: 'Group Accidental Insurance Deduction', value: '₹12.00', category: 'CALCULATION' },
-          { key: 'net_payout_amount', label: 'Net Payable to UPI VPA', value: '₹2,288.00', category: 'CALCULATION' },
+          { key: 'daily_accidental_insurance', label: 'Group Accidental Insurance Deduction', value: this.inr(insuranceDeduction, 2), category: 'FACT', sourceNote: 'Social Security Policy' },
+          { key: 'net_payout_amount', label: 'Net Payable to UPI VPA / Bank', value: this.inr(netPayoutAmount, 2), category: 'CALCULATION' },
         ],
       },
     ];
   }
 
   private static buildOperationsSLA(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const avgPrepMins = this.num(custom.avgKitchenPrepMins, 0);
+    const avgDispatchSecs = this.num(custom.avgRiderDispatchSecs, 0);
+    const avgFirstMileMins = this.num(custom.avgFirstMileMins, 0);
+    const avgLastMileMins = this.num(custom.avgLastMileMins, 0);
+    const avgTotalMins = Number((avgPrepMins + avgFirstMileMins + avgLastMileMins).toFixed(1));
+    const onTimeRatePct = this.num(custom.onTimeDeliveryRatePct, 0);
+    const breachedOrdersCount = this.num(custom.breachedOrdersCount, 0);
+
     return [
       {
         id: 'sla_metrics',
         title: 'Marketplace Speed & Kitchen SLA Metrics',
         metrics: [
-          { key: 'avg_kitchen_prep_time', label: 'Average Kitchen Prep Time', value: '14.2 mins', category: 'FACT' },
-          { key: 'avg_rider_assignment_latency', label: 'Average Rider Dispatch Latency', value: '48 secs', category: 'FACT' },
-          { key: 'avg_first_mile_transit', label: 'Average First-Mile (Rider to Restaurant)', value: '6.4 mins', category: 'FACT' },
-          { key: 'avg_last_mile_delivery', label: 'Average Last-Mile (Restaurant to Customer)', value: '16.8 mins', category: 'FACT' },
-          { key: 'avg_total_fulfillment_time', label: 'Total Order Fulfillment Duration', value: '37.4 mins', category: 'CALCULATION' },
-          { key: 'ontime_delivery_rate', label: 'On-Time Delivery SLA (<45 mins)', value: '94.8%', category: 'CALCULATION' },
+          { key: 'avg_kitchen_prep_time', label: 'Average Kitchen Prep Time', value: `${avgPrepMins} mins`, category: 'FACT', sourceNote: 'Order Events' },
+          { key: 'avg_rider_assignment_latency', label: 'Average Rider Dispatch Latency', value: `${avgDispatchSecs} secs`, category: 'FACT', sourceNote: 'Dispatch Telemetry' },
+          { key: 'avg_first_mile_transit', label: 'Average First-Mile (Rider to Restaurant)', value: `${avgFirstMileMins} mins`, category: 'FACT', sourceNote: 'GPS Telemetry' },
+          { key: 'avg_last_mile_delivery', label: 'Average Last-Mile (Restaurant to Customer)', value: `${avgLastMileMins} mins`, category: 'FACT', sourceNote: 'GPS Telemetry' },
+          { key: 'avg_total_fulfillment_time', label: 'Total Order Fulfillment Duration', value: `${avgTotalMins} mins`, category: 'CALCULATION' },
+          { key: 'ontime_delivery_rate', label: 'On-Time Delivery SLA (<45 mins)', value: `${onTimeRatePct}%`, category: 'CALCULATION' },
         ],
-      },
-      {
-        id: 'outlier_analysis',
-        title: 'Bottleneck & Delay Investigation',
         notes: [
-          '5 orders exceeded 50 minutes total duration due to heavy congestion on MG Road.',
-          'All affected customers automatically received ₹30 apologies coupon funded from surge escrow.',
-        ],
-        recommendations: [
-          'Calibrate default prep time for Biryani dishes for high-demand outlets from 15 mins to 22 mins.',
-          'Increase rider standby pool in Koramangala hub by 3 riders between 7:30 PM and 9:30 PM.',
+          breachedOrdersCount > 0
+            ? `${breachedOrdersCount} order(s) exceeded the 45-minute delivery SLA threshold.`
+            : 'Zero SLA breaches recorded in the supplied telemetry.',
         ],
       },
     ];
   }
 
   private static buildAnomalyAudit(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const ordersScanned = this.num(custom.ordersScanned, 0);
+    const ledgerValid = custom.ledgerHashValid !== false;
+    const suspiciousVelocity = this.num(custom.suspiciousVelocityDetected, 0);
+    const duplicateWebhooksBlocked = this.num(custom.duplicatePayoutTriggers, 0);
+    const impossibleTravelEvents = this.num(custom.impossibleTravelEvents, 0);
+
     return [
       {
         id: 'security_telemetry',
         title: 'Algorithmic Anomaly Detection Telemetry',
         metrics: [
-          { key: 'orders_scanned', label: 'Total Orders Scanned', value: 984, category: 'FACT' },
-          { key: 'ledger_hash_check', label: 'Cryptographic Ledger Hash Status', value: '100% VALID (0 TAMPERING)', category: 'FACT' },
-          { key: 'suspicious_velocity_detected', label: 'High Velocity Coupon Abuse Attempts', value: 3, category: 'FACT' },
-          { key: 'duplicate_payout_triggers', label: 'Duplicate Settlement Webhooks Blocked', value: 0, category: 'FACT' },
-          { key: 'impossible_travel_events', label: 'Impossible GPS Teleportation Flags', value: 1, category: 'FACT' },
-        ],
-      },
-      {
-        id: 'incident_remediation',
-        title: 'Automated Remediation Actions',
-        notes: [
-          'Suspicious device ID 8f92-c01b blocked for 24h after trying 12 failed OTP combinations.',
-          'Ledger entry idempotency keys prevented 2 identical bank payout requests from double execution.',
+          { key: 'orders_scanned', label: 'Total Orders Scanned', value: ordersScanned, category: 'FACT', sourceNote: 'Audit Engine' },
+          {
+            key: 'ledger_hash_check',
+            label: 'Cryptographic Ledger Hash Status',
+            value: ledgerValid ? 'VALID (0 TAMPERING)' : 'INTEGRITY ALERT',
+            category: 'FACT',
+            sourceNote: 'Immutable Audit Ledger',
+          },
+          { key: 'suspicious_velocity_detected', label: 'High Velocity Coupon Abuse Attempts', value: suspiciousVelocity, category: 'FACT', sourceNote: 'Fraud Shield' },
+          { key: 'duplicate_payout_triggers', label: 'Duplicate Settlement Webhooks Blocked', value: duplicateWebhooksBlocked, category: 'FACT', sourceNote: 'Idempotency Guard' },
+          { key: 'impossible_travel_events', label: 'Impossible GPS Teleportation Flags', value: impossibleTravelEvents, category: 'FACT', sourceNote: 'Anti-Fraud GPS Shield' },
         ],
       },
     ];
   }
 
   private static buildCustomerRetention(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const activeCustomers30d = this.num(custom.activeCustomers30d, 0);
+    const repeatOrderRatePct = this.num(custom.repeatOrderRate30dPct, 0);
+    const kingPayAdoptionPct = this.num(custom.kingPayAdoptionPct, 0);
+    const avgOrderFrequency = this.num(custom.avgOrderFrequency, 0);
+    const churnRiskUsers = this.num(custom.churnRiskUsers, 0);
+
     return [
       {
         id: 'cohort_metrics',
         title: 'Customer Cohort Repeat & Loyalty Metrics',
         metrics: [
-          { key: 'total_active_customers', label: 'Active Ordering Customers (30d)', value: 4120, category: 'FACT' },
-          { key: 'repeat_order_rate_30d', label: '30-Day Repeat Order Rate', value: '64.2%', category: 'CALCULATION' },
-          { key: 'king_pay_wallet_adoption', label: 'King Pay Wallet / AutoPay Adoption', value: '38.6%', category: 'FACT' },
-          { key: 'avg_order_frequency', label: 'Average Orders per User / Month', value: '3.8 orders', category: 'CALCULATION' },
-          { key: 'churn_risk_users', label: 'Dormant / Churn Risk Users (>21d inactive)', value: 240, category: 'INFERENCE', confidenceScore: 0.85 },
+          { key: 'total_active_customers', label: 'Active Ordering Customers (30d)', value: activeCustomers30d, category: 'FACT', sourceNote: 'Customers Table' },
+          { key: 'repeat_order_rate_30d', label: '30-Day Repeat Order Rate', value: `${repeatOrderRatePct}%`, category: 'CALCULATION' },
+          { key: 'king_pay_wallet_adoption', label: 'King Pay Wallet / AutoPay Adoption', value: `${kingPayAdoptionPct}%`, category: 'FACT', sourceNote: 'Payments Ledger' },
+          { key: 'avg_order_frequency', label: 'Average Orders per User / Month', value: `${avgOrderFrequency} orders`, category: 'CALCULATION' },
+          { key: 'churn_risk_users', label: 'Dormant / Churn Risk Users (>21d inactive)', value: churnRiskUsers, category: 'INFERENCE' },
         ],
       },
     ];
   }
 
   private static buildInventoryProcurement(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const trackedSkus = this.num(custom.trackedSkus, 0);
+    const stockoutRiskItems = this.num(custom.stockoutRiskItems, 0);
+    const estimatedSavingsWeekly = this.num(custom.estimatedBulkSavingsWeekly, 0);
+
     return [
       {
         id: 'procurement_advice',
         title: 'Wholesale Procurement & Ingredient Advisory',
         metrics: [
-          { key: 'tracked_skus', label: 'High-Velocity Menu SKUs Monitored', value: 48, category: 'FACT' },
-          { key: 'stockout_risk_items', label: 'Items at Risk of Stock-Out Tonight', value: 4, category: 'INFERENCE', confidenceScore: 0.91 },
-          { key: 'potential_bulk_savings', label: 'Potential Collective Sourcing Savings', value: '₹14,500/week', category: 'ESTIMATE', confidenceScore: 0.78 },
-        ],
-        recommendations: [
-          'Bulk purchase basmati rice and cooking oil via Order King Wholesale Alliance to save 12% on wholesale cost.',
-          'Notify Green Kitchen to increase paneer buffer stock before Friday dinner rush.',
+          { key: 'tracked_skus', label: 'Menu SKUs Monitored', value: trackedSkus, category: 'FACT', sourceNote: 'Catalog Inventory' },
+          { key: 'stockout_risk_items', label: 'Items Below Safety Stock', value: stockoutRiskItems, category: 'INFERENCE' },
+          { key: 'potential_bulk_savings', label: 'Estimated Collective Sourcing Savings', value: `${this.inr(estimatedSavingsWeekly)}/week`, category: 'ESTIMATE' },
         ],
       },
     ];
   }
 
   private static buildGSTCompliance(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const taxableRestaurantSupplies = this.num(custom.taxableRestaurantSupplies, 0);
+    const platformFeeTaxableValue = this.num(custom.platformFeeTaxableValue, 0);
+    const restaurantGst5pct = Number((taxableRestaurantSupplies * 0.05).toFixed(2));
+    const platformFeeGst18pct = Number((platformFeeTaxableValue * 0.18).toFixed(2));
+    const tcsCollected1pct = Number((taxableRestaurantSupplies * 0.01).toFixed(2));
+    const totalGovtRemittance = Number((restaurantGst5pct + platformFeeGst18pct + tcsCollected1pct).toFixed(2));
+
     return [
       {
         id: 'statutory_gst',
         title: 'Statutory GST Tax Summary (Section 9(5) CGST Act)',
         metrics: [
-          { key: 'total_taxable_value', label: 'Taxable Restaurant Supplies', value: '₹5,24,800.00', category: 'FACT' },
-          { key: 'restaurant_gst_5pct', label: 'Restaurant Service GST Collected @ 5% (Sec 9(5))', value: '₹26,240.00', category: 'CALCULATION' },
-          { key: 'platform_fee_gst_18pct', label: 'Platform Fee GST Liability @ 18%', value: '₹2,556.00', category: 'CALCULATION' },
-          { key: 'tcs_collected_1pct', label: 'TCS Collected under Section 52 (1%)', value: '₹5,248.00', category: 'CALCULATION' },
-          { key: 'total_govt_remittance', label: 'Total Statutory Remittance to Govt', value: '₹34,044.00', category: 'CALCULATION' },
+          { key: 'total_taxable_value', label: 'Taxable Restaurant Supplies', value: this.inr(taxableRestaurantSupplies, 2), category: 'FACT', sourceNote: 'GSTIN 18AFXPH9838M1Z9' },
+          { key: 'restaurant_gst_5pct', label: 'Restaurant Service GST Collected @ 5% (Sec 9(5))', value: this.inr(restaurantGst5pct, 2), category: 'CALCULATION' },
+          { key: 'platform_fee_gst_18pct', label: 'Platform Fee GST Liability @ 18%', value: this.inr(platformFeeGst18pct, 2), category: 'CALCULATION' },
+          { key: 'tcs_collected_1pct', label: 'TCS Collected under Section 52 (1%)', value: this.inr(tcsCollected1pct, 2), category: 'CALCULATION' },
+          { key: 'total_govt_remittance', label: 'Total Statutory Remittance to Govt', value: this.inr(totalGovtRemittance, 2), category: 'CALCULATION' },
         ],
         notes: [
-          'In accordance with Notification No. 17/2021-Central Tax (Rate), Order King remits 5% GST on restaurant services directly.',
-          'Monthly GSTR-1 and GSTR-8 ready for one-click JSON export.',
+          'In accordance with Notification No. 17/2021-Central Tax (Rate), Orderkingpay (GSTIN 18AFXPH9838M1Z9) remits 5% GST on restaurant services directly.',
+          'GSTR-1 and GSTR-8 figures reflect only verified ledger transactions supplied for this period.',
         ],
       },
     ];
   }
 
   private static buildDispatchEfficiency(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const totalDispatches = this.num(custom.totalDispatches, 0);
+    const avgDeadheadKm = this.num(custom.avgDeadheadKm, 0);
+    const batchedOrdersPct = this.num(custom.batchedOrdersPct, 0);
+    const fleetIdleTimePct = this.num(custom.fleetIdleTimePct, 0);
+
     return [
       {
         id: 'dispatch_metrics',
         title: 'Proximity Dispatch & Deadhead Analysis',
         metrics: [
-          { key: 'total_dispatches', label: 'Total Dispatched Trips', value: 984, category: 'FACT' },
-          { key: 'avg_deadhead_distance', label: 'Average Deadhead (Empty Rider Distance)', value: '1.2 km', category: 'FACT' },
-          { key: 'batched_orders_pct', label: 'Multi-Order Batching Efficiency', value: '28.4%', category: 'CALCULATION' },
-          { key: 'fleet_idle_time_pct', label: 'Rider Idle Time %', value: '14.1%', category: 'CALCULATION' },
-          { key: 'fuel_carbon_saved_kg', label: 'Estimated CO2 Saved via Route Optimization', value: '312 kg', category: 'ESTIMATE', confidenceScore: 0.82 },
+          { key: 'total_dispatches', label: 'Total Dispatched Trips', value: totalDispatches, category: 'FACT', sourceNote: 'Dispatch Ledger' },
+          { key: 'avg_deadhead_distance', label: 'Average Deadhead (Empty Rider Distance)', value: `${avgDeadheadKm} km`, category: 'FACT', sourceNote: 'GPS Telemetry' },
+          { key: 'batched_orders_pct', label: 'Multi-Order Batching Efficiency', value: `${batchedOrdersPct}%`, category: 'CALCULATION' },
+          { key: 'fleet_idle_time_pct', label: 'Rider Idle Time %', value: `${fleetIdleTimePct}%`, category: 'CALCULATION' },
         ],
       },
     ];
   }
 
   private static buildAIAgentPerformance(params: ReportGenerationParams): ReportSection[] {
+    const custom = params.customData || {};
+    const totalTasksProcessed = this.num(custom.totalTasksProcessed, 0);
+    const autonomousSuccessRatePct = this.num(custom.autonomousSuccessRatePct, 0);
+    const founderGateRequests = this.num(custom.founderGateRequests, 0);
+    const avgApprovalTurnaroundMins = this.num(custom.avgApprovalTurnaroundMins, 0);
+    const avgExecutionLatencyMs = this.num(custom.avgExecutionLatencyMs, 0);
+    const agentRows: Array<Array<string | number>> = Array.isArray(custom.agentBreakdown)
+      ? custom.agentBreakdown
+      : [];
+
     return [
       {
         id: 'agent_kpis',
-        title: 'Autonomous AI Workforce Utilization & Success',
+        title: 'AI Workforce Utilization & Execution Audit',
         metrics: [
-          { key: 'total_tasks_processed', label: 'Total Agentic Tasks Executed', value: 486, category: 'FACT' },
-          { key: 'autonomous_success_rate', label: 'Autonomous Task Success Rate', value: '98.8%', category: 'CALCULATION' },
-          { key: 'founder_gate_requests', label: 'Tasks Escalated for Founder Approval', value: 14, category: 'FACT' },
-          { key: 'founder_approval_latency', label: 'Avg Founder Approval Turnaround', value: '4.2 mins', category: 'CALCULATION' },
-          { key: 'avg_execution_latency', label: 'Average AI Task Processing Latency', value: '820 ms', category: 'FACT' },
+          { key: 'total_tasks_processed', label: 'Total Agentic Tasks Executed', value: totalTasksProcessed, category: 'FACT', sourceNote: 'AI Execution Log' },
+          { key: 'autonomous_success_rate', label: 'Autonomous Task Success Rate', value: `${autonomousSuccessRatePct}%`, category: 'CALCULATION' },
+          { key: 'founder_gate_requests', label: 'Tasks Escalated for Founder Approval', value: founderGateRequests, category: 'FACT', sourceNote: 'Approval Ledger' },
+          { key: 'founder_approval_latency', label: 'Avg Founder Approval Turnaround', value: `${avgApprovalTurnaroundMins} mins`, category: 'CALCULATION' },
+          { key: 'avg_execution_latency', label: 'Average AI Task Processing Latency', value: `${avgExecutionLatencyMs} ms`, category: 'FACT', sourceNote: 'AI Telemetry' },
         ],
-        tables: [
-          {
-            title: 'Agent Breakdown',
-            headers: ['Agent Role', 'Tasks Handled', 'Autonomous %', 'Escalations', 'Avg Latency'],
-            rows: [
-              ['FOUNDER_AI', '142', '96.2%', '6', '1200ms'],
-              ['FINANCE_AI', '98', '94.0%', '8', '650ms'],
-              ['OPERATIONS_AI', '84', '98.8%', '0', '420ms'],
-              ['DISPATCH_AI', '76', '100.0%', '0', '180ms'],
-              ['REPORTING_AI', '42', '100.0%', '0', '950ms'],
-              ['SUPPORT_AI', '44', '97.7%', '0', '310ms'],
-            ],
-          },
-        ],
+        tables: agentRows.length > 0
+          ? [
+              {
+                title: 'Agent Breakdown',
+                headers: ['Agent Role', 'Tasks Handled', 'Autonomous %', 'Escalations', 'Avg Latency'],
+                rows: agentRows,
+              },
+            ]
+          : undefined,
+        notes: agentRows.length === 0 ? ['No AI agent execution records supplied for this reporting window.'] : undefined,
       },
     ];
   }

@@ -91,7 +91,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
           className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-700 hover:text-orange-950 hover:underline cursor-pointer"
         >
           <MessageSquare className="size-3.5" />
-          <span>{open ? "Hide Conversation" : `View & Reply to Founder / Support (${messages.length})`}</span>
+          <span>{open ? "Hide Conversation" : `View & Reply to Support (${messages.length})`}</span>
         </button>
         {open && (
           <span className="text-[10px] text-emerald-700 font-mono flex items-center gap-1">
@@ -147,7 +147,7 @@ function TicketConversationView({ ticketId }: { ticketId: string }) {
                   void handleSend();
                 }
               }}
-              placeholder="Type message to Founder / Support..."
+              placeholder="Type message to OrderKing Support..."
               className="flex-1 rounded-xl border border-orange-200 bg-white px-3 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-orange-500"
               disabled={isSending}
             />

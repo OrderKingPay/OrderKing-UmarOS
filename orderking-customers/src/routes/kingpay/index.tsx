@@ -15,8 +15,8 @@ export const Route = createFileRoute("/kingpay/")({
   errorComponent: AppErrorComponent,
   head: () => ({
     meta: [
-      { property: "og:title", content: "KingPay — Direct UPI, Dynamic BharatQR & Instant Settlements" },
-      { property: "og:description", content: "Direct UPI pay, dynamic BharatQR, instant refunds, and double-entry mathematical ledger." },
+      { property: "og:title", content: "KingPay — Direct UPI & Dynamic BharatQR" },
+      { property: "og:description", content: "Direct UPI payments, dynamic BharatQR, travel search, and double-entry ledger." },
     ],
   }),
 });

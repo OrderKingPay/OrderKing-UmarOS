@@ -16,7 +16,6 @@ function Login() {
   const [phoneName, setPhoneName] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
-  const [providerNotice, setProviderNotice] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
   // Email Fallback State
   const [email, setEmail] = useState("");
@@ -83,7 +82,6 @@ function Login() {
       }
       setOtpSent(true);
       setResendTimer(25);
-      if (res?.providerNotice) setProviderNotice(res.providerNotice);
       setSuccessMsg(`Code sent by SMS to +91 ${cleanNumber}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to send OTP right now. Please try again.");
@@ -325,11 +323,6 @@ function Login() {
                     Change Number
                   </button>
                 </div>
-                {providerNotice && (
-                  <div className="rounded-xl bg-stone-100 px-3.5 py-2 text-[11px] font-semibold text-stone-700">
-                    {providerNotice}
-                  </div>
-                )}
                 <div>
                   <label className="block text-[11px] font-black uppercase tracking-wider text-stone-700 mb-1.5 text-center">
                     Enter 6-Digit Verification Code

@@ -271,15 +271,15 @@ describe("OrderKing Fleet Safety & Doorstep Handover Engine", () => {
       expect(res.distressSummary).toContain("Police");
     });
 
-    it("connects direct bridge to OrderKing 24x7 Fleet Safety Helpline (18001000)", () => {
+    it("connects direct bridge to OrderKing 24x7 Fleet Safety Helpline (+919395065587)", () => {
       const res = triggerSosSafetyDialer("FLEET", {
         lat: 26.1445,
         lng: 91.7362,
         deliveryId: "del_guwahati_44",
       });
 
-      expect(res.targetNumber).toBe("18001000");
-      expect(res.telUri).toBe("tel:18001000");
+      expect(res.targetNumber).toBe("+919395065587");
+      expect(res.telUri).toBe("tel:+919395065587");
       expect(res.distressSummary).toContain("OrderKing 24x7 Safety Helpline");
     });
 

@@ -35,7 +35,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
   const navigate = useNavigate();
 
-  const { restaurantId, restaurantName, items, coupon } = useCartStore();
+  const { restaurantId, restaurantName, items, coupon, setPreferredPaymentMethod } = useCartStore();
   const location = useLocationStore((s) => s.location);
   const totalItemCount = cartCount(items);
 
@@ -74,7 +74,13 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
   const handle1TapPay = async () => {
     setIsSubmitting(true);
     try {
-      // Direct navigation to checkout with selected payment intent preloaded
+      const mappedMethod =
+        selectedMethod === "KING_PAY"
+          ? "KING_PAY"
+          : selectedMethod === "UPI"
+            ? "DIRECT_UPI"
+            : "COD";
+      setPreferredPaymentMethod(mappedMethod);
       onClose();
       void navigate({ to: "/checkout" });
     } catch {
@@ -209,12 +215,9 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </span>
           </div>
 
-          {/* 2. Direct Chef Delivery */}
+          {/* 2. Delivery Fee */}
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-gray-700 flex items-center gap-1">
-              <span>Delivery Fee</span>
-              <span className="text-[10px] text-stone-400 font-normal">(Direct Chef Dispatch)</span>
-            </span>
+            <span className="font-semibold text-gray-700">Delivery Fee</span>
             <div className="text-right">
               {quoteQuery.isLoading ? (
                 <span className="text-[11px] font-medium text-stone-500">Calculating...</span>
@@ -232,10 +235,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
 
           {/* 3. Kitchen Packaging */}
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-gray-700 flex items-center gap-1">
-              <span>Restaurant Packaging</span>
-              <span className="text-[10px] text-stone-400 font-normal">(Eco-sealed container)</span>
-            </span>
+            <span className="font-semibold text-gray-700">Restaurant Packaging</span>
             <span className="font-mono font-bold text-gray-950">
               {packagingPaise === 0 ? (
                 <span className="text-gray-950 font-bold">₹0</span>
@@ -283,14 +283,14 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
             </span>
           </div>
 
-          {/* 7. GRAND TOTAL (24K GOLD & OBSIDIAN LUXURY CARD) */}
+          {/* 7. GRAND TOTAL */}
           <div className="relative overflow-hidden mt-1 rounded-2xl bg-gradient-to-r from-slate-950 via-[#17140f] to-slate-950 p-3.5 text-white flex items-center justify-between shadow-[0_4px_16px_rgba(245,158,11,0.25)] border border-orange-400/50">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-orange-300">
                 <Crown className="size-3 text-orange-400" />
                 <span>Total Amount to Pay</span>
               </div>
-              <p className="text-[10px] text-stone-400">All taxes &amp; fees included · 0 hidden charges</p>
+              <p className="text-[10px] text-stone-400">Itemized taxes &amp; fees included</p>
             </div>
             <div className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-orange-400 via-orange-300 to-orange-500 px-3.5 py-1.5 text-slate-950 font-black shadow-md border border-orange-300">
               <span className="font-mono text-base sm:text-lg">
@@ -375,7 +375,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
 
           <div className="flex items-center justify-center gap-1.5 text-[11px] font-medium text-stone-500">
             <ShieldCheck className="size-3 text-emerald-600" />
-            <span>256-Bit SSL Encrypted · Direct Chef Handover</span>
+            <span>TLS Encrypted Checkout · Orderkingpay</span>
           </div>
         </div>
       </div>

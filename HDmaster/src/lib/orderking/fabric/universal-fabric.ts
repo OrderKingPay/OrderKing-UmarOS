@@ -64,23 +64,25 @@ export class UniversalConnectorFabric {
     const authHeader = headers['authorization'] || headers['Authorization'];
     const requestId = headers['x-request-id'] || crypto.randomUUID();
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return { role: 'GUEST', requestId };
     }
 
-    const token = authHeader.replace('Bearer ', '').trim();
+    const token = authHeader.slice('Bearer '.length).trim();
+    const expectedSecret = process.env.FABRIC_SERVICE_TOKEN?.trim();
 
-    // Simulated secure token decoding bridging
-    if (token === 'FOUNDER_MASTER_TOKEN_xyz') {
-      return { userId: 'founder_001', role: 'FOUNDER', requestId };
-    }
-    
-    if (token.startsWith('admin_')) {
-      return { userId: 'admin_usr', role: 'ADMIN', requestId };
+    // Fail-closed: zero hardcoded backdoor tokens or dummy prefix accounts.
+    if (!expectedSecret || token.length === 0 || token.length !== expectedSecret.length) {
+      return { role: 'GUEST', requestId };
     }
 
-    if (token.startsWith('usr_')) {
-      return { userId: token, role: 'USER', requestId };
+    let diff = 0;
+    for (let i = 0; i < token.length; i++) {
+      diff |= token.charCodeAt(i) ^ expectedSecret.charCodeAt(i);
+    }
+
+    if (diff === 0) {
+      return { userId: 'service_verified', role: 'ADMIN', requestId };
     }
 
     return { role: 'GUEST', requestId };

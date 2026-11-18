@@ -23,7 +23,7 @@ export const OPERATIONAL_SHIFT_SLOTS: ReadonlyArray<ShiftSlot> = [
     tag: "Breakfast Dispatch",
     baseFarePaise: STATUTORY_BASE_FARE_PAISE,
     distanceRatePaise: STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-    peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · ₹1/min wait pay after 10m",
+    peakIncentiveNote: "Base ₹35 (first 2 km) + ₹12/km distance pay · ₹1/min wait pay after 6m",
   },
   {
     id: "lunch_peak_1130_1530",

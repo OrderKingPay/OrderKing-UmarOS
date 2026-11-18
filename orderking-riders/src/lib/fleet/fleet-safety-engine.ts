@@ -157,9 +157,9 @@ export const STATUTORY_SAFETY_HELPLINES = {
     service: "POLICE",
   },
   FLEET_SAFETY_HELPLINE: {
-    number: "18001000",
-    label: "1800-100-ORDER · OrderKing 24x7 Safety Helpline",
-    telUri: "tel:18001000",
+    number: "+919395065587",
+    label: "+91-9395065587 · OrderKing 24x7 Safety Helpline",
+    telUri: "tel:+919395065587",
     service: "FLEET_OPERATIONS",
   },
 } as const;

@@ -250,7 +250,7 @@ export function RiderOnboardingPage() {
 
   return (
     <AppShell>
-      <div className="mx-auto max-w-xl px-4 py-6 space-y-5 text-slate-100">
+      <div className="mx-auto max-w-xl px-4 py-6 space-y-5 text-foreground">
         {/* 5-Step Indicator */}
         <div className="flex items-center justify-between border-b border-border pb-3">
           {[
@@ -271,7 +271,7 @@ export function RiderOnboardingPage() {
                 ? "text-primary"
                 : step > s.n
                   ? "text-emerald-400"
-                  : "text-slate-500"
+                  : "text-muted-foreground"
                 }`}
             >
               <div
@@ -279,7 +279,7 @@ export function RiderOnboardingPage() {
                   ? "bg-primary text-white"
                   : step > s.n
                     ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400"
-                    : "bg-background border border-slate-800 text-slate-500"
+                    : "bg-background border border-border text-muted-foreground"
                   }`}
               >
                 {step > s.n ? <CheckCircle2 className="size-3.5" /> : s.n}
@@ -301,13 +301,13 @@ export function RiderOnboardingPage() {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-white">Basic Profile</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Enter your contact and service details.</p>
+                <h2 className="text-base font-bold text-foreground">Basic Profile</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Enter your contact and service details.</p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-slate-300">Full Name</Label>
+                  <Label className="text-xs text-foreground">Full Name</Label>
                   <Input
                     value={fullName}
                     onChange={(e) => { setFullName(e.target.value); setError(null); }}
@@ -316,9 +316,9 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Mobile Number</Label>
+                  <Label className="text-xs text-foreground">Mobile Number</Label>
                   <div className="relative mt-1">
-                    <span className="absolute left-3 top-3 text-xs text-slate-400 font-mono">+91</span>
+                    <span className="absolute left-3 top-3 text-xs text-muted-foreground font-mono">+91</span>
                     <Input
                       type="tel"
                       maxLength={10}
@@ -331,7 +331,7 @@ export function RiderOnboardingPage() {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-xs text-slate-300">Operational Delivery Hub</Label>
+                    <Label className="text-xs text-foreground">Operational Delivery Hub</Label>
                     <select
                       value={selectedHubId}
                       onChange={(e) => {
@@ -343,10 +343,10 @@ export function RiderOnboardingPage() {
                           setCityZone(`${hub.city} - ${hub.pockets[0].name}`);
                         }
                       }}
-                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-semibold text-slate-200 outline-none focus:border-primary"
+                      className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-semibold text-foreground outline-none focus:border-primary"
                     >
                       {OPERATIONAL_HUBS.map((h) => (
-                        <option key={h.id} value={h.id} className="bg-slate-900 text-slate-100">
+                        <option key={h.id} value={h.id} className="bg-card text-foreground">
                           {h.name} ({h.city})
                         </option>
                       ))}
@@ -354,7 +354,7 @@ export function RiderOnboardingPage() {
                   </div>
 
                   <div>
-                    <Label className="text-xs text-slate-300">Assigned Geofenced Pocket &amp; Live Capacity</Label>
+                    <Label className="text-xs text-foreground">Assigned Geofenced Pocket &amp; Live Capacity</Label>
                     <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {OPERATIONAL_HUBS.find((h) => h.id === selectedHubId)?.pockets.map((pkt) => {
                         const isSelected = selectedPocketId === pkt.id;
@@ -370,12 +370,12 @@ export function RiderOnboardingPage() {
                             className={`flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition ${
                               isSelected
                                 ? "border-primary bg-primary/10 text-primary"
-                                : "border-border bg-background text-slate-300 hover:border-slate-700"
+                                : "border-border bg-background text-foreground hover:border-primary/40"
                             }`}
                           >
                             <div>
                               <div className="font-bold text-[11px]">{pkt.name}</div>
-                              <div className="text-[10px] text-slate-400">Cap: {pkt.activeRiderCap} active riders</div>
+                              <div className="text-[10px] text-muted-foreground">Cap: {pkt.activeRiderCap} active riders</div>
                             </div>
                             <span
                               className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
@@ -401,7 +401,7 @@ export function RiderOnboardingPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-slate-300">City Zone</Label>
+                    <Label className="text-xs text-foreground">City Zone</Label>
                     <Input
                       value={cityZone}
                       onChange={(e) => setCityZone(e.target.value)}
@@ -410,7 +410,7 @@ export function RiderOnboardingPage() {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-slate-300">Pincode</Label>
+                    <Label className="text-xs text-foreground">Pincode</Label>
                     <Input
                       maxLength={6}
                       value={pincode}
@@ -421,7 +421,7 @@ export function RiderOnboardingPage() {
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Residential Address</Label>
+                  <Label className="text-xs text-foreground">Residential Address</Label>
                   <Input
                     value={serviceAddress}
                     onChange={(e) => { setServiceAddress(e.target.value); setError(null); }}
@@ -449,13 +449,13 @@ export function RiderOnboardingPage() {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-white">Identity Documents</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Government ID details for statutory verification.</p>
+                <h2 className="text-base font-bold text-foreground">Identity Documents</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Government ID details for statutory verification.</p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-slate-300">12-Digit Aadhaar Number</Label>
+                  <Label className="text-xs text-foreground">12-Digit Aadhaar Number</Label>
                   <Input
                     maxLength={12}
                     value={aadhaarNumber}
@@ -463,11 +463,11 @@ export function RiderOnboardingPage() {
                     placeholder="12-digit UIDAI number"
                     className="mt-1 bg-background border-border text-foreground h-11 font-mono"
                   />
-                  <p className="text-[10px] text-slate-400 mt-1">Verified with UIDAI checksum.</p>
+                  <p className="text-[10px] text-muted-foreground mt-1">Verified with UIDAI checksum.</p>
                 </div>
 
                 <div>
-                  <Label className="text-xs text-slate-300">PAN Card Number</Label>
+                  <Label className="text-xs text-foreground">PAN Card Number</Label>
                   <Input
                     maxLength={10}
                     value={panNumber}
@@ -479,7 +479,7 @@ export function RiderOnboardingPage() {
 
                 {!isExemptVehicle && (
                   <div>
-                    <Label className="text-xs text-slate-300">Driving License Number</Label>
+                    <Label className="text-xs text-foreground">Driving License Number</Label>
                     <Input
                       value={dlNumber}
                       onChange={(e) => { setDlNumber(e.target.value.toUpperCase()); setError(null); }}
@@ -495,7 +495,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-foreground h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -516,8 +516,8 @@ export function RiderOnboardingPage() {
           {step === 3 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-white">Vehicle Details</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Select delivery vehicle type.</p>
+                <h2 className="text-base font-bold text-foreground">Vehicle Details</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Select delivery vehicle type.</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2.5">
@@ -536,19 +536,19 @@ export function RiderOnboardingPage() {
                     }}
                     className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${vehicleCategory === v.id
                       ? "border-primary bg-primary text-primary-foreground/20 text-primary"
-                      : "border-border bg-background text-slate-300"
+                      : "border-border bg-background text-foreground"
                       }`}
                   >
                     <Bike className="size-5 mx-auto mb-1.5" />
                     <div className="font-bold text-xs">{v.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-0.5">{v.desc}</div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">{v.desc}</div>
                   </button>
                 ))}
               </div>
 
               {!isExemptVehicle ? (
                 <div>
-                  <Label className="text-xs text-slate-300">Vehicle Registration (RC Plate)</Label>
+                  <Label className="text-xs text-foreground">Vehicle Registration (RC Plate)</Label>
                   <Input
                     value={rcNumber}
                     onChange={(e) => { setRcNumber(e.target.value.toUpperCase()); setError(null); }}
@@ -569,7 +569,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(2)}
-                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-foreground h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -590,13 +590,13 @@ export function RiderOnboardingPage() {
           {step === 4 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-white">Payout Account</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Direct bank transfer for your daily earnings.</p>
+                <h2 className="text-base font-bold text-foreground">Payout Account</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Direct bank transfer for your daily earnings.</p>
               </div>
 
               <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-slate-300">Account Holder Name</Label>
+                  <Label className="text-xs text-foreground">Account Holder Name</Label>
                   <Input
                     value={bankAccountHolder || fullName}
                     onChange={(e) => setBankAccountHolder(e.target.value)}
@@ -605,7 +605,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Bank Account Number</Label>
+                  <Label className="text-xs text-foreground">Bank Account Number</Label>
                   <Input
                     type="password"
                     value={bankAccountNumber}
@@ -615,7 +615,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Re-enter Account Number</Label>
+                  <Label className="text-xs text-foreground">Re-enter Account Number</Label>
                   <Input
                     value={reenterAccountNumber}
                     onChange={(e) => { setReenterAccountNumber(e.target.value.replace(/\D/g, "")); setError(null); }}
@@ -624,7 +624,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">11-Character Bank IFSC Code</Label>
+                  <Label className="text-xs text-foreground">11-Character Bank IFSC Code</Label>
                   <Input
                     maxLength={11}
                     value={ifsc}
@@ -634,7 +634,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">UPI ID *</Label>
+                  <Label className="text-xs text-foreground">UPI ID *</Label>
                   <Input
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
@@ -649,7 +649,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(3)}
-                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-foreground h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>
@@ -670,8 +670,8 @@ export function RiderOnboardingPage() {
           {step === 5 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-base font-bold text-white">Profile Photo &amp; Bag</h2>
-                <p className="text-xs text-slate-400 mt-0.5">Live photo capture for partner ID card.</p>
+                <h2 className="text-base font-bold text-foreground">Profile Photo &amp; Bag</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Live photo capture for partner ID card.</p>
               </div>
 
               <div className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border rounded-2xl bg-background text-center">
@@ -689,10 +689,10 @@ export function RiderOnboardingPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="size-20 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+                    <div className="size-20 rounded-full bg-muted flex items-center justify-center mx-auto text-muted-foreground">
                       <Camera className="size-8" />
                     </div>
-                    <p className="text-xs text-slate-300">Take a clear front-facing photo without sunglasses or cap.</p>
+                    <p className="text-xs text-foreground">Take a clear front-facing photo without sunglasses or cap.</p>
                   </div>
                 )}
 
@@ -708,7 +708,7 @@ export function RiderOnboardingPage() {
                 <Button
                   type="button"
                   onClick={() => selfieInputRef.current?.click()}
-                  className="mt-4 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-xl"
+                  className="mt-4 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-4 py-2 rounded-xl"
                 >
                   {selfiePhoto ? "Retake Photo" : "Take Selfie"}
                 </Button>
@@ -717,17 +717,17 @@ export function RiderOnboardingPage() {
               <div className="rounded-xl border border-border bg-background p-3 flex items-center justify-between text-xs">
                 <div className="w-full space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-200">Kit &amp; Uniform Ledger</span>
+                    <span className="font-bold text-foreground">Kit &amp; Uniform Ledger</span>
                     <span className="text-emerald-400 font-bold text-[11px]">Allocated &amp; Verified</span>
                   </div>
-                  <div className="space-y-1 text-[11px] text-slate-400 border-t border-border/50 pt-1.5">
+                  <div className="space-y-1 text-[11px] text-muted-foreground border-t border-border/50 pt-1.5">
                     <div className="flex justify-between">
                       <span>OrderKing Thermal Insulated Delivery Bag</span>
-                      <span className="text-slate-200 font-medium">Included</span>
+                      <span className="text-foreground font-medium">Included</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Reflective Safety Uniform &amp; Rain Shell</span>
-                      <span className="text-slate-200 font-medium">Included</span>
+                      <span className="text-foreground font-medium">Included</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Security Deposit Amortization</span>
@@ -740,7 +740,7 @@ export function RiderOnboardingPage() {
 
               {/* T-Shirt Kit Sizing */}
               <div className="space-y-1.5">
-                <Label className="text-xs text-slate-300">Partner T-Shirt Kit Size</Label>
+                <Label className="text-xs text-foreground">Partner T-Shirt Kit Size</Label>
                 <div className="grid grid-cols-4 gap-2">
                   {(["M", "L", "XL", "XXL"] as const).map((sz) => (
                     <button
@@ -750,7 +750,7 @@ export function RiderOnboardingPage() {
                       className={`rounded-xl border py-2.5 text-xs font-bold transition ${
                         tshirtSize === sz
                           ? "border-primary bg-primary/20 text-primary"
-                          : "border-border bg-background text-slate-400 hover:text-slate-200"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {sz}
@@ -762,7 +762,7 @@ export function RiderOnboardingPage() {
               {/* Emergency Contact */}
               <div className="space-y-2.5 pt-1">
                 <div>
-                  <Label className="text-xs text-slate-300">Emergency Contact Name</Label>
+                  <Label className="text-xs text-foreground">Emergency Contact Name</Label>
                   <Input
                     value={emergencyName}
                     onChange={(e) => setEmergencyName(e.target.value)}
@@ -771,9 +771,9 @@ export function RiderOnboardingPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-slate-300">Emergency Contact Mobile</Label>
+                  <Label className="text-xs text-foreground">Emergency Contact Mobile</Label>
                   <div className="relative mt-1">
-                    <span className="absolute left-3 top-2.5 text-xs text-slate-400 font-mono">+91</span>
+                    <span className="absolute left-3 top-2.5 text-xs text-muted-foreground font-mono">+91</span>
                     <Input
                       type="tel"
                       maxLength={10}
@@ -795,7 +795,7 @@ export function RiderOnboardingPage() {
                     onChange={(e) => setTermsAccepted(e.target.checked)}
                     className="mt-0.5 rounded border-slate-700 text-primary focus:ring-0"
                   />
-                  <span className="text-slate-400 text-[11px] leading-relaxed">
+                  <span className="text-muted-foreground text-[11px] leading-relaxed">
                     I agree to the{" "}
                     <a
                       href="/terms"
@@ -824,7 +824,7 @@ export function RiderOnboardingPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(4)}
-                  className="border-border bg-background text-slate-300 h-11 px-5 rounded-xl"
+                  className="border-border bg-background text-foreground h-11 px-5 rounded-xl"
                 >
                   Back
                 </Button>

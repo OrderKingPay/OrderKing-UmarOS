@@ -6,11 +6,11 @@ import { formatPaise } from "@/lib/rider/money";
 import { PgStore } from "@/lib/rider/pg-store";
 
 const POLICY = [
-  "You are King AI (also known as King Spark) — the warm, respectful, hyper-intelligent human-style Fleet AI Support & Operations Mentor for OrderKing Delivery Partners in India.",
+  "You are King AI (also known as King Spark) — the concise, factual Fleet Support & Operations Assistant for OrderKing Delivery Partners in India.",
   "Brand exclusively as 'King AI' / 'King Spark' (OrderKing Fleet AI Assistant). Never mention 'UmarOS' in rider UI or any competitor brand names.",
-  "Address the rider respectfully by their name (e.g. 'Hello <Name> ji', or with appropriate cultural honorific in their language).",
-  "Provide natural, human-style conversational intelligence in Bengali (বাংলা), Assamese (অসমীয়া), Hindi (हिन्दी), and English.",
-  "Empower riders with autonomous resolution tools (zero founder headache):",
+  "Address the rider respectfully by their name (e.g. 'Hello <Name> ji', or with appropriate honorific in their language).",
+  "Provide clear conversational support in Bengali (বাংলা), Assamese (অসমীয়া), Hindi (हिन्दी), and English.",
+  "Assist riders with direct operational resolution:",
   "1. Explain exact payout breakdowns: Base floor (₹35 statutory minimum floor covering first 2.0 km), progressive distance slabs (2.0-5.0 km at ₹12/km, beyond 5.0 km at ₹15/km), wait-time pay (₹1/min after 6 mins grace period), and direct customer tip pass-through with zero platform deductions.",
   "2. Verify wait time at restaurant and auto-credit wait pay if arrival timestamp exceeds 6 mins.",
   "3. Resolve landmark navigation and customer phone reachability issues (gated entry, 500m geofence tolerance, 3-call doorstep unreachable rule with full protected payout).",
@@ -477,7 +477,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
         dispatched: true,
         coords,
         emergencyNumbers: ["112 (National Emergency - Police/Fire)", "108 (Government Emergency Medical Ambulance)"],
-        insuranceCover: "₹5,00,000 Cashless On-Duty Accident Cover (1800-258-5956)",
+        insuranceCover: "₹10,00,000 On-Duty Accident Cover — Code on Social Security, 2020 (+91-9395065587)",
       };
     }
 
@@ -789,27 +789,27 @@ function localHumanMentorAnswer(
         `• সরাসরি কল করুন: ১১২ (জাতীয় জরুরি পুলিশ/ফায়ার) অথবা ১০৮ (বিনামূল্যে সরকারি জরুরি অ্যাম্বুলেন্স)।\n` +
         `• আপনার লাইভ জিপিএস স্থানাঙ্ক: অক্ষাংশ ${coords.lat.toFixed(6)}, দ্রাঘিমাংশ ${coords.lng.toFixed(6)} | রাইডার: ${fullName} (${home.rider.phone})\n` +
         `• শূন্য-পেনাল্টি সুরক্ষা: কোনো জরিমানা বা রেটিং কর্তন ছাড়াই সক্রিয় অর্ডার নিকটবর্তী রাইডারের কাছে হস্তান্তরিত হবে।\n` +
-        `• ক্যাশলেস দুর্ঘটনা বীমা: ডিউটিতে থাকা অবস্থায় ₹৫,০০,০০০ টাকার ক্যাশলেস চিকিৎসা কভার সক্রিয় (টোল-ফ্রি: ১৮০০-২৫৮-৫৯৫৬)।`
+        `• দুর্ঘটনা বীমা: কোড অন সোশ্যাল সিকিউরিটি ২০২০ অনুযায়ী ₹১০,০০,০০০ দুর্ঘটনা কভার (+৯১-৯৩৯৫০৬৫৫৮৭)।`
       );
     }
     if (lang === "as") {
       return (
         `কিং এআই জৰুৰী এছঅ'এছ সজাগতা (লাইভ জিপিএছ সক্ৰিয়):\n` +
         `• আপোনাৰ জীৱন আৰু সুৰক্ষা সৰ্বপ্ৰথমে! সুৰক্ষিত স্থানত ৰখক।\n` +
-        `• পোনপটীয়া কল কৰক: ১১২ (ৰাষ্ট্ৰীয় জৰুৰীকালীন আৰক্ষী/অগ্নি নিৰ্বাপক) বা ১০৮ (বিনামূলীয়া এম্বুলেন্স সেৱা)।\n` +
+        `• পোনপটীয়া কল কৰক: ১১২ (ৰাষ্ট্ৰীয় জৰুৰীকালীন আৰক্ষী/অগ্নি নিৰ্বাপক) বা ১০৮ (এম্বুলেন্স সেৱা)।\n` +
         `• আপোনাৰ লাইভ স্থানাংক: অক্ষাংশ ${coords.lat.toFixed(6)}, দ্ৰাঘিমাংশ ${coords.lng.toFixed(6)} | ৰাইডাৰ: ${fullName} (${home.rider.phone})\n` +
         `• শূন্য-জৰিমনা সুৰক্ষা: কোনো জৰিমনা বা ৰেটিং ক্ষতি নোহোৱাকৈ আপোনাৰ কাৰ্য্যসূচী পুনৰ নিৰ্ধাৰণ কৰা হ'ব।\n` +
-        `• বিনামূলীয়া দুৰ্ঘটনা বীমা: ₹৫,০০,০০০ টকাৰ কেচলেছ চিকিৎসা বীমা উপলব্ধ (টোল-ফ্ৰী: ১৮০০-২৫৮-৫৯৫৬)।`
+        `• দুৰ্ঘটনা বীমা: সামাজিক সুৰক্ষা সংহিতা ২০২০ অনুসৰি ₹১০,০০,০০০ দুৰ্ঘটনা বীমা (+৯১-৯৩৯৫০৬৫৫৮৭)।`
       );
     }
     if (lang === "hi") {
       return (
         `किंग एआई आपातकालीन संकट चेतावनी (लाइव जीपीएस सक्रिय):\n` +
         `• आपकी सुरक्षा हमारी सर्वोच्च प्राथमिकता है! कृपया तुरंत सड़क के किनारे सुरक्षित स्थान पर रुकें।\n` +
-        `• त्वरित आपातकालीन संपर्क: 112 (राष्ट्रीय आपातकालीन पुलिस/दमकल) या 108 (मुफ्त सरकारी एम्बुलेंस सेवा) डायल करें।\n` +
+        `• त्वरित आपातकालीन संपर्क: 112 (राष्ट्रीय आपातकालीन पुलिस/दमकल) या 108 (सरकारी एम्बुलेंस सेवा) डायल करें।\n` +
         `• आपके लाइव जीपीएस निर्देशांक: अक्षांश ${coords.lat.toFixed(6)}, देशांतर ${coords.lng.toFixed(6)} | राइडर: ${fullName} (${home.rider.phone})\n` +
         `• शून्य जुर्माना सुरक्षा: सक्रिय ऑर्डर को बिना किसी रेटिंग कटौती के निकटतम पार्टनर को पुनः सौंपा जाएगा।\n` +
-        `• ₹5,00,000 कैशलेस दुर्घटना बीमा कवर सक्रिय है (टोल-फ्री: 1800-258-5956)।`
+        `• ₹10,00,000 ऑन-ड्यूटी दुर्घटना बीमा कवर (सामाजिक सुरक्षा संहिता 2020) — सहायता: +91-9395065587।`
       );
     }
     return (
@@ -818,7 +818,7 @@ function localHumanMentorAnswer(
       `• Immediate Emergency Dials: Dial 112 (National SOS - Police/Fire) or 108 (Government Emergency Medical Ambulance).\n` +
       `• Live GPS Coordinates: Lat ${coords.lat.toFixed(6)}, Lng ${coords.lng.toFixed(6)} | Rider: ${fullName} (${home.rider.phone})\n` +
       `• Zero-Penalty Protection: Active order is reassigned with zero cancellation penalty & full milestone credit.\n` +
-      `• Cashless Hospitalization: ₹5,00,000 on-duty accidental medical coverage active via 1800-258-5956.`
+      `• Statutory Accident Cover: ₹10,00,000 on-duty accident cover under Code on Social Security, 2020. Safety Desk: +91-9395065587.`
     );
   }
 
@@ -1145,7 +1145,7 @@ function localHumanMentorAnswer(
   }
 
   // -------------------------------------------------------------------------
-  // TOOL 5: Exact Payout Breakdown (Base Floor, Progressive Slabs, Wait Pay, 100% Tips)
+  // TOOL 5: Exact Payout Breakdown (Base Floor, Progressive Slabs, Wait Pay, Direct Customer Tips)
   // -------------------------------------------------------------------------
   if (
     n.includes("payout") ||

@@ -33,7 +33,7 @@ export function VehicleGarageHub({ walletBalance, onDeductWallet, onOpenScanner 
         </h2>
 
         <p className="text-muted text-sm sm:text-base max-w-2xl mx-auto mb-8">
-          Manage your vehicles effortlessly. Check traffic e-challans, get 0-paperwork insurance renewals, track PUC expiry, and recharge FASTag instantly.
+          Check traffic e-challans, renew vehicle insurance, track PUC expiry, and recharge FASTag.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">

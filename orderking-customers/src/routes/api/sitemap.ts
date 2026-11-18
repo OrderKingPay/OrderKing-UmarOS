@@ -10,7 +10,7 @@ function escapeXml(unsafe: string): string {
     .replace(/'/g, "&apos;");
 }
 
-const CANONICAL_HOST = "https://orderking.in";
+const CANONICAL_HOST = "https://orderkingpay.com";
 
 // 28 States & 8 Union Territories of India for Programmatic SEO Directory
 const INDIAN_STATES_AND_UTS = [

@@ -104,7 +104,7 @@ export class SovereignLocalProvider implements AIProvider {
           responseText = JSON.stringify({ toolId: "get_platform_state", arguments: {} });
         }
       } else {
-        responseText = `[UMAR AI Sovereign Core] Command received: "${textContent}". Platform operational with sovereign zero-cost fallbacks. All 5 apps (Customer, Partner, Rider, HDmaster, Apps-integration) running with active ACID ledger integrity.`;
+        responseText = `[UMAR AI Local Router] Command received: "${textContent}". No external LLM API key is active; use a structured tool command or configure a live provider key in Settings.`;
       }
     }
 

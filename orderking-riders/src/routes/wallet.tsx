@@ -3,6 +3,7 @@ import { AppShell } from "@/components/rider/app-shell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   formatPaise,
   generateUpiDepositIntent,
@@ -134,6 +135,7 @@ export function WalletPage() {
         </div>
 
         {/* Pocket Balance Card */}
+        {loading && !home ? <Skeleton className="h-44 w-full rounded-xl" /> : null}
         <Card className="space-y-4 p-5">
           <div className="flex items-center justify-between">
             <div>

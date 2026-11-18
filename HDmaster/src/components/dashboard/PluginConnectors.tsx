@@ -940,7 +940,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                     type="button"
                     onClick={() =>
                       handleCopy(
-                        "https://orderking.in/api/v1/kingpay/razorpay-webhook",
+                        "https://orderkingpay.com/api/v1/kingpay/razorpay-webhook",
                         "rzp_hook"
                       )
                     }
@@ -1601,7 +1601,7 @@ export function PluginConnectors({ forcedTab }: { forcedTab?: ConnectorTab }) {
                     }
                     className="w-full h-9 rounded-lg border border-border bg-background px-3 text-xs font-medium"
                   >
-                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Supercharged Low Latency)</option>
+                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Low Latency)</option>
                     <option value="gemini-2.5-pro">Gemini 2.5 Pro (Deep Multimodal)</option>
                     <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                     <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>

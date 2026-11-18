@@ -1,16 +1,14 @@
-import { useState } from "react";
-import { geoUrl, googleNavigationUrl, mapsUrl, getActiveNavigationTarget } from "@/lib/rider/maps";
+import { useCallback, useState } from "react";
+import { googleNavigationUrl, mapsUrl, getActiveNavigationTarget } from "@/lib/rider/maps";
+import { haversineKm } from "@/lib/rider/eta";
 import type { GeoPoint } from "@/lib/rider/types";
 import { Button } from "@/components/ui/button";
 import {
   Compass,
-  Flame,
-  Layers,
   LocateFixed,
   MapPin,
   Navigation,
   Radio,
-  Store,
   TrendingUp,
 } from "lucide-react";
 
@@ -20,48 +18,9 @@ export interface DemandHotspot {
   surgeMultiplier: number;
   demandLevel: "VERY_HIGH" | "HIGH" | "NORMAL";
   activeRestaurants: number;
-  x: number; // 0-100 relative on canvas
-  y: number; // 0-72 relative on canvas
+  lat: number;
+  lng: number;
 }
-
-const DEFAULT_DEMAND_HOTSPOTS: ReadonlyArray<DemandHotspot> = [
-  {
-    id: "hotspot_station",
-    name: "Station Road & Junction",
-    surgeMultiplier: 1.4,
-    demandLevel: "VERY_HIGH",
-    activeRestaurants: 14,
-    x: 42,
-    y: 28,
-  },
-  {
-    id: "hotspot_bazaar",
-    name: "Central Market & Main Bazaar",
-    surgeMultiplier: 1.3,
-    demandLevel: "VERY_HIGH",
-    activeRestaurants: 11,
-    x: 65,
-    y: 42,
-  },
-  {
-    id: "hotspot_hospital",
-    name: "Civil Hospital & College Rd",
-    surgeMultiplier: 1.2,
-    demandLevel: "HIGH",
-    activeRestaurants: 8,
-    x: 25,
-    y: 52,
-  },
-  {
-    id: "hotspot_bypass",
-    name: "Bypass Highway Food Court",
-    surgeMultiplier: 1.1,
-    demandLevel: "NORMAL",
-    activeRestaurants: 6,
-    x: 78,
-    y: 20,
-  },
-];
 
 function isValidCoord(p?: GeoPoint | null): p is GeoPoint {
   return Boolean(
@@ -74,27 +33,12 @@ function isValidCoord(p?: GeoPoint | null): p is GeoPoint {
   );
 }
 
-function project(p: GeoPoint, all: GeoPoint[]) {
-  const valid = all.filter(isValidCoord);
-  if (valid.length === 0) return { x: 50, y: 36 };
-
-  const lats = valid.map((x) => x.lat);
-  const lngs = valid.map((x) => x.lng);
-  const minLat = Math.min(...lats) - 0.008;
-  const maxLat = Math.max(...lats) + 0.008;
-  const minLng = Math.min(...lngs) - 0.008;
-  const maxLng = Math.max(...lngs) + 0.008;
-
-  const latSpan = maxLat - minLat || 0.016;
-  const lngSpan = maxLng - minLng || 0.016;
-
-  const rawX = ((p.lng - minLng) / lngSpan) * 100;
-  const rawY = (1 - (p.lat - minLat) / latSpan) * 72;
-
-  // Clamp within padded canvas (8% to 92%)
-  const x = Math.min(92, Math.max(8, rawX));
-  const y = Math.min(64, Math.max(8, rawY));
-  return { x, y };
+function buildOsmEmbedUrl(center: GeoPoint, delta = 0.012): string {
+  const minLng = (center.lng - delta).toFixed(6);
+  const minLat = (center.lat - delta * 0.72).toFixed(6);
+  const maxLng = (center.lng + delta).toFixed(6);
+  const maxLat = (center.lat + delta * 0.72).toFixed(6);
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${minLng}%2C${minLat}%2C${maxLng}%2C${maxLat}&layer=mapnik&marker=${center.lat.toFixed(6)}%2C${center.lng.toFixed(6)}`;
 }
 
 export function MapPane({
@@ -106,7 +50,8 @@ export function MapPane({
   navigateLabel = "Navigate",
   deliveryState,
   mode = "delivery",
-  initialHeatmap = true,
+  hotspots = [],
+  onRecenter,
 }: {
   pickup?: GeoPoint | null;
   drop?: GeoPoint | null;
@@ -117,320 +62,216 @@ export function MapPane({
   deliveryState?: string | null;
   mode?: "delivery" | "heatmap";
   initialHeatmap?: boolean;
+  hotspots?: ReadonlyArray<DemandHotspot>;
+  onRecenter?: () => void;
 }) {
-  const [heatmapEnabled, setHeatmapEnabled] = useState(initialHeatmap);
-  const [recenterCount, setRecenterCount] = useState(0);
+  const [localGps, setLocalGps] = useState<(GeoPoint & { accuracyM?: number }) | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
 
   const isDeliveryMode = mode === "delivery" && Boolean(pickup || drop || deliveryState);
-  const points = [pickup, drop, current].filter(isValidCoord);
 
-  // State-aware target resolution
   const { target, isPickup, stageLabel } = getActiveNavigationTarget(
     pickup ?? null,
     drop ?? null,
-    deliveryState ?? null
+    deliveryState ?? null,
   );
   const targetLabel = isPickup ? pickupLabel || "Pickup Restaurant" : dropLabel || "Customer Location";
 
-  const pickupCoordValid = isValidCoord(pickup);
-  const dropCoordValid = isValidCoord(drop);
-  const currentCoordValid = isValidCoord(current);
+  const activeCurrent = isValidCoord(current) ? current : isValidCoord(localGps) ? localGps : null;
+  const activeTarget = isValidCoord(target) ? target : null;
+  const mapCenter = activeTarget ?? activeCurrent ?? (isValidCoord(pickup) ? pickup : null) ?? (isValidCoord(drop) ? drop : null);
 
-  const pickupProj = pickupCoordValid ? project(pickup, points) : null;
-  const dropProj = dropCoordValid ? project(drop, points) : null;
-  const currentProj = currentCoordValid
-    ? project(current, points)
-    : { x: 50, y: 36 };
-  const targetProj = isPickup ? pickupProj : dropProj;
+  const distanceToTargetKm =
+    activeCurrent && activeTarget
+      ? Math.round(haversineKm(activeCurrent, activeTarget) * 10) / 10
+      : null;
+
+  const routeTotalKm =
+    isValidCoord(pickup) && isValidCoord(drop)
+      ? Math.round(haversineKm(pickup, drop) * 10) / 10
+      : null;
+
+  const handleRecenter = useCallback(() => {
+    onRecenter?.();
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setGpsError("Device GPS unavailable");
+      return;
+    }
+    setLocating(true);
+    setGpsError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocalGps({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          accuracyM: Math.round(pos.coords.accuracy || 0),
+        });
+        setLocating(false);
+      },
+      (err) => {
+        setGpsError(err.message || "GPS permission denied");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
+    );
+  }, [onRecenter]);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
-      {/* Top Header / Map Phase Banner */}
+      {/* Top Map Phase & GPS Bar */}
       <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3.5 py-2 text-xs">
         {deliveryState ? (
           <span className="flex items-center gap-1.5 font-bold text-[#E23744]">
-            <Compass className="size-3.5 animate-spin" style={{ animationDuration: "8s" }} />
-            <span>Active Route: {stageLabel}</span>
+            <Compass className="size-3.5" />
+            <span>{stageLabel}</span>
           </span>
         ) : (
           <span className="flex items-center gap-1.5 font-bold text-foreground">
-            <Radio className="size-3.5 text-emerald-400 animate-pulse" />
-            <span>Live Demand Radar &amp; Heatmap</span>
+            <Radio className="size-3.5 text-emerald-500" />
+            <span>Live GPS Map</span>
           </span>
         )}
 
-        <div className="flex items-center gap-1.5">
-          {/* Heatmap Toggle Button */}
+        <div className="flex items-center gap-2">
+          {distanceToTargetKm !== null && (
+            <span className="rounded-md bg-primary/10 px-2 py-0.5 font-mono text-[11px] font-bold text-primary">
+              {distanceToTargetKm.toFixed(1)} km
+            </span>
+          )}
           <button
             type="button"
-            onClick={() => setHeatmapEnabled((v) => !v)}
-            className={`inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-bold transition ${heatmapEnabled
-                ? "bg-orange-500/20 text-[#E23744] border border-orange-500/40"
-                : "bg-muted/40 text-muted-foreground border border-border/50 hover:bg-muted"
-              }`}
+            onClick={handleRecenter}
+            disabled={locating}
+            title="Refresh & Recenter GPS"
+            aria-label="Refresh & Recenter GPS"
+            className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-2 py-1 text-[11px] font-semibold text-foreground hover:bg-muted transition disabled:opacity-50"
           >
-            <Flame className={`size-3.5 ${heatmapEnabled ? "text-[#E23744]" : "text-muted-foreground"}`} />
-            <span>{heatmapEnabled ? "Heatmap ON" : "Heatmap OFF"}</span>
-          </button>
-
-          {/* Recenter Button */}
-          <button
-            type="button"
-            onClick={() => setRecenterCount((c) => c + 1)}
-            title="Recenter GPS"
-            className="rounded-lg border border-border/50 bg-muted/40 p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition"
-          >
-            <LocateFixed className="size-3.5" />
+            <LocateFixed className={`size-3.5 ${locating ? "animate-spin text-primary" : ""}`} />
+            <span>{locating ? "Locating..." : "GPS"}</span>
           </button>
         </div>
       </div>
 
-      {/* SVG Map Canvas */}
+      {/* Live Interactive OpenStreetMap Canvas */}
       <div className="relative bg-muted/30">
-        <svg
-          viewBox="0 0 100 72"
-          className="h-48 sm:h-56 w-full"
-          role="img"
-          aria-label="OrderKing Live Partner Route & Heatmap Visualizer"
-        >
-          <defs>
-            {/* Heatmap Thermal Gradients */}
-            <radialGradient id="heat_surge_high" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#ef4444" stopOpacity="0.75" />
-              <stop offset="45%" stopColor="#f59e0b" stopOpacity="0.45" />
-              <stop offset="80%" stopColor="#2563eb" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#090b10" stopOpacity="0" />
-            </radialGradient>
+        {mapCenter ? (
+          <iframe
+            key={`${mapCenter.lat.toFixed(4)}_${mapCenter.lng.toFixed(4)}`}
+            title="Live OrderKing Delivery Map"
+            src={buildOsmEmbedUrl(mapCenter)}
+            className="h-52 sm:h-60 w-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        ) : (
+          <div className="flex h-44 flex-col items-center justify-center gap-2 p-4 text-center text-xs text-muted-foreground">
+            <LocateFixed className="size-6 text-muted-foreground/70" />
+            <p className="font-semibold text-foreground">
+              {gpsError ? `GPS Error: ${gpsError}` : "Waiting for live GPS signal"}
+            </p>
+            <Button type="button" size="sm" variant="outline" onClick={handleRecenter} disabled={locating}>
+              {locating ? "Acquiring GPS..." : "Acquire Live GPS"}
+            </Button>
+          </div>
+        )}
 
-            <radialGradient id="heat_surge_medium" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.65" />
-              <stop offset="55%" stopColor="#2563eb" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#090b10" stopOpacity="0" />
-            </radialGradient>
-
-            <radialGradient id="heat_radar_pulse" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#10b981" stopOpacity="0.5" />
-              <stop offset="70%" stopColor="#10b981" stopOpacity="0.1" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* Light Map Grid Background */}
-          <rect width="100" height="72" fill="#F1F5F9" />
-
-          {/* Subtle Map Roads & Grid System */}
-          <g stroke="#E2E8F0" strokeWidth="0.35">
-            {Array.from({ length: 7 }, (_, i) => (
-              <line key={`h${i}`} x1="0" y1={i * 12} x2="100" y2={i * 12} />
-            ))}
-            {Array.from({ length: 9 }, (_, i) => (
-              <line key={`v${i}`} x1={i * 12.5} y1="0" x2={i * 12.5} y2="72" />
-            ))}
-            {/* Primary Arterial Road Lines */}
-            <path
-              d="M 0 36 Q 30 20 50 36 T 100 36"
-              fill="none"
-              stroke="#CBD5E1"
-              strokeWidth="0.8"
-            />
-            <path
-              d="M 45 0 Q 55 35 45 72"
-              fill="none"
-              stroke="#CBD5E1"
-              strokeWidth="0.8"
-            />
-          </g>
-
-          {/* REAL HEATMAP THERMAL OVERLAY LAYER */}
-          {heatmapEnabled && (
-            <g className="transition-opacity duration-500">
-              {DEFAULT_DEMAND_HOTSPOTS.map((h) => (
-                <g key={h.id}>
-                  {/* Outer Heat Halo */}
-                  <circle
-                    cx={h.x}
-                    cy={h.y}
-                    r={h.demandLevel === "VERY_HIGH" ? 18 : 13}
-                    fill={h.demandLevel === "VERY_HIGH" ? "url(#heat_surge_high)" : "url(#heat_surge_medium)"}
-                  />
-                  {/* Hotspot Core Pin */}
-                  <circle
-                    cx={h.x}
-                    cy={h.y}
-                    r="1.8"
-                    fill={h.demandLevel === "VERY_HIGH" ? "#ef4444" : "#f59e0b"}
-                    stroke="#FFFFFF"
-                    strokeWidth="0.5"
-                  />
-                  {/* Surge Multiplier Tag */}
-                  <text
-                    x={h.x}
-                    y={h.y - 3}
-                    textAnchor="middle"
-                    fill="#F8FAFC"
-                    fontSize="2.4"
-                    fontWeight="bold"
-                    className="select-none filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                  >
-                    {h.surgeMultiplier}x
-                  </text>
-                </g>
-              ))}
-            </g>
-          )}
-
-          {/* ACTIVE DELIVERY ROUTE PATH */}
-          {isDeliveryMode && pickupProj && dropProj ? (
-            <line
-              x1={pickupProj.x}
-              y1={pickupProj.y}
-              x2={dropProj.x}
-              y2={dropProj.y}
-              stroke="#64748B"
-              strokeWidth="1.2"
-              strokeDasharray="2 1.5"
-            />
-          ) : null}
-
-          {/* ACTIVE TRAJECTORY PATH TO TARGET */}
-          {isDeliveryMode && currentProj && targetProj ? (
-            <line
-              x1={currentProj.x}
-              y1={currentProj.y}
-              x2={targetProj.x}
-              y2={targetProj.y}
-              stroke="#e5a93c"
-              strokeWidth="1.6"
-              strokeDasharray="2.5 1.5"
-            />
-          ) : null}
-
-          {/* RESTAURANT PICKUP MARKER */}
-          {isDeliveryMode && pickupProj ? (
-            <g>
-              <circle cx={pickupProj.x} cy={pickupProj.y} r="3.4" fill="rgba(245, 158, 11, 0.25)" />
-              <circle cx={pickupProj.x} cy={pickupProj.y} r="2.2" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="0.6" />
-            </g>
-          ) : null}
-
-          {/* CUSTOMER DROPOFF MARKER */}
-          {isDeliveryMode && dropProj ? (
-            <g>
-              <circle cx={dropProj.x} cy={dropProj.y} r="3.4" fill="rgba(37, 99, 235, 0.25)" />
-              <circle cx={dropProj.x} cy={dropProj.y} r="2.2" fill="#2563EB" stroke="#FFFFFF" strokeWidth="0.6" />
-            </g>
-          ) : null}
-
-          {/* LIVE RIDER POSITION MARKER WITH RADAR WAVES */}
-          {currentProj ? (
-            <g>
-              {/* Radar Scanning Ring */}
-              <circle cx={currentProj.x} cy={currentProj.y} r="6.5" fill="url(#heat_radar_pulse)" className="animate-ping" />
-              <circle cx={currentProj.x} cy={currentProj.y} r="3.8" fill="rgba(16, 185, 129, 0.25)" />
-              {/* Inner Position Dot */}
-              <circle cx={currentProj.x} cy={currentProj.y} r="2.2" fill="#10B981" stroke="#F8FAFC" strokeWidth="0.7" />
-            </g>
-          ) : null}
-        </svg>
-
-        {/* Map Overlay Key Indicator */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-white/95 px-2.5 py-1 text-[10px] text-gray-700 shadow-xs border border-gray-200">
-          {isDeliveryMode ? (
-            <>
-              <span className="flex items-center gap-1 text-orange-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-orange-400" /> Kitchen
-              </span>
-              <span className="text-border">|</span>
-              <span className="flex items-center gap-1 text-blue-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-blue-500" /> Customer
-              </span>
-              <span className="text-border">|</span>
-            </>
-          ) : (
-            <>
-              <span className="flex items-center gap-1 text-red-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-red-500" /> Peak Surge
-              </span>
-              <span className="text-border">|</span>
-              <span className="flex items-center gap-1 text-orange-400 font-semibold">
-                <span className="size-1.5 rounded-full bg-orange-400" /> High Demand
-              </span>
-              <span className="text-border">|</span>
-            </>
-          )}
-          <span className="flex items-center gap-1 text-emerald-400 font-bold">
-            <span className="size-1.5 rounded-full bg-emerald-400" /> You
-          </span>
-        </div>
+        {/* Live Telemetry Coordinates Pill */}
+        {activeCurrent && (
+          <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-2 rounded-lg bg-white/95 dark:bg-card/95 px-2.5 py-1 text-[10px] font-mono text-foreground shadow-xs border border-border">
+            <span className="size-1.5 rounded-full bg-emerald-500" />
+            <span>
+              {activeCurrent.lat.toFixed(5)}, {activeCurrent.lng.toFixed(5)}
+            </span>
+            {localGps?.accuracyM ? (
+              <span className="text-muted-foreground">±{localGps.accuracyM}m</span>
+            ) : null}
+          </div>
+        )}
       </div>
 
-      {/* Bottom Route / Hotspot Actions Bar */}
+      {/* Bottom Route & Navigation Bar */}
       {isDeliveryMode ? (
         <div className="flex items-center justify-between gap-2 p-3 border-t border-border bg-card">
           <div className="space-y-0.5 min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-xs text-foreground font-semibold truncate">
               <MapPin className="size-3.5 text-[#E23744] shrink-0" />
               <span className="truncate">{pickupLabel || "Restaurant"}</span>
-              <span className="text-muted-foreground">-</span>
+              <span className="text-muted-foreground">&rarr;</span>
               <span className="truncate">{dropLabel || "Customer"}</span>
             </p>
-            <p className="text-[10px] text-muted-foreground">
-              Heading to: <strong className="text-foreground">{targetLabel}</strong>
+            <p className="text-[11px] text-muted-foreground">
+              Destination: <strong className="text-foreground">{targetLabel}</strong>
+              {routeTotalKm !== null ? ` · Route ${routeTotalKm.toFixed(1)} km` : ""}
             </p>
           </div>
 
-          {target ? (
+          {activeTarget ? (
             <div className="flex items-center gap-1.5 shrink-0">
               <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-3">
-                <a href={googleNavigationUrl(target)} target="_blank" rel="noreferrer">
+                <a href={googleNavigationUrl(activeTarget)} target="_blank" rel="noreferrer">
                   <Navigation className="size-3.5 mr-1" />
                   {navigateLabel}
                 </a>
               </Button>
-              <Button asChild variant="ghost" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
-                <a href={mapsUrl(target, targetLabel)} target="_blank" rel="noreferrer" title="Open Street Map">
-                  OSM
+              <Button asChild variant="outline" size="sm" className="px-2 text-muted-foreground hover:text-foreground">
+                <a href={mapsUrl(activeTarget, targetLabel)} target="_blank" rel="noreferrer" title="OpenStreetMap">
+                  Map
                 </a>
               </Button>
             </div>
           ) : null}
         </div>
-      ) : (
-        /* Standby Heatmap Surge Recommendations Bar */
+      ) : hotspots.length > 0 ? (
         <div className="p-3 border-t border-border bg-card space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-1.5 font-bold text-foreground">
               <TrendingUp className="size-3.5 text-[#E23744]" />
-              <span>Nearby High-Demand Surge Hotspots</span>
-            </span>
-            <span className="text-[11px] font-semibold text-emerald-400">
-              Live Fleet Dispatches Active
+              <span>Active Demand Zones</span>
             </span>
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-            {DEFAULT_DEMAND_HOTSPOTS.map((spot) => (
-              <div
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {hotspots.map((spot) => (
+              <a
                 key={spot.id}
-                className="rounded-xl border border-border bg-card p-2 space-y-1 transition hover:border-orange-500/40"
+                href={googleNavigationUrl({ lat: spot.lat, lng: spot.lng })}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-xl border border-border bg-card p-2 space-y-1 transition hover:border-primary/40"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-medium text-muted-foreground truncate">
-                    {spot.name.split("&")[0]}
+                  <span className="text-[11px] font-semibold text-foreground truncate">
+                    {spot.name}
                   </span>
-                  <span className="font-mono font-bold text-[11px] text-red-400">
+                  <span className="font-mono font-bold text-[11px] text-[#E23744]">
                     {spot.surgeMultiplier}x
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-slate-300">
-                  <span>{spot.activeRestaurants} Outlets</span>
-                  <span className="text-[#E23744] font-semibold">
-                    {spot.demandLevel === "VERY_HIGH" ? "Surge" : "High"}
-                  </span>
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                  <span>{spot.activeRestaurants} active</span>
+                  <span>Navigate</span>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-t border-border bg-card text-xs">
+          <span className="text-muted-foreground">
+            {activeCurrent
+              ? `GPS Locked (${activeCurrent.lat.toFixed(4)}, ${activeCurrent.lng.toFixed(4)})`
+              : "Tap GPS above to lock device location"}
+          </span>
+          {activeCurrent && (
+            <a
+              href={mapsUrl(activeCurrent, "Current Location")}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-primary hover:underline"
+            >
+              Open Map
+            </a>
+          )}
         </div>
       )}
     </div>

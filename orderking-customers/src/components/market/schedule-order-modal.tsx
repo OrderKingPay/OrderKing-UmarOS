@@ -61,8 +61,8 @@ export function ScheduleOrderModal({
               <Clock className="size-5" />
             </span>
             <div>
-              <h3 className="font-display text-base font-bold text-fg">Schedule Order Delivery</h3>
-              <p className="text-xs text-muted">{restaurantName} · Freshly prepared before dispatch</p>
+              <h3 className="font-display text-base font-bold text-fg">Schedule Delivery</h3>
+              <p className="text-xs text-muted">{restaurantName}</p>
             </div>
           </div>
           <button
@@ -124,13 +124,13 @@ export function ScheduleOrderModal({
           </div>
         </div>
 
-        {/* Guarantee Banner */}
+        {/* Scheduling Note */}
         <div className="rounded-xl border border-border bg-surface-2 p-3 text-xs text-muted space-y-1">
           <p className="font-semibold text-fg flex items-center gap-1">
-            <BellRing className="size-3.5 text-primary" /> On-Time Freshness Promise:
+            <BellRing className="size-3.5 text-primary" /> Scheduled Delivery Window
           </p>
           <p className="text-[11px]">
-            The kitchen receives your order ticket 25 minutes prior to your selected slot so food arrives steaming hot!
+            Your selected day and time window will be included with your order instructions for the kitchen.
           </p>
         </div>
 

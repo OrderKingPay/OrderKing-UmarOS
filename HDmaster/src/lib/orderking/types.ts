@@ -299,17 +299,17 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   fontDisplay: "Newsreader",
   fontBody: "IBM Plex Sans",
   domain: "orderking.in",
-  tagline: "Order like a King.",
+  tagline: "",
   appStoreName: "Order King",
   notificationSender: "Order King",
-  invoiceBranding: "Order King Foods",
+  invoiceBranding: "Orderkingpay",
   customerBranding: "Order King",
   restaurantBranding: "Order King Partner",
   riderBranding: "Order King Rider",
   adminBranding: "Order King Command",
-  legalCompanyName: "Order King Foods Private Limited",
+  legalCompanyName: "Orderkingpay",
   supportEmail: "support@orderking.in",
-  supportPhone: "+91 38xxx xxxxx",
+  supportPhone: "",
 };
 
 export const FEATURE_FLAG_KEYS = [

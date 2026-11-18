@@ -377,7 +377,7 @@ export function resolveSovereignResponse(
     q.includes("ৰুম") ||
     q.includes("விடுதி")
   ) {
-    let reply = "Explore verified hotels and luxury stays with authentic room rates.";
+    let reply = "Explore verified hotels and stays with live room rates.";
     if (dialect.code === "hi") {
       reply = "सत्यापित होटल और कमरे देखें, सीधे प्रामाणिक दरों पर।";
     } else if (dialect.code === "bn") {
@@ -410,7 +410,7 @@ export function resolveSovereignResponse(
     q.includes("ভ্ৰমণ") ||
     q.includes("சுற்றுலா")
   ) {
-    let reply = "Explore curated national and international holiday tour packages.";
+    let reply = "Explore domestic and international holiday tour packages.";
     if (dialect.code === "hi") {
       reply = "घरेलू और अंतरराष्ट्रीय हॉलिडे टूर पैकेज देखें।";
     } else if (dialect.code === "bn") {
@@ -992,7 +992,7 @@ export function CustomerConciergeDrawer({
       { id: `custom-${crypto.randomUUID().slice(0, 12)}`, name: clean, pricePaise: estPaise },
     ]);
     setCustomAddonText("");
-    toast.success(`Added ${clean} (${formatPaise(estPaise)}) to your feast!`);
+    toast.success(`Added ${clean} (${formatPaise(estPaise)}) to your cart.`);
   };
 
   // Calculations for Checkout Bottom-Sheet (₹ and integer paise)

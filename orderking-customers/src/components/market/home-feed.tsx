@@ -13,9 +13,19 @@ import {
   MapPin,
   Utensils,
   ChevronRight,
+  Plane,
+  Train,
+  CreditCard,
+  GraduationCap,
+  Building2,
+  Briefcase,
   Eye,
   SlidersHorizontal,
   ChevronDown,
+  Tag,
+  X,
+  Check,
+  ArrowUpDown,
 } from "lucide-react";
 import { KitchenCard } from "@/components/market/restaurant-card";
 import { LocationDialog } from "@/components/market/location-dialog";
@@ -123,7 +133,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     id: "delhi-cp",
     name: "Connaught Place Central",
     flagshipLabel: "Delhi NCR Flagship",
-    description: "Iconic North Indian, Mughlai and Street Heritage",
+    description: "North Indian, Mughlai and Local Kitchens",
     cityId: "del",
     cityName: "New Delhi",
     zoneId: "del-cp",
@@ -139,7 +149,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     id: "sribhumi-core",
     name: "Sribhumi Core",
     flagshipLabel: "Karimganj / Assam Flagship",
-    description: "Launch Flagship: Authentic Sylheti and Assamese Kitchens",
+    description: "Sylheti, Bengali and Assamese Kitchens",
     cityId: "karimganj",
     cityName: "Sribhumi / Karimganj",
     zoneId: "karimganj_core",
@@ -155,7 +165,7 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     id: "mumbai-metro",
     name: "Mumbai Metropolitan",
     flagshipLabel: "Bandra / BKC Flagship",
-    description: "Coastal Seafood, Artisanal Cafes and Late Night Dining",
+    description: "Seafood, Cafes and Late Night Kitchens",
     cityId: "mum",
     cityName: "Mumbai",
     zoneId: "mum-bandra",
@@ -164,14 +174,14 @@ export const ACTIVE_FLAGSHIP_HUBS = [
     line1: "Linking Road, Bandra West, Mumbai",
     lat: 19.0600,
     lng: 72.8336,
-    highlight: "Bandra and BKC Gourmet Kitchens",
+    highlight: "Bandra and BKC Delivery Zone",
     gradient: "from-blue-500 to-indigo-600",
   },
   {
     id: "bengaluru-hub",
     name: "Bengaluru Tech Hub",
     flagshipLabel: "Indiranagar Flagship",
-    description: "Craft Burgers, Artisanal Bakeries and Pan-Asian Delights",
+    description: "Burgers, Bakeries and South Indian Kitchens",
     cityId: "blr",
     cityName: "Bengaluru",
     zoneId: "blr-ind",
@@ -217,13 +227,23 @@ export function HomeFeed({
     customization?.isFeatureEnabled?.("monsoon_mode")
   );
 
-  // Secondary quick filter tags
+  // Secondary quick filter tags & Zomato-style Sort/Filter sheet
   const [filterFast, setFilterFast] = useState(false);
   const [filterRating, setFilterRating] = useState(false);
   const [filterOffers, setFilterOffers] = useState(false);
   const [filterBudget, setFilterBudget] = useState(false);
+  const [sortBy, setSortBy] = useState<"relevance" | "delivery_time" | "rating" | "cost_low" | "cost_high">("relevance");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category || null);
   const [locDialogOpen, setLocDialogOpen] = useState(false);
+
+  const activeFilterCount =
+    (filterFast ? 1 : 0) +
+    (filterRating ? 1 : 0) +
+    (filterOffers ? 1 : 0) +
+    (filterBudget ? 1 : 0) +
+    (dietFilter === "veg" ? 1 : 0) +
+    (sortBy !== "relevance" ? 1 : 0);
 
   // Past orders for reorder
   const pastOrders = useQuery({
@@ -389,14 +409,16 @@ export function HomeFeed({
     return finalKitchens.sort((a, b) => {
         const etaA = typeof a.etaMinutes === "number" ? a.etaMinutes : Number(a.etaMinutes || 30);
         const etaB = typeof b.etaMinutes === "number" ? b.etaMinutes : Number(b.etaMinutes || 30);
-        if (filterFast) return etaA - etaB;
-
         const minA = typeof a.minOrderPaise === "number" ? a.minOrderPaise : Number(a.minOrderPaise || 20000);
         const minB = typeof b.minOrderPaise === "number" ? b.minOrderPaise : Number(b.minOrderPaise || 20000);
-        if (filterBudget) return minA - minB;
-
         const ratingA = typeof a.ratingAvg === "number" ? a.ratingAvg : Number(a.ratingAvg || 4.0);
         const ratingB = typeof b.ratingAvg === "number" ? b.ratingAvg : Number(b.ratingAvg || 4.0);
+
+        if (sortBy === "delivery_time" || (sortBy === "relevance" && filterFast)) return etaA - etaB;
+        if (sortBy === "rating") return ratingB - ratingA;
+        if (sortBy === "cost_low" || (sortBy === "relevance" && filterBudget)) return minA - minB;
+        if (sortBy === "cost_high") return minB - minA;
+
         const countA = typeof a.ratingCount === "number" ? a.ratingCount : Number(a.ratingCount || 10);
         const countB = typeof b.ratingCount === "number" ? b.ratingCount : Number(b.ratingCount || 10);
 
@@ -404,7 +426,7 @@ export function HomeFeed({
         const scoreB = ratingB * Math.log10(Math.max(10, countB));
         return scoreB - scoreA;
       });
-  }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast, selectedCategory, q]);
+  }, [list.data?.restaurants, dietFilter, filterRating, filterOffers, filterBudget, filterFast, sortBy, selectedCategory, q]);
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 px-3 py-4 sm:px-6 sm:py-6 bg-[#FCFAF7] text-gray-900 font-sans">
@@ -426,31 +448,7 @@ export function HomeFeed({
           </div>
 
           <div className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-2 scrollbar-none pt-1 items-center">
-            {/* Meals under ₹199 card with Rich Metallic Copper & Burnt Orange aesthetic */}
-            <button
-              type="button"
-              onClick={() => setFilterBudget(!filterBudget)}
-              className={cn(
-                "group flex flex-col justify-between shrink-0 w-24 sm:w-28 h-20 sm:h-24 p-2 sm:p-2.5 rounded-2xl border text-left transition-all active:scale-95 shadow-2xs select-none cursor-pointer",
-                filterBudget
-                  ? "bg-gradient-to-br from-[#9A3412] via-[#B85D19] to-[#E85D04] text-white border-orange-500 shadow-md ring-2 ring-orange-400"
-                  : "bg-gradient-to-br from-orange-50/90 via-white to-orange-50/40 border-orange-200/80 text-orange-950 hover:border-orange-500"
-              )}
-            >
-              <div>
-                <span className="block text-[9px] font-black uppercase tracking-wider text-[#C2410C] dark:text-orange-400 leading-tight">
-                  MEALS UNDER
-                </span>
-                <span className="block text-base sm:text-lg font-black leading-none mt-0.5">
-                  ₹199
-                </span>
-              </div>
-              <span className="inline-flex items-center text-[10px] font-extrabold text-[#C2410C] dark:text-orange-300">
-                Explore <ChevronRight className="size-3 ml-0.5" />
-              </span>
-            </button>
-
-            {/* "All" Category Pill (1:1 with Zomato live screenshot) */}
+            {/* "All" Category Pill (1:1 with Zomato) */}
             <button
               type="button"
               onClick={() => setSelectedCategory(null)}
@@ -536,14 +534,20 @@ export function HomeFeed({
       {/* 2. SECONDARY QUICK FILTER PILLS (Zomato 1:1 Parity) & RESULT COUNT */}
       {(list.data?.restaurants?.length ?? 0) > 0 && <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none text-xs">
         <div className="flex items-center gap-2 shrink-0">
-          {/* Filters Button */}
+          {/* Filters & Sort Button (Zomato 1:1) */}
           <button
             type="button"
-            className="flex items-center gap-1 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border border-gray-200 bg-white hover:bg-stone-50 text-gray-800 shadow-2xs select-none active:scale-95 cursor-pointer"
+            onClick={() => setFiltersOpen(true)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-bold transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              activeFilterCount > 0
+                ? "bg-[#E23744] text-white border-[#E23744] shadow-sm"
+                : "border-gray-200 bg-white hover:bg-stone-50 text-gray-800"
+            )}
           >
-            <SlidersHorizontal className="size-3.5 text-gray-600" />
-            <span>Filters</span>
-            <ChevronDown className="size-3 text-gray-500" />
+            <SlidersHorizontal className={cn("size-3.5", activeFilterCount > 0 ? "text-white" : "text-gray-600")} />
+            <span>Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}</span>
+            <ChevronDown className={cn("size-3", activeFilterCount > 0 ? "text-white/90" : "text-gray-500")} />
           </button>
 
           {/* Fast Delivery: Zomato standard pill */}
@@ -593,6 +597,21 @@ export function HomeFeed({
             <span>Rating 4.0+</span>
           </button>
 
+          {/* Great Offers: Zomato standard pill */}
+          <button
+            type="button"
+            onClick={() => setFilterOffers(!filterOffers)}
+            className={cn(
+              "flex items-center gap-1.5 shrink-0 rounded-full px-3 py-1.5 font-black transition-all border shadow-2xs select-none active:scale-95 cursor-pointer",
+              filterOffers
+                ? "bg-gradient-to-r from-[#E23744] to-orange-600 text-white border-[#E23744] shadow-sm"
+                : "bg-white hover:bg-rose-50/60 text-gray-700 border-gray-200 hover:border-rose-300"
+            )}
+          >
+            <Tag className={cn("size-3.5", filterOffers ? "text-white" : "text-[#E23744]")} />
+            <span>Great Offers</span>
+          </button>
+
           {/* Under ₹200: Indigo / Purple */}
           <button
             type="button"
@@ -608,11 +627,6 @@ export function HomeFeed({
             <span>Under ₹200</span>
           </button>
         </div>
-
-        {/* Place Count */}
-        <span className="text-[11px] font-bold text-orange-950 bg-orange-100/80 border border-orange-200/80 px-2.5 py-1 rounded-full shrink-0">
-          {`${filteredRestaurants.length} restaurants found`}
-        </span>
       </div>}
 
       {/* 3. ACTIVE ORDER BANNER (Real Data Only) */}
@@ -643,16 +657,13 @@ export function HomeFeed({
         </section>
       )}
 
-      {/* RESTAURANTS GRID (1:1 with Zomato Screenshot 3) */}
+      {/* RESTAURANTS GRID (Zomato 1:1) */}
       <section aria-label="Restaurants Grid" className="pt-2">
         {!isZeroDeliveryInRadius && (
-          <div className="mb-3 space-y-0.5">
+          <div className="mb-3 flex items-center justify-between">
             <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-stone-500 font-mono">
               {filteredRestaurants.length} RESTAURANTS DELIVERING TO YOU
             </h2>
-            <p className="text-base sm:text-lg font-black text-gray-950 tracking-tight">
-              Featured
-            </p>
           </div>
         )}
 
@@ -701,6 +712,7 @@ export function HomeFeed({
                     setFilterRating(false);
                     setFilterOffers(false);
                     setFilterBudget(false);
+                    setSortBy("relevance");
                   }}
                   className="bg-[#E23744] hover:bg-[#cf2f3c] text-white border-transparent font-bold rounded-xl px-5 py-2 cursor-pointer"
                 >
@@ -742,33 +754,162 @@ export function HomeFeed({
                   </Button>
                 </div>
 
-                {/* Popular Food Cuisines */}
+                {/* Active KingPay Connected Services */}
                 <div className="space-y-3 pt-2">
                   <div className="text-center">
                     <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
-                      Explore Popular Cuisines
+                      Available Services
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      Top dishes and cuisines served by our kitchen partners
+                      Book travel, pay bills, or explore courses and jobs.
                     </p>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-center gap-2">
-                    {CURATED_FOOD_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat.slug}
-                        type="button"
-                        onClick={() => setSelectedCategory(cat.slug)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:border-[#E85D04] hover:bg-orange-50/60 text-xs font-bold text-gray-800 transition active:scale-95 cursor-pointer shadow-2xs"
-                      >
-                        <Utensils className="size-3 text-[#E85D04]" />
-                        <span>{cat.name}</span>
-                      </button>
-                    ))}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    {/* 1. KingPay Wallet */}
+                    <Link
+                      to="/kingpay"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(232,93,4,0.18)] hover:border-orange-500 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs group-hover:scale-105 transition-transform">
+                          <CreditCard className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-full">
+                          UPI
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#E85D04] block leading-snug transition-colors">
+                          KingPay Wallet
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Direct UPI &amp; Bills
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 2. Flights */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "flights" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(14,165,233,0.18)] hover:border-sky-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white shadow-[0_2px_8px_rgba(14,165,233,0.3)] group-hover:scale-105 transition-transform">
+                          <Plane className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
+                          Travel
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-sky-600 block leading-snug transition-colors">
+                          Flights
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Domestic &amp; International
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 3. Hotels & Stays */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "hotels" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
+                          <Building2 className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
+                          Stays
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
+                          Hotels &amp; Stays
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Worldwide Stays
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 4. Trains & PNR */}
+                    <Link
+                      to="/travel"
+                      search={{ tab: "trains" }}
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.18)] hover:border-indigo-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform">
+                          <Train className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
+                          IRCTC
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-indigo-600 block leading-snug transition-colors">
+                          Trains &amp; PNR
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          IRCTC Booking &amp; Status
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 5. King AI Tutor */}
+                    <Link
+                      to="/tutor"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(20,184,166,0.18)] hover:border-teal-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-[0_2px_8px_rgba(20,184,166,0.3)] group-hover:scale-105 transition-transform">
+                          <GraduationCap className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full">
+                          Tutor
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-teal-600 block leading-snug transition-colors">
+                          King AI Tutor
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Academic Tutor · CBSE &amp; State
+                        </span>
+                      </div>
+                    </Link>
+
+                    {/* 6. King Jobs */}
+                    <Link
+                      to="/tutor-jobs"
+                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.18)] hover:border-purple-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 text-white shadow-[0_2px_8px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform">
+                          <Briefcase className="size-4.5" />
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full">
+                          Jobs
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-purple-600 block leading-snug transition-colors">
+                          King Jobs
+                        </span>
+                        <span className="text-[10px] text-gray-500 block mt-0.5">
+                          Hyperlocal Gigs &amp; Apply
+                        </span>
+                      </div>
+                    </Link>
                   </div>
                 </div>
 
-                {/* Honest "Popular Locations" */}
+                {/* Popular Locations */}
                 <div
                   data-testid="flagship-viewing-mode-card"
                   className="rounded-2xl border border-stone-200/90 bg-white p-4 sm:p-5 shadow-xs text-center space-y-3"
@@ -881,6 +1022,157 @@ export function HomeFeed({
 
       {/* Location Selector Dialog */}
       <LocationDialog open={locDialogOpen} onOpenChange={setLocDialogOpen} />
+
+      {/* Zomato-Style Sort & Filters Modal Sheet */}
+      {filtersOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4"
+          onClick={() => setFiltersOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Sort and Filter Restaurants"
+        >
+          <div
+            className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-white border border-stone-200 shadow-2xl overflow-hidden flex flex-col max-h-[85dvh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="size-4 text-[#E23744]" />
+                <h3 className="text-base font-black text-gray-950">Sort &amp; Filters</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                aria-label="Close filters"
+                className="flex size-8 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 text-gray-700 cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="overflow-y-auto p-5 space-y-5">
+              {/* Sort By */}
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-stone-500">
+                  <ArrowUpDown className="size-3.5" />
+                  <span>Sort By</span>
+                </div>
+                <div className="space-y-1.5">
+                  {(
+                    [
+                      { id: "relevance", label: "Relevance" },
+                      { id: "delivery_time", label: "Delivery Time (Fastest First)" },
+                      { id: "rating", label: "Rating (High to Low)" },
+                      { id: "cost_low", label: "Minimum Order (Low to High)" },
+                      { id: "cost_high", label: "Minimum Order (High to Low)" },
+                    ] as const
+                  ).map((opt) => (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setSortBy(opt.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer",
+                        sortBy === opt.id
+                          ? "border-[#E23744] bg-rose-50/60 text-[#E23744]"
+                          : "border-stone-200 bg-white hover:bg-stone-50 text-gray-800"
+                      )}
+                    >
+                      <span>{opt.label}</span>
+                      <span
+                        className={cn(
+                          "flex size-4 items-center justify-center rounded-full border",
+                          sortBy === opt.id
+                            ? "border-[#E23744] bg-[#E23744] text-white"
+                            : "border-stone-300"
+                        )}
+                      >
+                        {sortBy === opt.id && <Check className="size-2.5 stroke-[3]" />}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filter Toggles */}
+              <div className="space-y-2.5">
+                <span className="block text-xs font-black uppercase tracking-wider text-stone-500">
+                  Filter Restaurants
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    {
+                      label: "Pure Veg",
+                      active: dietFilter === "veg",
+                      toggle: () => setDietFilter(dietFilter === "veg" ? "all" : "veg"),
+                    },
+                    {
+                      label: "Rating 4.0+",
+                      active: filterRating,
+                      toggle: () => setFilterRating((v) => !v),
+                    },
+                    {
+                      label: "Fast Delivery",
+                      active: filterFast,
+                      toggle: () => setFilterFast((v) => !v),
+                    },
+                    {
+                      label: "Great Offers",
+                      active: filterOffers,
+                      toggle: () => setFilterOffers((v) => !v),
+                    },
+                    {
+                      label: "Under ₹200",
+                      active: filterBudget,
+                      toggle: () => setFilterBudget((v) => !v),
+                    },
+                  ].map((f) => (
+                    <button
+                      key={f.label}
+                      type="button"
+                      onClick={f.toggle}
+                      className={cn(
+                        "flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer",
+                        f.active
+                          ? "border-[#E23744] bg-rose-50/70 text-[#E23744]"
+                          : "border-stone-200 bg-white hover:bg-stone-50 text-gray-800"
+                      )}
+                    >
+                      <span>{f.label}</span>
+                      {f.active && <Check className="size-3.5 text-[#E23744]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 px-5 py-3.5 border-t border-stone-100 bg-stone-50/70">
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterFast(false);
+                  setFilterRating(false);
+                  setFilterOffers(false);
+                  setFilterBudget(false);
+                  setSortBy("relevance");
+                  if (dietFilter === "veg") setDietFilter("all");
+                }}
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-stone-200/70 transition cursor-pointer"
+              >
+                Clear All
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(false)}
+                className="flex-1 py-2.5 rounded-xl bg-[#E23744] hover:bg-[#cf2f3c] text-white text-xs font-black transition shadow-sm cursor-pointer"
+              >
+                Show {filteredRestaurants.length} restaurant{filteredRestaurants.length === 1 ? "" : "s"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

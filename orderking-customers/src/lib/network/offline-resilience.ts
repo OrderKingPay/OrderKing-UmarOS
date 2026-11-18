@@ -590,7 +590,7 @@ export class OfflineResilienceEngine {
     isLowRes: boolean
   ): string {
     try {
-      const base = 'https://orderking.in';
+      const base = 'https://orderkingpay.com';
       const isRelative = url.startsWith('/');
       const parsed = new URL(url, base);
 

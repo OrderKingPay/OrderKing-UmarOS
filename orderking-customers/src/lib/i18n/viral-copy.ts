@@ -248,7 +248,7 @@ export const VIRAL_COPY_MATRIX: Record<
 // ============================================================================
 
 export function buildTargetShareUrl(ctx: ViralShareContext): string {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://orderking.in";
+  const origin = typeof window !== "undefined" ? window.location.origin : "https://orderkingpay.com";
   const refSuffix = ctx.referralCode ? `?ref=${encodeURIComponent(ctx.referralCode)}` : "";
 
   if (ctx.restaurantSlug) {

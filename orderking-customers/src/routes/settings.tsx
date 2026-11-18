@@ -1,30 +1,57 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CustomerShell } from "@/components/market/shell";
 import { useT } from "@/components/providers";
 import { LANGS, type Lang } from "@/lib/i18n";
 import { toast } from "sonner";
-import { Check, Globe, ArrowLeft, Smartphone, Sparkles, ShieldCheck, Volume2 } from "lucide-react";
+import { Check, Globe, ArrowLeft, Smartphone, Sparkles, ShieldCheck } from "lucide-react";
 import { useLocationStore } from "@/lib/stores/location";
 
 export const Route = createFileRoute("/settings")({ component: SettingsPage });
 
+function readBoolPref(key: string, fallback = true): boolean {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const val = window.localStorage.getItem(key);
+    if (val === null) return fallback;
+    return val !== "false";
+  } catch {
+    return fallback;
+  }
+}
+
+function writeBoolPref(key: string, value: boolean) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, value ? "true" : "false");
+  } catch {
+    /* ignore storage limits */
+  }
+}
+
 function SettingsPage() {
-  const { lang, setLang, t } = useT();
+  const { lang, setLang } = useT();
   const location = useLocationStore((s) => s.location);
   const [haptics, setHaptics] = useState(true);
   const [voiceAi, setVoiceAi] = useState(true);
   const [sounds, setSounds] = useState(true);
 
+  useEffect(() => {
+    setHaptics(readBoolPref("ok_pref_haptics", true));
+    setVoiceAi(readBoolPref("ok_pref_voice_ai", true));
+    setSounds(readBoolPref("ok_pref_sounds", true));
+  }, []);
+
   const handleSelectLang = (targetLang: Lang, nativeName: string) => {
     setLang(targetLang);
-    toast.success(`Language set to ${nativeName}! Active system-wide.`);
+    toast.success(`Language set to ${nativeName}`);
   };
 
   const toggleHaptics = () => {
     const next = !haptics;
     setHaptics(next);
+    writeBoolPref("ok_pref_haptics", next);
     if (typeof navigator !== "undefined" && "vibrate" in navigator && next) {
       navigator.vibrate(30);
     }
@@ -34,13 +61,15 @@ function SettingsPage() {
   const toggleVoiceAi = () => {
     const next = !voiceAi;
     setVoiceAi(next);
-    toast.success(next ? "Voice AI synthesis activated" : "Voice AI synthesis paused");
+    writeBoolPref("ok_pref_voice_ai", next);
+    toast.success(next ? "Voice assistant audio enabled" : "Voice assistant audio muted");
   };
 
   const toggleSounds = () => {
     const next = !sounds;
     setSounds(next);
-    toast.success(next ? "Order sound effects turned on" : "Order sound effects muted");
+    writeBoolPref("ok_pref_sounds", next);
+    toast.success(next ? "Order sound alerts enabled" : "Order sound alerts muted");
   };
 
   return (
@@ -239,7 +268,7 @@ function SettingsPage() {
               <h2 className="text-xs font-black text-stone-900 uppercase tracking-wider">Privacy &amp; Terms</h2>
             </div>
             <p className="text-xs text-stone-600 leading-relaxed font-medium">
-              OrderKing &amp; KingPay operate under strict Section 79 IT Act privacy protocols. Zero user contact book data, zero unencrypted storage, and complete end-to-end data security and compliance.
+              OrderKing &amp; KingPay operate under Section 79 of the Information Technology Act, 2000. Device preferences above are stored locally in your browser; account data is governed by our Privacy Policy.
             </p>
           </section>
         </div>

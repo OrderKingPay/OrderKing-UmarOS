@@ -584,19 +584,6 @@ export const loadLive = createServerFn({ method: "GET" })
     }
   });
 
-export const tickSim = createServerFn({ method: "POST" })
-  .middleware([authMiddleware])
-  .handler(async ({ context }) => {
-    try {
-      const ws = await workspace(context.userId);
-      const { tickSimulation } = await import("@/lib/orderking/server/queries.server");
-      const tick = await tickSimulation(ws);
-      return { ok: true as const, advanced: tick.advanced, label: tick.label };
-    } catch (err) {
-      return fail(err);
-    }
-  });
-
 export const loadAnalytics = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }) => {

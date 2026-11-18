@@ -1,4 +1,4 @@
-// 1,000x Strict Geofencing & Sovereign Territory Guard for Order King & King Pay
+// Strict Geofencing & Territory Guard for Order King & King Pay
 // Enforces mandatory rule: Order King FOODS only appears where delivery is strictly active.
 // Everywhere else across India, users ONLY see and experience King Pay.
 
@@ -15,7 +15,7 @@ export interface ActiveDeliveryZone {
 
 /**
  * Verified zones where Order King Food Delivery infrastructure is live.
- * Default flagship launch zone: Sribhumi / Karimganj core 12km radius.
+ * Default launch zone: Sribhumi / Karimganj core 12km radius.
  */
 export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
   {
@@ -26,7 +26,7 @@ export const ACTIVE_DELIVERY_ZONES: ActiveDeliveryZone[] = [
     centerLng: 92.3511,
     radiusKm: 12.0, // 12 km strict radius
     status: "ACTIVE",
-    description: "15-minute ultra-fast delivery active with 0% surge and live rider fleet.",
+    description: "Active food delivery zone: 12 km service radius centered at Sribhumi / Karimganj.",
   },
 ];
 
@@ -48,7 +48,7 @@ export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lo
 }
 
 /**
- * 1,000x Strict Evaluation: Checks whether food delivery is legally active at the coordinates.
+ * Strict Evaluation: Checks whether food delivery is active at the coordinates.
  * If false, the app MUST hide all food restaurants, carts, and delivery menus,
  * presenting ONLY the King Pay FinTech ecosystem.
  */

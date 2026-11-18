@@ -24,6 +24,7 @@ import {
   ChefHat,
   Activity,
   Percent,
+  BookOpen,
 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -49,8 +50,6 @@ import type { MenuItemView } from "@/lib/market-types";
 import { cartCount, cartKey, useCartStore, type CartItem } from "@/lib/stores/cart";
 import { useLocationStore } from "@/lib/stores/location";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
-import { WhatsAppShare } from "@/components/market/whatsapp-share";
-import { WhatsAppViralBountiesWidget as ReferralGamifiedLoop } from "@/components/market/whatsapp-viral-bounties-widget";
 import { RestaurantSeo, buildRestaurantJsonLd } from "@/components/seo/RestaurantSeo";
 
 export const Route = createFileRoute("/r/$slug")({
@@ -64,8 +63,8 @@ export const Route = createFileRoute("/r/$slug")({
       : "Restaurant";
     const title = `${cleanName} - Food Delivery | Order Online | OrderKing`;
     const desc = `Order food online from ${cleanName}. Live order tracking and transparent menu pricing on OrderKing.`;
-    const pageUrl = `https://orderking.in/r/${slug}`;
-    const ogImg = `https://orderking.in/icon-512.png`;
+    const pageUrl = `https://orderkingpay.com/r/${slug}`;
+    const ogImg = `https://orderkingpay.com/icon-512.png`;
     return {
       meta: [
         { title },
@@ -121,6 +120,8 @@ function RestaurantPage() {
   const cartItems = useCartStore((s) => s.items);
   const cartRestaurantId = useCartStore((s) => s.restaurantId);
   const cartRestaurantName = useCartStore((s) => s.restaurantName);
+  const kitchenInstructions = useCartStore((s) => s.kitchenInstructions);
+  const setKitchenInstructions = useCartStore((s) => s.setKitchenInstructions);
   const addItem = useCartStore((s) => s.addItem);
   const updateQty = useCartStore((s) => s.updateQty);
   const remove = useCartStore((s) => s.remove);
@@ -141,6 +142,7 @@ function RestaurantPage() {
   const [showNutritionDrawer, setShowNutritionDrawer] = useState(false);
   const [nutritionItem, setNutritionItem] = useState<MenuItemView | null>(null);
   const [selectedDishDetail, setSelectedDishDetail] = useState<MenuItemView | null>(null);
+  const [menuBookOpen, setMenuBookOpen] = useState(false);
 
   const detail = useQuery({
     queryKey: ["restaurant", slug, location.lat, location.lng, lang],
@@ -382,19 +384,15 @@ function RestaurantPage() {
               </div>
             </div>
 
-            {/* Bottom Floating Badges inside Hero */}
-            <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/60 backdrop-blur-md border border-orange-400/40 px-3 py-1 text-xs font-bold text-orange-300 shadow-md">
-                <Sparkles className="size-3.5 text-[#E85D04]" />
-                OrderKing Partner Kitchen
-              </span>
-              {restaurant.card.vegOnly && (
+            {/* Bottom Floating Badge inside Hero */}
+            {restaurant.card.vegOnly && (
+              <div className="absolute bottom-16 sm:bottom-20 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
                 <span className="flex items-center gap-1.5 rounded-full bg-emerald-950/80 backdrop-blur-md border border-emerald-500/50 px-3 py-1 text-xs font-bold text-emerald-300 shadow-md">
                   <span className="size-2 rounded-full bg-emerald-400" />
-                  100% Pure Veg Outlet
+                  Pure Veg
                 </span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* 2. Restaurant Info Header */}
@@ -427,9 +425,6 @@ function RestaurantPage() {
                   <div className="text-left">
                     <span className="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300">
                       {restaurant.card.ratingCount ? `${restaurant.card.ratingCount}+ ratings` : "No ratings yet"}
-                    </span>
-                    <span className="block text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                      Partner Outlet
                     </span>
                   </div>
                 </div>
@@ -505,24 +500,12 @@ function RestaurantPage() {
                 </div>
               )}
 
-              {/* FSSAI Regulatory Information Card */}
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 px-4 py-2.5 text-xs">
-                <div className="flex items-center gap-2.5 text-zinc-700 dark:text-zinc-300">
-                  <span className="font-bold flex items-center gap-1.5 text-zinc-900 dark:text-white">
-                    <ShieldCheck className="size-4 text-emerald-600" />
-                    {restaurant.fssaiLicenseNumber || (restaurant as any).fssai_license
-                      ? "FSSAI Licensed Kitchen"
-                      : "FSSAI Declaration"}
-                  </span>
-                </div>
-              </div>
-
               {/* Action Ribbon */}
               <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button
                   type="button"
                   onClick={() => setShowGroupOrder(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95 cursor-pointer"
                 >
                   <Users className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
                   <span>Group Order</span>
@@ -531,7 +514,7 @@ function RestaurantPage() {
                 <button
                   type="button"
                   onClick={() => setShowDiningReservation(true)}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95 cursor-pointer"
                 >
                   <Utensils className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
                   <span>Book Table</span>
@@ -543,10 +526,10 @@ function RestaurantPage() {
                     setCookingInstructionsItem(restaurant.card.name);
                     setShowCookingInstructions(true);
                   }}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-orange-400/40 bg-gradient-to-r from-orange-500/10 to-[#B85D19]/10 hover:from-orange-500/20 hover:to-[#B85D19]/20 p-2.5 text-xs font-bold text-orange-950 dark:text-orange-100 transition shadow-2xs active:scale-95 cursor-pointer"
                 >
                   <ChefHat className="size-3.5 text-[#E85D04] dark:text-orange-400 shrink-0" />
-                  <span>Chef Notes</span>
+                  <span>{kitchenInstructions ? "Chef Notes (Saved)" : "Chef Notes"}</span>
                 </button>
 
                 <button
@@ -555,21 +538,12 @@ function RestaurantPage() {
                     setNutritionItem(null);
                     setShowNutritionDrawer(true);
                   }}
-                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 p-2.5 text-xs font-bold text-emerald-950 dark:text-emerald-100 transition shadow-2xs active:scale-95"
+                  className="flex items-center justify-center gap-1.5 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 p-2.5 text-xs font-bold text-emerald-950 dark:text-emerald-100 transition shadow-2xs active:scale-95 cursor-pointer"
                 >
                   <Activity className="size-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>Nutrition</span>
                 </button>
               </div>
-
-              {/* WhatsApp Deep-Link Sharing Component */}
-              <WhatsAppShare
-                variant="restaurant"
-                restaurantName={restaurant.card.name}
-                restaurantSlug={slug}
-                cuisine={restaurant.card.cuisineSummary}
-                className="mt-3"
-              />
 
               {/* 1-Tap 15-Second Kitchen Audio Voice Note */}
               <AudioVoiceNote
@@ -725,7 +699,7 @@ function RestaurantPage() {
                               {it.veg ? (
                                 <span
                                   className="flex size-4 shrink-0 items-center justify-center rounded-xs border border-emerald-600 bg-white shadow-2xs"
-                                  title="100% Pure Vegetarian"
+                                  title="Vegetarian"
                                 >
                                   <span className="size-2 rounded-full bg-emerald-600" />
                                 </span>
@@ -738,9 +712,13 @@ function RestaurantPage() {
                                 </span>
                               )}
 
-                              <p className="font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-[#E85D04] dark:group-hover:text-orange-400 transition-colors">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedDishDetail(it)}
+                                className="text-left font-display font-bold text-base sm:text-lg text-zinc-900 dark:text-zinc-50 group-hover:text-[#E85D04] dark:group-hover:text-orange-400 transition-colors cursor-pointer"
+                              >
                                 <HighlightMatch text={it.name} query={menuQ} />
-                              </p>
+                              </button>
 
                               {it.bestseller && (
                                 <span className="flex items-center gap-1 rounded-full bg-orange-500/20 px-2 py-0.5 text-[10px] font-extrabold text-orange-900 dark:text-orange-200 border border-orange-400/40 shadow-2xs">
@@ -762,17 +740,8 @@ function RestaurantPage() {
                               </p>
                             )}
 
-                            {/* Nutritional & Trust Badges */}
+                            {/* Nutrition button */}
                             <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                              
-                              
-                              <span
-                                className={`font-bold ${
-                                  it.veg ? "text-emerald-600 dark:text-emerald-400" : "text-orange-900 dark:text-orange-400"
-                                }`}
-                              >
-                                {it.veg ? "Pure Veg" : "Non-Veg"}
-                              </span>
                               <button
                                 type="button"
                                 onClick={() => {
@@ -789,7 +758,12 @@ function RestaurantPage() {
 
                           {/* Image & Add Button (Elevated Floating Overlap Style) */}
                           <div className="relative shrink-0 flex flex-col items-center">
-                            <div className="size-24 sm:size-28 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 shadow-sm">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedDishDetail(it)}
+                              aria-label={`View details for ${it.name}`}
+                              className="size-24 sm:size-28 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700 shadow-sm cursor-pointer"
+                            >
                               {it.imageUrl ? (
                                 <img
                                   loading="lazy"
@@ -802,7 +776,7 @@ function RestaurantPage() {
                                   <span className="text-sm font-semibold text-zinc-400">OrderKing</span>
                                 </div>
                               )}
-                            </div>
+                            </button>
 
                             {/* Add Button with Gradient Fill & Bounce Animation */}
                             <div className="-mt-4 relative z-10">
@@ -938,9 +912,6 @@ function RestaurantPage() {
                 </p>
               </div>
             </div>
-
-            {/* Gamified Viral Loop */}
-            <ReferralGamifiedLoop source="restaurant" className="my-8" />
           </div>
 
           <CustomizeDialog
@@ -952,6 +923,37 @@ function RestaurantPage() {
               add(restaurant.card.id, restaurant.card.name, line);
               void trackAnalytics({ data: { name: "add_to_cart", payload: { item: line.itemId } } });
             }}
+          />
+
+          <DishDetailModal
+            dish={selectedDishDetail}
+            open={Boolean(selectedDishDetail)}
+            onOpenChange={(v) => !v && setSelectedDishDetail(null)}
+            restaurantName={restaurant.card.name}
+            restaurantId={restaurant.card.id}
+            locale={locale}
+            cartQuantity={
+              selectedDishDetail
+                ? cartItems.find((ci) => ci.itemId === selectedDishDetail.id)?.quantity ?? 0
+                : 0
+            }
+            onAddToCart={(dish, quantity, instructions) => {
+              const line: Omit<CartItem, "key"> = {
+                itemId: dish.id,
+                variantId: null,
+                addonIds: [],
+                quantity,
+                instructions: instructions?.trim() || "",
+              };
+              add(restaurant.card.id, restaurant.card.name, { ...line, key: cartKey(line) });
+              void trackAnalytics({ data: { name: "add_to_cart", payload: { item: dish.id } } });
+            }}
+            onUpdateCartQuantity={(nextQty) => {
+              if (!selectedDishDetail) return;
+              const existing = cartItems.find((ci) => ci.itemId === selectedDishDetail.id);
+              if (existing) updateQty(existing.key, nextQty);
+            }}
+            onCustomize={(dish) => setCustom(dish)}
           />
 
           {/* Cart Conflict Modal */}
@@ -969,41 +971,56 @@ function RestaurantPage() {
             }}
           />
 
-          {/* 5. STICKY BOTTOM CART BAR WITH ITEM COUNT AND TOTAL */}
-          {totalCartCount > 0 && (
-            <div className="fixed bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-xl mx-auto z-40 animate-in slide-in-from-bottom-4 duration-300">
-              <div className="rounded-2xl bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white p-3.5 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.5)] border border-orange-500/60 backdrop-blur-xl flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#B85D19] via-[#E85D04] to-[#C2410C] text-white font-black shadow-md">
-                    <ShoppingBag className="size-5" />
+          {/* Zomato-Style Floating Menu Book FAB for Category Jump */}
+          {restaurant.categories?.length > 1 && (
+            <div className="fixed right-4 bottom-36 z-40">
+              {menuBookOpen && (
+                <div className="mb-2 w-64 max-h-72 overflow-y-auto rounded-2xl bg-zinc-950/95 text-white border border-white/15 shadow-2xl p-2 space-y-1 backdrop-blur-md">
+                  <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-orange-300">
+                      Menu Categories
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setMenuBookOpen(false)}
+                      aria-label="Close menu categories"
+                      className="text-zinc-400 hover:text-white cursor-pointer"
+                    >
+                      <X className="size-3.5" />
+                    </button>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="rounded-full bg-orange-500/20 border border-orange-400/40 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-orange-300">
-                        {totalCartCount} {totalCartCount === 1 ? "ITEM" : "ITEMS"}
+                  {restaurant.categories.map((cat: any) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveCategory(cat.id);
+                        setMenuBookOpen(false);
+                        const el = document.getElementById(`cat-${cat.id}`);
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className="w-full flex items-center justify-between rounded-xl px-3 py-2 text-xs font-bold hover:bg-white/10 transition text-left cursor-pointer"
+                    >
+                      <span className="truncate">{cat.name}</span>
+                      <span className="text-zinc-400 font-mono text-[11px] shrink-0 ml-2">
+                        {cat.items?.length ?? 0}
                       </span>
-                      {cartSubtotalPaise > 0 && (
-                        <span className="font-display text-sm sm:text-base font-black tabular-nums text-white">
-                          {formatPaise(cartSubtotalPaise, { locale })}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-zinc-400 truncate max-w-[140px] sm:max-w-xs mt-0.5">
-                      From {restaurant.card.name}
-                    </p>
-                  </div>
+                    </button>
+                  ))}
                 </div>
-
-                <Link
-                  to="/cart"
-                  className="rounded-xl bg-gradient-to-r from-[#B85D19] via-[#E85D04] to-[#C2410C] hover:brightness-110 text-white font-black text-xs sm:text-sm px-5 py-2.5 shadow-[0_0_24px_rgba(232,93,4,0.45)] flex items-center gap-2 uppercase tracking-wider hover:scale-105 active:scale-95 transition-all no-underline"
-                >
-                  <span>View Cart</span>
-                  <ChevronRight className="size-4 stroke-[3]" />
-                </Link>
-              </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setMenuBookOpen((v) => !v)}
+                aria-expanded={menuBookOpen}
+                className="ml-auto flex items-center gap-1.5 rounded-full bg-zinc-950 text-white border border-white/20 px-4 py-2.5 text-xs font-black uppercase tracking-wider shadow-[0_8px_24px_rgba(0,0,0,0.4)] hover:bg-zinc-900 active:scale-95 transition cursor-pointer"
+              >
+                <BookOpen className="size-3.5 text-orange-400" />
+                <span>Menu</span>
+              </button>
             </div>
           )}
+
           {/* Action Modals */}
           <GroupOrderingModal
             isOpen={showGroupOrder}
@@ -1026,7 +1043,8 @@ function RestaurantPage() {
             onClose={() => setShowCookingInstructions(false)}
             itemName={cookingInstructionsItem || restaurant.card.name}
             onSave={(inst) => {
-              toast.success(`Chef instructions saved: ${inst}`);
+              setKitchenInstructions(inst);
+              toast.success(`Kitchen note saved for checkout`);
             }}
           />
 

@@ -4,7 +4,7 @@ import { useCartStore, cartKey, toCartItem, type CartItem } from "@/lib/stores/c
 import { useDietStore } from "@/lib/stores/diet";
 import { getCheckoutUpsells, type CheckoutUpsellItem } from "@/lib/server/upsell";
 import { formatPaise } from "@/lib/money";
-import { Sparkles, Check, Plus, Zap, ShieldCheck, Crown } from "lucide-react";
+import { Sparkles, Check, Plus, Zap, Crown } from "lucide-react";
 
 interface CheckoutUpsellEngineProps {
   restaurantId: string;
@@ -110,13 +110,10 @@ export function CheckoutUpsellEngine({
           </div>
           <div>
             <h3 className="font-display text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">
-              Recommended Pairings
-              <span className="rounded-full bg-orange-500/20 border border-orange-500/40 px-2 py-0.5 text-[10px] font-extrabold text-orange-950 dark:text-orange-200 uppercase tracking-wider">
-                Quick Add
-              </span>
+              Complete your meal
             </h3>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Handpicked sides and beverages frequently enjoyed with your meal
+              Sides and beverages from this restaurant
             </p>
           </div>
         </div>
@@ -181,7 +178,7 @@ export function CheckoutUpsellEngine({
                     className={`flex size-4 shrink-0 items-center justify-center rounded-xs border p-0.5 shadow-2xs ${
                       upsell.veg ? "border-emerald-600 bg-white" : "border-rose-600 bg-white"
                     }`}
-                    title={upsell.veg ? "100% Pure Vegetarian" : "Non-Vegetarian"}
+                    title={upsell.veg ? "Vegetarian" : "Non-Vegetarian"}
                   >
                     {upsell.veg ? (
                       <span className="size-2 rounded-full bg-emerald-600" />
@@ -251,15 +248,6 @@ export function CheckoutUpsellEngine({
             );
           })
         )}
-      </div>
-
-      {/* Trust & Conversion Guarantee Microcopy */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-orange-400/20 pt-3 text-[10px] text-zinc-500 dark:text-zinc-400">
-        <span className="flex items-center gap-1.5 text-orange-700 dark:text-orange-400 font-bold">
-          <ShieldCheck className="size-3.5" />
-          1-Click Instant Addition • Live Bill Calculation
-        </span>
-        <span className="font-medium">Kitchen Fresh • Authentic Menu Rates</span>
       </div>
     </section>
   );

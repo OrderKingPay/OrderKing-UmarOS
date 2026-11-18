@@ -41,11 +41,21 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const { t, lang } = useT();
   const locale = lang === "bn" ? "bn-IN" : "en-IN";
-  const { restaurantId, restaurantName, items, coupon, updateQty, remove, setCoupon, clear } = useCartStore();
+  const {
+    restaurantId,
+    restaurantName,
+    items,
+    coupon,
+    scheduledSlot,
+    updateQty,
+    remove,
+    setCoupon,
+    setScheduledSlot,
+    clear,
+  } = useCartStore();
   const location = useLocationStore((s) => s.location);
   const [code, setCode] = useState(coupon);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
-  const [scheduledTime, setScheduledTime] = useState<{ date: string; timeSlot: string } | null>(null);
   const navigate = useNavigate();
   const isDeliveryActive = isDeliveryActiveInLocation(location.lat, location.lng, location.cityId);
 
@@ -120,8 +130,8 @@ function CartPage() {
                     {t("cart.title") || "Your Cart"}
                   </h1>
                   {restaurantName && (
-                    <p className="text-xs text-slate-500">
-                      Delivering fresh from <span className="text-slate-900 font-semibold">{restaurantName}</span>
+                    <p className="text-xs text-slate-600 font-semibold">
+                      {restaurantName}
                     </p>
                   )}
                 </div>
@@ -133,7 +143,7 @@ function CartPage() {
                 className="flex items-center gap-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition cursor-pointer active:scale-95"
               >
                 <Clock className="size-3.5" />
-                <span>{scheduledTime ? `${scheduledTime.date} (${scheduledTime.timeSlot})` : "Schedule Delivery"}</span>
+                <span>{scheduledSlot ? `${scheduledSlot.date} (${scheduledSlot.timeSlot})` : "Schedule Delivery"}</span>
               </button>
             </div>
           </div>
@@ -339,10 +349,7 @@ function CartPage() {
               <div className="rounded-3xl border border-orange-400/30 bg-gradient-to-b from-white via-zinc-50/50 to-orange-50/15 dark:from-zinc-900 dark:to-zinc-900 p-5 sm:p-6 shadow-md space-y-4">
                 <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
                   <h3 className="font-display text-base font-extrabold text-zinc-900 dark:text-zinc-50 flex items-center gap-2">
-                    <span>Detailed Bill Summary</span>
-                    <span className="rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold px-2 py-0.5">
-                      Verified Safe
-                    </span>
+                    <span>Bill Summary</span>
                   </h3>
                   <span className="text-[11px] font-mono text-zinc-400">CGST Sec 9(5) ECO</span>
                 </div>
@@ -433,7 +440,7 @@ function CartPage() {
         isOpen={scheduleModalOpen}
         onClose={() => setScheduleModalOpen(false)}
         restaurantName={restaurantName}
-        onSchedule={(s) => setScheduledTime(s)}
+        onSchedule={(s) => setScheduledSlot(s)}
       />
     </CustomerShell>
   );

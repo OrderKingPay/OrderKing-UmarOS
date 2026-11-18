@@ -139,15 +139,15 @@ describe("B2B SaaS Sales Deck Engine & 15-Stage CRM Revenue System", () => {
     assert.match(email.body, /ر\.س/);
   });
 
-  test("quarantines SCENARIO_TEMPLATE leads from verified revenue and tracks 9 separated financial buckets", () => {
+  test("starts with zero fake pre-seeded leads and tracks 9 separated financial buckets", () => {
     const engine = new CrmPipelineEngine();
     assert.strictEqual(SELLABLE_ORDERKING_SERVICES.length, 10);
 
-    // Initial pre-seeded leads are quarantined as SCENARIO_TEMPLATE with 0 verified collected revenue
+    // Zero fake/placeholder scenario templates are pre-seeded on startup
     const initialBreakdown = engine.getCommercialRevenueBreakdown();
     assert.strictEqual(initialBreakdown.verifiedMoneyCollectedInr, 0);
     assert.strictEqual(initialBreakdown.verifiedLeadsCount, 0);
-    assert.ok(initialBreakdown.scenarioTemplatesCount >= 3);
+    assert.strictEqual(initialBreakdown.scenarioTemplatesCount, 0);
 
     // Add a real verified lead with contact permission
     const added = engine.addLead({

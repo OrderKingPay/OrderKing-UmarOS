@@ -172,7 +172,7 @@ export function TravelQuotationModal({
                 Get Direct Offline Quotation
               </h3>
               <p className="text-xs text-slate-400">
-                Direct B2B wholesale rates for Umrah, confirmed trains, flights, and religious yatras. Negotiate directly with no hidden middleman fees.
+                Submit a travel inquiry for Umrah, flights, rail travel, or holiday packages for an itemized quote.
               </p>
             </div>
 
@@ -183,10 +183,10 @@ export function TravelQuotationModal({
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { id: "UMRAH", label: "Umrah Special", sub: "Makkah/Madinah" },
-                  { id: "TRAIN", label: "Confirmed Train", sub: "Tatkal / Quota" },
-                  { id: "FLIGHT", label: "Flights", sub: "Group / Best Fare" },
-                  { id: "PILGRIMAGE", label: "Religious Yatra", sub: "Hindu & Shrines" },
+                  { id: "UMRAH", label: "Umrah Travel", sub: "Makkah/Madinah" },
+                  { id: "TRAIN", label: "Rail Inquiry", sub: "IRCTC Official" },
+                  { id: "FLIGHT", label: "Flights", sub: "Group / Multi-City" },
+                  { id: "PILGRIMAGE", label: "Religious Yatra", sub: "Domestic Shrines" },
                   { id: "HOLIDAY", label: "Holiday Tour", sub: "Domestic & Abroad" },
                 ].map((item) => (
                   <button

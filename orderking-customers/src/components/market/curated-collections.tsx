@@ -15,7 +15,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
   {
     id: "trending-now",
     title: "Trending This Week",
-    tagline: "Most ordered flavors loved across the city",
+    tagline: "Most ordered dishes in your area",
     coverImage: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=500&q=80",
     badge: "Popular",
     searchFilter: { category: "Biryani" },
@@ -23,7 +23,7 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
   {
     id: "late-night",
     title: "Late Night Deliveries",
-    tagline: "Late night food delivered by active kitchen partners",
+    tagline: "Active kitchens open late",
     coverImage: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=80",
     badge: "Open Now",
     searchFilter: { openNow: true },
@@ -39,23 +39,23 @@ export const CURATED_COLLECTIONS: FoodCollection[] = [
   {
     id: "pocket-friendly",
     title: "Value Combos",
-    tagline: "Hearty combos and satisfying meal packs",
+    tagline: "Meal combos and pack options",
     coverImage: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80",
     badge: "Combos",
     searchFilter: { category: "Rolls" },
   },
   {
     id: "romantic-dining",
-    title: "Dine-In Experiences",
-    tagline: "Verified dining partner ambiance & table reservations",
+    title: "Dine-In Tables",
+    tagline: "Table reservations at partner restaurants",
     coverImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=500&q=80",
     badge: "Dine-In",
     searchFilter: { category: "Cafe" },
   },
   {
     id: "authentic-biryani",
-    title: "Biryani Special",
-    tagline: "Dum, Kolkata & Awadhi preparation",
+    title: "Biryani",
+    tagline: "Dum, Kolkata & Awadhi rice dishes",
     coverImage: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=500&q=80",
     badge: "Specialty",
     searchFilter: { category: "Biryani" },
@@ -79,7 +79,7 @@ export function CuratedCollections({
             <Sparkles className="size-4 text-primary" />
             <h2 className="font-display text-base font-bold text-fg">Collections</h2>
           </div>
-          <p className="text-xs text-muted">Curated dining and delivery lists based on local trends</p>
+          <p className="text-xs text-muted">Restaurant lists by dining and delivery category</p>
         </div>
         <Link
           to="/search"

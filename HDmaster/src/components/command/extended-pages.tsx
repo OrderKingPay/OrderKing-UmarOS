@@ -6,6 +6,7 @@ import {
   loadRestaurants,
   loadRiders,
   loadFinance,
+  loadHealth,
   verifySettlementBatchFn,
   exportCsv,
   triggerSoundboxTestAlertFn,
@@ -358,9 +359,27 @@ export function ReconciliationPage() {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="Accounting Engine" value="Integer Paise" source="64-BIT BIGINT" />
-        <MetricCard label="Double-Entry Balance" value="Balanced" source="SUM(DEBIT) = SUM(CREDIT)" />
+        <MetricCard
+          label="Batch Verification"
+          value={
+            verifyMut.data?.ok
+              ? verifyMut.data.data.verified
+                ? "Verified Balanced"
+                : "Discrepancy Found"
+              : "Awaiting Batch ID"
+          }
+          source="SUM(DEBIT) = SUM(CREDIT)"
+        />
         <MetricCard label="Total Commission" value={fin ? money(fin.summary.revenue.commissions) : "₹0.00"} source="REALIZED" />
-        <MetricCard label="Audit Discrepancies" value="0 Paise" source="FORENSIC INTEGRITY" />
+        <MetricCard
+          label="Measured Discrepancy"
+          value={
+            verifyMut.data?.ok
+              ? `${verifyMut.data.data.discrepancyPaise} Paise`
+              : "Run Batch Check"
+          }
+          source="POSTGRESQL CHECKSUM"
+        />
       </div>
 
       <div className="rounded-[24px] border border-border bg-surface p-6 space-y-4 max-w-2xl">
@@ -474,6 +493,9 @@ export function TaxDeskPage() {
 // 6. 6-TIER INCIDENT RESPONSE CENTER
 // =========================================================================
 export function IncidentsPage() {
+  const healthQ = useQuery({ queryKey: ["health"], queryFn: () => loadHealth() });
+  const h = healthQ.data && healthQ.data.ok ? healthQ.data.data : null;
+
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-3">
@@ -484,13 +506,29 @@ export function IncidentsPage() {
             Deterministic incident classification, IT Act 2000 &amp; CERT-In statutory 6-hour cybersecurity reporting readiness.
           </p>
         </div>
+        <Button variant="secondary" size="sm" onClick={() => void healthQ.refetch()}>
+          <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+          Probe Live Health
+        </Button>
       </header>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="CERT-In SLA" value="6-Hour Window" source="IT ACT 2000" />
-        <MetricCard label="Database Pooler" value="Port 6543 (IPv4)" source="HEALTHY" />
-        <MetricCard label="API Latency p95" value="< 45ms" source="EDGE RUNTIME" />
-        <MetricCard label="Active Incidents" value="0 Critical" source="WATCHDOG" />
+        <MetricCard
+          label="Database Status"
+          value={healthQ.isLoading ? "Checking…" : h ? String((h as Record<string, unknown>).database ?? "Connected") : "Unavailable"}
+          source={h ? h.label : "LIVE PROBE"}
+        />
+        <MetricCard
+          label="Measured DB Latency"
+          value={healthQ.isLoading ? "Measuring…" : h ? `${h.databaseLatencyMs} ms` : "—"}
+          source={h ? h.label : "LIVE PROBE"}
+        />
+        <MetricCard
+          label="Health Probe"
+          value={healthQ.isLoading ? "Running…" : healthQ.data?.ok ? "OK" : "Alert"}
+          source="POSTGRESQL"
+        />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

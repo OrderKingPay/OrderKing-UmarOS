@@ -14,7 +14,7 @@ export const LOCALES = [
 export type Locale = (typeof LOCALES)[number];
 
 const en = {
-  app: { name: "Order King Command", tagline: "Order like a King." },
+  app: { name: "Order King Command", tagline: "" },
   nav: {
     dashboard: "Today",
     ceo: "CEO Command",
@@ -92,7 +92,7 @@ const en = {
 };
 
 const hi: typeof en = {
-  app: { name: "ऑर्डर किंग कमांड", tagline: "राजा की तरह ऑर्डर करें।" },
+  app: { name: "ऑर्डर किंग कमांड", tagline: "" },
   nav: {
     dashboard: "आज",
     ceo: "सीईओ कमांड",
@@ -170,7 +170,7 @@ const hi: typeof en = {
 };
 
 const bn: typeof en = {
-  app: { name: "অর্ডার কিং কমান্ড", tagline: "রাজার মতো অর্ডার করুন।" },
+  app: { name: "অর্ডার কিং কমান্ড", tagline: "" },
   nav: {
     dashboard: "আজ",
     ceo: "সিইও কমান্ড",
@@ -251,13 +251,13 @@ export const DICTIONARIES: Record<Locale, typeof en> = {
   en,
   hi,
   bn,
-  gu: { ...en, app: { name: "ઓર્ડર કિંગ કમાન્ડ", tagline: "રાજાની જેમ ઓર્ડર કરો." } },
-  kn: { ...en, app: { name: "ಆರ್ಡರ್ ಕಿಂಗ್ ಕಮಾಂಡ್", tagline: "ರಾಜನಂತೆ ಆರ್ಡರ್ ಮಾಡಿ." } },
-  ml: { ...en, app: { name: "ഓർഡർ കിംഗ് കമാൻഡ്", tagline: "രാജാവിനെപ്പോലെ ഓർഡർ ചെയ്യൂ." } },
-  mr: { ...hi, app: { name: "ऑर्डर किंग कमांड", tagline: "राजासारखे ऑर्डर करा." } },
-  pa: { ...en, app: { name: "ਆਰਡਰ ਕਿੰਗ ਕਮਾਂਡ", tagline: "ਰਾਜੇ ਵਾਂਗ ਆਰਡਰ ਕਰੋ।" } },
-  ta: { ...en, app: { name: "ஆர்டர் கிங் கமாண்ட்", tagline: "ராஜா போல் ஆர்டர் செய்யுங்கள்." } },
-  te: { ...en, app: { name: "ఆర్డర్ కింగ్ కమాండ్", tagline: "రాజులా ఆర్డర్ చేయండి." } },
+  gu: { ...en, app: { name: "ઓર્ડર કિંગ કમાન્ડ", tagline: "" } },
+  kn: { ...en, app: { name: "ಆರ್ಡರ್ ಕಿಂಗ್ ಕಮಾಂಡ್", tagline: "" } },
+  ml: { ...en, app: { name: "ഓർഡർ കിംഗ് കമാൻഡ്", tagline: "" } },
+  mr: { ...hi, app: { name: "ऑर्डर किंग कमांड", tagline: "" } },
+  pa: { ...en, app: { name: "ਆਰਡਰ ਕਿੰਗ ਕਮਾਂਡ", tagline: "" } },
+  ta: { ...en, app: { name: "ஆர்டர் கிங் கமாண்ட்", tagline: "" } },
+  te: { ...en, app: { name: "ఆర్డర్ కింగ్ కమాండ్", tagline: "" } },
 };
 
 export type MessageTree = typeof en;

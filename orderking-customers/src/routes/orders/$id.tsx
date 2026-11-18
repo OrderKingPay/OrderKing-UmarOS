@@ -68,6 +68,7 @@ function OrderDetailPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>(["Fresh & hot", "On-time delivery"]);
   const [reviewComment, setReviewComment] = useState("");
   const [splitCount, setSplitCount] = useState(2);
+  const [splitUpiId, setSplitUpiId] = useState("");
   const [dishReviewOpen, setDishReviewOpen] = useState(false);
 
   // Order Dispute & Complaint Resolution State
@@ -161,9 +162,9 @@ function OrderDetailPage() {
   });
 
   const submitReview = useMutation({
-    mutationFn: () => submitOrderReview({ data: { orderId: id, rating: starRating, body: reviewComment } }),
+    mutationFn: (rating: number) => submitOrderReview({ data: { orderId: id, rating, body: reviewComment } }),
     onSuccess: () => {
-      toast.success("Review submitted! Thank you for rating.");
+      toast.success("Review submitted.");
       void reviewQuery.refetch();
     },
     onError: (err) => {
@@ -626,7 +627,7 @@ function OrderDetailPage() {
                   onClick={() => {
                     const avg = Math.round((foodRating + restaurantRating + riderRating + appRating) / 4);
                     setStarRating(avg);
-                    submitReview.mutate();
+                    submitReview.mutate(avg);
                   }}
                   className="w-full bg-emerald-600 hover:bg-emerald-700 text-fg font-bold py-2 rounded-xl shadow-md transition"
                 >
@@ -821,19 +822,13 @@ function OrderDetailPage() {
           </div>
         )}
 
-        {/* 1-Tap Split Bill with Friends via UPI (Increases AOV, viral acquisition, 0.5% convenience fee) */}
+        {/* Split Bill with Friends */}
         <div className="mt-4 rounded-[var(--radius-xl)] border border-primary/20 bg-primary/5 p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              
-              <div>
-                <h3 className="font-semibold text-sm text-foreground">Split Bill with Friends via UPI</h3>
-                <p className="text-xs text-muted">Generate instant UPI payment links for your friends in 1-tap</p>
-              </div>
+            <div>
+              <h3 className="font-semibold text-sm text-foreground">Split Bill with Friends</h3>
+              <p className="text-xs text-muted">Calculate each person&apos;s share and optionally include your UPI ID</p>
             </div>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-              Direct Resolution
-            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex-1 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-mono">
@@ -845,28 +840,40 @@ function OrderDetailPage() {
                   key={cnt}
                   type="button"
                   onClick={() => setSplitCount(cnt)}
-                  className={`size-7 rounded-md text-xs font-bold transition ${splitCount === cnt ? "bg-primary text-fg" : "border border-border bg-surface text-muted"}`}
+                  className={`size-7 rounded-md text-xs font-bold transition cursor-pointer ${splitCount === cnt ? "bg-primary text-fg" : "border border-border bg-surface text-muted"}`}
                 >
                   {cnt}
                 </button>
               ))}
             </div>
           </div>
+          <input
+            type="text"
+            value={splitUpiId}
+            onChange={(e) => setSplitUpiId(e.target.value)}
+            placeholder="Your UPI ID (optional, e.g. name@upi)"
+            className="w-full rounded-lg border border-border bg-surface px-3 py-1.5 text-xs placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary"
+          />
           <Button
             size="sm"
             variant="secondary"
             className="w-full text-xs font-medium"
             onClick={() => {
-              const text = `Hey! Here's your ₹${((order.summary.totalPaise / splitCount) / 100).toFixed(2)} share for our food order from ${order.summary.restaurantName}: upi://pay?pa=9395065587@ybl&pn=OrderKingPay&am=${((order.summary.totalPaise / splitCount) / 100).toFixed(2)}&cu=INR&tn=Bill Split for ${order.summary.publicId}`;
+              const shareAmt = ((order.summary.totalPaise / splitCount) / 100).toFixed(2);
+              const cleanedVpa = splitUpiId.trim();
+              const upiPart = cleanedVpa && cleanedVpa.includes("@")
+                ? ` — Pay via UPI: upi://pay?pa=${encodeURIComponent(cleanedVpa)}&am=${shareAmt}&cu=INR&tn=${encodeURIComponent(`Bill Split ${order.summary.publicId}`)}`
+                : "";
+              const text = `Your share is ₹${shareAmt} for our OrderKing order #${order.summary.publicId} from ${order.summary.restaurantName}${upiPart}`;
               if (typeof navigator !== "undefined" && navigator.share) {
-                void navigator.share({ title: "Split Bill on OrderKing", text });
+                void navigator.share({ title: "Split Bill", text });
               } else if (typeof navigator !== "undefined") {
                 void navigator.clipboard?.writeText(text);
-                toast.success("UPI split payment link copied to clipboard!");
+                toast.success("Split bill details copied to clipboard.");
               }
             }}
           >
-            Share UPI Split Link (WhatsApp / SMS)
+            Share Split Amount
           </Button>
         </div>
 
@@ -926,7 +933,7 @@ function OrderDetailPage() {
         {order.summary.dataLabel === "REAL" ? (
           <p className="mt-4 text-center text-xs font-bold text-orange-900 bg-orange-50 border border-orange-200/80 rounded-xl p-2.5 flex items-center justify-center gap-1.5">
             <Check className="size-3.5 text-emerald-600" />
-            <span>Live status synchronized in real-time from OrderKing Command</span>
+            <span>Live order status</span>
           </p>
         ) : null}
 
