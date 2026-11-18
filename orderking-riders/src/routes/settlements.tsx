@@ -6,7 +6,7 @@ import { Card, CardMeta, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
-import { DEFAULT_BRANDING } from "@/lib/rider/config";
+
 import { useI18n } from "@/lib/rider/i18n-context";
 import { formatPaise, computeNextWednesdaySettlementIst, computeNextDailySettlementIst } from "@/lib/rider/money";
 import {
@@ -122,7 +122,7 @@ export function SettlementsDesk() {
         },
       });
       setRider(updated);
-      toast.success(`Settlement batch ${settlement.id.slice(0, 8)} acknowledged in Order King Partner Ledger.`);
+      toast.success(`Settlement batch ${settlement.id.slice(0, 8)} acknowledged in OrderKing Partner Ledger.`);
     } catch (e) {
       toast.error(errorMessage(e, t("actionNotConfirmed")));
     } finally {
@@ -235,13 +235,13 @@ export function SettlementsDesk() {
   return (
     <AppShell>
       <div className="space-y-6 font-sans">
-        {/* 1. HEADER & ORDER KING TREASURY EXPLANATION */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xs space-y-4">
+        {/* 1. HEADER & ORDERKING SETTLEMENT SCHEDULE */}
+        <div className="rounded-2xl border border-border bg-card p-6 text-foreground shadow-xs space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <Link
                 to="/earnings"
-                className="inline-flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 transition"
+                className="inline-flex size-9 items-center justify-center rounded-xl border border-border bg-muted text-foreground hover:bg-muted/80 transition"
                 title="Back to Earnings"
               >
                 <ArrowLeft className="size-4" />
@@ -253,7 +253,7 @@ export function SettlementsDesk() {
                     Direct Bank Transfer
                   </span>
                 </div>
-                <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-slate-900">
+                <h1 className="mt-1 font-display text-2xl sm:text-3xl font-bold text-foreground">
                   Payouts &amp; Bank Details
                 </h1>
               </div>
@@ -264,7 +264,7 @@ export function SettlementsDesk() {
                 variant="outline"
                 size="sm"
                 onClick={() => downloadCsvVoucher()}
-                className="inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-800"
+                className="inline-flex items-center gap-1.5"
               >
                 <FileSpreadsheet className="size-4 text-emerald-700" />
                 <span>Download CSV Voucher</span>
@@ -273,7 +273,7 @@ export function SettlementsDesk() {
                 variant="outline"
                 size="sm"
                 onClick={() => window.print()}
-                className="inline-flex items-center gap-1.5 border-slate-300 bg-white text-slate-800"
+                className="inline-flex items-center gap-1.5"
               >
                 <Printer className="size-4 text-slate-700" />
                 <span>Print / Save PDF</span>
@@ -326,7 +326,7 @@ export function SettlementsDesk() {
         <Card className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2.5">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-800">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-muted text-foreground">
                 <Building2 className="size-5" />
               </div>
               <div>
@@ -410,7 +410,7 @@ export function SettlementsDesk() {
         <Card className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <CardTitle>Order King Ledger Reconciliation Breakdown</CardTitle>
+              <CardTitle>OrderKing Ledger Reconciliation Breakdown</CardTitle>
               <CardMeta>
                 Real-time computation of delivery payouts, incentives, tips, and COD cash in hand
               </CardMeta>
@@ -464,11 +464,11 @@ export function SettlementsDesk() {
                   {formatPaise(earnings.totals.tip ?? 0)}
                 </span>
               </div>
-              <div className="rounded-xl border border-emerald-300 bg-emerald-50/70 p-3.5 text-slate-900">
-                <span className="text-[11px] font-bold uppercase text-emerald-900 block">
+              <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 text-emerald-700 dark:text-emerald-300">
+                <span className="text-[11px] font-bold uppercase text-emerald-700 dark:text-emerald-300 block">
                   {t("netPayable")}
                 </span>
-                <span className="mt-1 block font-display text-2xl font-extrabold text-emerald-900">
+                <span className="mt-1 block font-display text-2xl font-extrabold text-emerald-700 dark:text-emerald-300">
                   {formatPaise(earnings.totals.netPayable)}
                 </span>
               </div>
@@ -508,6 +508,9 @@ export function SettlementsDesk() {
           </div>
 
           <div className="space-y-3">
+            {settlements.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No settlement batches recorded yet.</p>
+            ) : null}
             {settlements.map((s) => {
               const ackTimestamp = acknowledgedIds[s.id];
               const isConfirmed = Boolean(s.confirmedPaidAt || ackTimestamp);

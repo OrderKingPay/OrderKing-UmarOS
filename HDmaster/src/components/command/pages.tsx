@@ -3364,8 +3364,8 @@ function SettingsPage() {
           <Field label="Incentive Escalation per Decline (paise) [1000 = +₹10]">
             <Input
               type="number"
-              value={cur.bountyEscalationPaise ?? 1000}
-              onChange={(e) => set("bountyEscalationPaise" as any, Number(e.target.value))}
+              value={cur.incentiveEscalationPaise ?? 1000}
+              onChange={(e) => set("incentiveEscalationPaise" as any, Number(e.target.value))}
             />
           </Field>
           <Field label="Offer Timeout Window (seconds)">

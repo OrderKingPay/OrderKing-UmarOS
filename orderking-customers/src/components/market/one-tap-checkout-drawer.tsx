@@ -16,6 +16,7 @@ import {
   Receipt,
   Clock,
   Info,
+  Wallet,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore, cartCount } from "@/lib/stores/cart";
@@ -112,7 +113,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
         <div className="relative flex items-center justify-between pb-3 border-b border-orange-950/10">
           <div className="flex items-center gap-2.5">
             <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 via-orange-300 to-orange-500 text-slate-950 shadow-[0_2px_10px_rgba(245,158,11,0.4)]">
-              <Crown className="size-4.5" />
+              <ShoppingBag className="size-4.5 text-slate-950" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -248,7 +249,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
           {/* 4. Platform Fee */}
           <div className="flex items-center justify-between text-xs bg-emerald-50/70 p-2 rounded-xl border border-emerald-200/60">
             <div className="flex items-center gap-1.5">
-              <Crown className="size-3 text-emerald-700 shrink-0" />
+              <ShieldCheck className="size-3 text-emerald-700 shrink-0" />
               <div>
                 <span className="font-black text-emerald-950 text-xs block">OrderKing Platform Fee</span>
                 <span className="text-[10px] text-emerald-700 font-medium">Itemized platform service charge</span>
@@ -287,7 +288,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
           <div className="relative overflow-hidden mt-1 rounded-2xl bg-gradient-to-r from-slate-950 via-[#17140f] to-slate-950 p-3.5 text-white flex items-center justify-between shadow-[0_4px_16px_rgba(245,158,11,0.25)] border border-orange-400/50">
             <div className="space-y-0.5">
               <div className="flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-orange-300">
-                <Crown className="size-3 text-orange-400" />
+                <Receipt className="size-3 text-orange-400" />
                 <span>Total Amount to Pay</span>
               </div>
               <p className="text-[10px] text-stone-400">Itemized taxes &amp; fees included</p>
@@ -316,7 +317,7 @@ export function OneTapCheckoutDrawer({ open, onClose }: OneTapCheckoutDrawerProp
                   : "border-stone-200 bg-white hover:border-orange-300"
               )}
             >
-              <Crown className="size-4 text-orange-900 mb-1" />
+              <Wallet className="size-4 text-orange-900 mb-1" />
               <span className="text-xs font-black text-gray-950 leading-tight">KingPay UPI</span>
               <span className="text-[9px] font-bold text-orange-900 mt-0.5">Instant Pay</span>
             </button>

@@ -19,6 +19,7 @@ import {
   Settings,
   LogOut,
   Mic,
+  ShieldCheck,
 } from "lucide-react";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { OrderKingMark } from "@/components/brand/wordmark";
@@ -422,7 +423,7 @@ export function CustomerShell({
                             {user.primaryEmail || "Signed in"}
                           </span>
                           <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-amber-700 mt-0.5">
-                            <Crown className="size-2.5 fill-amber-500 text-amber-600" /> Verified Account
+                            <ShieldCheck className="size-2.5 text-emerald-600" /> Verified Account
                           </span>
                         </div>
                       </div>
@@ -444,7 +445,7 @@ export function CustomerShell({
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                         >
                           <Package className="size-4 text-amber-600" />
-                          <span>My Orders &amp; Passes</span>
+                          <span>My Orders</span>
                         </Link>
 
                         <Link
@@ -453,7 +454,7 @@ export function CustomerShell({
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                         >
                           <CreditCard className="size-4 text-amber-600" />
-                          <span>KingPay &amp; Crowns</span>
+                          <span>KingPay Wallet</span>
                         </Link>
 
                         <Link
@@ -462,7 +463,7 @@ export function CustomerShell({
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                         >
                           <GraduationCap className="size-4 text-amber-600" />
-                          <span>King Tutor &amp; Solutions</span>
+                          <span>King Tutor</span>
                         </Link>
 
                         <Link
@@ -471,7 +472,7 @@ export function CustomerShell({
                           className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 hover:text-amber-950 transition no-underline"
                         >
                           <Briefcase className="size-4 text-amber-600" />
-                          <span>King Job &amp; Careers</span>
+                          <span>King Jobs</span>
                         </Link>
 
                         <button

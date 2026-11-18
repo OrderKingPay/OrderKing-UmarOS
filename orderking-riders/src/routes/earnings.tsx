@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import {
   formatPaise,
-  STATUTORY_BASE_DISTANCE_KM,
-  STATUTORY_BASE_FARE_PAISE,
-  STATUTORY_DISTANCE_RATE_PER_KM_PAISE,
-  getOperationalTier,
+
+
+
+
 } from "@/lib/rider/money";
 import { useI18n } from "@/lib/rider/i18n-context";
 import { createTicketFn, getEarningsFn, getSettlementsFn, getHomeFn, requestInstantPayoutFn } from "@/lib/server/rider-fns";
@@ -40,7 +40,7 @@ const MILESTONES = STANDARD_DAILY_MILESTONES;
 
 function Page() {
   const { t } = useI18n();
-  const { payout, surge, weather } = useRiderCustomization();
+  const { payout, surge } = useRiderCustomization();
   const [preset, setPreset] = useState<Preset>("today");
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -450,7 +450,7 @@ function Page() {
               className="shrink-0 bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-1.5 shadow-sm"
             >
               <Zap className="size-3.5" />
-              {instantPayoutBusy ? "Dispatched..." : "Instant Payout"}
+              {instantPayoutBusy ? "Dispatching..." : "Instant Payout"}
             </Button>
           </div>
 
@@ -587,6 +587,9 @@ function Page() {
         <Card>
           <CardTitle>{t("settlements")}</CardTitle>
           <ul className="mt-3 space-y-2">
+            {settlements.length === 0 ? (
+              <li className="text-xs text-muted-foreground">No settlement batches recorded yet.</li>
+            ) : null}
             {settlements.map((s) => (
               <li key={s.id} className="flex items-center justify-between text-sm">
                 <span>

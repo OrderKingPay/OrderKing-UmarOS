@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
-  generateSovereignPnr,
+  generateCarrierPnr,
   generateTransactionId,
   calculateFareBreakdown,
   validatePassenger,
@@ -10,14 +10,14 @@ import {
   searchTrainQuotes,
   searchBusQuotes,
   searchCabQuotes,
-  issueSovereignETicket,
+  issueCarrierETicket,
   getStoredETickets,
   saveETicketToStorage,
   checkSupplierGating,
   bookDirectTravelQuote,
   SUPPLIER_UNAVAILABLE_MESSAGE,
   SupplierUnavailableError,
-  SOVEREIGN_ETICKETS_STORAGE_KEY,
+  CARRIER_ETICKETS_STORAGE_KEY,
   type Passenger,
   type BookingContact,
   type FlightQuote,
@@ -204,10 +204,10 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
 
   describe("Sovereign PNR & Sovereign Digital E-Ticket Generation", () => {
     it("generates mode-specific Sovereign PNR codes adhering to OrderKing format and blocks synthetic train PNRs", () => {
-      expect(generateSovereignPnr("flight")).toMatch(/^OK-FL-[A-Z0-9]{6}\d{4}$/);
-      expect(() => generateSovereignPnr("train")).toThrow(/CRIS\/IRCTC/);
-      expect(generateSovereignPnr("bus")).toMatch(/^OK-BS-[A-Z0-9]{6}\d{4}$/);
-      expect(generateSovereignPnr("cab")).toMatch(/^OK-CB-[A-Z0-9]{6}\d{4}$/);
+      expect(generateCarrierPnr("flight")).toMatch(/^OK-FL-[A-Z0-9]{6}\d{4}$/);
+      expect(() => generateCarrierPnr("train")).toThrow(/CRIS\/IRCTC/);
+      expect(generateCarrierPnr("bus")).toMatch(/^OK-BS-[A-Z0-9]{6}\d{4}$/);
+      expect(generateCarrierPnr("cab")).toMatch(/^OK-CB-[A-Z0-9]{6}\d{4}$/);
     });
 
     it("generates unique transaction IDs for KingPay Wallet and Razorpay gateways", () => {
@@ -220,12 +220,12 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
 
     it("refuses unverified travel ticket issuance", () => {
       const quote=searchFlightQuotes()[0];
-      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
+      expect(()=>issueCarrierETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
     });
 
     it("does not mint a fake cab PNR or driver dispatch", () => {
       const quote=searchCabQuotes()[0];
-      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"female",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"razorpay_upi",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
+      expect(()=>issueCarrierETicket({quote,passengers:[{id:"p1",fullName:"Test Passenger",age:30,gender:"female",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"razorpay_upi",rebateDestination:"food_wallet"})).toThrow(/supplier reservation|verified payment/i);
     });
   });
 
@@ -246,7 +246,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       const mockStorage:Record<string,string>={};
       vi.stubGlobal("window",{localStorage:{getItem:(key:string)=>mockStorage[key]||null,setItem:(key:string,val:string)=>{mockStorage[key]=val;},clear:()=>{}}});
       const quote=searchFlightQuotes()[0];
-      expect(()=>issueSovereignETicket({quote,passengers:[{id:"p1",fullName:"Test",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow();
+      expect(()=>issueCarrierETicket({quote,passengers:[{id:"p1",fullName:"Test",age:30,gender:"male",seatPreference:"Window"}],contact:{phone:"9876543210",email:"test@example.com"},paymentMethod:"kingpay_wallet",rebateDestination:"food_wallet"})).toThrow();
       expect(getStoredETickets()).toHaveLength(0);
       vi.unstubAllGlobals();
     });
@@ -261,7 +261,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
 
       const quote = searchFlightQuotes()[0];
       expect(() =>
-        issueSovereignETicket({
+        issueCarrierETicket({
           quote,
           passengers: [{ id: "p1", fullName: "Aarav Gupta", age: 34, gender: "male", seatPreference: "Window" }],
           contact: { phone: "9876543210", email: "aarav@example.com" },
@@ -297,7 +297,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       };
 
       expect(() =>
-        issueSovereignETicket({
+        issueCarrierETicket({
           quote: mockTrainQuote,
           passengers: [{ id: "p2", fullName: "Priya Nair", age: 28, gender: "female", seatPreference: "Lower" }],
           contact: { phone: "9876543210", email: "priya@example.com" },
@@ -317,7 +317,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
 
       const quote = searchBusQuotes()[0];
       expect(() =>
-        issueSovereignETicket({
+        issueCarrierETicket({
           quote,
           passengers: [{ id: "p3", fullName: "Devendra Patel", age: 45, gender: "male", seatPreference: "Window" }],
           contact: { phone: "9876543210", email: "devendra@example.com" },
@@ -370,7 +370,7 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
     it("guarantees unauthenticated users cannot mint simulated travel bookings without verified auth token", () => {
       const quote = searchFlightQuotes()[0];
       expect(() =>
-        issueSovereignETicket({
+        issueCarrierETicket({
           quote,
           passengers: [{ id: "p-anon", fullName: "Guest User", age: 30, gender: "male", seatPreference: "Aisle" }],
           contact: { phone: "9876543210", email: "guest@example.com" },
@@ -427,10 +427,10 @@ describe("In-App Travel Booking Service - Zero-Redirect Native Architecture", ()
       });
 
       const flightQuote = searchFlightQuotes()[0];
-      const pnr = generateSovereignPnr("flight");
+      const pnr = generateCarrierPnr("flight");
       expect(pnr).toMatch(/^OK-FL-[A-Z0-9]+$/);
 
-      const ticket = issueSovereignETicket({
+      const ticket = issueCarrierETicket({
         quote: flightQuote,
         passengers: [{ id: "p1", fullName: "Aditya Verma", age: 34, gender: "male", seatPreference: "Window" }],
         contact: { phone: "9876543210", email: "aditya@orderking.com" },

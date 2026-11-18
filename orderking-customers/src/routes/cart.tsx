@@ -10,7 +10,6 @@ import {
   Sparkles,
   Tag,
   ShieldCheck,
-  Crown,
   ChevronRight,
   Clock,
   ArrowLeft,

@@ -545,7 +545,7 @@ export interface RenderedVideoItem {
   mp4Url: string;
   thumbnailUrl: string;
   scriptSnippet: string;
-  bountyOfferInr: number;
+  referralOfferInr: number;
   status: "rendering" | "completed" | "failed";
   createdAt: string;
   blastCount: number;
@@ -575,8 +575,8 @@ export interface AiVideoMediaConnector {
   enableSubtitles: boolean;
 
   // Viral 'Liberation Bounty' Campaign
-  bountyCampaignTitle: string;
-  bountyCashRewardInr: number;
+  referralCampaignTitle: string;
+  referralCashRewardInr: number;
   bountyPromoCode: string;
   bountyCtaUrl: string;
   scriptTemplate: string;
@@ -1152,8 +1152,8 @@ Secure their permission to dispatch the WhatsApp onboarding pack, or schedule a 
     backgroundType: "cyber_dark",
     backgroundColor: "#0D3B2E",
     enableSubtitles: true,
-    bountyCampaignTitle: "OrderKing Welcome Discount Campaign",
-    bountyCashRewardInr: 150,
+    referralCampaignTitle: "OrderKing Welcome Discount Campaign",
+    referralCashRewardInr: 150,
     bountyPromoCode: "WELCOME150",
     bountyCtaUrl: "https://orderkingpay.com/offers",
     scriptTemplate: "Order fresh food directly from verified local restaurants with live delivery tracking on OrderKing. Transparent pricing, no hidden markups, and fast doorstep delivery. Download OrderKing or order online today.",

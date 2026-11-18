@@ -19,7 +19,7 @@ export interface CompetitorTariffBreakdown {
   competitorAveragePaise: number;
 }
 
-export interface OrderKingSovereignTariff {
+export interface OrderKingOfficialTariff {
   tboNetRatePaise: number;       // TBO B2B wholesale net price
   publishedAirlineMrpPaise: number; // Airline published retail price
   convenienceFeePaise: number;   // Guaranteed 0 paise
@@ -48,7 +48,7 @@ export interface CorridorTariff {
   typicalDuration: string;
   activeCarriers: string[]; // ["6E", "AI", "QP", "SG"]
   competitors: CompetitorTariffBreakdown;
-  sovereign: OrderKingSovereignTariff;
+  sovereign: OrderKingOfficialTariff;
   cacheMeta: {
     source: "CLOUDFLARE_EDGE_KV" | "EDGE_MEMORY_FALLBACK";
     cachedAt: string; // ISO timestamp

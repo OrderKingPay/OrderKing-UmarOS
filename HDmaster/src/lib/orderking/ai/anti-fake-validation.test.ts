@@ -279,7 +279,7 @@ test("UmarOS Premium - Founder Console Security Commands & Telemetry Integration
   // 1. /shield command
   const shieldCmdRes = await runFounderConsoleCommandCore({ command: "/shield" });
   assert.equal(shieldCmdRes.status, "SUCCESS");
-  assert.equal(shieldCmdRes.toolExecuted, "audit_military_anti_fraud_shield");
+  assert.equal(shieldCmdRes.toolExecuted, "audit_fraud_prevention_shield");
   assert.ok(shieldCmdRes.data.totalExploitsBlocked >= 0);
   assert.ok(shieldCmdRes.response.includes("Fraud Shield Status:"));
 

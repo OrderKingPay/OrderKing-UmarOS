@@ -123,8 +123,10 @@ function createNeonSql(): Promise<Sql> {
     const pool = new Pool({
       connectionString: url,
       ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
-      connectionTimeoutMillis: 25000,
+      connectionTimeoutMillis: 15000,
       idleTimeoutMillis: 15000,
+      query_timeout: 20000,
+      keepAlive: true,
       max: 10,
     });
     pool.on('error', (err: any) => {
@@ -152,7 +154,7 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|query read timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient) {
               globalRef.__pgSqlPromise__ = undefined;
               sqlPromise = null;
@@ -163,9 +165,12 @@ function createNeonSql(): Promise<Sql> {
                   const Client = pgMod.default?.Client ?? pgMod.Client;
                   const fallbackClient = new Client({
                     connectionString: url.includes(":6543") ? url.replace(":6543", ":5432") : url,
-                    ssl: { rejectUnauthorized: false },
+                    ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
                     connectionTimeoutMillis: 10000,
+                    query_timeout: 20000,
+                    keepAlive: true,
                   });
+                  fallbackClient.on('error', () => {});
                   await fallbackClient.connect();
                   const freshRes = await fallbackClient.query(text, params);
                   await fallbackClient.end().catch(() => {});
@@ -183,8 +188,10 @@ function createNeonSql(): Promise<Sql> {
         let lastErr;
         for (let attempt = 0; attempt < 4; attempt++) {
           let client;
+          const onClientError = () => {};
           try {
             client = await pool.connect();
+            client.on('error', onClientError);
             await client.query("BEGIN ISOLATION LEVEL READ COMMITTED");
             const result = await fn(makeClientSql(client));
             await client.query("COMMIT");
@@ -192,12 +199,13 @@ function createNeonSql(): Promise<Sql> {
           } catch (error) {
             lastErr = error;
             if (client) {
+              client.off?.('error', onClientError);
               try { await client.query("ROLLBACK"); } catch (_) {}
               try { client.release(true); } catch (_) {}
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
+            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|query read timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
             if (isTransient) {
               globalRef.__pgSqlPromise__ = undefined;
               sqlPromise = null;
@@ -208,9 +216,12 @@ function createNeonSql(): Promise<Sql> {
                   const Client = pgMod.default?.Client ?? pgMod.Client;
                   const fallbackClient = new Client({
                     connectionString: url.includes(":6543") ? url.replace(":6543", ":5432") : url,
-                    ssl: { rejectUnauthorized: false },
+                    ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
                     connectionTimeoutMillis: 10000,
+                    query_timeout: 20000,
+                    keepAlive: true,
                   });
+                  fallbackClient.on('error', () => {});
                   await fallbackClient.connect();
                   await fallbackClient.query("BEGIN ISOLATION LEVEL READ COMMITTED");
                   const result = await fn(makeClientSql(fallbackClient));
@@ -223,7 +234,10 @@ function createNeonSql(): Promise<Sql> {
             }
             throw error;
           } finally {
-            if (client) client.release();
+            if (client) {
+              client.off?.('error', onClientError);
+              client.release();
+            }
           }
         }
         throw lastErr;

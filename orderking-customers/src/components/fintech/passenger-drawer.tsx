@@ -26,11 +26,11 @@ import {
   type BookingContact,
   type PaymentMethod,
   type RebateChoice,
-  type SovereignETicket,
+  type CarrierETicket,
   calculateFareBreakdown,
   validatePassengers,
   validateContact,
-  issueSovereignETicket,
+  issueCarrierETicket,
   checkSupplierGating,
   SUPPLIER_UNAVAILABLE_MESSAGE,
 } from "@/lib/travel/in-app-booking-service";
@@ -42,7 +42,7 @@ interface Props {
   passengerCount: number;
   walletBalancePaise?: number;
   onDeductWallet?: (amountPaise: number, description: string) => boolean;
-  onBookingSuccess: (ticket: SovereignETicket) => void;
+  onBookingSuccess: (ticket: CarrierETicket) => void;
   selectedSeats?: string[];
   travelDate?: string;
 }
@@ -181,7 +181,7 @@ export function PassengerDrawer({
       }
 
       // Generate ticket strictly from confirmed supplier & payment token
-      const ticket = issueSovereignETicket({
+      const ticket = issueCarrierETicket({
         quote,
         passengers,
         contact,

@@ -3,42 +3,36 @@ import { AppShell } from "@/components/rider/app-shell";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { errorMessage, newIdempotencyKey } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { formatPaise } from "@/lib/rider/money";
+import { DEFAULT_CONFIG } from "@/lib/rider/config";
 import {
   createTicketFn,
   listTicketsFn,
-  riderAiSupportFn,
   getHomeFn,
-  getEarningsFn,
-  getSettlementsFn,
 } from "@/lib/server/rider-fns";
-import { askAssistantFn } from "@/lib/server/assistant";
 import type { TicketTopic } from "@/lib/rider/types";
-import { Banknote, BarChart3, HeartPulse, MapPin, PhoneOff, Siren, Store, type LucideIcon } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import {
+  Banknote,
+  BarChart3,
+  Bot,
+  HeartPulse,
+  MapPin,
+  Phone,
+  PhoneOff,
+  Siren,
+  Store,
+  type LucideIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/support")({
   beforeLoad: ({ context }) => {
     if (!context?.sessionUser) throw redirect({ to: "/login" });
   },
-  component: Page
+  component: Page,
 });
-
-const TOPICS: TicketTopic[] = [
-  "ORDER_ISSUE",
-  "RESTAURANT_ISSUE",
-  "CUSTOMER_UNAVAILABLE",
-  "CASH_DISPUTE",
-  "PAYMENT_ISSUE",
-  "APP_ISSUE",
-  "VEHICLE_PROBLEM",
-  "SAFETY_ISSUE",
-  "OTHER",
-];
 
 type WorkflowId =
   | "KITCHEN_WAIT_DELAY"
@@ -120,43 +114,23 @@ const GUIDED_WORKFLOWS: GuidedWorkflowSpec[] = [
 ];
 
 type HomeState = Awaited<ReturnType<typeof getHomeFn>>;
-type EarningsState = Awaited<ReturnType<typeof getEarningsFn>>;
-type SettlementsState = Awaited<ReturnType<typeof getSettlementsFn>>;
 
 function Page() {
-  const { t, locale } = useI18n();
-  const [topic, setTopic] = useState<TicketTopic>("ORDER_ISSUE");
-  const [message, setMessage] = useState("");
+  const { t } = useI18n();
   const [tickets, setTickets] = useState<Awaited<ReturnType<typeof listTicketsFn>>>([]);
   const [home, setHome] = useState<HomeState | null>(null);
-  const [earnings, setEarnings] = useState<EarningsState | null>(null);
-  const [settlements, setSettlements] = useState<SettlementsState>([]);
   const [error, setError] = useState<string | null>(null);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
 
-  // Guided Self-Resolution Workflow state
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<WorkflowId>("KITCHEN_WAIT_DELAY");
   const [workflowNote, setWorkflowNote] = useState(GUIDED_WORKFLOWS[0].presets[0]);
   const [workflowSubmitting, setWorkflowSubmitting] = useState(false);
 
-  // AI Support Co-Pilot state
-  const [aiResolution, setAiResolution] = useState<string>("");
-  const [aiMessage, setAiMessage] = useState("");
-  const [aiPending, setAiPending] = useState(false);
-
   async function load() {
     try {
-      const [tk, h, e, s] = await Promise.all([
-        listTicketsFn(),
-        getHomeFn(),
-        getEarningsFn({ data: { preset: "today" } }),
-        getSettlementsFn(),
-      ]);
+      const [tk, h] = await Promise.all([listTicketsFn(), getHomeFn()]);
       setTickets(tk);
       setHome(h);
-      setEarnings(e);
-      setSettlements(s);
     } catch (e) {
       setError(errorMessage(e, t("connectionLostBody")));
     }
@@ -172,7 +146,6 @@ function Page() {
   function selectWorkflow(wf: GuidedWorkflowSpec) {
     setSelectedWorkflowId(wf.id);
     setWorkflowNote(wf.presets[0] ?? "");
-    setTopic(wf.topic);
     setSuccessBanner(null);
     setError(null);
   }
@@ -204,67 +177,6 @@ function Page() {
     }
   }
 
-  async function submit(e: FormEvent) {
-    e.preventDefault();
-    setPending(true);
-    setError(null);
-    setSuccessBanner(null);
-    try {
-      const created = await createTicketFn({
-        data: {
-          topic,
-          message: message.trim(),
-          deliveryId: activeOrder?.id ?? null,
-          idempotencyKey: newIdempotencyKey(),
-        },
-      });
-      setMessage("");
-      setSuccessBanner(`Ticket #${created.id.slice(0, 8)} registered.`);
-      await load();
-    } catch (err) {
-      setError(errorMessage(err, t("actionNotConfirmed")));
-    } finally {
-      setPending(false);
-    }
-  }
-
-  async function askRiderAi() {
-    if (!aiMessage.trim()) return;
-    setAiPending(true);
-    setAiResolution("");
-    setError(null);
-    try {
-      const result = await riderAiSupportFn({
-        data: {
-          message: aiMessage,
-          locale,
-          deliveryId: activeOrder?.id ?? null,
-        },
-      });
-      setAiResolution(result.text);
-    } catch {
-      try {
-        const fallback = await askAssistantFn({
-          data: {
-            question: aiMessage,
-            busy: Boolean(activeOrder) || home?.rider.status === "BUSY",
-            locale,
-          },
-        });
-        setAiResolution(fallback.text);
-      } catch (innerErr) {
-        setError(
-          errorMessage(
-            innerErr,
-            "Support is temporarily unavailable. Please select your issue from the options above.",
-          ),
-        );
-      }
-    } finally {
-      setAiPending(false);
-    }
-  }
-
   function cleanTicketMessage(raw: string): string {
     if (raw.startsWith("[FLEET_AUTO_AUDIT") || raw.startsWith("[UMAR_AUTO_AUDIT")) {
       const closeIdx = raw.indexOf("]");
@@ -285,7 +197,13 @@ function Page() {
               Partner assistance, order issues &amp; payouts
             </p>
           </div>
-          <Badge tone="online">24x7 Help</Badge>
+          <Link
+            to="/assistant"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition"
+          >
+            <Bot className="size-3.5 text-primary" />
+            <span>Live Chat</span>
+          </Link>
         </div>
 
         {successBanner ? (
@@ -320,13 +238,16 @@ function Page() {
                   key={wf.id}
                   type="button"
                   onClick={() => selectWorkflow(wf)}
-                  className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition ${active
+                  className={`flex flex-col items-start gap-1 rounded-xl border p-2.5 text-left transition ${
+                    active
                       ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
                       : "border-border bg-card hover:bg-muted"
-                    }`}
+                  }`}
                 >
                   <WfIcon className="size-4 text-primary" />
-                  <span className="text-xs font-semibold leading-tight text-foreground">{wf.title}</span>
+                  <span className="text-xs font-semibold leading-tight text-foreground">
+                    {wf.title}
+                  </span>
                 </button>
               );
             })}
@@ -340,10 +261,11 @@ function Page() {
                   key={idx}
                   type="button"
                   onClick={() => setWorkflowNote(preset)}
-                  className={`rounded-lg border px-2.5 py-1 text-xs text-left transition ${workflowNote === preset
+                  className={`rounded-lg border px-2.5 py-1 text-xs text-left transition ${
+                    workflowNote === preset
                       ? "border-primary bg-primary/10 font-medium text-primary"
                       : "border-border bg-muted/40 text-muted-foreground hover:bg-muted"
-                    }`}
+                  }`}
                 >
                   {preset}
                 </button>
@@ -367,11 +289,21 @@ function Page() {
           </Button>
         </Card>
 
-        {/* 2. Emergency Helplines */}
+        {/* 2. Partner & Emergency Contacts */}
         <Card className="p-3.5 space-y-2 border-border bg-card">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Emergency Contacts
+            Helpline &amp; Emergency Contacts
           </h2>
+          <a
+            href={`tel:${DEFAULT_CONFIG.supportPhone}`}
+            className="flex items-center justify-between rounded-lg border border-border bg-muted/40 p-2.5 text-xs font-bold text-foreground hover:bg-muted transition"
+          >
+            <span className="flex items-center gap-2">
+              <Phone className="size-4 text-primary shrink-0" />
+              <span>OrderKing Partner Desk</span>
+            </span>
+            <span className="font-mono text-primary">{DEFAULT_CONFIG.supportPhone}</span>
+          </a>
           <div className="grid grid-cols-2 gap-2">
             <a
               href="tel:112"

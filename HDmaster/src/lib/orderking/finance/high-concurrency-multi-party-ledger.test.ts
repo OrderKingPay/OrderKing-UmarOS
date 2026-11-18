@@ -6,7 +6,7 @@ import {
   type LedgerEntry,
   type DynamicTravelCheckoutSplitParams,
   type DynamicTravelCheckoutSplitResult,
-  SOVEREIGN_NPCI_UPI_VPA,
+  OFFICIAL_NPCI_UPI_VPA,
   SECONDARY_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
 import {
@@ -83,7 +83,7 @@ describe("HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", () =>
             account: "BANK_CLEARING",
             direction: "DEBIT",
             amountPaise: totalCustomerDebitPaise,
-            entityId: `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`,
+            entityId: `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`,
             memo: "Direct NPCI UPI collection via Sovereign VPA",
           },
           {
@@ -462,7 +462,7 @@ describe("HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", () =>
               account: "BANK_CLEARING",
               direction: "DEBIT",
               amountPaise: amount,
-              entityId: `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`,
+              entityId: `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`,
               memo: `Customer payment for concurrent order #${i}`,
             },
             {
@@ -704,7 +704,7 @@ describe("HIGH-CONCURRENCY DOUBLE-ENTRY LEDGER & MULTI-PARTY SPLIT AUDIT", () =>
       assert.ok(debit);
       assert.strictEqual(debit.account, "BANK_CLEARING");
       assert.strictEqual(debit.amountPaise, 459_900);
-      assert.strictEqual(debit.entityId, `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`);
+      assert.strictEqual(debit.entityId, `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`);
 
       const credits = tx.entries.filter((e) => e.direction === "CREDIT");
       assert.strictEqual(credits.length, 3);

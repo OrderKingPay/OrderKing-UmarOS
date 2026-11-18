@@ -1797,7 +1797,7 @@ export async function executeTool(
         zoneMetrics: zones,
         nearestRiderMatrix: {
           strategy: "Strict Euclidean Proximity + Sequential Cascading",
-          bountyEscalation: "₹10 (1000 paise) on 1st decline -> ₹20 on 2nd -> ₹30 on 3rd",
+          escalationSchedule: "₹10 (1000 paise) on 1st decline -> ₹20 on 2nd -> ₹30 on 3rd",
           dispatchRadiusKm: 8.0,
           offerTimeoutSeconds: 30,
         },

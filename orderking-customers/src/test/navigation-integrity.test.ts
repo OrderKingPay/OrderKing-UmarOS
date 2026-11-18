@@ -444,35 +444,16 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
         "Food delivery is not available in your location, kindly update your location."
       );
 
-      // 4. Exact 6 authentic KingPay-aligned 3D services present
-      expect(homeFeedSource).toContain('to="/kingpay"');
-      expect(homeFeedSource).toContain("KingPay Wallet");
-      expect(homeFeedSource).toContain("Direct UPI &amp; Bills");
-
-      expect(homeFeedSource).toContain('search={{ tab: "flights" }}');
-      expect(homeFeedSource).toContain("Flights");
-      expect(homeFeedSource).toContain("Domestic &amp; International");
-
-      expect(homeFeedSource).toContain('search={{ tab: "hotels" }}');
-      expect(homeFeedSource).toContain("Hotels &amp; Stays");
-      expect(homeFeedSource).toContain("Worldwide Stays");
-
-      expect(homeFeedSource).toContain('search={{ tab: "trains" }}');
-      expect(homeFeedSource).toContain("Trains &amp; PNR");
-      expect(homeFeedSource).toContain("IRCTC Booking &amp; Status");
-
-      expect(homeFeedSource).toContain('to="/tutor"');
-      expect(homeFeedSource).toContain("King AI Tutor");
-      expect(homeFeedSource).toContain("Academic Tutor · CBSE &amp; State");
-
-      expect(homeFeedSource).toContain('to="/tutor-jobs"');
-      expect(homeFeedSource).toContain("King Jobs");
-      expect(homeFeedSource).toContain("Hyperlocal Gigs &amp; Apply");
-
-      // Verify courier & pilgrimage are NOT in frontline fallback (as per user mandate)
+      // 4. Pure Zomato Food Delivery fallback: Cuisines & Operational Hubs (zero travel/tutor clutter)
+      expect(homeFeedSource).toContain("Explore Popular Cuisines");
+      expect(homeFeedSource).toContain("Popular Locations");
+      expect(homeFeedSource).not.toContain('search={{ tab: "flights" }}');
+      expect(homeFeedSource).not.toContain('search={{ tab: "hotels" }}');
+      expect(homeFeedSource).not.toContain('search={{ tab: "trains" }}');
+      expect(homeFeedSource).not.toContain('to="/tutor"');
+      expect(homeFeedSource).not.toContain('to="/tutor-jobs"');
       expect(homeFeedSource).not.toContain('to="/parcel"');
       expect(homeFeedSource).not.toContain('search={{ tab: "pilgrimage" }}');
-      expect(homeFeedSource).not.toContain("AI STEM Tutor");
 
       // 5. Zero slogans or buzzwords
       const bannedWords = ["sovereign", "patron privilege", "vip concierge", "zero bleed", "disaster proof", "monarch"];

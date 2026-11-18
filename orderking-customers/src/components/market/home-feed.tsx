@@ -13,12 +13,6 @@ import {
   MapPin,
   Utensils,
   ChevronRight,
-  Plane,
-  Train,
-  CreditCard,
-  GraduationCap,
-  Building2,
-  Briefcase,
   Eye,
   SlidersHorizontal,
   ChevronDown,
@@ -754,158 +748,29 @@ export function HomeFeed({
                   </Button>
                 </div>
 
-                {/* Active KingPay Connected Services */}
+                {/* Popular Food Cuisines */}
                 <div className="space-y-3 pt-2">
                   <div className="text-center">
                     <h4 className="text-sm sm:text-base font-black text-gray-950 tracking-tight">
-                      Available Services
+                      Explore Popular Cuisines
                     </h4>
                     <p className="text-xs text-gray-500 max-w-md mx-auto mt-0.5">
-                      Book travel, pay bills, or explore courses and jobs.
+                      Top dishes and cuisines served by our kitchen partners
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-                    {/* 1. KingPay Wallet */}
-                    <Link
-                      to="/kingpay"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(232,93,4,0.18)] hover:border-orange-500 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs group-hover:scale-105 transition-transform">
-                          <CreditCard className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-orange-900 bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-full">
-                          UPI
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-[#E85D04] block leading-snug transition-colors">
-                          KingPay Wallet
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Direct UPI &amp; Bills
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 2. Flights */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "flights" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(14,165,233,0.18)] hover:border-sky-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-sky-600 text-white shadow-[0_2px_8px_rgba(14,165,233,0.3)] group-hover:scale-105 transition-transform">
-                          <Plane className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-sky-800 bg-sky-50 border border-sky-200/80 px-2 py-0.5 rounded-full">
-                          Travel
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-sky-600 block leading-snug transition-colors">
-                          Flights
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Domestic &amp; International
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 3. Hotels & Stays */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "hotels" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(245,158,11,0.18)] hover:border-amber-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white shadow-[0_2px_8px_rgba(245,158,11,0.3)] group-hover:scale-105 transition-transform">
-                          <Building2 className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200/80 px-2 py-0.5 rounded-full">
-                          Stays
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-amber-600 block leading-snug transition-colors">
-                          Hotels &amp; Stays
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Worldwide Stays
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 4. Trains & PNR */}
-                    <Link
-                      to="/travel"
-                      search={{ tab: "trains" }}
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.18)] hover:border-indigo-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white shadow-[0_2px_8px_rgba(99,102,241,0.3)] group-hover:scale-105 transition-transform">
-                          <Train className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-full">
-                          IRCTC
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-indigo-600 block leading-snug transition-colors">
-                          Trains &amp; PNR
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          IRCTC Booking &amp; Status
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 5. King AI Tutor */}
-                    <Link
-                      to="/tutor"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(20,184,166,0.18)] hover:border-teal-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-[0_2px_8px_rgba(20,184,166,0.3)] group-hover:scale-105 transition-transform">
-                          <GraduationCap className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-teal-800 bg-teal-50 border border-teal-200/80 px-2 py-0.5 rounded-full">
-                          Tutor
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-teal-600 block leading-snug transition-colors">
-                          King AI Tutor
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Academic Tutor · CBSE &amp; State
-                        </span>
-                      </div>
-                    </Link>
-
-                    {/* 6. King Jobs */}
-                    <Link
-                      to="/tutor-jobs"
-                      className="group flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-white border border-stone-200/90 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(168,85,247,0.18)] hover:border-purple-400 hover:-translate-y-0.5 transition-all duration-200 active:scale-[0.98] no-underline min-h-[116px]"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-violet-700 text-white shadow-[0_2px_8px_rgba(168,85,247,0.3)] group-hover:scale-105 transition-transform">
-                          <Briefcase className="size-4.5" />
-                        </span>
-                        <span className="text-[10px] font-bold text-purple-800 bg-purple-50 border border-purple-200/80 px-2 py-0.5 rounded-full">
-                          Jobs
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-xs sm:text-sm font-black text-gray-950 group-hover:text-purple-600 block leading-snug transition-colors">
-                          King Jobs
-                        </span>
-                        <span className="text-[10px] text-gray-500 block mt-0.5">
-                          Hyperlocal Gigs &amp; Apply
-                        </span>
-                      </div>
-                    </Link>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {CURATED_FOOD_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat.slug}
+                        type="button"
+                        onClick={() => setSelectedCategory(cat.slug)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-stone-200 bg-white hover:border-[#E85D04] hover:bg-orange-50/60 text-xs font-bold text-gray-800 transition active:scale-95 cursor-pointer shadow-2xs"
+                      >
+                        <Utensils className="size-3 text-[#E85D04]" />
+                        <span>{cat.name}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 

@@ -23,10 +23,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { formatPaise } from "@/lib/money";
-import type { SovereignETicket } from "@/lib/travel/in-app-booking-service";
+import type { CarrierETicket } from "@/lib/travel/in-app-booking-service";
 
 interface Props {
-  ticket: SovereignETicket;
+  ticket: CarrierETicket;
   onClose: () => void;
 }
 

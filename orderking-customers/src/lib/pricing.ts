@@ -40,7 +40,7 @@ export type PromoInput = {
 export const STANDARD_DELIVERY_COMMISSION_BPS = 2800; // 28.00% Standard marketplace delivery take-rate
 export const MIN_DELIVERY_COMMISSION_BPS = 1800; // 18.00% Negotiated high-volume enterprise take-rate
 export const MAX_DELIVERY_COMMISSION_BPS = 2800; // 28.00% Maximum delivery take-rate cap
-export const DINE_IN_TABLE_QR_COMMISSION_BPS = 0; // 0.00% Sovereign dine-in commission on Table QR orders
+export const DINE_IN_TABLE_QR_COMMISSION_BPS = 0; // 0.00% direct dine-in commission on Table QR orders
 
 export const PAYMENT_GATEWAY_CONFIG = {
   FEE_BPS: 184, // 184 bps = 1.84% Payment Gateway base processing fee

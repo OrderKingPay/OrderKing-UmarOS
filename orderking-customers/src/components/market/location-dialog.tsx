@@ -327,7 +327,7 @@ export function LocationDialog({
           <div className="flex items-start justify-between gap-3 pb-3 border-b border-orange-950/10">
             <div className="flex items-center gap-2.5">
               <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 text-slate-950 shadow-[0_4px_14px_rgba(245,158,11,0.35)] border border-orange-200">
-                <Crown className="size-5 fill-slate-950" />
+                <MapPin className="size-5 text-slate-950" />
               </div>
               <div>
                 <Dialog.Title className="text-xl font-black tracking-tight text-gray-950">

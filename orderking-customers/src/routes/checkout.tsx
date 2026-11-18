@@ -11,7 +11,6 @@ import {
   Bike,
   Lock,
   Sparkles,
-  Crown,
   CreditCard,
   Wallet,
   Banknote,

@@ -2051,7 +2051,7 @@ export type CommercialBypassDialsState = {
   garageRoadsideAssistanceActive: boolean;
 
   // Dial 9: WhatsApp referral reward credit dials
-  customerReferralBountyInr: number; // default: 50 (10-500)
+  customerReferralRewardInr: number; // default: 50 (10-500)
   refereeFirstOrderDiscountInr: number; // default: 100 (20-500)
   milestoneFiveFriendsBonusInr: number; // default: 500 (100-2000)
   viralOneTapShareCampaignActive: boolean;
@@ -2109,7 +2109,7 @@ export const DEFAULT_BYPASS_DIALS: CommercialBypassDialsState = {
   mandatoryGigInsuranceCompliance: true,
   garageRoadsideAssistanceActive: true,
 
-  customerReferralBountyInr: 50,
+  customerReferralRewardInr: 50,
   refereeFirstOrderDiscountInr: 100,
   milestoneFiveFriendsBonusInr: 500,
   viralOneTapShareCampaignActive: true,
@@ -2186,7 +2186,7 @@ export async function getCommercialBypassDials(ctx: AccessContext): Promise<Comm
         garageRoadsideAssistanceActive: v.garageRoadsideAssistanceActive !== false,
 
         // Dial 9
-        customerReferralBountyInr: Math.max(10, Math.min(500, Math.round(Number(v.customerReferralBountyInr) || 50))),
+        customerReferralRewardInr: Math.max(10, Math.min(500, Math.round(Number(v.customerReferralRewardInr) || 50))),
         refereeFirstOrderDiscountInr: Math.max(20, Math.min(500, Math.round(Number(v.refereeFirstOrderDiscountInr) || 100))),
         milestoneFiveFriendsBonusInr: Math.max(100, Math.min(2000, Math.round(Number(v.milestoneFiveFriendsBonusInr) || 500))),
         viralOneTapShareCampaignActive: v.viralOneTapShareCampaignActive !== false,
@@ -2262,7 +2262,7 @@ export async function updateCommercialBypassDials(
     mandatoryGigInsuranceCompliance: patch.mandatoryGigInsuranceCompliance !== undefined ? Boolean(patch.mandatoryGigInsuranceCompliance) : current.mandatoryGigInsuranceCompliance,
     garageRoadsideAssistanceActive: patch.garageRoadsideAssistanceActive !== undefined ? Boolean(patch.garageRoadsideAssistanceActive) : current.garageRoadsideAssistanceActive,
 
-    customerReferralBountyInr: patch.customerReferralBountyInr !== undefined ? Math.max(10, Math.min(500, Math.round(Number(patch.customerReferralBountyInr)))) : current.customerReferralBountyInr,
+    customerReferralRewardInr: patch.customerReferralRewardInr !== undefined ? Math.max(10, Math.min(500, Math.round(Number(patch.customerReferralRewardInr)))) : current.customerReferralRewardInr,
     refereeFirstOrderDiscountInr: patch.refereeFirstOrderDiscountInr !== undefined ? Math.max(20, Math.min(500, Math.round(Number(patch.refereeFirstOrderDiscountInr)))) : current.refereeFirstOrderDiscountInr,
     milestoneFiveFriendsBonusInr: patch.milestoneFiveFriendsBonusInr !== undefined ? Math.max(100, Math.min(2000, Math.round(Number(patch.milestoneFiveFriendsBonusInr)))) : current.milestoneFiveFriendsBonusInr,
     viralOneTapShareCampaignActive: patch.viralOneTapShareCampaignActive !== undefined ? Boolean(patch.viralOneTapShareCampaignActive) : current.viralOneTapShareCampaignActive,

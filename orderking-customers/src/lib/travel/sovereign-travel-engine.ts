@@ -3,7 +3,7 @@ import { PAISE_PER_RUPEE } from "@/lib/money";
 export type TravelMode = "flight" | "train" | "hotel" | "bus";
 export type RebateDestination = "24k_gold" | "food_wallet";
 
-export const SOVEREIGN_TRAVEL_DISCLAIMER =
+export const OFFICIAL_TRAVEL_DISCLAIMER =
   "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
 
 export type VIPTravelCategory =

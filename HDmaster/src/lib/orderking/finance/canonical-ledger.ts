@@ -3,7 +3,7 @@ import { getSql, type Sql } from '../../db.ts';
 import * as crypto from 'crypto';
 import { assertSafePaise } from '../revenue/tax-calculator.ts';
 
-export const SOVEREIGN_NPCI_UPI_VPA = "orderking@ybl";
+export const OFFICIAL_NPCI_UPI_VPA = "orderking@ybl";
 export const SECONDARY_NPCI_UPI_VPA = "9395065587@ybl";
 export const LATE_NIGHT_START_HOUR_IST = 23; // 11:00 PM IST
 export const LATE_NIGHT_END_HOUR_IST = 4;   // 04:00 AM IST
@@ -447,7 +447,7 @@ export class CanonicalLedger {
     };
   }
 
-  public static readonly SOVEREIGN_NPCI_UPI_VPA = SOVEREIGN_NPCI_UPI_VPA;
+  public static readonly OFFICIAL_NPCI_UPI_VPA = OFFICIAL_NPCI_UPI_VPA;
   public static readonly SECONDARY_NPCI_UPI_VPA = SECONDARY_NPCI_UPI_VPA;
 
   public static evaluatePaymentMethodSafety(params: {
@@ -471,7 +471,7 @@ export class CanonicalLedger {
           allowed: false,
           isLateNight: true,
           isThreatZone,
-          reason: `LATE_NIGHT_COD_LOCKOUT: Cash on Delivery is strictly locked out between 23:00 and 04:00 IST for rider safety. Only verified NPCI UPI (${SOVEREIGN_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
+          reason: `LATE_NIGHT_COD_LOCKOUT: Cash on Delivery is strictly locked out between 23:00 and 04:00 IST for rider safety. Only verified NPCI UPI (${OFFICIAL_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
         };
       }
       if (isThreatZone) {
@@ -479,7 +479,7 @@ export class CanonicalLedger {
           allowed: false,
           isLateNight,
           isThreatZone: true,
-          reason: `THREAT_ZONE_COD_LOCKOUT: Cash on Delivery is locked out in high-risk zones for rider physical safety. Only verified NPCI UPI (${SOVEREIGN_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
+          reason: `THREAT_ZONE_COD_LOCKOUT: Cash on Delivery is locked out in high-risk zones for rider physical safety. Only verified NPCI UPI (${OFFICIAL_NPCI_UPI_VPA}) and online prepaid flows are permitted.`,
         };
       }
     }
@@ -559,7 +559,7 @@ export class CanonicalLedger {
       debitMemo = `Rider doorstep cash collection for COD order #${params.orderId}`;
     } else if (method === "DIRECT_UPI" || method === "NPCI_UPI") {
       debitAccount = "BANK_CLEARING";
-      const vpa = params.npciUpiVpa || SOVEREIGN_NPCI_UPI_VPA;
+      const vpa = params.npciUpiVpa || OFFICIAL_NPCI_UPI_VPA;
       debitEntityId = `NPCI_UPI:${vpa}`;
       debitMemo = `Direct NPCI UPI collection via ${vpa} for order #${params.orderId}`;
     } else if (method === "KING_PAY") {
@@ -599,7 +599,7 @@ export class CanonicalLedger {
     return this.captureOrderPayment({
       ...params,
       paymentMethod: "NPCI_UPI",
-      npciUpiVpa: params.vpa || SOVEREIGN_NPCI_UPI_VPA,
+      npciUpiVpa: params.vpa || OFFICIAL_NPCI_UPI_VPA,
     });
   }
 
@@ -649,7 +649,7 @@ export class CanonicalLedger {
 
     const method = (params.paymentMethod || "NPCI_UPI").toUpperCase();
     let debitAccount: LedgerAccountType = "BANK_CLEARING";
-    let debitEntityId = `NPCI_UPI:${params.npciUpiVpa || SOVEREIGN_NPCI_UPI_VPA}`;
+    let debitEntityId = `NPCI_UPI:${params.npciUpiVpa || OFFICIAL_NPCI_UPI_VPA}`;
     let debitMemo = `Customer 1-Tap UPI payment for order #${params.orderId} (incl. concierge add-ons)`;
 
     if (method === "KING_PAY") {
@@ -1164,7 +1164,7 @@ export class CanonicalLedger {
     const debitAccount: LedgerAccountType = params.paymentMethod === "KING_PAY" ? "CUSTOMER_WALLET" : "BANK_CLEARING";
     const debitEntityId = params.paymentMethod === "KING_PAY" 
       ? (params.userId || "KINGPAY_USER") 
-      : `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`;
+      : `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`;
 
     const entries: LedgerEntry[] = [
       {
@@ -1299,7 +1299,7 @@ export class CanonicalLedger {
     const debitAccount: LedgerAccountType = params.paymentMethod === "KING_PAY" ? "CUSTOMER_WALLET" : "BANK_CLEARING";
     const debitEntityId = params.paymentMethod === "KING_PAY"
       ? (params.userId || "KINGPAY_USER")
-      : `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`;
+      : `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`;
 
     const founderAccount: LedgerAccountType = params.founderAccount || "PLATFORM_FEE_REVENUE";
     const founderEntityId = params.founderEntityId || "FOUNDER_VAULT";

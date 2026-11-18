@@ -15,7 +15,7 @@ import {
 } from "./merchant-contracts.ts";
 import {
   canonicalLedger,
-  SOVEREIGN_NPCI_UPI_VPA,
+  OFFICIAL_NPCI_UPI_VPA,
   SECONDARY_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
 
@@ -195,7 +195,7 @@ describe("SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", () => 
         restaurantId: "rest_taj_01",
         riderId: "rider_fast_01",
         idempotencyKey: "test-idem-sovereign-upi-" + Date.now(),
-        vpa: SOVEREIGN_NPCI_UPI_VPA,
+        vpa: OFFICIAL_NPCI_UPI_VPA,
       });
 
       assert.ok(sovereignTx.transactionId);
@@ -205,7 +205,7 @@ describe("SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", () => 
       // ZERO intermediary float or custodial wallet account
       const sovereignDebit = sovereignTx.entries.find((e) => e.direction === "DEBIT");
       assert.strictEqual(sovereignDebit?.account, "BANK_CLEARING");
-      assert.strictEqual(sovereignDebit?.entityId, `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`);
+      assert.strictEqual(sovereignDebit?.entityId, `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`);
       assert.strictEqual(sovereignDebit?.amountPaise, totalOrderPaise);
 
       // CREDITS must balance to exact components without leakage
@@ -234,7 +234,7 @@ describe("SPECIALIST MISSION CERTIFICATION: FINTECH & SETTLEMENTS AUDIT", () => 
 
     test("BharatQR dynamic payload links direct sovereign VPA with verified CRC-16 checksum", () => {
       // Direct EMVCo BharatQR TLV builder logic
-      const vpa = SOVEREIGN_NPCI_UPI_VPA;
+      const vpa = OFFICIAL_NPCI_UPI_VPA;
       const payeeName = "OrderKingPay";
       const amount = "650.00";
       const txnRef = "OKUPI998877";

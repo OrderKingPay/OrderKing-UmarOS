@@ -5,7 +5,7 @@ import { CarrierETicketModal } from "@/components/fintech/sovereign-eticket-moda
 import { TravelQuotationModal } from "@/components/fintech/travel-quotation-modal";
 import { CabBookingEngine } from "@/components/fintech/cab-booking-engine";
 import {
-  type SovereignETicket,
+  type CarrierETicket,
   getStoredETickets,
 } from "@/lib/travel/in-app-booking-service";
 import {
@@ -220,7 +220,7 @@ export interface SavedTripReference {
   routeOrLocation: string;
   notes: string;
   createdAt: string;
-  sovereignETicket?: SovereignETicket;
+  sovereignETicket?: CarrierETicket;
 }
 
 const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
@@ -363,7 +363,7 @@ export function TravelPage() {
   const [tripRoute, setTripRoute] = useState("");
   const [tripNotes, setTripNotes] = useState("");
   const [tripFilter, setTripFilter] = useState<"ALL" | SavedTripReference["bookingType"]>("ALL");
-  const [activeTicketModal, setActiveTicketModal] = useState<SovereignETicket | null>(null);
+  const [activeTicketModal, setActiveTicketModal] = useState<CarrierETicket | null>(null);
   const [quotationModal, setQuotationModal] = useState<{ isOpen: boolean; category?: "UMRAH" | "TRAIN" | "FLIGHT" | "PILGRIMAGE" | "HOLIDAY"; destination?: string; origin?: string } | null>(null);
 
   useEffect(() => {

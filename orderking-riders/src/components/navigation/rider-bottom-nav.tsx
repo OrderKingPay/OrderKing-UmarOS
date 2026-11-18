@@ -6,22 +6,26 @@ import {
   UserCheck,
   Wallet,
 } from "lucide-react";
-import { useI18n } from "@/lib/rider/i18n-context";
 import { cn } from "@/lib/utils";
 
 interface RiderBottomNavProps {
   isDutyOnline?: boolean;
 }
 
-export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavProps) {
-  const { t } = useI18n();
+export function RiderFloatingBottomNav({ isDutyOnline = false }: RiderBottomNavProps) {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
-  const isDutyActive = path === "/" || path === "/duty";
+  const isDutyActive = path === "/" || path === "/duty" || path === "/dashboard";
   const isTripsActive = path === "/trips" || path === "/history" || path.startsWith("/delivery");
   const isPocketActive = path === "/cash" || path === "/wallet";
   const isEarningsActive = path === "/earnings" || path === "/settlements" || path === "/payouts";
-  const isProfileActive = path === "/profile" || path === "/onboarding" || path === "/benefits";
+  const isProfileActive =
+    path === "/profile" ||
+    path === "/onboarding" ||
+    path === "/kyc" ||
+    path === "/benefits" ||
+    path === "/safety" ||
+    path === "/academy";
 
   return (
     <nav
@@ -29,18 +33,16 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
       aria-label="Delivery Partner Navigation"
       className="fixed inset-x-0 bottom-2.5 sm:bottom-4 z-40 pointer-events-none mx-auto max-w-md px-2.5 sm:px-4"
     >
-      <div className="pointer-events-auto relative rounded-[28px] bg-white/95 backdrop-blur-2xl border border-gray-200 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.12),inset_0_1px_1px_0_rgba(255,255,255,0.8)] px-1.5 pt-1.5 pb-2 transition-all">
-        {/* Subtle Ambient Emerald Beam if Online */}
+      <div className="pointer-events-auto relative rounded-[28px] bg-card/95 backdrop-blur-2xl border border-border shadow-lg px-1.5 pt-1.5 pb-2 transition-all">
         <div
           className={cn(
             "absolute top-0 inset-x-8 h-[1.5px] transition-colors pointer-events-none",
             isDutyOnline
-              ? "bg-gradient-to-r from-transparent via-emerald-400/70 to-transparent"
-              : "bg-gradient-to-r from-transparent via-slate-400/30 to-transparent",
+              ? "bg-gradient-to-r from-transparent via-emerald-500/70 to-transparent"
+              : "bg-gradient-to-r from-transparent via-border to-transparent",
           )}
         />
 
-        {/* 5 DEDICATED BENCHMARK FLEET TABS */}
         <ul className="grid grid-cols-5 items-center justify-items-center relative">
           {/* 1. DUTY */}
           <li className="w-full flex justify-center">
@@ -49,16 +51,16 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isDutyActive
-                  ? "text-emerald-600 font-extrabold"
-                  : "text-gray-500 font-semibold",
+                  ? "text-emerald-600 dark:text-emerald-400 font-extrabold"
+                  : "text-muted-foreground hover:text-foreground font-semibold",
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isDutyActive
-                    ? "bg-emerald-50 ring-1 ring-emerald-500/20 text-emerald-600 scale-105"
-                    : "group-hover:bg-gray-100",
+                    ? "bg-emerald-500/10 ring-1 ring-emerald-500/25 text-emerald-600 dark:text-emerald-400 scale-105"
+                    : "group-hover:bg-muted",
                 )}
               >
                 <House className="size-5" />
@@ -86,15 +88,15 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isTripsActive
                   ? "text-[#E23744] font-extrabold"
-                  : "text-gray-500 font-semibold",
+                  : "text-muted-foreground hover:text-foreground font-semibold",
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isTripsActive
-                    ? "bg-red-50 ring-1 ring-red-500/20 text-[#E23744] scale-105"
-                    : "group-hover:bg-gray-100",
+                    ? "bg-[#E23744]/10 ring-1 ring-[#E23744]/25 text-[#E23744] scale-105"
+                    : "group-hover:bg-muted",
                 )}
               >
                 <ReceiptText className="size-5" />
@@ -115,16 +117,16 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isPocketActive
-                  ? "text-blue-600 font-extrabold"
-                  : "text-gray-500 font-semibold",
+                  ? "text-blue-600 dark:text-blue-400 font-extrabold"
+                  : "text-muted-foreground hover:text-foreground font-semibold",
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isPocketActive
-                    ? "bg-blue-50 ring-1 ring-blue-500/20 text-blue-600 scale-105"
-                    : "group-hover:bg-gray-100",
+                    ? "bg-blue-500/10 ring-1 ring-blue-500/25 text-blue-600 dark:text-blue-400 scale-105"
+                    : "group-hover:bg-muted",
                 )}
               >
                 <Wallet className="size-5" />
@@ -145,16 +147,16 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
               className={cn(
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isEarningsActive
-                  ? "text-orange-600 font-extrabold"
-                  : "text-gray-500 font-semibold",
+                  ? "text-orange-600 dark:text-orange-400 font-extrabold"
+                  : "text-muted-foreground hover:text-foreground font-semibold",
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isEarningsActive
-                    ? "bg-orange-50 ring-1 ring-orange-500/20 text-orange-600 scale-105"
-                    : "group-hover:bg-gray-100",
+                    ? "bg-orange-500/10 ring-1 ring-orange-500/25 text-orange-600 dark:text-orange-400 scale-105"
+                    : "group-hover:bg-muted",
                 )}
               >
                 <Banknote className="size-5" />
@@ -176,15 +178,15 @@ export function RiderFloatingBottomNav({ isDutyOnline = true }: RiderBottomNavPr
                 "group relative flex flex-col items-center justify-center py-1 w-full text-center no-underline transition-all duration-300 active:scale-90",
                 isProfileActive
                   ? "text-[#E23744] font-extrabold"
-                  : "text-gray-500 font-semibold",
+                  : "text-muted-foreground hover:text-foreground font-semibold",
               )}
             >
               <div
                 className={cn(
                   "relative flex size-9 items-center justify-center rounded-2xl transition-all duration-300",
                   isProfileActive
-                    ? "bg-red-50 ring-1 ring-red-500/20 text-[#E23744] scale-105"
-                    : "group-hover:bg-gray-100",
+                    ? "bg-[#E23744]/10 ring-1 ring-[#E23744]/25 text-[#E23744] scale-105"
+                    : "group-hover:bg-muted",
                 )}
               >
                 <UserCheck className="size-5" />

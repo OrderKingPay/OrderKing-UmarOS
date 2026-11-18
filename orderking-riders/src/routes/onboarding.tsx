@@ -30,7 +30,7 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 export function RiderOnboardingPage() {
-  const [rider, setRider] = useState<RiderProfile | null>(null);
+  const [, setRider] = useState<RiderProfile | null>(null);
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +66,7 @@ export function RiderOnboardingPage() {
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyMobile, setEmergencyMobile] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(true);
-  const [bagVerified, setBagVerified] = useState(true);
+
   const selfieInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -290,7 +290,7 @@ export function RiderOnboardingPage() {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-3 text-xs text-rose-200 flex items-center gap-2">
+          <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-xs text-destructive flex items-center gap-2">
             <AlertCircle className="size-4 text-rose-400 shrink-0" />
             <span>{error}</span>
           </div>
@@ -380,10 +380,10 @@ export function RiderOnboardingPage() {
                             <span
                               className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
                                 pkt.capacityStatus === "HIGH_DEMAND"
-                                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                                  ? "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/40"
                                   : pkt.capacityStatus === "OPEN"
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                                  : "bg-rose-500/20 text-rose-300 border border-rose-500/40"
+                                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40"
+                                  : "bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/40"
                               }`}
                             >
                               {pkt.capacityStatus === "HIGH_DEMAND"
@@ -535,7 +535,7 @@ export function RiderOnboardingPage() {
                       setError(null);
                     }}
                     className={`rounded-xl border p-3.5 text-xs font-semibold transition-all ${vehicleCategory === v.id
-                      ? "border-primary bg-primary text-primary-foreground/20 text-primary"
+                      ? "border-primary bg-primary/10 text-primary"
                       : "border-border bg-background text-foreground"
                       }`}
                   >
@@ -557,7 +557,7 @@ export function RiderOnboardingPage() {
                   />
                 </div>
               ) : (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 p-3 text-xs text-emerald-300">
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs text-emerald-700 dark:text-emerald-300">
                   {vehicleCategory === "CYCLE"
                     ? "Bicycle: Rule 2U non-motorized exemption; 0–3 km delivery radius cap; zero driving license or RC plate required."
                     : "Low-Speed EV (<25 km/h): Battery-powered vehicle (<250W) exempt from driving license and registration under CMVR Rule 2U."}
@@ -718,7 +718,7 @@ export function RiderOnboardingPage() {
                 <div className="w-full space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-foreground">Kit &amp; Uniform Ledger</span>
-                    <span className="text-emerald-400 font-bold text-[11px]">Allocated &amp; Verified</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">Standard Issue</span>
                   </div>
                   <div className="space-y-1 text-[11px] text-muted-foreground border-t border-border/50 pt-1.5">
                     <div className="flex justify-between">

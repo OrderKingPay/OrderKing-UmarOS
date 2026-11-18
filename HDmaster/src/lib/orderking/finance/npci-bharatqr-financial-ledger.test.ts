@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 import * as crypto from "node:crypto";
 import {
   canonicalLedger,
-  SOVEREIGN_NPCI_UPI_VPA,
+  OFFICIAL_NPCI_UPI_VPA,
   SECONDARY_NPCI_UPI_VPA,
   type LedgerEntry,
   type LedgerTransaction,
@@ -170,7 +170,7 @@ describe("GUARANTEED FINTECH & SETTLEMENTS SPECIALIST AUDIT (2b420240)", () => {
     const testCases = [
       {
         label: "Primary Sovereign VPA",
-        vpa: SOVEREIGN_NPCI_UPI_VPA, // "orderking@ybl"
+        vpa: OFFICIAL_NPCI_UPI_VPA, // "orderking@ybl"
         payeeName: "OrderKingPay",
         amountPaise: 49_900, // ₹499.00
         ref: "ORDK-SOV-001",

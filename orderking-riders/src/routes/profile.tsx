@@ -18,7 +18,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  FileCheck2,
+
   FileText,
   Gift,
   Lock,
@@ -104,7 +104,7 @@ const LEGAL_SECTIONS: ReadonlyArray<LegalSection> = [
       },
       {
         heading: "3. Statutory TDS & Grievance Redressal Officer",
-        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support - Cash / Payment Issue or contact the Partner Grievance Officer at grievance.rider@orderking.in.",
+        body: "Where applicable under Section 194-O of the Income Tax Act, 1961, statutory TDS at 1% is accounted for on gross credits. For payout or ledger disputes, raise a ticket under Support - Cash / Payment Issue or contact Orderkingpay Partner Support at +91-9395065587.",
       },
     ],
   },
@@ -226,12 +226,12 @@ function Page() {
             <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
               <div className="flex items-center justify-between text-muted-foreground">
                 <span className="font-semibold">Driving License</span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Active</span>
+                <span className={`text-[10px] font-bold ${rider?.licenceNumber ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>{rider?.licenceNumber ? "On File" : "Pending"}</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
                 {rider?.licenceNumber || "Upload required"}
               </p>
-              <p className="text-[10px] text-muted-foreground">Motorcycle with Gear (MCWG)</p>
+              <p className="text-[10px] text-muted-foreground">{rider?.licenceNumber ? "Verified license record" : "Submit in KYC onboarding"}</p>
             </div>
 
             {/* Vehicle RC */}
@@ -243,7 +243,7 @@ function Page() {
               <p className="font-mono text-sm font-bold text-foreground">
                 {rider?.vehicleRegistration || "Registration required"}
               </p>
-              <p className="text-[10px] text-muted-foreground">Commercial Transport Permit</p>
+              <p className="text-[10px] text-muted-foreground">{rider?.vehicleRegistration ? "Vehicle registered" : "Submit RC plate in KYC"}</p>
             </div>
 
             {/* Insulated Thermal Bag Verification */}
@@ -256,7 +256,7 @@ function Page() {
                 <span className="text-[10px] font-bold">FSSAI Norms</span>
               </div>
               <p className="text-xs font-bold text-foreground">
-                Insulated Bag Verified
+                {rider?.kycStatus === "VERIFIED" ? "Insulated Bag Verified" : "Pending KYC Verification"}
               </p>
               <p className="text-[10px] text-muted-foreground">Dual hot/cold compartments &amp; tamper-proof seal ready</p>
             </div>
@@ -265,7 +265,7 @@ function Page() {
             <div className="rounded-xl bg-muted/30 p-3 border border-border/60 space-y-1">
               <div className="flex items-center justify-between text-muted-foreground">
                 <span className="font-semibold">Identity (Gov ID)</span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">DigiLocker</span>
+                <span className={`text-[10px] font-bold ${rider?.governmentIdLast4 ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>{rider?.governmentIdLast4 ? "Verified" : "Pending"}</span>
               </div>
               <p className="font-mono text-sm font-bold text-foreground">
                 {rider?.governmentIdLast4 ? `•••• •••• ${rider.governmentIdLast4}` : "Verification required"}
@@ -275,7 +275,7 @@ function Page() {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-border/60 text-xs">
-            <span className="text-muted-foreground">Documents verified for active delivery.</span>
+            <span className="text-muted-foreground">{rider?.kycStatus === "VERIFIED" ? "Documents verified for active delivery." : "Complete KYC verification to activate dispatch."}</span>
             <Link to="/onboarding" className="text-primary font-bold hover:underline inline-flex items-center gap-1">
               Manage KYC Identity &amp; Vehicle Documents <ArrowRight className="size-3" />
             </Link>
@@ -292,7 +292,7 @@ function Page() {
               <div>
                 <CardTitle className="text-sm font-bold">Partner Benefits &amp; Rewards</CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  15% EV discounts (Yulu, Zypp), HPCL/IOCL ₹2.50/L fuel cashback &amp; ₹10L insurance
+                  Statutory ₹35 base fare, ₹10L on-duty accident cover &amp; partner hubs
                 </p>
               </div>
             </div>
@@ -322,7 +322,7 @@ function Page() {
                 </p>
               </div>
             </div>
-            <Badge tone="online">Auto-Save</Badge>
+            <Badge tone="muted">Editable</Badge>
           </div>
 
           <div className="space-y-3 pt-1 text-xs">

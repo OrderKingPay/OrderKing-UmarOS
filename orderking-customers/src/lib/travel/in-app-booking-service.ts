@@ -18,7 +18,7 @@ import {
   extractAirportCode,
 } from "./airline-deep-links";
 
-export const SOVEREIGN_TRAVEL_DISCLAIMER =
+export const OFFICIAL_TRAVEL_DISCLAIMER =
   "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon charter confirmation.";
 
 export type TravelMode = "flight" | "train" | "bus" | "cab";
@@ -127,7 +127,7 @@ export interface FareCalculation {
   effectiveNetCostPaise: number;
 }
 
-export interface SovereignETicket {
+export interface CarrierETicket {
   pnr: string;
   bookingId: string;
   mode: TravelMode;
@@ -209,7 +209,7 @@ function randomDigitsInRange(min: number, maxExclusive: number): number {
   return min + (arr[0]! % span);
 }
 
-export function generateSovereignPnr(mode: TravelMode): string {
+export function generateCarrierPnr(mode: TravelMode): string {
   if (mode === "train") {
     throw new Error(
       "Synthetic Indian Railways PNR generation is strictly prohibited under CRIS/IRCTC regulations. Genuine 10-digit numeric PNRs are issued exclusively by Indian Railways PRS upon official ticket confirmation."
@@ -920,7 +920,7 @@ export function searchCabQuotes(
 // SOVEREIGN DIGITAL E-TICKET ISSUANCE & PERSISTENCE
 // ============================================================================
 
-export const SOVEREIGN_ETICKETS_STORAGE_KEY = "orderking_sovereign_etickets_v1";
+export const CARRIER_ETICKETS_STORAGE_KEY = "orderking_sovereign_etickets_v1";
 export const SAVED_TRIPS_STORAGE_KEY = "orderking_saved_trips_v1";
 
 export type SupplierApiState = "online" | "unauthenticated" | "offline" | "rate_limited";
@@ -999,7 +999,7 @@ export function checkSupplierGating(
   };
 }
 
-export function issueSovereignETicket(params: {
+export function issueCarrierETicket(params: {
   quote: BaseQuote & Record<string, any>;
   passengers: Passenger[];
   contact: BookingContact;
@@ -1012,7 +1012,7 @@ export function issueSovereignETicket(params: {
   isConfirmedSupplier?: boolean;
   supplierState?: SupplierApiState;
   region?: string;
-}): SovereignETicket {
+}): CarrierETicket {
   // Fail-Closed Supplier Gating: if carrier or supplier APIs are unauthenticated,
   // offline, or rate-limited, fail closed with truthful unavailable message.
   if (
@@ -1072,7 +1072,7 @@ export function issueSovereignETicket(params: {
     );
   }
 
-  const pnr = generateSovereignPnr(params.quote.mode);
+  const pnr = generateCarrierPnr(params.quote.mode);
   const bookingId = `BK-${Date.now().toString().slice(-8)}`;
   const dateStr = params.travelDate || new Date().toISOString().split("T")[0];
 
@@ -1132,10 +1132,10 @@ export function issueSovereignETicket(params: {
     totalPaise: fareCalc.totalCheckoutPaise,
     platformGstin: "18AFXPH9838M1Z9",
     tradeName: "Orderkingpay",
-    sovereignGuarantee: "Direct Carrier Fare",
+    directFareGuarantee: "Direct Carrier Fare",
   });
 
-  const ticket: SovereignETicket = {
+  const ticket: CarrierETicket = {
     pnr,
     bookingId,
     mode: params.quote.mode,
@@ -1216,7 +1216,7 @@ export async function bookDirectTravelQuote(params: {
   supplierReservationId?: string;
   verifiedPaymentToken?: string;
 }): Promise<
-  | { success: true; ticket: SovereignETicket }
+  | { success: true; ticket: CarrierETicket }
   | { success: false; error: string; code: SupplierApiState | "VALIDATION_FAILED" | "SUPPLIER_BLOCKED" }
 > {
   const paxVal = validatePassengers(params.passengers);
@@ -1253,7 +1253,7 @@ export async function bookDirectTravelQuote(params: {
   }
 
   try {
-    const ticket = issueSovereignETicket({
+    const ticket = issueCarrierETicket({
       ...params,
       isConfirmedSupplier: true,
     });
@@ -1267,16 +1267,16 @@ export async function bookDirectTravelQuote(params: {
   }
 }
 
-export function getStoredETickets(): SovereignETicket[] {
+export function getStoredETickets(): CarrierETicket[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(SOVEREIGN_ETICKETS_STORAGE_KEY);
+    const raw = window.localStorage.getItem(CARRIER_ETICKETS_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
     // Strict Fintech Audit: Zero synthetic train tickets in user passbook or storage.
     // Train tickets must pass genuine CRIS PRS validation and must not be hardcoded quotes.
-    const sanitized = parsed.filter((t: SovereignETicket) => {
+    const sanitized = parsed.filter((t: CarrierETicket) => {
       if (t.mode === "train") {
         const cris = validateCrisPnr(t.pnr);
         if (!cris.valid) return false;
@@ -1287,7 +1287,7 @@ export function getStoredETickets(): SovereignETicket[] {
 
     // Automatically purge fabricated records from local storage if any were present
     if (sanitized.length !== parsed.length) {
-      window.localStorage.setItem(SOVEREIGN_ETICKETS_STORAGE_KEY, JSON.stringify(sanitized));
+      window.localStorage.setItem(CARRIER_ETICKETS_STORAGE_KEY, JSON.stringify(sanitized));
     }
 
     return sanitized;
@@ -1296,7 +1296,7 @@ export function getStoredETickets(): SovereignETicket[] {
   }
 }
 
-export function saveETicketToStorage(ticket: SovereignETicket): void {
+export function saveETicketToStorage(ticket: CarrierETicket): void {
   if (typeof window === "undefined") return;
   // Strictly prevent synthetic train tickets from persisting to storage
   if (ticket.mode === "train") {
@@ -1308,13 +1308,13 @@ export function saveETicketToStorage(ticket: SovereignETicket): void {
   try {
     const current = getStoredETickets();
     const updated = [ticket, ...current.filter((t) => t.pnr !== ticket.pnr)];
-    window.localStorage.setItem(SOVEREIGN_ETICKETS_STORAGE_KEY, JSON.stringify(updated));
+    window.localStorage.setItem(CARRIER_ETICKETS_STORAGE_KEY, JSON.stringify(updated));
   } catch {
     // ignore quota
   }
 }
 
-function syncTicketToSavedTrips(ticket: SovereignETicket): void {
+function syncTicketToSavedTrips(ticket: CarrierETicket): void {
   if (typeof window === "undefined") return;
   // Strictly prevent synthetic train tickets from syncing to saved trips
   if (ticket.mode === "train") {

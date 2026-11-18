@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   canonicalLedger,
   CanonicalLedger,
-  SOVEREIGN_NPCI_UPI_VPA,
+  OFFICIAL_NPCI_UPI_VPA,
   isLateNightCurfewIst,
 } from "./canonical-ledger.ts";
 
@@ -124,7 +124,7 @@ describe("Canonical Double-Entry Financial Ledger Engine", () => {
 
     // Verify sovereign VPA entity routing
     assert.strictEqual(debits[0].account, "BANK_CLEARING");
-    assert.strictEqual(debits[0].entityId, `NPCI_UPI:${SOVEREIGN_NPCI_UPI_VPA}`);
+    assert.strictEqual(debits[0].entityId, `NPCI_UPI:${OFFICIAL_NPCI_UPI_VPA}`);
   });
 
   test("permits KingPay Royal Wallet during late-night hours with double-entry balance", async () => {

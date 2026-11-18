@@ -610,7 +610,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
       status: "SUCCESS",
       title: "Anti-Fraud Cryptographic Shield",
       response: `Fraud Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Orders Blocked: ${report.fakeOrdersIntercepted}, Refunds Blocked: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
-      toolExecuted: "audit_military_anti_fraud_shield",
+      toolExecuted: "audit_fraud_prevention_shield",
       executionMs,
       data: report
     };

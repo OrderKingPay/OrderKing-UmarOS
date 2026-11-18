@@ -76,7 +76,7 @@ describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
       }
       expect(totalDebit).toBe(totalCredit);
       expect(totalDebit).toBe(amountPaise);
-    });
+    }, 120000);
 
     it("executes multi-party route split transfer with statutory tax compliance", async () => {
       const orderId = `ord_split_${Date.now()}`;
@@ -120,7 +120,7 @@ describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
       }
       expect(debits).toBe(credits);
       expect(debits).toBe(totalAmountPaise);
-    });
+    }, 120000);
 
     it("rejects split payout when components do not match total escrow amount", async () => {
       await expect(

@@ -12,7 +12,7 @@
  * - Order Idempotency: Exactly one bounty per order ID.
  * - Minimum Order Threshold: Minimum ₹100 (10,000 paise) order to prevent ₹1 micro-order bounty harvesting.
  * - Double-Entry Ledger: Debits PROMO_MARKETING_EXPENSE, credits USER_WALLET.
- * - Dynamic Dial Integration: Synchronized with Commercial Bypass Dial 9 (customerReferralBountyInr).
+ * - Dynamic Dial Integration: Synchronized with Commercial Bypass Dial 9 (customerReferralRewardInr).
  */
 
 import { getSql, type Sql } from "../../db.ts";

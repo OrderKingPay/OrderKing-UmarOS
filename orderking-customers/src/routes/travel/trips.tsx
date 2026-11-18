@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CalendarDays, Crown, FileText, Plane, ShieldCheck, TrainFront, CheckCircle2, QrCode, Bus, Car, ExternalLink } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { getStoredETickets, type SovereignETicket } from "@/lib/travel/in-app-booking-service";
+import { getStoredETickets, type CarrierETicket } from "@/lib/travel/in-app-booking-service";
 import { CarrierETicketModal } from "@/components/fintech/sovereign-eticket-modal";
 import { listMyOrders } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
@@ -47,8 +47,8 @@ const FILTERS: View[] = ["Upcoming", "In Transit", "Completed", "Cancelled / Ref
 function MyTripsPage() {
   const { user, isPending } = useCurrentUserState();
   const [view, setView] = useState<View>("Upcoming");
-  const [eTickets, setETickets] = useState<SovereignETicket[]>(() => getStoredETickets());
-  const [selectedTicket, setSelectedTicket] = useState<SovereignETicket | null>(null);
+  const [eTickets, setETickets] = useState<CarrierETicket[]>(() => getStoredETickets());
+  const [selectedTicket, setSelectedTicket] = useState<CarrierETicket | null>(null);
 
   const ordersQuery = useQuery({
     queryKey: ["my_travel_mobility_orders", user?.id],

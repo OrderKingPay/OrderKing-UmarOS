@@ -83,7 +83,7 @@ export type PlatformSettings = {
   dynamicAlgorithmMode?: "AUTO" | "FORCE_OFF_PEAK" | "FORCE_PEAK" | "OFF";
   offPeakBudgetCeilingPaise?: number;
   strategicDispatchRadiusKm?: number;
-  bountyEscalationPaise?: number;
+  incentiveEscalationPaise?: number;
   sampleCatalogueBanner?: boolean;
   launchMode?: "development" | "pilot" | "live";
   riderDiscipline?: RiderDisciplineSettings;
@@ -245,7 +245,7 @@ export const DEFAULT_SETTINGS: PlatformSettings = {
   dynamicAlgorithmMode: "AUTO",
   offPeakBudgetCeilingPaise: 14900,
   strategicDispatchRadiusKm: 8.0,
-  bountyEscalationPaise: 1000,
+  incentiveEscalationPaise: 1000,
   sampleCatalogueBanner: false,
   launchMode: "live",
   riderDiscipline: DEFAULT_RIDER_DISCIPLINE_SETTINGS,

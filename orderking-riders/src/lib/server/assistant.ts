@@ -6,8 +6,8 @@ import { formatPaise } from "@/lib/rider/money";
 import { PgStore } from "@/lib/rider/pg-store";
 
 const POLICY = [
-  "You are King AI (also known as King Spark) — the concise, factual Fleet Support & Operations Assistant for OrderKing Delivery Partners in India.",
-  "Brand exclusively as 'King AI' / 'King Spark' (OrderKing Fleet AI Assistant). Never mention 'UmarOS' in rider UI or any competitor brand names.",
+  "You are King AI — the concise, factual Fleet Support & Operations Assistant for OrderKing Delivery Partners in India.",
+  "Brand exclusively as 'King AI' (OrderKing Fleet Support Assistant). Never mention 'UmarOS' in rider UI or any competitor brand names.",
   "Address the rider respectfully by their name (e.g. 'Hello <Name> ji', or with appropriate honorific in their language).",
   "Provide clear conversational support in Bengali (বাংলা), Assamese (অসমীয়া), Hindi (हिन्दी), and English.",
   "Assist riders with direct operational resolution:",
@@ -74,7 +74,7 @@ interface WaitCreditResult {
 
 interface EmergencyBroadcastResult {
   dispatched: boolean;
-  coords: { lat: number; lng: number };
+  coords: { lat: number; lng: number } | null;
   emergencyNumbers: string[];
   insuranceCover: string;
 }
@@ -449,14 +449,16 @@ export const askAssistantFn = createServerFn({ method: "POST" })
       );
 
     if (isEmergencyRequest) {
-      const coords = data.coords || { lat: 26.1445, lng: 91.7362 };
+      const coords = data.coords ?? null;
+      const gpsLabel = coords ? `${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}` : "GPS unavailable";
+      const gpsShort = coords ? `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}` : "GPS unavailable";
       try {
         const idempotencyKey = `sos_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
         const ticket = await eng.createTicket(
           context.userId,
           {
             topic: "SAFETY_ISSUE",
-            message: `[KING AI SOS BROADCAST] Emergency distress at GPS: ${coords.lat.toFixed(6)}, ${coords.lng.toFixed(6)}. Rider: ${home.rider.fullName} (${home.rider.phone}). Order: ${active?.orderCode ?? "NONE"}. Direct routing to 112/108 initiated.`,
+            message: `[KING AI SOS BROADCAST] Emergency distress at GPS: ${gpsLabel}. Rider: ${home.rider.fullName} (${home.rider.phone}). Order: ${active?.orderCode ?? "NONE"}. Direct routing to 112/108 initiated.`,
             deliveryId: active?.id ?? null,
           },
           idempotencyKey,
@@ -464,7 +466,7 @@ export const askAssistantFn = createServerFn({ method: "POST" })
         resolutionAction = {
           type: "EMERGENCY_SOS_DISPATCHED",
           title: "Emergency Distress SOS Protocol Active",
-          details: `Distress signal with live GPS (${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}) routed to 112/108. Order reassigned with zero penalty.`,
+          details: `Distress signal (${gpsShort}) routed to 112/108. Order reassigned with zero penalty.`,
           ticketId: ticket.id,
           deliveryId: active?.id,
           badgeTone: "offline",
@@ -781,13 +783,17 @@ function localHumanMentorAnswer(
     n.includes("दुर्घटना") ||
     n.includes("आपातकाल")
   ) {
-    const coords = emergencyBroadcast?.coords || { lat: 26.1445, lng: 91.7362 };
+    const coords = emergencyBroadcast?.coords ?? null;
+    const coordsBn = coords ? `অক্ষাংশ ${coords.lat.toFixed(6)}, দ্রাঘিমাংশ ${coords.lng.toFixed(6)}` : "জিপিএস পাওয়া যায়নি";
+    const coordsAs = coords ? `অক্ষাংশ ${coords.lat.toFixed(6)}, দ্ৰাঘিমাংশ ${coords.lng.toFixed(6)}` : "জিপিএছ উপলব্ধ নহয়";
+    const coordsHi = coords ? `अक्षांश ${coords.lat.toFixed(6)}, देशांतर ${coords.lng.toFixed(6)}` : "जीपीएस उपलब्ध नहीं";
+    const coordsEn = coords ? `Lat ${coords.lat.toFixed(6)}, Lng ${coords.lng.toFixed(6)}` : "GPS unavailable (enable location)";
     if (lang === "bn") {
       return (
         `কিং এআই জরুরি এসওএস সতর্কতা (লাইভ জিপিএস সক্রিয়):\n` +
         `• আপনার জীবন ও নিরাপত্তা সবার আগে! নিরাপদ স্থানে রাস্তা থেকে সরে দাঁড়ান।\n` +
         `• সরাসরি কল করুন: ১১২ (জাতীয় জরুরি পুলিশ/ফায়ার) অথবা ১০৮ (বিনামূল্যে সরকারি জরুরি অ্যাম্বুলেন্স)।\n` +
-        `• আপনার লাইভ জিপিএস স্থানাঙ্ক: অক্ষাংশ ${coords.lat.toFixed(6)}, দ্রাঘিমাংশ ${coords.lng.toFixed(6)} | রাইডার: ${fullName} (${home.rider.phone})\n` +
+        `• আপনার লাইভ জিপিএস স্থানাঙ্ক: ${coordsBn} | রাইডার: ${fullName} (${home.rider.phone})\n` +
         `• শূন্য-পেনাল্টি সুরক্ষা: কোনো জরিমানা বা রেটিং কর্তন ছাড়াই সক্রিয় অর্ডার নিকটবর্তী রাইডারের কাছে হস্তান্তরিত হবে।\n` +
         `• দুর্ঘটনা বীমা: কোড অন সোশ্যাল সিকিউরিটি ২০২০ অনুযায়ী ₹১০,০০,০০০ দুর্ঘটনা কভার (+৯১-৯৩৯৫০৬৫৫৮৭)।`
       );
@@ -797,7 +803,7 @@ function localHumanMentorAnswer(
         `কিং এআই জৰুৰী এছঅ'এছ সজাগতা (লাইভ জিপিএছ সক্ৰিয়):\n` +
         `• আপোনাৰ জীৱন আৰু সুৰক্ষা সৰ্বপ্ৰথমে! সুৰক্ষিত স্থানত ৰখক।\n` +
         `• পোনপটীয়া কল কৰক: ১১২ (ৰাষ্ট্ৰীয় জৰুৰীকালীন আৰক্ষী/অগ্নি নিৰ্বাপক) বা ১০৮ (এম্বুলেন্স সেৱা)।\n` +
-        `• আপোনাৰ লাইভ স্থানাংক: অক্ষাংশ ${coords.lat.toFixed(6)}, দ্ৰাঘিমাংশ ${coords.lng.toFixed(6)} | ৰাইডাৰ: ${fullName} (${home.rider.phone})\n` +
+        `• আপোনাৰ লাইভ স্থানাংক: ${coordsAs} | ৰাইডাৰ: ${fullName} (${home.rider.phone})\n` +
         `• শূন্য-জৰিমনা সুৰক্ষা: কোনো জৰিমনা বা ৰেটিং ক্ষতি নোহোৱাকৈ আপোনাৰ কাৰ্য্যসূচী পুনৰ নিৰ্ধাৰণ কৰা হ'ব।\n` +
         `• দুৰ্ঘটনা বীমা: সামাজিক সুৰক্ষা সংহিতা ২০২০ অনুসৰি ₹১০,০০,০০০ দুৰ্ঘটনা বীমা (+৯১-৯৩৯৫০৬৫৫৮৭)।`
       );
@@ -807,7 +813,7 @@ function localHumanMentorAnswer(
         `किंग एआई आपातकालीन संकट चेतावनी (लाइव जीपीएस सक्रिय):\n` +
         `• आपकी सुरक्षा हमारी सर्वोच्च प्राथमिकता है! कृपया तुरंत सड़क के किनारे सुरक्षित स्थान पर रुकें।\n` +
         `• त्वरित आपातकालीन संपर्क: 112 (राष्ट्रीय आपातकालीन पुलिस/दमकल) या 108 (सरकारी एम्बुलेंस सेवा) डायल करें।\n` +
-        `• आपके लाइव जीपीएस निर्देशांक: अक्षांश ${coords.lat.toFixed(6)}, देशांतर ${coords.lng.toFixed(6)} | राइडर: ${fullName} (${home.rider.phone})\n` +
+        `• आपके लाइव जीपीएस निर्देशांक: ${coordsHi} | राइडर: ${fullName} (${home.rider.phone})\n` +
         `• शून्य जुर्माना सुरक्षा: सक्रिय ऑर्डर को बिना किसी रेटिंग कटौती के निकटतम पार्टनर को पुनः सौंपा जाएगा।\n` +
         `• ₹10,00,000 ऑन-ड्यूटी दुर्घटना बीमा कवर (सामाजिक सुरक्षा संहिता 2020) — सहायता: +91-9395065587।`
       );
@@ -816,7 +822,7 @@ function localHumanMentorAnswer(
       `KING AI EMERGENCY DISTRESS PROTOCOL ACTIVE (Live GPS Synced):\n` +
       `• Your life & safety come before any delivery. Move to a safe location off the roadway.\n` +
       `• Immediate Emergency Dials: Dial 112 (National SOS - Police/Fire) or 108 (Government Emergency Medical Ambulance).\n` +
-      `• Live GPS Coordinates: Lat ${coords.lat.toFixed(6)}, Lng ${coords.lng.toFixed(6)} | Rider: ${fullName} (${home.rider.phone})\n` +
+      `• Live GPS Coordinates: ${coordsEn} | Rider: ${fullName} (${home.rider.phone})\n` +
       `• Zero-Penalty Protection: Active order is reassigned with zero cancellation penalty & full milestone credit.\n` +
       `• Statutory Accident Cover: ₹10,00,000 on-duty accident cover under Code on Social Security, 2020. Safety Desk: +91-9395065587.`
     );
@@ -1393,7 +1399,7 @@ function localHumanMentorAnswer(
     );
   }
   return (
-    `Hello ${firstName} ji! I am King AI (King Spark), your live Fleet AI Support & Operations Co-Pilot. Here is your real-time shift briefing:\n` +
+    `Hello ${firstName}, here is your live shift briefing:\n` +
     `• Duty & KYC Status: ${home.rider.status} (${home.rider.kycStatus}) | Today's Earnings: ${formatPaise(s.todayEarningsPaise)} (${s.completedToday} trips)\n` +
     `• Milestone Coach: ${milestone.remaining > 0 ? `${milestone.remaining} more trips to unlock +${formatPaise(milestone.bonusPaise)} (${milestone.tierName})` : `${milestone.tierName} unlocked!`}\n` +
     `• Active Order: ${active ? `#${active.orderCode} (${active.restaurant.name} to ${active.customer.area})` : "None right now"}\n` +

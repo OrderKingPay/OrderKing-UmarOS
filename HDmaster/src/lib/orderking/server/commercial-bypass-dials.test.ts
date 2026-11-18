@@ -347,11 +347,11 @@ describe("SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", (
   // DIAL 9: WhatsApp Referral Reward Referral Credit Dials
   // =========================================================================
   describe("Dial 9: WhatsApp Referral Reward Referral Credit Dials", () => {
-    it("calibrates referrer bounty (₹50), referee discount (₹100), and group milestone (₹500)", async () => {
+    it("calibrates referrer reward (₹50), referee discount (₹100), and group milestone (₹500)", async () => {
       const res = await updateCommercialBypassDials(
         founderWs,
         {
-          customerReferralBountyInr: 50,
+          customerReferralRewardInr: 50,
           refereeFirstOrderDiscountInr: 100,
           milestoneFiveFriendsBonusInr: 500,
           viralOneTapShareCampaignActive: true,
@@ -360,7 +360,7 @@ describe("SILENT BYPASS 10 — CONSOLIDATED 9 COMMERCIAL BYPASS MASTER DIALS", (
       );
 
       expect(res.ok).toBe(true);
-      expect(res.state.customerReferralBountyInr).toBe(50);
+      expect(res.state.customerReferralRewardInr).toBe(50);
       expect(res.state.refereeFirstOrderDiscountInr).toBe(100);
       expect(res.state.milestoneFiveFriendsBonusInr).toBe(500);
       expect(res.state.viralOneTapShareCampaignActive).toBe(true);

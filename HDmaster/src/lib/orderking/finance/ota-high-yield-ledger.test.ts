@@ -5,7 +5,7 @@ import {
   canonicalLedger,
   MANDATORY_OTA_CONVENIENCE_FEE_PAISE,
   type OtaTravelBookingParams,
-  SOVEREIGN_NPCI_UPI_VPA,
+  OFFICIAL_NPCI_UPI_VPA,
 } from "./canonical-ledger.ts";
 
 describe("HIGH-YIELD OTA CONVENIENCE FEE & DOUBLE-ENTRY LEDGER LOCKDOWN", () => {

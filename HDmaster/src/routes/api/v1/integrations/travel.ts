@@ -6,7 +6,7 @@ import { createAPIFileRoute } from "@/lib/createAPIFileRoute";
 
 export const TRAVEL_CONCIERGE_DISCLAIMER =
   "Wholesale B2B fare benchmarks verified against IATA GDS standards. Direct instant issuance connects upon booking confirmation.";
-export const SOVEREIGN_TRAVEL_DISCLAIMER = TRAVEL_CONCIERGE_DISCLAIMER;
+export const OFFICIAL_TRAVEL_DISCLAIMER = TRAVEL_CONCIERGE_DISCLAIMER;
 
 export const APIRoute = createAPIFileRoute('/api/v1/integrations/travel')({
   GET: async () => {

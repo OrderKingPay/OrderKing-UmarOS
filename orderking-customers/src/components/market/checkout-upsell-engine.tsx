@@ -106,7 +106,7 @@ export function CheckoutUpsellEngine({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 text-zinc-950 shadow-md">
-            <Crown className="size-5" />
+            <Sparkles className="size-5 text-zinc-950" />
           </div>
           <div>
             <h3 className="font-display text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-50 tracking-tight flex items-center gap-2">

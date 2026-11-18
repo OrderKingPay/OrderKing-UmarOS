@@ -28,7 +28,7 @@ import {
   type EcosystemOrderSummary,
 } from "../lib/server/ecosystem";
 import {
-  generateSovereignPnr,
+  generateCarrierPnr,
   generateTransactionId,
   calculateFareBreakdown,
   validatePassenger,
@@ -122,7 +122,7 @@ describe("E2E 10x Simulated Transaction Runs: Flights, Trains, and Food Quality 
         expect(txnId).toMatch(flight.paymentMethod === "kingpay_wallet" ? /^KP-WAL-\d{9}$/ : /^RZP-PAY-\d{9}$/);
 
         // 5. Sovereign PNR Format Validation
-        const pnr = generateSovereignPnr("flight");
+        const pnr = generateCarrierPnr("flight");
         expect(pnr).toMatch(/^OK-FL-[A-Z0-9]{6}\d{4}$/);
 
         // 6. Fail-closed Supplier Gating enforcement
@@ -156,7 +156,7 @@ describe("E2E 10x Simulated Transaction Runs: Flights, Trains, and Food Quality 
     trainManifests.forEach((train, idx) => {
       it(`Train Tx ${idx + 1}: ${train.trainNo} ${train.name} (${train.from}->${train.to}) - Class ${train.classType}, CRIS Gate & Refund Schedule`, () => {
         // 1. Mandatory CRIS / IRCTC Anti-Synthetic Gate: synthetic train PNR minting MUST throw
-        expect(() => generateSovereignPnr("train")).toThrow(/CRIS\/IRCTC/);
+        expect(() => generateCarrierPnr("train")).toThrow(/CRIS\/IRCTC/);
 
         // 2. Integer paise zero convenience desk fee
         const fare = calculateFareBreakdown(train.farePaise, 0, 1, train.otaFeePaise, 100, 7500);

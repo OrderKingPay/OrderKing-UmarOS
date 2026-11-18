@@ -358,10 +358,10 @@ function Page() {
               const url = mapsPinUrl ?? window.location.origin;
               if (navigator.share) {
                 void navigator.share({
-                  title: "Order King Rider Emergency Location",
+                  title: "OrderKing Rider Emergency Location",
                   text: liveGps
                     ? `Rider GPS: ${liveGps.lat}, ${liveGps.lng}`
-                    : "Order King Rider Location",
+                    : "OrderKing Rider Location",
                   url,
                 });
               } else {

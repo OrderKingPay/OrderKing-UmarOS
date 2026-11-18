@@ -6,13 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { errorMessage } from "@/lib/client/errors";
 import { useI18n } from "@/lib/rider/i18n-context";
-import { formatPaise } from "@/lib/rider/money";
-import type { LocaleCode } from "@/lib/rider/types";
+
+
 import {
   getHomeFn,
-  getEarningsFn,
-  getSettlementsFn,
-  listTicketsFn,
+
+
+
 } from "@/lib/server/rider-fns";
 import { askAssistantFn, type ResolutionAction } from "@/lib/server/assistant";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -77,7 +77,7 @@ interface ChatMessage {
   } | null;
   emergencyBroadcast?: {
     dispatched: boolean;
-    coords: { lat: number; lng: number };
+    coords: { lat: number; lng: number } | null;
     emergencyNumbers: string[];
     insuranceCover: string;
   } | null;
@@ -186,6 +186,7 @@ function Page() {
   const [home, setHome] = useState<Awaited<ReturnType<typeof getHomeFn>> | null>(null);
   const [loadingContext, setLoadingContext] = useState(true);
   const [autoCreditNotice, setAutoCreditNotice] = useState<string | null>(null);
+  const [sosDispatched, setSosDispatched] = useState(false);
   const [sosActiveCoords, setSosActiveCoords] = useState<{ lat: number; lng: number } | null>(null);
 
   async function refreshLiveState(initial = false) {
@@ -275,7 +276,7 @@ function Page() {
         coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
         setSosActiveCoords(coords);
       } catch {
-        coords = { lat: 26.1445, lng: 91.7362 };
+        // GPS unavailable — do not fabricate coordinates
       }
     }
 
@@ -304,6 +305,7 @@ function Page() {
         );
       }
       if (res.emergencyBroadcast?.dispatched) {
+        setSosDispatched(true);
         setSosActiveCoords(res.emergencyBroadcast.coords);
       }
 
@@ -407,7 +409,7 @@ function Page() {
         ) : null}
 
         {/* SOS Alert Banner */}
-        {sosActiveCoords ? (
+        {sosDispatched ? (
           <div className="rounded-xl border border-rose-500/60 bg-rose-500/10 p-3.5 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
@@ -415,7 +417,7 @@ function Page() {
                 Emergency Dispatched (112 / 108)
               </span>
               <span className="font-mono text-[10px] text-muted-foreground">
-                GPS: {sosActiveCoords.lat.toFixed(4)}, {sosActiveCoords.lng.toFixed(4)}
+                {sosActiveCoords ? `GPS: ${sosActiveCoords.lat.toFixed(4)}, ${sosActiveCoords.lng.toFixed(4)}` : "GPS unavailable"}
               </span>
             </div>
             <div className="flex gap-2 pt-1">
@@ -626,7 +628,7 @@ function Page() {
               size="icon"
               disabled={pending}
               onClick={toggleVoiceInput}
-              title={isListening ? "Stop Listening" : "Speak to King Spark"}
+              title={isListening ? "Stop Listening" : "Voice Input"}
               className={cn(
                 "size-10 shrink-0 border-border transition-all",
                 isListening
