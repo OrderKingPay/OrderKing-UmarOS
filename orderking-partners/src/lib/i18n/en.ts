@@ -204,7 +204,7 @@ export const en = {
     cannotDelete: "Guest reviews reflect authentic culinary feedback and cannot be deleted or modified.",
   },
   assistant: {
-    title: "Partner Assistant",
+    title: "King AI Assistant",
     placeholder: "Ask King AI about today’s sales, popular dishes, or settlement details…",
     send: "Ask King AI",
     disclaimer: "King AI answers using verified restaurant ledger and catalog data.",
