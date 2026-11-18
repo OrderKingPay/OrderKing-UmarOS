@@ -124,15 +124,21 @@ function createNeonSql(): Promise<Sql> {
       connectionString: url,
       ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
       connectionTimeoutMillis: 15000,
-      idleTimeoutMillis: 15000,
+      idleTimeoutMillis: 5000,
       query_timeout: 20000,
       keepAlive: true,
-      max: 10,
+      max: 3,
+      allowExitOnIdle: true,
+    });
+    pool.on('connect', (client: any) => {
+      client.on('error', (err: any) => {
+        // Prevent idle client termination from becoming an uncaught process exception
+        console.warn('[Postgres Pooled Client Notice]:', err?.message);
+      });
     });
     pool.on('error', (err: any) => {
+      // pg.Pool automatically evicts broken idle clients; do NOT orphan the pool or leak sockets.
       console.warn('[Postgres Pool Warning]:', err?.message);
-      globalRef.__pgSqlPromise__ = undefined;
-      sqlPromise = null;
     });
     const run = async <T>(text: string, params: unknown[]) => {
       const res = await pool.query(text, params);
@@ -144,6 +150,9 @@ function createNeonSql(): Promise<Sql> {
         return res.rows as T[];
       });
 
+    const isTransientPgError = (msg: string) =>
+      /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|query read timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND|remaining connection slots|too many clients|MaxClientsInSessionMode/i.test(msg);
+
     return toSql(
       async <T>(text: string, params: unknown[]) => {
         let lastErr;
@@ -154,30 +163,9 @@ function createNeonSql(): Promise<Sql> {
           } catch (err) {
             lastErr = err;
             const msg = err instanceof Error ? err.message : String(err);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|query read timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient) {
-              globalRef.__pgSqlPromise__ = undefined;
-              sqlPromise = null;
-              if (attempt < 4) {
-                await new Promise((r) => setTimeout(r, 200 * (attempt + 1)));
-                try {
-                  const pgMod = await import("pg");
-                  const Client = pgMod.default?.Client ?? pgMod.Client;
-                  const fallbackClient = new Client({
-                    connectionString: url.includes(":6543") ? url.replace(":6543", ":5432") : url,
-                    ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
-                    connectionTimeoutMillis: 10000,
-                    query_timeout: 20000,
-                    keepAlive: true,
-                  });
-                  fallbackClient.on('error', () => {});
-                  await fallbackClient.connect();
-                  const freshRes = await fallbackClient.query(text, params);
-                  await fallbackClient.end().catch(() => {});
-                  return freshRes.rows as T[];
-                } catch (_) {}
-                continue;
-              }
+            if (isTransientPgError(msg) && attempt < 4) {
+              await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+              continue;
             }
             throw err;
           }
@@ -205,32 +193,9 @@ function createNeonSql(): Promise<Sql> {
               client = undefined;
             }
             const msg = error instanceof Error ? error.message : String(error);
-            const isTransient = /terminated unexpectedly|ECONNRESET|socket disconnected|timeout exceeded|connection timeout|query read timeout|could not serialize access|40001|deadlock|getaddrinfo|EAI_AGAIN|ENOTFOUND/i.test(msg);
-            if (isTransient) {
-              globalRef.__pgSqlPromise__ = undefined;
-              sqlPromise = null;
-              if (attempt < 3) {
-                await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
-                try {
-                  const pgMod = await import("pg");
-                  const Client = pgMod.default?.Client ?? pgMod.Client;
-                  const fallbackClient = new Client({
-                    connectionString: url.includes(":6543") ? url.replace(":6543", ":5432") : url,
-                    ssl: isRemote ? { rejectUnauthorized: false, servername: host } : undefined,
-                    connectionTimeoutMillis: 10000,
-                    query_timeout: 20000,
-                    keepAlive: true,
-                  });
-                  fallbackClient.on('error', () => {});
-                  await fallbackClient.connect();
-                  await fallbackClient.query("BEGIN ISOLATION LEVEL READ COMMITTED");
-                  const result = await fn(makeClientSql(fallbackClient));
-                  await fallbackClient.query("COMMIT");
-                  await fallbackClient.end().catch(() => {});
-                  return result;
-                } catch (_) {}
-                continue;
-              }
+            if (isTransientPgError(msg) && attempt < 3) {
+              await new Promise((r) => setTimeout(r, 350 * (attempt + 1)));
+              continue;
             }
             throw error;
           } finally {
