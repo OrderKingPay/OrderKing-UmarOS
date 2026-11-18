@@ -319,7 +319,7 @@ export const LIVE_BENCHMARK_QUOTES: readonly CarrierQuote[] = [
   },
 ] as const;
 
-export function calculateSovereignFareBreakdown(
+export function calculateOfficialFareBreakdown(
   quote: CarrierQuote,
   passengers: number,
   rebateDestination: RebateDestination,
@@ -363,3 +363,5 @@ export function calculateSovereignFareBreakdown(
     totalCustomerAdvantagePaise,
   };
 }
+
+export const calculateSovereignFareBreakdown = calculateOfficialFareBreakdown;

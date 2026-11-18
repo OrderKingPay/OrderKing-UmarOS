@@ -106,7 +106,7 @@ export const FRONTIER_MODELS: Record<string, ModelEconomicProfile> = {
   },
   "local-core": {
     id: "local-core",
-    name: "Sovereign Local Core",
+    name: "OrderKing Local Core",
     provider: "Local Core",
     inputCostPerMillionUsd: 0.00,
     outputCostPerMillionUsd: 0.00,

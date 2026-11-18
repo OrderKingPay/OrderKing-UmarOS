@@ -26,7 +26,7 @@ import {
 } from "../../src/lib/orderking/security/system-audit-ledger.ts";
 
 import {
-  militaryAntiFraudShield,
+  fraudShield,
 } from "../../src/lib/orderking/security/military-anti-fraud-shield.ts";
 
 import {
@@ -261,7 +261,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
   // =========================================================================
   describe("5. Military Anti-Fraud Shield & Anti-Abuse Sentinel", () => {
     it("flags rider teleportation when geodesic speed > 120 km/h or mock provider", () => {
-      const result = militaryAntiFraudShield.validateRiderTelemetry({
+      const result = fraudShield.validateRiderTelemetry({
         riderId: "rider_teleport",
         lat: 26.1445,
         lng: 91.7362,
@@ -277,7 +277,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
     });
 
     it("flags telemetry if isFromMockProvider returns true", () => {
-      const mockResult = militaryAntiFraudShield.validateRiderTelemetry({
+      const mockResult = fraudShield.validateRiderTelemetry({
         riderId: "rider_mock",
         lat: 24.8690,
         lng: 92.3586,
@@ -291,7 +291,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
 
     it("validates that geofence arrival is within 100m threshold", () => {
       // Identical coordinates -> distance 0m (< 100m)
-      const valid = militaryAntiFraudShield.validateGeofenceArrival(
+      const valid = fraudShield.validateGeofenceArrival(
         { lat: 24.8690, lng: 92.3586 },
         { lat: 24.8690, lng: 92.3586 }
       );
@@ -299,7 +299,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       assert.equal(valid.code, "OK");
 
       // Coordinates ~1.5km away -> rejected
-      const invalid = militaryAntiFraudShield.validateGeofenceArrival(
+      const invalid = fraudShield.validateGeofenceArrival(
         { lat: 24.8690, lng: 92.3586 },
         { lat: 24.8800, lng: 92.3586 }
       );
@@ -308,7 +308,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
     });
 
     it("detects phantom order collusion between matching IPs, devices, or accounts", () => {
-      const collusion = militaryAntiFraudShield.detectPhantomOrderCollusion({
+      const collusion = fraudShield.detectPhantomOrderCollusion({
         customerId: "cust_1",
         merchantId: "merch_1",
         customerIp: "103.20.15.5",
@@ -318,7 +318,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       assert.equal(collusion.valid, false);
       assert.equal(collusion.code, "COLLUSION_IP_MATCH");
 
-      const deviceCollusion = militaryAntiFraudShield.detectPhantomOrderCollusion({
+      const deviceCollusion = fraudShield.detectPhantomOrderCollusion({
         customerId: "cust_2",
         merchantId: "merch_2",
         deviceId: "dev_xyz_99",
@@ -332,18 +332,18 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       const devId = `dev_promo_${Date.now()}`;
       const code = "SUMMER50";
       // 1st redemption ok
-      assert.equal(militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
+      assert.equal(fraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
       // 2nd redemption ok
-      assert.equal(militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
+      assert.equal(fraudShield.validatePromoVelocity(devId, undefined, code).valid, true);
       // 3rd redemption on same device within 24h -> blocked
-      const blocked = militaryAntiFraudShield.validatePromoVelocity(devId, undefined, code);
+      const blocked = fraudShield.validatePromoVelocity(devId, undefined, code);
       assert.equal(blocked.valid, false);
       assert.equal(blocked.code, "PROMO_DEVICE_LIMIT_EXCEEDED");
     });
 
     it("enforces COD cash hoarding limit (forces offline if > ₹1,500 for > 4h)", () => {
       // ₹1,600 (160000 paise) held for 5 hours -> lock
-      const hoarding = militaryAntiFraudShield.validateRiderCodHoarding(
+      const hoarding = fraudShield.validateRiderCodHoarding(
         "rider_cod_1",
         160000,
         5.0
@@ -352,7 +352,7 @@ describe("UMAR OS ZERO-TRUST ENTERPRISE COMMAND & SECURITY SUITE", () => {
       assert.equal(hoarding.code, "COD_CASH_HOARDING_LOCK");
 
       // ₹1,200 held for 2 hours -> compliant
-      const allowed = militaryAntiFraudShield.validateRiderCodHoarding(
+      const allowed = fraudShield.validateRiderCodHoarding(
         "rider_cod_2",
         120000,
         2.0

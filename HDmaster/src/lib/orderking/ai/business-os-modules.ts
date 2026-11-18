@@ -194,7 +194,7 @@ export class BusinessOsModules {
         autoRollbackArmed: true
       },
       {
-        service: "military-anti-fraud-shield",
+        service: "fraud-prevention-shield",
         status: "HEALTHY",
         latencyP99Ms: 4,
         uptimePct: 100.0,

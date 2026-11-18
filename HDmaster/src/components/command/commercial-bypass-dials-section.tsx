@@ -101,7 +101,7 @@ export function CommercialBypassDialsSection() {
   const [garageRoadsideAssistanceActive, setGarageRoadsideAssistanceActive] = useState(true);
 
   // 9. WhatsApp Referral Reward Referral Dials
-  const [customerReferralRewardInr, setCustomerReferralBountyInr] = useState(50);
+  const [customerReferralRewardInr, setCustomerReferralRewardInr] = useState(50);
   const [refereeFirstOrderDiscountInr, setRefereeFirstOrderDiscountInr] = useState(100);
   const [milestoneFiveFriendsBonusInr, setMilestoneFiveFriendsBonusInr] = useState(500);
   const [viralOneTapShareCampaignActive, setViralOneTapShareCampaignActive] = useState(true);
@@ -158,7 +158,7 @@ export function CommercialBypassDialsSection() {
       setMandatoryGigInsuranceCompliance(state.mandatoryGigInsuranceCompliance);
       setGarageRoadsideAssistanceActive(state.garageRoadsideAssistanceActive);
 
-      setCustomerReferralBountyInr(state.customerReferralRewardInr);
+      setCustomerReferralRewardInr(state.customerReferralRewardInr);
       setRefereeFirstOrderDiscountInr(state.refereeFirstOrderDiscountInr);
       setMilestoneFiveFriendsBonusInr(state.milestoneFiveFriendsBonusInr);
       setViralOneTapShareCampaignActive(state.viralOneTapShareCampaignActive);
@@ -935,7 +935,7 @@ export function CommercialBypassDialsSection() {
                   max="500"
                   step="10"
                   value={customerReferralRewardInr}
-                  onChange={(e) => setCustomerReferralBountyInr(Number(e.target.value))}
+                  onChange={(e) => setCustomerReferralRewardInr(Number(e.target.value))}
                   onMouseUp={() => updateMutation.mutate({ customerReferralRewardInr })}
                   className="w-full accent-teal-500 h-1.5 bg-zinc-800 rounded-lg cursor-pointer"
                 />

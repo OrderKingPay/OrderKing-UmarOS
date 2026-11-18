@@ -12,7 +12,11 @@ import type {
   ParcelOrderResult,
   PackageType,
 } from "../courier/types";
-import { getRazorpayConfig, verifyRazorpaySignature } from "./razorpay.server";
+
+async function loadRazorpayServer() {
+  const modPath = "./razorpay.server";
+  return (await import(/* @vite-ignore */ modPath)) as typeof import("./razorpay.server");
+}
 
 export const COD_MAX_PAISE = 200_000; // ₹2,000 maximum ceiling for Cash/Pay on Delivery
 
@@ -52,6 +56,7 @@ export async function prepareParcelRazorpayOrderHandler({
     isNight: Boolean(data.isNight),
   });
 
+  const { getRazorpayConfig } = await loadRazorpayServer();
   const config = getRazorpayConfig();
   const receipt = (data.receipt || `rcpt_pcl_${Date.now()}`).slice(0, 40);
 
@@ -157,6 +162,7 @@ export async function submitParcelOrderHandler({
   }
 
   if (method === "RAZORPAY_ONLINE") {
+    const { getRazorpayConfig, verifyRazorpaySignature } = await loadRazorpayServer();
     const config = getRazorpayConfig();
     if (!config.hasCredentials || !config.keyId) {
       throw new Error("Secure online parcel payment is unavailable. Please choose Cash on Delivery.");

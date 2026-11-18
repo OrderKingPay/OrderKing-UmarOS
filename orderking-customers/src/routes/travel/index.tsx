@@ -220,6 +220,7 @@ export interface SavedTripReference {
   routeOrLocation: string;
   notes: string;
   createdAt: string;
+  carrierETicket?: CarrierETicket;
   sovereignETicket?: CarrierETicket;
 }
 
@@ -570,8 +571,9 @@ export function TravelPage() {
   const handleOpenTripLiveStatus = (trip: SavedTripReference) => {
     if (!trip) return;
 
-    if (trip.sovereignETicket) {
-      setActiveTicketModal(trip.sovereignETicket);
+    const activeTicket = trip.carrierETicket || trip.sovereignETicket;
+    if (activeTicket) {
+      setActiveTicketModal(activeTicket);
       return;
     }
 
