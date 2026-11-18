@@ -259,7 +259,23 @@ export function useTableReservations(restaurantId?: string): TableReservationHoo
   const [tables, setTables] = useState<DiningTable[]>(INITIAL_TABLES);
   const [activeTab, setActiveTab] = useState<ReservationStatus>("PENDING");
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<DiningAreaZone | "ALL">("ALL");
-  const [autoAcceptBookings, setAutoAcceptBookings] = useState<boolean>(true);
+  const autoAcceptKey = `ok_dining_auto_accept_${restaurantId || "default"}`;
+  const [autoAcceptBookings, setAutoAcceptBookingsState] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem(autoAcceptKey);
+      if (saved !== null) return saved === "true";
+    }
+    return true;
+  });
+  const setAutoAcceptBookings = (val: boolean | ((prev: boolean) => boolean)) => {
+    setAutoAcceptBookingsState((prev) => {
+      const next = typeof val === "function" ? val(prev) : val;
+      if (typeof window !== "undefined") {
+        localStorage.setItem(autoAcceptKey, String(next));
+      }
+      return next;
+    });
+  };
 
   // Synchronize server data into state whenever query updates
   useEffect(() => {

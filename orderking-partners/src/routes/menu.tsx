@@ -24,7 +24,7 @@ import {
 } from "@/lib/server/api-menu";
 import { OneTapStockToggle } from "@/components/one-tap-stock-toggle";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
-import { orderKingSpark } from "@/lib/ai/order-king-spark"; import { askAssistant } from "@/lib/server/api-more";
+import { getNextDay06AM, orderKingSpark } from "@/lib/ai/order-king-spark"; import { askAssistant } from "@/lib/server/api-more";
 import { toast } from "sonner";
 import { supabaseCloud } from "@/lib/db-cloud";
 import { LocalStockoutScheduler, formatStockoutRemaining } from "@/lib/menu/timed-stockout";
@@ -511,8 +511,11 @@ function MenuPage() {
 
   async function bulk(status: "sold_out" | "available") {
     if (!selected.length) return;
+    const autoReset6Am = typeof window === "undefined" ? true : localStorage.getItem("ok_stock_auto_reset_6am") !== "false";
+    const effectiveStatus = status === "sold_out" && autoReset6Am ? "temporarily_unavailable" : status;
+    const nextAvailableAt = status === "sold_out" && autoReset6Am ? getNextDay06AM().toISOString() : null;
     await setAvailability({
-      data: { restaurantId: vendor.restaurantId, itemIds: selected, status },
+      data: { restaurantId: vendor.restaurantId, itemIds: selected, status: effectiveStatus, nextAvailableAt },
     });
     setSelected([]);
     void qc.invalidateQueries({ queryKey: ["menu"] });

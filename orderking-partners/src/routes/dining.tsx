@@ -110,7 +110,7 @@ function DiningPage() {
     >
       <div className="space-y-6">
         {/* TOP STATION BANNER & LIVE REVENUE LEDGER */}
-        <div className="rounded-[28px] border border-gray-200 bg-white shadow-xs bg-white p-5 sm:p-6 shadow-xl space-y-5">
+        <div className="rounded-[28px] border border-gray-200 bg-white p-5 sm:p-6 shadow-xs space-y-5">
           {/* Header Title & Quick Action Bar */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200/80 pb-5">
             <div className="space-y-1">
@@ -150,7 +150,7 @@ function DiningPage() {
                 title="Toggle Auto-Accept Bookings"
               >
                 {autoAcceptBookings ? (
-                  <ToggleRight className="size-4 text-emerald-400" />
+                  <ToggleRight className="size-4 text-emerald-600" />
                 ) : (
                   <ToggleLeft className="size-4 text-gray-500" />
                 )}
@@ -197,7 +197,7 @@ function DiningPage() {
                   ({seatedGuestsCount} seated diners)
                 </span>
               </div>
-              <div className="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+              <div className="text-[11px] text-emerald-700 font-semibold flex items-center gap-1">
                 <span>{availableTablesCount} of {tables.length} tables free</span>
                 <span className="text-slate-600">•</span>
                 <span>{occupancyRate}% occupancy</span>
@@ -250,7 +250,7 @@ function DiningPage() {
           {/* ORDER KING RESTAURATEUR COMMITMENT STRIP */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-gray-800">
             <div className="flex items-center gap-2.5">
-              <ShieldCheck className="size-4 text-emerald-400 shrink-0" />
+              <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
               <span>
                 <strong className="text-emerald-800">Table Reservations:</strong> {dineInCommissionDisplay} commission on all dine-in reservations. You retain 100% of guest food &amp; beverage bills.
               </span>

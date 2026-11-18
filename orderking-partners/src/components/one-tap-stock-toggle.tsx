@@ -128,7 +128,7 @@ export function OneTapStockToggle({
                 : size === "sm"
                 ? "px-2.5 py-1 text-[11px]"
                 : "px-3 py-1.5 text-xs"
-            } bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-950/40 hover:scale-102 active:scale-98 ${
+            } bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 shadow-xs hover:scale-102 active:scale-98 ${
               disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`}
           >
@@ -144,7 +144,7 @@ export function OneTapStockToggle({
               </span>
             )}
 
-            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-emerald-900/60 text-emerald-400">
+            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-emerald-100 text-emerald-700">
               1-Tap
             </span>
           </button>
@@ -160,25 +160,25 @@ export function OneTapStockToggle({
                 : size === "sm"
                 ? "px-2.5 py-1 text-[11px]"
                 : "px-3 py-1.5 text-xs"
-            } bg-rose-950/90 hover:bg-emerald-950/90 border border-rose-500/60 hover:border-emerald-500/60 text-rose-300 hover:text-emerald-300 shadow-sm shadow-rose-950/40 hover:scale-102 active:scale-98 ${
+            } bg-rose-50 hover:bg-emerald-50 border border-rose-300 hover:border-emerald-300 text-rose-700 hover:text-emerald-800 shadow-xs hover:scale-102 active:scale-98 ${
               isExpired ? "animate-bounce" : ""
             } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
           >
             {loading ? (
               <Loader2 className="size-3.5 animate-spin text-current" />
             ) : isExpired ? (
-              <span className="flex items-center gap-1.5 text-orange-300">
+              <span className="flex items-center gap-1.5 text-orange-700">
                 <RotateCcw className="size-3.5 animate-spin" />
                 <span>RESTORE</span>
               </span>
             ) : (
               <span className="flex items-center gap-1.5">
-                <X className="size-3.5 text-rose-400 stroke-[3]" />
+                <X className="size-3.5 text-rose-600 stroke-[3]" />
                 <span>SOLD OUT FOR TODAY</span>
               </span>
             )}
 
-            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-rose-900/60 text-rose-300">
+            <span className="text-[9px] uppercase px-1 py-0.2 rounded font-mono bg-rose-100 text-rose-700">
               86
             </span>
           </button>
@@ -190,7 +190,7 @@ export function OneTapStockToggle({
             type="button"
             disabled={disabled || loading}
             onClick={() => setModalOpen(true)}
-            title="Set timed out-of-stock duration (Tier-1 Partner Parity)"
+            title="Set timed out-of-stock duration"
             className="p-1.5 rounded-md bg-white hover:bg-gray-100 border border-gray-300 text-gray-500 hover:text-gray-800 text-xs transition cursor-pointer"
           >
             <Clock className="size-3.5" />
@@ -200,8 +200,8 @@ export function OneTapStockToggle({
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded border ${
                 isExpired
-                  ? "bg-orange-950/80 border-orange-500/80 text-orange-300 animate-pulse"
-                  : "bg-rose-950/60 border-rose-800/60 text-rose-300"
+                  ? "bg-orange-50 border-orange-300 text-orange-800 animate-pulse"
+                  : "bg-rose-50 border-rose-200 text-rose-700"
               }`}
               title={formattedRemaining ?? "Turned off indefinitely"}
             >

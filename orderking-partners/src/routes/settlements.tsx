@@ -529,16 +529,7 @@ function SettlementsPage() {
                   <span className="font-mono text-gray-900 font-semibold">{r?.gstin || "Unregistered"}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  onClick={() => setShowInvoiceModal(true)}
-                  className="h-8 text-xs bg-[#E23744] hover:bg-[#d32f2f] text-white font-semibold gap-1 rounded-xl shadow-xs"
-                >
-                  <FileText className="size-3.5 text-white" />
-                  GSTR-1 Tax Invoice (PDF)
-                </Button>
-              </div>
+
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 text-xs">
@@ -570,12 +561,12 @@ function SettlementsPage() {
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
                 <div className="text-[10px] text-gray-500 font-semibold">TCS (SEC 52)</div>
                 <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.tcs)}</div>
-                <div className="text-[9px] text-gray-400 mt-0.5">1% Net Supply</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">0.5% Net Supply</div>
               </div>
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-2.5">
                 <div className="text-[10px] text-gray-500 font-semibold">TDS (SEC 194-O)</div>
                 <div className="font-bold text-rose-600 mt-0.5 tabular">−{formatINR(totals.tds)}</div>
-                <div className="text-[9px] text-gray-400 mt-0.5">1% Gross Sales</div>
+                <div className="text-[9px] text-gray-400 mt-0.5">0.1% Gross Sales</div>
               </div>
               <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-2.5">
                 <div className="text-[10px] text-emerald-800 font-bold">NET PAYABLE</div>
@@ -594,7 +585,7 @@ function SettlementsPage() {
                 </span>
               </div>
               <span className="text-[10px] font-bold text-blue-700 shrink-0">
-                100% Tax Compliant
+                GSTIN 18AFXPH9838M1Z9
               </span>
             </div>
           </Card>
@@ -657,8 +648,8 @@ function SettlementsPage() {
                       <th className="py-2.5 px-2">Rest. Disc</th>
                       <th className="py-2.5 px-2">Commission ({effectiveCommissionPct}%)</th>
                       <th className="py-2.5 px-2">PG Fee (1.8%)</th>
-                      <th className="py-2.5 px-2">TCS (1%)</th>
-                      <th className="py-2.5 px-2">TDS (1%)</th>
+                      <th className="py-2.5 px-2">TCS (0.5%)</th>
+                      <th className="py-2.5 px-2">TDS (0.1%)</th>
                       <th className="py-2.5 px-2">Sec 9(5) Remitted</th>
                       <th className="py-2.5 px-2">Plat. Promo</th>
                       <th className="py-2.5 px-2 text-right">Net Payable</th>

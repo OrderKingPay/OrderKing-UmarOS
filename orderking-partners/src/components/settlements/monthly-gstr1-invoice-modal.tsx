@@ -50,6 +50,46 @@ export interface MonthlyGstr1InvoiceModalProps {
   settledOrdersCount?: number;
 }
 
+interface BillingMonthOption {
+  key: string;
+  label: string;
+  dateRangeLabel: string;
+  invoiceDate: string;
+  compactCode: string;
+}
+
+const SHORT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const FULL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+function buildRecentBillingMonths(count = 6): BillingMonthOption[] {
+  const now = new Date();
+  const options: BillingMonthOption[] = [];
+  for (let i = 0; i < count; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const year = d.getFullYear();
+    const monthIdx = d.getMonth();
+    const monthNum = String(monthIdx + 1).padStart(2, "0");
+    const lastDay = String(new Date(year, monthIdx + 1, 0).getDate()).padStart(2, "0");
+    const shortM = SHORT_MONTHS[monthIdx];
+    options.push({
+      key: `${year}-${monthNum}`,
+      label: `${FULL_MONTHS[monthIdx]} ${year}`,
+      dateRangeLabel: `01-${shortM}-${year} to ${lastDay}-${shortM}-${year}`,
+      invoiceDate: `${lastDay}-${shortM}-${year}`,
+      compactCode: `${year}${monthNum}`,
+    });
+  }
+  return options;
+}
+
+function computeLedgerChecksum(payload: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < payload.length; i++) {
+    hash ^= payload.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).toUpperCase().padStart(8, "0");
+}
 export function MonthlyGstr1InvoiceModal({
   isOpen,
   onClose,
@@ -60,7 +100,8 @@ export function MonthlyGstr1InvoiceModal({
   totals,
   settledOrdersCount = 0,
 }: MonthlyGstr1InvoiceModalProps) {
-  const [selectedMonth, setSelectedMonth] = useState<string>("2026-10");
+  const billingMonths = useMemo(() => buildRecentBillingMonths(6), []);
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => billingMonths[0]?.key ?? "");
 
   // Genuine settlement totals calculated directly from verified database ledger
   const effectiveTotals = useMemo(() => {
@@ -100,20 +141,17 @@ export function MonthlyGstr1InvoiceModal({
     };
   }, [totals, commissionPct]);
 
-  const monthLabel =
-    selectedMonth === "2026-10" ? "October 2026" : selectedMonth === "2026-09" ? "September 2026" : "August 2026";
-  const dateRangeLabel =
-    selectedMonth === "2026-10"
-      ? "01-Oct-2026 to 31-Oct-2026"
-      : selectedMonth === "2026-09"
-        ? "01-Sep-2026 to 30-Sep-2026"
-        : "01-Aug-2026 to 31-Aug-2026";
-  const invoiceDate =
-    selectedMonth === "2026-10" ? "31-Oct-2026" : selectedMonth === "2026-09" ? "30-Sep-2026" : "31-Aug-2026";
+  const activeMonth = billingMonths.find((m) => m.key === selectedMonth) ?? billingMonths[0];
+  const monthLabel = activeMonth.label;
+  const dateRangeLabel = activeMonth.dateRangeLabel;
+  const invoiceDate = activeMonth.invoiceDate;
 
   const outletCleanId = restaurantId.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6).toUpperCase() || "OKM001";
-  const invoiceNumber = `OK/GSTR1/${selectedMonth.replace("-", "")}/${outletCleanId}`;
-  const verificationHash = `OK-HASH-9985-${selectedMonth}-${outletCleanId}-7F3B9E1A-CA-STATUTORY`;
+  const invoiceNumber = `OK/GSTR1/${activeMonth.compactCode}/${outletCleanId}`;
+  const ledgerDigest = computeLedgerChecksum(
+    `${invoiceNumber}|18AFXPH9838M1Z9|${effectiveTotals.gross}|${effectiveTotals.sec9_5}|${effectiveTotals.payable}|${settledOrdersCount}`
+  );
+  const verificationHash = `OK-CHK-9985-${activeMonth.compactCode}-${outletCleanId}-${ledgerDigest}`;
 
   // Merchant Details (Trade Name, Legal Name, GSTIN or EXEMPT / UNREGISTERED, PAN, Registered Address)
   const merchantTradeName = (restaurant?.display_name || restaurant?.name || restaurantName || "Order King Partner Kitchen").trim();
@@ -228,6 +266,64 @@ export function MonthlyGstr1InvoiceModal({
     printWindow.document.close();
   };
 
+  const handleDownloadGstr1Json = () => {
+    const payload = {
+      schema: "ORDERKING_GSTR1_MONTHLY_STATEMENT_V1",
+      generatedAt: new Date().toISOString(),
+      invoiceNumber,
+      invoiceDate,
+      billingCycle: monthLabel,
+      settlementPeriod: dateRangeLabel,
+      checksum: verificationHash,
+      platformEntity: {
+        tradeName: "Orderkingpay",
+        gstin: "18AFXPH9838M1Z9",
+        pan: "AFXPH9838M",
+        placeOfSupply: "Assam (18)",
+        address: "Main Road, Near Sambu Sagar Park, Sribhumi, Assam 788710, India",
+        sac: "9985",
+      },
+      merchant: {
+        restaurantId,
+        tradeName: merchantTradeName,
+        legalName: merchantLegalName,
+        gstin: merchantGstin,
+        pan: merchantPan,
+        fssai: merchantFssai,
+        address: merchantAddress,
+        ifsc: merchantIfsc,
+      },
+      settledOrdersCount,
+      commissionPct: Number(commissionPct) || 0,
+      amountsPaise: {
+        grossFoodSales: effectiveTotals.food,
+        packagingCharges: effectiveTotals.packing,
+        grossSales: effectiveTotals.gross,
+        merchantPromotionalDiscounts: effectiveTotals.restDisc,
+        netTaxableFoodSupply,
+        sec9_5FoodGstPlatformRemitted: effectiveTotals.sec9_5,
+        sec9_5Cgst: sec9_5CgstPaise,
+        sec9_5Sgst: sec9_5SgstPaise,
+        platformCommission: effectiveTotals.commission,
+        platformCommissionGst: effectiveTotals.commGst,
+        paymentGatewayFee: effectiveTotals.gwFee,
+        paymentGatewayGst: effectiveTotals.gwGst,
+        tcsSec52: effectiveTotals.tcs,
+        tdsSec194O: effectiveTotals.tds,
+        platformPromoReimbursement: effectiveTotals.platDisc,
+        netBankRemittancePayable: effectiveTotals.payable,
+      },
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `OrderKing-GSTR1-${activeMonth.key}-${outletCleanId}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
   if (!isOpen) return null;
 
   return (
@@ -259,30 +355,12 @@ export function MonthlyGstr1InvoiceModal({
               onChange={(e) => setSelectedMonth(e.target.value)}
               className="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-emerald-500 font-mono"
             >
-              <option value="2026-10">October 2026 (Current)</option>
-              <option value="2026-09">September 2026</option>
-              <option value="2026-08">August 2026</option>
+              {billingMonths.map((m, idx) => (
+                <option key={m.key} value={m.key}>
+                  {m.label}{idx === 0 ? " (Current)" : ""}
+                </option>
+              ))}
             </select>
-
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handlePrint}
-              className="h-8 text-xs border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 font-medium gap-1.5"
-            >
-              <Printer className="size-3.5 text-emerald-400" />
-              <span>Print Tax Invoice</span>
-            </Button>
-
-            <Button
-              size="sm"
-              variant="primary"
-              onClick={handlePrint}
-              className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-950 gap-1.5"
-            >
-              <Download className="size-3.5 text-emerald-100" />
-              <span>Download Official Monthly Tax Invoice</span>
-            </Button>
 
             <button
               type="button"
@@ -306,11 +384,11 @@ export function MonthlyGstr1InvoiceModal({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-extrabold text-lg text-slate-950 uppercase tracking-tight">
-                      Order King Internet Private Limited
+                      Orderkingpay
                     </span>
                   </div>
                   <div className="text-[11px] text-slate-600 mt-0.5 font-medium">
-                    Orderkingpay (Order King · King Pay)
+                    Order King · King Pay Merchant Settlement Desk
                   </div>
                   <div className="text-[10px] text-slate-500 mt-1 max-w-md leading-relaxed">
                     Principal Place of Business: Main Road, Near Sambu Sagar Park, Sribhumi, Assam 788710, India
@@ -322,9 +400,6 @@ export function MonthlyGstr1InvoiceModal({
                     </div>
                     <div>
                       <span className="font-bold text-slate-900">PAN:</span> AFXPH9838M
-                    </div>
-                    <div>
-                      <span className="font-bold text-slate-900">CIN:</span> U72900KA2024PTC189201
                     </div>
                     <div>
                       <span className="font-bold text-slate-900">HSN/SAC:</span> 9985 (Restaurant Ordering Services)
@@ -697,80 +772,33 @@ export function MonthlyGstr1InvoiceModal({
               </p>
             </div>
 
-            {/* Bottom Execution Bar: Verification QR Code & Digital Signature Stamp */}
+            {/* Bottom Execution Bar: Ledger Integrity Checksum & Statutory Signatory */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2.5 border-t-2 border-slate-900">
-              {/* Left: Verification QR Code */}
-              <div className="flex items-center gap-3">
-                <div className="p-1 bg-white border border-slate-900 rounded shadow-sm shrink-0">
-                  <svg
-                    className="size-16"
-                    viewBox="0 0 100 100"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect width="100" height="100" fill="white" />
-                    <rect x="5" y="5" width="28" height="28" fill="#0f172a" />
-                    <rect x="9" y="9" width="20" height="20" fill="white" />
-                    <rect x="13" y="13" width="12" height="12" fill="#0f172a" />
-
-                    <rect x="67" y="5" width="28" height="28" fill="#0f172a" />
-                    <rect x="71" y="9" width="20" height="20" fill="white" />
-                    <rect x="75" y="13" width="12" height="12" fill="#0f172a" />
-
-                    <rect x="5" y="67" width="28" height="28" fill="#0f172a" />
-                    <rect x="9" y="71" width="20" height="20" fill="white" />
-                    <rect x="13" y="75" width="12" height="12" fill="#0f172a" />
-
-                    <rect x="38" y="8" width="5" height="5" fill="#0f172a" />
-                    <rect x="48" y="8" width="5" height="5" fill="#0f172a" />
-                    <rect x="58" y="8" width="5" height="5" fill="#0f172a" />
-                    <rect x="38" y="18" width="5" height="5" fill="#0f172a" />
-                    <rect x="48" y="23" width="5" height="5" fill="#0f172a" />
-                    <rect x="58" y="18" width="5" height="5" fill="#0f172a" />
-                    <rect x="38" y="28" width="5" height="5" fill="#0f172a" />
-                    <rect x="8" y="38" width="5" height="5" fill="#0f172a" />
-                    <rect x="18" y="48" width="5" height="5" fill="#0f172a" />
-                    <rect x="28" y="38" width="5" height="5" fill="#0f172a" />
-                    <rect x="38" y="38" width="24" height="24" fill="#047857" rx="4" />
-                    <text x="50" y="54" fill="white" fontSize="11" fontWeight="bold" textAnchor="middle">OK</text>
-                    <rect x="68" y="38" width="5" height="5" fill="#0f172a" />
-                    <rect x="78" y="48" width="5" height="5" fill="#0f172a" />
-                    <rect x="88" y="38" width="5" height="5" fill="#0f172a" />
-                    <rect x="38" y="68" width="5" height="5" fill="#0f172a" />
-                    <rect x="48" y="78" width="5" height="5" fill="#0f172a" />
-                    <rect x="58" y="68" width="5" height="5" fill="#0f172a" />
-                    <rect x="68" y="68" width="5" height="5" fill="#0f172a" />
-                    <rect x="78" y="78" width="5" height="5" fill="#0f172a" />
-                    <rect x="88" y="88" width="5" height="5" fill="#0f172a" />
-                  </svg>
+              <div className="space-y-1">
+                <div className="text-[9.5px] font-mono font-bold uppercase text-slate-900">
+                  Statutory Ledger Integrity Checksum
                 </div>
-                <div className="space-y-0.5">
-                  <div className="text-[9.5px] font-mono font-bold uppercase text-slate-900">
-                    GST Statutory QR Code
-                  </div>
-                  <div className="text-[8.5px] text-slate-500 max-w-[190px]">
-                    Scan using any GST camera / scanner to verify cryptographic platform execution.
-                  </div>
-                  <div className="text-[8px] font-mono text-emerald-800 break-all">{verificationHash}</div>
+                <div className="text-[8.5px] text-slate-500 max-w-[300px]">
+                  Deterministic reconciliation digest computed from Invoice No, ECO GSTIN 18AFXPH9838M1Z9, Section 9(5) tax, and net paise remittance.
                 </div>
+                <div className="text-[8.5px] font-mono font-semibold text-emerald-800 break-all">{verificationHash}</div>
               </div>
 
-              {/* Right: Digital Signature Execution Seal */}
-              <div className="border-2 border-emerald-800/80 rounded-lg p-2 bg-emerald-50/50 flex items-center gap-2.5 shrink-0">
+              <div className="border-2 border-emerald-800/80 rounded-lg p-2.5 bg-emerald-50/50 flex items-center gap-2.5 shrink-0">
                 <div className="size-9 rounded-full border border-emerald-700 flex items-center justify-center bg-white text-emerald-800 font-bold text-xs">
                   OK
                 </div>
                 <div>
                   <div className="text-[9.5px] font-mono uppercase font-bold text-emerald-950 flex items-center gap-1">
                     <CheckCircle2 className="size-3 text-emerald-700" />
-                    Digitally Executed &amp; Signed
+                    Computer-Generated Tax Statement
                   </div>
-                  <div className="text-[9.5px] font-bold text-slate-900">Order King Internet Private Limited</div>
+                  <div className="text-[9.5px] font-bold text-slate-900">Orderkingpay</div>
                   <div className="text-[8.5px] text-slate-600">
-                    Authorized Signatory: Head of Taxation &amp; Regulatory Compliance
+                    GSTIN: 18AFXPH9838M1Z9 · Sribhumi, Assam - 788710
                   </div>
                   <div className="text-[8px] font-mono text-slate-500">
-                    Digital Certificate: OK-CERT-IN-202610 · Bangalore
+                    Cycle Ref: OK-GSTR1-{activeMonth.compactCode}
                   </div>
                 </div>
               </div>
@@ -795,16 +823,16 @@ export function MonthlyGstr1InvoiceModal({
               className="h-8 text-xs border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200"
             >
               <Printer className="mr-1.5 size-3.5 text-emerald-400" />
-              Print Tax Invoice
+              Print / Save PDF
             </Button>
             <Button
               size="sm"
               variant="primary"
-              onClick={handlePrint}
+              onClick={handleDownloadGstr1Json}
               className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium"
             >
               <Download className="mr-1.5 size-3.5" />
-              Download Official Monthly Tax Invoice
+              Download GSTR-1 JSON
             </Button>
           </div>
         </div>

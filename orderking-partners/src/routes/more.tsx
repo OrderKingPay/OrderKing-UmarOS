@@ -12,12 +12,9 @@ import { useCommissionTokens } from "@orderking/ui";
 import {
   ArrowUpRight,
   CalendarDays,
-  FileText,
   Globe,
   HeartHandshake,
   Mail,
-  Scale,
-  ShieldCheck,
   Sparkles,
   Volume2,
   VolumeX,
@@ -268,7 +265,7 @@ function MorePage() {
                 </p>
               </div>
             </div>
-            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">24/7 SUPPORT</span>
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">PARTNER DESK</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-gray-600 border-t border-gray-100">
@@ -277,10 +274,10 @@ function MorePage() {
               <span>
                 Partner Desk:{" "}
                 <a
-                  href="mailto:partner-support@orderkingpay.com"
+                  href="mailto:care@orderkingpay.com"
                   className="text-[#E23744] font-semibold hover:underline"
                 >
-                  partner-support@orderkingpay.com
+                  care@orderkingpay.com
                 </a>
               </span>
             </div>

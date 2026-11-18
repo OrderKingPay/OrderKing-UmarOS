@@ -9,7 +9,7 @@ import { formatINR, mulBps } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { REJECT_REASONS, type OrderState } from "@/lib/orders/state-machine";
 import { transitionOrderViaHDmaster } from "@/lib/server/hdmaster-order-transition";
-import { delayOrderPrep, requestRiderDispatch } from "@/lib/server/api-orders";
+import { confirmRiderHandover, delayOrderPrep, requestRiderDispatch } from "@/lib/server/api-orders";
 import { enqueueMutation } from "@/lib/offline/durable-queue";
 import { StructuredRejectionModal } from "@/components/orders/structured-rejection-modal";
 import { CourierRadarMap } from "@/components/orders/courier-radar-map";
@@ -243,6 +243,16 @@ export function OrderCard({
 
     setHandoverSubmitting(true);
     try {
+      await confirmRiderHandover({
+        data: {
+          restaurantId,
+          orderId: order.id,
+          otp: fullOtp,
+          barcodeScanned,
+          tamperTapeChecked,
+          billAttachedChecked,
+        },
+      });
       playHandoverSuccessChime();
 
       // Update client state
@@ -260,8 +270,8 @@ export function OrderCard({
       toast.success(`Rider Handover Verified. Food handed over for Order #${order.orderNumber}.`);
       setHandoverModalOpen(false);
       onChanged?.();
-    } catch {
-      toast.error("Failed to verify rider handover.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to verify rider handover.");
     } finally {
       setHandoverSubmitting(false);
     }

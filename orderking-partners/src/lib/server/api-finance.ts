@@ -81,8 +81,8 @@ export const getSettlements = createServerFn({ method: "GET" })
               const commGst = Math.round((comm * 18) / 100);
               const gwFee = Math.round((gross * 180) / 10000); // 1.8% PG fee
               const gwGst = Math.round((gwFee * 18) / 100);
-              const tcs = Math.round((netTaxable * 100) / 10000); // 1% TCS Sec 52
-              const tds = Math.round((gross * 100) / 10000); // 1% TDS Sec 194-O
+              const tcs = Math.round((netTaxable * 50) / 10000); // 0.5% TCS Sec 52 (0.25% CGST + 0.25% SGST)
+              const tds = Math.round((gross * 10) / 10000); // 0.1% TDS Sec 194-O
               const sec9_5 = Math.round((netTaxable * 500) / 10000); // 5% Food GST remitted by platform
 
               return {

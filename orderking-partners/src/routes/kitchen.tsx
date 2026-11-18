@@ -8,8 +8,7 @@ import { Card } from "@/components/ui/card";
 import { useT } from "@/components/use-t";
 import { useVendor } from "@/components/use-vendor";
 import { useClientState } from "@/lib/client-state";
-import { listOrders } from "@/lib/server/api-orders";
-import { getSoundboxStatus, activateSoundbox } from "@/lib/server/api-finance";
+import { acceptOrder, listOrders, markReady, quickThrottleKitchen } from "@/lib/server/api-orders";
 import { isFeatureEnabled, type AppLanguage } from "@/lib/platform-config";
 import { INDIAN_LANGUAGE_CATALOG } from "@/lib/i18n";
 import { supabaseCloud } from "@/lib/db-cloud";
@@ -24,13 +23,8 @@ import {
   PlayCircle,
   LayoutGrid,
   Monitor,
-  Printer,
-  Clock,
-  Sparkles,
 } from "lucide-react";
-import { KingPaySoundboxEngine } from "@/components/KingPaySoundboxEngine";
 import { KitchenDisplayStation } from "@/components/kitchen-display-station";
-import { inferDishComplexity } from "@/lib/orders/dynamic-kpt";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
 import { toast } from "sonner";
 
@@ -194,7 +188,7 @@ export function KitchenPage({
   const setSoundOn = useClientState((s) => s.setSoundOn);
 
   // Active view tab: Live Kanban vs KDS Cook Station vs POS Gateway
-  const [activeTab, setActiveTab] = useState<"BOARD" | "KDS" | "HARDWARE">(defaultTab);
+  const [activeTab, setActiveTab] = useState<"BOARD" | "KDS">(defaultTab);
   const [testVoiceLang, setTestVoiceLang] = useState<AppLanguage>(lang);
 
   // Kitchen Throttling (+15m / +30m rush prep buffer) state
@@ -213,40 +207,74 @@ export function KitchenPage({
     return false;
   });
 
-  const handleSetThrottle = (buffer: number) => {
-    setThrottleBuffer(buffer);
-    setKitchenPaused(false);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_kitchen_throttle_buffer", buffer.toString());
-      localStorage.setItem("ok_kitchen_paused", "false");
-    }
-    if (buffer > 0) {
-      useKitchenRushStore.getState().activate(buffer === 10 ? 10 : 15);
-      toast.warning(`Kitchen Rush Buffer: +${buffer} mins prep buffer applied! Riders and customers notified.`);
-    } else {
-      useKitchenRushStore.getState().deactivate();
-      toast.success("Standard Kitchen SLA Restored (+0 mins).");
+  const handleSetThrottle = async (buffer: number) => {
+    try {
+      if (vendor.restaurantId) {
+        if (kitchenPaused) {
+          await quickThrottleKitchen({ data: { restaurantId: vendor.restaurantId, mode: "RESUME" } });
+        }
+        await quickThrottleKitchen({
+          data: { restaurantId: vendor.restaurantId, mode: buffer > 0 ? "RUSH" : "NORMAL" },
+        });
+      }
+      setThrottleBuffer(buffer);
+      setKitchenPaused(false);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ok_kitchen_throttle_buffer", buffer.toString());
+        localStorage.setItem("ok_kitchen_paused", "false");
+      }
+      if (buffer > 0) {
+        useKitchenRushStore.getState().activate(buffer === 10 ? 10 : 15);
+        toast.warning(`Kitchen Rush Buffer: +${buffer} mins prep SLA saved.`);
+      } else {
+        useKitchenRushStore.getState().deactivate();
+        toast.success("Standard Kitchen SLA Restored (+0 mins).");
+      }
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update kitchen throttle.");
     }
   };
 
-  const handleToggleKitchenPause = () => {
+  const handleToggleKitchenPause = async () => {
     const nextPaused = !kitchenPaused;
-    setKitchenPaused(nextPaused);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ok_kitchen_paused", nextPaused.toString());
-    }
-    if (nextPaused) {
-      toast.error("Kitchen Paused: New orders on hold for 15 min rush relief.");
-    } else {
-      toast.success("Kitchen Resumed: Ready for new incoming orders!");
+    try {
+      if (vendor.restaurantId) {
+        await quickThrottleKitchen({
+          data: { restaurantId: vendor.restaurantId, mode: nextPaused ? "PAUSE" : "RESUME" },
+        });
+      }
+      setKitchenPaused(nextPaused);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ok_kitchen_paused", nextPaused.toString());
+      }
+      if (nextPaused) {
+        toast.error("Kitchen Paused: Storefront offline for incoming orders.");
+      } else {
+        toast.success("Kitchen Resumed: Storefront online for incoming orders.");
+      }
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to update kitchen status.");
     }
   };
 
-  const soundboxQuery = useQuery({
-    queryKey: ["soundbox", vendor.restaurantId],
-    queryFn: () => getSoundboxStatus({ data: { restaurantId: vendor.restaurantId } }),
-    enabled: Boolean(vendor.restaurantId),
-  });
+  const handleBumpKdsOrder = async (orderId: string) => {
+    if (!vendor.restaurantId) return;
+    const target = allOrders.find((o: any) => o.id === orderId);
+    try {
+      if (target && ["PLACED", "PENDING", "ACCEPTED", "CONFIRMED"].includes(String(target.state))) {
+        await acceptOrder({ data: { restaurantId: vendor.restaurantId, orderId } });
+      }
+      await markReady({ data: { restaurantId: vendor.restaurantId, orderId } });
+      toast.success(`Order #${target?.orderNumber ?? orderId.slice(-4)} marked Ready for Rider Pickup.`);
+      void qc.invalidateQueries({ queryKey: ["orders"] });
+      void qc.invalidateQueries({ queryKey: ["dashboard"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to mark order ready.");
+      throw err;
+    }
+  };
 
   const q = useQuery({
     queryKey: ["orders", vendor.restaurantId, "live"],
@@ -382,7 +410,7 @@ export function KitchenPage({
             type="button"
             onClick={handleToggleKitchenPause}
             className={`rounded-lg px-2.5 py-1 text-xs font-bold transition flex items-center gap-1 ${kitchenPaused
-                ? "bg-rose-700 text-gray-900 shadow-xs animate-pulse"
+                ? "bg-rose-700 text-white shadow-xs animate-pulse"
                 : "bg-surface border border-line text-muted hover:text-rose-500"
               }`}
           >
@@ -438,7 +466,7 @@ export function KitchenPage({
                 <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   Kitchen Display System (KDS)
                 </h2>
-                <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+                <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-mono font-semibold text-emerald-700">
                   {q.data ? `SYNCED ${new Date(q.data.serverTime).toLocaleTimeString()}` : "SYNCING"}
                 </span>
 
@@ -515,7 +543,7 @@ export function KitchenPage({
               <div
                 key={col.state}
                 className={`rounded-lg border px-3 py-2 flex items-center justify-between ${isUrgent
-                    ? "border-orange-500/40 bg-orange-500/10 text-orange-300"
+                    ? "border-orange-300 bg-orange-50 text-orange-800"
                     : "border-gray-200 bg-gray-50 text-gray-700"
                   }`}
               >
@@ -565,7 +593,7 @@ export function KitchenPage({
 
       {activeTab === "KDS" && (
         <div className="pt-2">
-          <KitchenDisplayStation orders={q.data?.orders ?? []} prepThrottleBuffer={throttleBuffer} />
+          <KitchenDisplayStation orders={q.data?.orders ?? []} prepThrottleBuffer={throttleBuffer} onBumpOrder={handleBumpKdsOrder} />
         </div>
       )}
 

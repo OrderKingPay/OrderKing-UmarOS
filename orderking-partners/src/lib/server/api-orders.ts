@@ -556,6 +556,59 @@ export const requestRiderDispatch = createServerFn({ method: "POST" })
     });
   });
 
+
+export const confirmRiderHandover = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((d: {
+    restaurantId?: string;
+    orderId: string;
+    otp?: string;
+    barcodeScanned?: boolean;
+    tamperTapeChecked?: boolean;
+    billAttachedChecked?: boolean;
+  }) => d)
+  .handler(async ({ context, data }) => {
+    return withVendor(context.userId, data.restaurantId, "orders.ready", async (sql, ctx) => {
+      const rows = await sql<{ id: string; order_number: string; state: string; status: string | null }>`
+        SELECT id, order_number, state, status FROM orders
+        WHERE id = ${data.orderId} AND restaurant_id = ${ctx.restaurantId}
+        LIMIT 1
+      `;
+      const order = rows[0];
+      if (!order) throw new Error("Order not found or unauthorized");
+      const numericDigits = (order.order_number || order.id).replace(/\D/g, "");
+      const expectedOtp = numericDigits.length >= 4 ? numericDigits.slice(-4) : numericDigits.padStart(4, "0");
+      if (!data.barcodeScanned && data.otp !== expectedOtp) {
+        throw new Error(`Invalid rider handover OTP (expected ${expectedOtp})`);
+      }
+      await sql`
+        UPDATE orders
+        SET state = 'PICKED_UP',
+            status = 'PICKED_UP',
+            updated_at = now()
+        WHERE id = ${order.id} AND restaurant_id = ${ctx.restaurantId}
+      `;
+      const method = data.barcodeScanned ? "Barcode Scan" : `OTP ${expectedOtp}`;
+      const checks = [
+        data.tamperTapeChecked ? "Tamper seal verified" : null,
+        data.billAttachedChecked ? "Bill attached" : null,
+      ].filter(Boolean).join(", ");
+      const reason = `Rider handover verified via ${method}${checks ? ` (${checks})` : ""}`;
+      await sql`
+        insert into order_events (id, order_id, restaurant_id, previous_state, new_state, actor, actor_user_id, reason)
+        values (${newId("evt")}, ${order.id}, ${ctx.restaurantId}, ${order.state || "READY"}, 'PICKED_UP', 'restaurant', ${context.userId}, ${reason})
+      `;
+      await writeAudit(sql, {
+        restaurantId: ctx.restaurantId,
+        actorUserId: context.userId,
+        action: "RIDER_HANDOVER_VERIFIED",
+        entityType: "order",
+        entityId: order.id,
+        detail: reason,
+      });
+      return { ok: true as const, orderId: order.id, state: "PICKED_UP" as const };
+    });
+  });
 export async function setOrderStatus(params: {
   orderId: string;
   status: "ACCEPTED" | "PREPARING" | "READY" | "REJECTED";

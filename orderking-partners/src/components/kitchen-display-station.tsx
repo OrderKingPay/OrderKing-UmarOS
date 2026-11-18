@@ -1,8 +1,7 @@
 import { getCurrentEcosystemShift } from "@orderking/ui";
 import { useState, useEffect } from "react";
-import { Clock, ChefHat, CheckSquare, Square, AlertTriangle, ArrowRight, Flame, Volume2 } from "lucide-react";
+import { Clock, ChefHat, CheckSquare, Square, AlertTriangle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 
 export interface KotItem {
   id: string;
@@ -34,10 +33,7 @@ function inferStation(name: string): "GRILL" | "TANDOOR" | "FRYER" | "CURRY" | "
   return "PACKING";
 }
 
-function mapOrdersToKotTickets(orders?: OrderView[], activeRadiusKm?: number): KotTicket[] {
-  if (!orders || orders.length === 0) return [];
-  const shift = getCurrentEcosystemShift();
-  const radiusCap = activeRadiusKm ?? shift.maxRadiusKm;
+function mapOrdersToKotTickets(orders?: OrderView[]): KotTicket[] {
   if (!orders || orders.length === 0) return [];
   return orders
     .filter((o) => ["PLACED", "ACCEPTED", "CONFIRMED", "PREPARING"].includes(o.state))
@@ -66,10 +62,13 @@ function mapOrdersToKotTickets(orders?: OrderView[], activeRadiusKm?: number): K
 export function KitchenDisplayStation({
   orders,
   prepThrottleBuffer = 0,
+  onBumpOrder,
 }: {
   orders?: OrderView[];
   prepThrottleBuffer?: number;
+  onBumpOrder?: (orderId: string) => Promise<void> | void;
 }) {
+  const [bumpingId, setBumpingId] = useState<string | null>(null);
   const currentShift = getCurrentEcosystemShift();
   const outOfRadiusOrders = (orders || []).filter(
     (o) => o.deliveryDistanceKm && o.deliveryDistanceKm > currentShift.maxRadiusKm
@@ -128,8 +127,17 @@ export function KitchenDisplayStation({
     );
   };
 
-  const bumpTicket = (ticketId: string) => {
-    setTickets((prev) => prev.filter((t) => t.id !== ticketId));
+  const bumpTicket = async (ticketId: string) => {
+    if (bumpingId === ticketId) return;
+    setBumpingId(ticketId);
+    try {
+      if (onBumpOrder) {
+        await onBumpOrder(ticketId);
+      }
+      setTickets((prev) => prev.filter((t) => t.id !== ticketId));
+    } finally {
+      setBumpingId(null);
+    }
   };
 
   const STATIONS = ["ALL", "TANDOOR", "CURRY", "FRYER", "GRILL", "PACKING"];
@@ -308,7 +316,7 @@ export function KitchenDisplayStation({
                 </div>
 
                 {t.status === "READY" && (
-                  <div className="mx-3 my-1 flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-950/30 px-2.5 py-1 text-[11px] font-mono text-emerald-300">
+                  <div className="mx-3 my-1 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-mono text-emerald-800">
                     <span className="flex items-center gap-1.5 font-bold">
                       <span className="relative flex size-2">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -316,7 +324,7 @@ export function KitchenDisplayStation({
                       </span>
                       <span>Order Ready · Rider Dispatch Notified</span>
                     </span>
-                    <span className="text-[10px] text-emerald-400/80">DISPATCH ACTIVE</span>
+                    <span className="text-[10px] text-emerald-700 font-bold">DISPATCH ACTIVE</span>
                   </div>
                 )}
 
@@ -327,14 +335,15 @@ export function KitchenDisplayStation({
                   </span>
                   <Button
                     size="sm"
-                    onClick={() => bumpTicket(t.id)}
+                    disabled={bumpingId === t.id}
+                    onClick={() => void bumpTicket(t.id)}
                     className={`text-xs gap-1 ${
                       t.status === "READY"
                         ? "bg-emerald-600 hover:bg-emerald-700 text-white"
                         : ""
                     }`}
                   >
-                    <span>{t.status === "READY" ? "Ready & Bump Ticket" : "Bump KOT"}</span>
+                    <span>{bumpingId === t.id ? "Marking Ready..." : t.status === "READY" ? "Ready & Bump Ticket" : "Mark Ready & Bump"}</span>
                     <ArrowRight className="size-3" />
                   </Button>
                 </div>

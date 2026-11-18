@@ -28,8 +28,8 @@ export function PartnerIndexRedirect() {
   }, [user, isPending]);
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-      <div className="size-8 border-4 border-[#00B074]/20 border-t-[#00B074] rounded-full animate-spin" />
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="size-8 border-4 border-[#E23744]/20 border-t-[#E23744] rounded-full animate-spin" />
     </div>
   );
 }
