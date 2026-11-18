@@ -27,7 +27,8 @@ import {
 import { toast } from "sonner";
 import { askAssistant } from "@/lib/server/api-more";
 import { getMenu, setAvailability } from "@/lib/server/api-menu";
-import { quickThrottleKitchen } from "@/lib/server/api-orders";
+import { getDashboard, quickThrottleKitchen } from "@/lib/server/api-orders";
+import { calculateDailyBusinessSummary } from "@/lib/finance/daily-summary";
 import {
   orderKingSpark,
   type SparkDisputeCase,
@@ -196,6 +197,13 @@ export function OrderKingSparkModal({
   const menuQ = useQuery({
     queryKey: ["menu", activeRestaurantId],
     queryFn: () => getMenu({ data: { restaurantId: activeRestaurantId } }),
+    enabled: Boolean(activeRestaurantId && isOpen),
+  });
+
+  // Load live PostgreSQL dashboard & today's delivered orders for authentic shift recon
+  const dashQ = useQuery({
+    queryKey: ["dashboard", activeRestaurantId],
+    queryFn: () => getDashboard({ data: { restaurantId: activeRestaurantId } }),
     enabled: Boolean(activeRestaurantId && isOpen),
   });
 
@@ -376,27 +384,23 @@ export function OrderKingSparkModal({
         setMessages((prev) => [...prev, sparkMsg]);
         speakResponse(sparkMsg.text);
       } else {
-        // Fallback to orderKingSpark local query handler
-        const fallback = orderKingSpark.handleRestaurantQuery(questionText);
         const sparkMsg: ChatMessage = {
           id: `spark-${Date.now()}`,
           sender: "spark",
-          text: fallback.text,
+          text: "Assistant service did not return a reply for this query. Please retry or use the live quick action controls above.",
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages((prev) => [...prev, sparkMsg]);
-        speakResponse(sparkMsg.text);
       }
-    } catch {
-      const fallback = orderKingSpark.handleRestaurantQuery(questionText);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Assistant service unavailable";
       const sparkMsg: ChatMessage = {
         id: `spark-${Date.now()}`,
         sender: "spark",
-        text: fallback.text,
+        text: `Unable to reach live assistant backend (${errMsg}). No synthetic data was generated — please check connectivity and retry.`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, sparkMsg]);
-      speakResponse(sparkMsg.text);
     } finally {
       setIsLoading(false);
     }
@@ -428,13 +432,42 @@ export function OrderKingSparkModal({
     speakResponse(sparkMsg.text);
   };
 
-  // Quick Action: Daily Shift Financial Recon
+  // Quick Action: Daily Shift Financial Recon (100% Live PostgreSQL Data)
   const triggerReconAction = () => {
-    const recon = orderKingSpark.generateDailyShiftRecon("Today");
+    const deliveredOrders = dashQ.data?.todayDeliveredOrders ?? [];
+    const commissionBps = dashQ.data?.commissionBps ?? vendor.selected?.commissionBps ?? 2500;
+    const summary = calculateDailyBusinessSummary(deliveredOrders, {
+      defaultCommissionBps: commissionBps,
+    });
+    const deliveredCount = deliveredOrders.length || (dashQ.data?.today?.accepted ?? 0);
+    const grossPaise = deliveredOrders.length > 0 ? summary.grossGmvPaise : (dashQ.data?.today?.salesPaise ?? 0);
+    const netPayoutPaise = deliveredOrders.length > 0 ? summary.netEstimatedPayoutPaise : (dashQ.data?.today?.settlementPaise ?? 0);
+    const recon: SparkShiftFinancialReconReport = {
+      shiftDate: new Date().toISOString().slice(0, 10),
+      shiftPeriod: "Today",
+      totalDeliveredOrders: deliveredCount,
+      cancelledOrders: dashQ.data?.today?.cancelled ?? 0,
+      grossFoodSalesPaise: summary.totalFoodValuePaise,
+      packagingChargesPaise: summary.totalPackingPaise,
+      grossCustomerSpendPaise: grossPaise,
+      merchantFundedDiscountsPaise: summary.totalRestaurantDiscountsPaise,
+      platformSponsoredDiscountCreditPaise: summary.totalPlatformDiscountsPaise,
+      orderKingPlatformCommissionPaise: summary.platformCommissionPaise,
+      servicesGstPaise: summary.servicesGstTotalPaise,
+      paymentGatewayFeePaise: summary.gatewayFeePaise,
+      gst95RemittedByPlatformPaise: summary.sec9_5GstPaise,
+      tcsSection52Paise: Math.round((summary.netTaxableSupplyPaise * 100) / 10000),
+      tdsSection194OPaise: Math.round((grossPaise * 10) / 10000),
+      customerDisputeDeductionsPaise: dashQ.data?.today?.refundsPaise ?? 0,
+      netPayoutAccruedPaise: netPayoutPaise,
+      bankSettlementAccount: "Registered Settlement Account",
+      settlementStatus: "PENDING_MIDNIGHT_BATCH",
+      conversationalSummary: `Live daily reconciliation: ${deliveredCount} delivered order(s), gross sales ${formatINR(grossPaise)}, net estimated payout ${formatINR(netPayoutPaise)}.`,
+    };
     const sparkMsg: ChatMessage = {
       id: `spark-recon-${Date.now()}`,
       sender: "spark",
-      text: `Daily Shift & Financial Recon Report:\nDelivered Orders: ${recon.totalDeliveredOrders} | Gross Sales: ${formatINR(recon.grossCustomerSpendPaise)}\nPlatform Commission: ${formatINR(recon.orderKingPlatformCommissionPaise)}\nStatutory GST Sec 9(5): ${formatINR(recon.gst95RemittedByPlatformPaise)}\nNet Bank Payout Accrued: ${formatINR(recon.netPayoutAccruedPaise)} (T+1 Daily Deposit)`,
+      text: `Daily Shift & Financial Recon Report (Live Ledger):\nDelivered Orders: ${recon.totalDeliveredOrders} | Gross Sales: ${formatINR(recon.grossCustomerSpendPaise)}\nPlatform Commission (${Math.round(commissionBps / 100)}%): ${formatINR(recon.orderKingPlatformCommissionPaise)}\nStatutory GST Sec 9(5): ${formatINR(recon.gst95RemittedByPlatformPaise)}\nNet Bank Payout Accrued: ${formatINR(recon.netPayoutAccruedPaise)} (T+1 Daily Deposit)`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       actionCardType: "RECON",
       reconData: recon,
@@ -838,7 +871,7 @@ export function OrderKingSparkModal({
                         </span>
                       </div>
                       <div className="flex justify-between text-slate-300">
-                        <span>Platform Commission (22%):</span>
+                        <span>Platform Commission ({Math.round((dashQ.data?.commissionBps ?? vendor.selected?.commissionBps ?? 2500) / 100)}%):</span>
                         <span className="font-bold text-white">
                           {formatINR(m.reconData.orderKingPlatformCommissionPaise)}
                         </span>

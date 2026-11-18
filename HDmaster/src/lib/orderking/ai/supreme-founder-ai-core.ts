@@ -11,13 +11,13 @@ import { ACTIVE_DELIVERY_ZONES, isDeliveryActiveInLocation } from "../geo/geofen
 import type { UmarAiJumpCardData } from "./umar-ai-directory";
 
 export type AiModelId =
-  | "auto-supreme-orchestrator"
+  | "auto-orchestrator"
   | "ensemble-consensus"
   | "local-ultra"
   | "claude-4-6-opus"
   | "gpt-5-6-omni"
   | "grok-4-6-super"
-  | "codex-supreme"
+  | "codex-engine"
   | "gemini-3-8-ultra"
   | "deepseek-r1-local"
   | "claude-3-7-sonnet"
@@ -34,7 +34,7 @@ export function resolveAutoModel(query: string): { model: AiModelId; reason: str
     return { model: "ensemble-consensus", reason: "Auto-routed to Ensemble Multi-Model Consensus: Running all strongest models simultaneously." };
   }
   if (q.includes("code") || q.includes("schema") || q.includes("api") || q.includes("scaffold") || q.includes("react") || q.includes("sql") || q.includes("git")) {
-    return { model: "codex-supreme", reason: "Auto-routed to Codex Premium Architect for maximum precision code synthesis." };
+    return { model: "codex-engine", reason: "Auto-routed to Codex Premium Architect for maximum precision code synthesis." };
   }
   if (q.includes("live") || q.includes("score") || q.includes("news") || q.includes("trending") || q.includes("cricket") || q.includes("match")) {
     return { model: "grok-4-6-super", reason: "Auto-routed to Grok 4.6 SuperGrok Ultra for real-time live telemetric intelligence." };
@@ -232,7 +232,7 @@ export interface VideoEditorStudioConfig {
 
 export interface SystemSettingsConfig {
   aiModel: AiModelId;
-  thinkingDepth: "standard" | "deep" | "sovereign_ultra";
+  thinkingDepth: "standard" | "deep" | "extended_deep";
   speechVoice: "young_female_aria" | "executive_nova" | "deep_male_orion";
   speechSpeed: number; // 0.8 to 1.5
   speechPitch: number; // 0.8 to 1.4
@@ -246,7 +246,7 @@ export interface SystemSettingsConfig {
 
 export const DEFAULT_SYSTEM_SETTINGS: SystemSettingsConfig = {
   aiModel: "local-ultra",
-  thinkingDepth: "sovereign_ultra",
+  thinkingDepth: "extended_deep",
   speechVoice: "young_female_aria",
   speechSpeed: 1.05,
   speechPitch: 1.1,

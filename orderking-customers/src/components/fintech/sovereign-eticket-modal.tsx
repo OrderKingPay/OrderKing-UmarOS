@@ -30,7 +30,7 @@ interface Props {
   onClose: () => void;
 }
 
-export function SovereignETicketModal({ ticket, onClose }: Props) {
+export function CarrierETicketModal({ ticket, onClose }: Props) {
   const [countdown, setCountdown] = useState<string>("");
   const [copiedPnr, setCopiedPnr] = useState(false);
 
@@ -425,4 +425,4 @@ export function SovereignETicketModal({ ticket, onClose }: Props) {
   );
 }
 
-export { SovereignETicketModal as CarrierETicketModal };
+export { CarrierETicketModal as SovereignETicketModal };

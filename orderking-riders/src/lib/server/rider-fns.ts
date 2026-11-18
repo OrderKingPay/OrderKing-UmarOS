@@ -855,21 +855,37 @@ export const verifyTruecallerRiderFn = createServerFn({ method: "POST" })
       throw new RiderError("INVALID_PHONE", "Please enter a valid 10-digit mobile number.", 400);
     }
 
-    if (data.accessToken) {
-      try {
-        const tcRes = await fetch("https://profile4.truecaller.com/v1/default", {
-          headers: { Authorization: `Bearer ${data.accessToken}` },
-        });
-        if (tcRes.ok) {
-          const tcData = (await tcRes.json().catch(() => ({}))) as { phoneNumber?: string; name?: string };
-          const tcPhone = sanitizeIndianPhone(tcData.phoneNumber || "");
-          if (tcPhone && tcPhone !== cleanPhone) {
-            throw new RiderError("PHONE_MISMATCH", "Truecaller phone number does not match.", 400);
-          }
-        }
-      } catch (err) {
-        if (err instanceof RiderError) throw err;
+    if (!data.accessToken?.trim()) {
+      throw new RiderError(
+        "TRUECALLER_TOKEN_REQUIRED",
+        "Truecaller cryptographic verification token is required. Use mobile OTP login.",
+        401,
+      );
+    }
+
+    try {
+      const tcRes = await fetch("https://profile4.truecaller.com/v1/default", {
+        headers: { Authorization: `Bearer ${data.accessToken.trim()}` },
+      });
+      if (!tcRes.ok) {
+        throw new RiderError(
+          "TRUECALLER_VERIFICATION_FAILED",
+          "Truecaller token verification failed. Use mobile OTP login.",
+          401,
+        );
       }
+      const tcData = (await tcRes.json().catch(() => ({}))) as { phoneNumber?: string; name?: string };
+      const tcPhone = sanitizeIndianPhone(tcData.phoneNumber || "");
+      if (!tcPhone || tcPhone !== cleanPhone) {
+        throw new RiderError("PHONE_MISMATCH", "Truecaller phone number does not match.", 400);
+      }
+    } catch (err) {
+      if (err instanceof RiderError) throw err;
+      throw new RiderError(
+        "TRUECALLER_UNAVAILABLE",
+        "Truecaller verification service could not be reached. Use mobile OTP login.",
+        503,
+      );
     }
 
     const email = `${cleanPhone}@rider.orderking.in`;

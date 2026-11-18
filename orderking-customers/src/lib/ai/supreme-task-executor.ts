@@ -90,11 +90,11 @@ export interface PremiumExecutionPlan {
   pauseReason?: string;
 }
 
-export type SupremeStageNode = PremiumStageNode;
+export type StageNode = PremiumStageNode;
 export type EnterpriseStageNode = PremiumStageNode;
-export type SupremeExecutionPlan = PremiumExecutionPlan;
+export type ExecutionPlan = PremiumExecutionPlan;
 export type EnterpriseExecutionPlan = PremiumExecutionPlan;
-export type SupremeTaskStage = PremiumTaskStage;
+export type TaskStage = PremiumTaskStage;
 export type EnterpriseTaskStage = PremiumTaskStage;
 
 export function decomposeFounderGoal(goal: string): PremiumExecutionPlan {

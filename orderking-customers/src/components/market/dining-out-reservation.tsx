@@ -100,7 +100,7 @@ export function DiningOutReservationModal({
   if (!open && !isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-4 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl border border-border bg-surface shadow-2xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-surface-2 px-5 py-4">
@@ -307,8 +307,8 @@ export function DiningOutReservationModal({
         {!isConfirmed && (
           <div className="border-t border-border bg-surface px-5 py-3.5 flex items-center justify-between">
             <div>
-              <p className="text-[11px] text-muted">Zero Cancellation Fee</p>
-              <p className="font-bold text-xs text-fg">Direct Restaurant Booking</p>
+              <p className="text-[11px] text-muted">No booking fee</p>
+              <p className="font-bold text-xs text-fg">Direct Restaurant Request</p>
             </div>
             <Button onClick={handleConfirm} disabled={isSubmitting} className="gap-1.5">
               <Sparkles className="size-3.5" /> {isSubmitting ? "Submitting..." : "Request Table"}

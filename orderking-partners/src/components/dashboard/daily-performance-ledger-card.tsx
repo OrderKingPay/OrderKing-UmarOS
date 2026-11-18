@@ -23,11 +23,13 @@ import {
 
 export interface DailyPerformanceLedgerCardProps {
   orders?: DeliveredOrderInput[];
+  commissionBps?: number;
   customSummary?: Partial<DailyBusinessSummary>;
 }
 
 export function DailyPerformanceLedgerCard({
   orders,
+  commissionBps,
   customSummary,
 }: DailyPerformanceLedgerCardProps) {
   const [showItemized, setShowItemized] = useState(false);
@@ -39,7 +41,8 @@ export function DailyPerformanceLedgerCard({
   }, []);
 
   const effectiveOrders = orders && orders.length > 0 ? orders : [];
-  const computed = calculateDailyBusinessSummary(effectiveOrders, { refDate: now });
+  const effectiveCommissionBps = commissionBps ?? 2500;
+  const computed = calculateDailyBusinessSummary(effectiveOrders, { defaultCommissionBps: effectiveCommissionBps, refDate: now });
 
   const summary: DailyBusinessSummary = {
     ...computed,
@@ -66,7 +69,7 @@ export function DailyPerformanceLedgerCard({
             Today&apos;s Revenue &amp; Estimated Net Payout
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            Transparent breakdown of gross sales, service deductions, and daily bank payout.
+            Itemized breakdown of gross sales, statutory deductions, and daily bank payout.
           </p>
         </div>
 
@@ -179,7 +182,7 @@ export function DailyPerformanceLedgerCard({
         {/* Concise Deductions Summary Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono pt-1">
           <div className="p-2.5 rounded-xl bg-white border border-gray-200">
-            <div className="text-[10px] text-gray-500">Platform Commission (25%)</div>
+            <div className="text-[10px] text-gray-500">Platform Commission ({(effectiveCommissionBps / 100).toFixed(0)}%)</div>
             <div className="font-bold text-gray-900 mt-0.5">
               -{formatINR(summary.platformCommissionPaise)}
             </div>

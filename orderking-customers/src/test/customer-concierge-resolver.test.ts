@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CONCIERGE_DIALECTS,
-  resolveSovereignResponse,
+  resolveConciergeResponse,
   type ActionPayload,
   type SupportedDialect,
 } from "../components/ai/customer-concierge-drawer";
@@ -45,7 +45,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
       for (const query of testQueries) {
         const enDialect = getDialect("en");
-        const res = resolveSovereignResponse(query, enDialect);
+        const res = resolveConciergeResponse(query, enDialect);
 
         expect(res.reply).toBeTruthy();
         expect(res.reply).not.toContain("\n\n");
@@ -106,7 +106,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
   describe("Directive 3: Intent-to-Action Parser", () => {
     it("parses direct food requests into CHECKOUT_POPUP with item, quantity, and estimatedPaise", () => {
       // 1. English
-      const enRes = resolveSovereignResponse("order biryani", getDialect("en"));
+      const enRes = resolveConciergeResponse("order biryani", getDialect("en"));
       expect(enRes.action?.type).toBe("CHECKOUT_POPUP");
       if (enRes.action?.type === "CHECKOUT_POPUP") {
         expect(enRes.action.item).toContain("Biryani");
@@ -115,7 +115,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 2. Hindi: "biryani chahiye"
-      const hiRes = resolveSovereignResponse("biryani chahiye", getDialect("hi"));
+      const hiRes = resolveConciergeResponse("biryani chahiye", getDialect("hi"));
       expect(hiRes.action?.type).toBe("CHECKOUT_POPUP");
       if (hiRes.action?.type === "CHECKOUT_POPUP") {
         expect(hiRes.action.item).toContain("Biryani");
@@ -124,7 +124,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 3. Bengali / Sylheti: "ekta biriyani lagbe"
-      const bnRes = resolveSovereignResponse("ekta biriyani lagbe", getDialect("bn"));
+      const bnRes = resolveConciergeResponse("ekta biriyani lagbe", getDialect("bn"));
       expect(bnRes.action?.type).toBe("CHECKOUT_POPUP");
       if (bnRes.action?.type === "CHECKOUT_POPUP") {
         expect(bnRes.action.item).toContain("Biryani");
@@ -133,7 +133,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 4. Quantity parsing: "2 pizza"
-      const pizzaRes = resolveSovereignResponse("I want 2 pizza", getDialect("en"));
+      const pizzaRes = resolveConciergeResponse("I want 2 pizza", getDialect("en"));
       expect(pizzaRes.action?.type).toBe("CHECKOUT_POPUP");
       if (pizzaRes.action?.type === "CHECKOUT_POPUP") {
         expect(pizzaRes.action.item).toBe("Farmhouse Fresh Pizza");
@@ -144,21 +144,21 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("parses KingPay / UPI requests into KINGPAY_POPUP with SCAN, BILL, or TRANSFER", () => {
       // Scan
-      const scanRes = resolveSovereignResponse("scan bharatqr to pay", getDialect("en"));
+      const scanRes = resolveConciergeResponse("scan bharatqr to pay", getDialect("en"));
       expect(scanRes.action?.type).toBe("KINGPAY_POPUP");
       if (scanRes.action?.type === "KINGPAY_POPUP") {
         expect(scanRes.action.action).toBe("SCAN");
       }
 
       // Bill
-      const billRes = resolveSovereignResponse("pay electricity bill with kingpay", getDialect("en"));
+      const billRes = resolveConciergeResponse("pay electricity bill with kingpay", getDialect("en"));
       expect(billRes.action?.type).toBe("KINGPAY_POPUP");
       if (billRes.action?.type === "KINGPAY_POPUP") {
         expect(billRes.action.action).toBe("BILL");
       }
 
       // Transfer
-      const transferRes = resolveSovereignResponse("send money via upi transfer", getDialect("en"));
+      const transferRes = resolveConciergeResponse("send money via upi transfer", getDialect("en"));
       expect(transferRes.action?.type).toBe("KINGPAY_POPUP");
       if (transferRes.action?.type === "KINGPAY_POPUP") {
         expect(transferRes.action.action).toBe("TRANSFER");
@@ -177,7 +177,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       for (const query of ambiguousQueries) {
         const detected = detectLanguage(query);
         const dialect = getDialect(detected);
-        const res = resolveSovereignResponse(query, dialect);
+        const res = resolveConciergeResponse(query, dialect);
 
         // Expect exactly 1 short question comparing Biryani or Homestyle Thali
         expect(res.reply).toMatch(/Biryani|बिरयानी|বিরিয়ানি|বিৰিয়ানি/i);
@@ -209,7 +209,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       for (const query of discountQueries) {
         const detected = detectLanguage(query);
         const dialect = getDialect(detected);
-        const res = resolveSovereignResponse(query, dialect);
+        const res = resolveConciergeResponse(query, dialect);
 
         // Never generate discounts or fake codes
         expect(res.reply.toLowerCase()).not.toContain("50% off");
@@ -239,11 +239,11 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
     it("executes intent resolution 100% locally with sub-5ms performance benchmark", () => {
       const start = performance.now();
       for (let i = 0; i < 200; i++) {
-        resolveSovereignResponse("Order 1 Chicken Dum Biryani", getDialect("en"));
-        resolveSovereignResponse("biryani chahiye", getDialect("hi"));
-        resolveSovereignResponse("ekta biriyani lagbe", getDialect("bn"));
-        resolveSovereignResponse("scan bharatqr", getDialect("en"));
-        resolveSovereignResponse("discount chahiye", getDialect("hi"));
+        resolveConciergeResponse("Order 1 Chicken Dum Biryani", getDialect("en"));
+        resolveConciergeResponse("biryani chahiye", getDialect("hi"));
+        resolveConciergeResponse("ekta biriyani lagbe", getDialect("bn"));
+        resolveConciergeResponse("scan bharatqr", getDialect("en"));
+        resolveConciergeResponse("discount chahiye", getDialect("hi"));
       }
       const end = performance.now();
       const avgMs = (end - start) / 1000;
@@ -259,7 +259,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
   describe("Additional Architectural Specification: Contextual Suggestive Selling", () => {
     it("attaches high-margin suggested add-ons (45%-60% margin) into CHECKOUT_POPUP payload", () => {
       // 1. Biryani: Raita and Gulab Jamun
-      const biryaniRes = resolveSovereignResponse("1 Chicken Dum Biryani", getDialect("en"));
+      const biryaniRes = resolveConciergeResponse("1 Chicken Dum Biryani", getDialect("en"));
       expect(biryaniRes.action?.type).toBe("CHECKOUT_POPUP");
       if (biryaniRes.action?.type === "CHECKOUT_POPUP") {
         expect(biryaniRes.action.suggestedAddons).toBeDefined();
@@ -275,7 +275,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 2. Pizza: Garlic Bread and Soda
-      const pizzaRes = resolveSovereignResponse("order pizza", getDialect("en"));
+      const pizzaRes = resolveConciergeResponse("order pizza", getDialect("en"));
       if (pizzaRes.action?.type === "CHECKOUT_POPUP") {
         const addonNames = pizzaRes.action.suggestedAddons?.map((a: any) => a.name);
         expect(addonNames).toContain("Garlic Breadsticks");
@@ -283,7 +283,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 3. Bengali prompt: "ekta biriyani lagbe" -> Bengali suggestive prompt
-      const bnBiryani = resolveSovereignResponse("ekta biriyani lagbe", getDialect("bn"));
+      const bnBiryani = resolveConciergeResponse("ekta biriyani lagbe", getDialect("bn"));
       expect(bnBiryani.reply).toContain("বিরিয়ানি");
       expect(bnBiryani.reply).toMatch(/যোগ করতে চান|রায়তা|গোলাপ জামুন/i);
     });
@@ -295,7 +295,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
   describe("Directive 6: Connected Ecosystem Live Item 86 Inventory Filter", () => {
     it("never suggests an add-on that is marked 86'd (out-of-stock) in the kitchen POS", () => {
       // 1. Raita is marked 86'd -> Only Gulab Jamun suggested
-      const resRaita86 = resolveSovereignResponse(
+      const resRaita86 = resolveConciergeResponse(
         "1 Chicken Dum Biryani",
         getDialect("en"),
         { outOfStockItems: ["addon-raita", "Chilled Mint Raita"] }
@@ -312,7 +312,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       }
 
       // 2. Both Raita & Gulab Jamun are 86'd -> Zero add-ons suggested
-      const resBoth86 = resolveSovereignResponse(
+      const resBoth86 = resolveConciergeResponse(
         "1 Chicken Dum Biryani",
         getDialect("en"),
         { outOfStockItems: ["addon-raita", "addon-gulab-jamun"] }
@@ -328,7 +328,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("notifies customer and redirects to available signature dish when requested item itself is 86'd", () => {
       // Biryani is 86'd (sold out) in POS inventory
-      const resBiryani86 = resolveSovereignResponse(
+      const resBiryani86 = resolveConciergeResponse(
         "I want to order biryani",
         getDialect("en"),
         { outOfStockItems: ["biryani", "Royal Chicken Dum Biryani"] }
@@ -360,7 +360,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       ];
 
       for (const query of irritationQueries) {
-        const res = resolveSovereignResponse(query, getDialect("en"));
+        const res = resolveConciergeResponse(query, getDialect("en"));
 
         expect(res.action?.type).toBe("CHECKOUT_POPUP");
         if (res.action?.type === "CHECKOUT_POPUP") {
@@ -385,7 +385,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
     });
 
     it("suppresses 100% of upsell prompts when options.suppressSuggestions is explicitly true", () => {
-      const res = resolveSovereignResponse(
+      const res = resolveConciergeResponse(
         "1 Chicken Dum Biryani",
         getDialect("en"),
         { suppressSuggestions: true }
@@ -400,13 +400,13 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("verifies KingPay area default response and cab transit dispatch intent", () => {
       // 1. Cab transit
-      const cabRes = resolveSovereignResponse("book cab to airport", getDialect("en"), { area: "kingpay" });
+      const cabRes = resolveConciergeResponse("book cab to airport", getDialect("en"), { area: "kingpay" });
       expect(cabRes.action?.type).toBe("NAVIGATE");
       expect(cabRes.action?.url).toBe("/travel?tab=cabs");
       expect(cabRes.reply).toContain("transit is ready");
 
       // 2. Default in kingpay area
-      const defRes = resolveSovereignResponse("general question", getDialect("en"), { area: "kingpay" });
+      const defRes = resolveConciergeResponse("general question", getDialect("en"), { area: "kingpay" });
       expect(defRes.action?.type).toBe("KINGPAY_POPUP");
       expect(defRes.reply).toContain("KingPay Support");
       expect(defRes.reply.toLowerCase()).not.toContain("zero gateway markup");
@@ -414,27 +414,27 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("routes burger requests authentically to search catalog without fake dishes", () => {
       // 1. English in KingPay
-      const burgerRes = resolveSovereignResponse("Can I order a burger?", getDialect("en"), { area: "kingpay" });
+      const burgerRes = resolveConciergeResponse("Can I order a burger?", getDialect("en"), { area: "kingpay" });
       expect(burgerRes.action?.type).toBe("NAVIGATE");
       expect(burgerRes.action?.url).toBe("/search?q=burger");
       expect(burgerRes.reply).toContain("burger menus");
       expect(burgerRes.reply).not.toContain("Royal Feast Platter");
 
       // 2. Hindi
-      const hiBurger = resolveSovereignResponse("मुझे बर्गर खाना है", getDialect("hi"));
+      const hiBurger = resolveConciergeResponse("मुझे बर्गर खाना है", getDialect("hi"));
       expect(hiBurger.action?.type).toBe("NAVIGATE");
       expect(hiBurger.action?.url).toBe("/search?q=burger");
       expect(hiBurger.reply).toContain("बर्गर");
 
       // 3. Bengali
-      const bnBurger = resolveSovereignResponse("বার্গার অর্ডার করতে চাই", getDialect("bn"));
+      const bnBurger = resolveConciergeResponse("বার্গার অর্ডার করতে চাই", getDialect("bn"));
       expect(bnBurger.action?.type).toBe("NAVIGATE");
       expect(bnBurger.action?.url).toBe("/search?q=burger");
       expect(bnBurger.reply).toContain("বার্গার");
     });
 
     it("answers restaurant connectivity inquiries with authentic partner architecture", () => {
-      const restRes = resolveSovereignResponse("how are restaurants connected to kingpay", getDialect("en"), { area: "kingpay" });
+      const restRes = resolveConciergeResponse("how are restaurants connected to kingpay", getDialect("en"), { area: "kingpay" });
       expect(restRes.action?.type).toBe("NAVIGATE");
       expect(restRes.action?.url).toBe("/");
       expect(restRes.reply).toContain("partner.orderkingpay.com");
@@ -442,7 +442,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
     });
 
     it("routes general food inquiries in KingPay to OrderKing Food", () => {
-      const foodRes = resolveSovereignResponse("i want to order food", getDialect("en"), { area: "kingpay" });
+      const foodRes = resolveConciergeResponse("i want to order food", getDialect("en"), { area: "kingpay" });
       expect(foodRes.action?.type).toBe("NAVIGATE");
       expect(foodRes.action?.url).toBe("/");
       expect(foodRes.reply).toContain("OrderKing Food");
@@ -450,13 +450,13 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("accurately resolves train ticket queries across Hindi, Bengali, Assamese, Tamil, and Hinglish", () => {
       // 1. Bengali: "কিভাবে ট্রেন বুক করব টিকিট।"
-      const bnRes = resolveSovereignResponse("কিভাবে ট্রেন বুক করব টিকিট।", getDialect("bn"), { area: "kingpay" });
+      const bnRes = resolveConciergeResponse("কিভাবে ট্রেন বুক করব টিকিট।", getDialect("bn"), { area: "kingpay" });
       expect(bnRes.action?.type).toBe("NAVIGATE");
       expect(bnRes.action?.url).toBe("/travel?tab=trains");
       expect(bnRes.reply).toContain("ট্রেন");
 
       // 2. Hindi: "ट्रेन टिकट कैसे बुक किया जाएगा?"
-      const hiRes = resolveSovereignResponse("ट्रेन टिकट कैसे बुक किया जाएगा?", getDialect("hi"), { area: "kingpay" });
+      const hiRes = resolveConciergeResponse("ट्रेन टिकट कैसे बुक किया जाएगा?", getDialect("hi"), { area: "kingpay" });
       expect(hiRes.action?.type).toBe("NAVIGATE");
       expect(hiRes.action?.url).toBe("/travel?tab=trains");
       expect(hiRes.reply).toContain("ट्रेन");
@@ -464,14 +464,14 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       // 3. Hinglish: "Train ticket kaise book kiya jaayega."
       const hinglishCode = detectLanguage("Train ticket kaise book kiya jaayega.");
       expect(hinglishCode).toBe("hi");
-      const hinglishRes = resolveSovereignResponse("Train ticket kaise book kiya jaayega.", getDialect(hinglishCode), { area: "kingpay" });
+      const hinglishRes = resolveConciergeResponse("Train ticket kaise book kiya jaayega.", getDialect(hinglishCode), { area: "kingpay" });
       expect(hinglishRes.action?.type).toBe("NAVIGATE");
       expect(hinglishRes.action?.url).toBe("/travel?tab=trains");
 
       // 4. Assamese: "ট্ৰেইনৰ টিকট লাগে."
       const asCode = detectLanguage("ট্ৰেইনৰ টিকট লাগে.");
       expect(asCode).toBe("as");
-      const asRes = resolveSovereignResponse("ট্ৰেইনৰ টিকট লাগে.", getDialect(asCode), { area: "kingpay" });
+      const asRes = resolveConciergeResponse("ট্ৰেইনৰ টিকট লাগে.", getDialect(asCode), { area: "kingpay" });
       expect(asRes.action?.type).toBe("NAVIGATE");
       expect(asRes.action?.url).toBe("/travel?tab=trains");
       expect(asRes.reply).toContain("ট্ৰেইন");
@@ -479,7 +479,7 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
       // 5. Tamil: "ட்ரெய்ன் டிக்கெட்."
       const taCode = detectLanguage("ட்ரெய்ன் டிக்கெட்.");
       expect(taCode).toBe("ta");
-      const taRes = resolveSovereignResponse("ட்ரெய்ன் டிக்கெட்.", getDialect(taCode), { area: "kingpay" });
+      const taRes = resolveConciergeResponse("ட்ரெய்ன் டிக்கெட்.", getDialect(taCode), { area: "kingpay" });
       expect(taRes.action?.type).toBe("NAVIGATE");
       expect(taRes.action?.url).toBe("/travel?tab=trains");
       expect(taRes.reply).toContain("ரயில்");
@@ -487,12 +487,12 @@ describe("AI Concierge & Intent Resolver - Supreme Certification Suite", () => {
 
     it("accurately resolves language inquiry questions like 'Tumhe kun kun bhasha bujho.'", () => {
       const detected = detectLanguage("Tumhe kun kun bhasha bujho.");
-      const res = resolveSovereignResponse("Tumhe kun kun bhasha bujho.", getDialect(detected));
+      const res = resolveConciergeResponse("Tumhe kun kun bhasha bujho.", getDialect(detected));
       expect(res.reply).toMatch(/understand|বুঝি|समझता|বুজি/i);
     });
 
     it("guarantees food orders have clean short chat reply without chat upsell text", () => {
-      const biryaniRes = resolveSovereignResponse("How can I order a biryani?", getDialect("en"));
+      const biryaniRes = resolveConciergeResponse("How can I order a biryani?", getDialect("en"));
       expect(biryaniRes.reply).toMatch(/Chicken Dum Biryani/);
       expect(biryaniRes.action?.type).toBe("CHECKOUT_POPUP");
     });

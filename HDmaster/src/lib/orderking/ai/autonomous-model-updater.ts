@@ -61,7 +61,7 @@ export const INITIAL_MODEL_REGISTRY: UpgradableModelInfo[] = [
     benchmarkScore: 99.6,
   },
   {
-    id: "codex-supreme",
+    id: "codex-engine",
     name: "Codex Premium Architect",
     generation: "codex-local-v1",
     provider: "Codex Local Core",

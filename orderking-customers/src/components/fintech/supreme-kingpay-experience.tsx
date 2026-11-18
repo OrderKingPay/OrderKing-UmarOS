@@ -206,7 +206,7 @@ function CatalogHitIcon({ icon }: { icon: string }) {
   }
 }
 
-export function SupremeKingPayExperience() {
+export function KingPayExperience() {
   const navigate = useNavigate();
   const location = useLocationStore((s) => s.location);
   const { walletBalancePaise, deductMoney } = useRealKingPayWallet();
@@ -1371,6 +1371,4 @@ export function SupremeKingPayExperience() {
     </div>
   );
 }
-
-export { SupremeKingPayExperience as KingPayExperience };
 

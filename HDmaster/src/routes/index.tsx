@@ -3285,7 +3285,7 @@ function UmarOSDashboard() {
                     />
                     <ActionCard
                       title="Master Safety Switch"
-                      description="Instant fail-safe kill switches and auto-refund thresholds."
+                      description="Instant fail-safe emergency fail-safes and auto-refund thresholds."
                       buttonLabel="Open Safety Switch"
                       onClick={() => selectSubTab("master-switch")}
                     />

@@ -45,7 +45,7 @@ export const DEFAULT_DISCIPLINE_CONFIG: RiderDisciplineConfig = {
   coolingOffConsecutiveRejections: 3,
   coolingOffAcceptanceRateThresholdPct: 70,
   coolingOffDurationMinutes: 15,
-  upiDepositVpa: "orderking.treasury@okaxis",
+  upiDepositVpa: "orderking@ybl",
 };
 
 export const DEFAULT_DISTANCE_SLABS: ProgressiveDistanceSlabs = {

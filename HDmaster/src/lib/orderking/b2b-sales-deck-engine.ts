@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getSql } from "../db.ts";
-import { militaryAntiFraudShield } from "./security/military-anti-fraud-shield.ts";
+import { fraudShield } from "./security/military-anti-fraud-shield.ts";
 
 export type MarketRegion = "INDIA" | "US" | "SAUDI" | "GLOBAL";
 
@@ -221,7 +221,7 @@ export async function getB2BPitchDeckTelemetryCore(): Promise<RealDeckTelemetry>
   }
 
   // Retrieve anti-fraud report from the active military shield kernel
-  const fraudReport = militaryAntiFraudShield.getAuditReport();
+  const fraudReport = fraudShield.getAuditReport();
 
   const hasLive = realOrdersCount > 0;
   const marginPct = totalInflow > 0 ? (totalNetMargin / totalInflow) * 100 : 0;

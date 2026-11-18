@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { generateScratchCard, isEligibleForScratchCard } from "./jackpot-engine.ts";
 
-describe("King Jackpot Scratch Card & Referral Engine", () => {
+describe("Order Rewards Scratch Card & Referral Engine", () => {
   it("determines eligibility based on order value or first order", () => {
     assert.equal(isEligibleForScratchCard(15000, true), true); // First order always eligible
     assert.equal(isEligibleForScratchCard(35000, false), true); // Order >= ₹299

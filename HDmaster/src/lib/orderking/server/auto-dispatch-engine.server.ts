@@ -1,6 +1,6 @@
 import { getCurrentEcosystemShift, checkThreatZoneIntersections } from "../../../../../packages/ui/src/ecosystem-shifts.ts";
 import { getSql, type Sql } from "../../db.ts";
-import { militaryAntiFraudShield } from "../security/military-anti-fraud-shield.ts";
+import { fraudShield } from "../security/military-anti-fraud-shield.ts";
 
 export interface AutoDispatchResult {
   assignedOrders: number;
@@ -33,7 +33,7 @@ function calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lo
 
 export async function runAlgorithmicAutoDispatch(evaluationDate: Date = new Date()): Promise<AutoDispatchResult> {
   // Dispatch Velocity Throttling
-  const throttleCheck = militaryAntiFraudShield.checkDispatchThrottle(2);
+  const throttleCheck = fraudShield.checkDispatchThrottle(2);
   if (!throttleCheck.valid) {
     return { assignedOrders: 0, matchedPairs: [], unassignedOrders: 0 };
   }
@@ -93,7 +93,7 @@ export async function runAlgorithmicAutoDispatch(evaluationDate: Date = new Date
           if (!rider.lat || !rider.lng) continue; // Skip riders with no GPS signal
 
           // GPS Telemetry & Spoofing Shield
-          const telemetryCheck = militaryAntiFraudShield.validateRiderTelemetry({
+          const telemetryCheck = fraudShield.validateRiderTelemetry({
             riderId: rider.id,
             lat: rider.lat,
             lng: rider.lng,

@@ -95,7 +95,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       measuredLatencyMs: 4,
       lastChecked: now,
       fallbackModelId: "self",
-      description: "Always-active sovereign core with zero external latency or cost. Runs clinical differential diagnostics, software engineering, mathematics, and business OS tools locally.",
+      description: "Always-active local core engine with zero external latency or cost. Runs clinical differential diagnostics, software engineering, mathematics, and business OS tools locally.",
       capabilities: {
         canStream: true,
         canProcessImages: false,
@@ -104,7 +104,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "auto-supreme-orchestrator",
+      id: "auto-orchestrator",
       displayName: "Auto-Select Best Model (Premium Orchestrator)",
       provider: "Orchestrator",
       realApiId: "dynamic-router-v1",
@@ -246,7 +246,7 @@ export function getVerifiedModelRegistry(): VerifiedModelRecord[] {
       },
     },
     {
-      id: "codex-supreme",
+      id: "codex-engine",
       displayName: "Codex Premium Architect (Local Core)",
       provider: "Local Core",
       realApiId: "codex-local-v1",
@@ -316,7 +316,7 @@ export async function testModelConnectivity(modelId: string): Promise<ModelConne
     };
   }
 
-  if (target.id === "auto-supreme-orchestrator" || target.id === "ensemble-consensus") {
+  if (target.id === "auto-orchestrator" || target.id === "ensemble-consensus") {
     const ready = Boolean(getProviderApiKey("openai") || getProviderApiKey("gemini") || getProviderApiKey("anthropic") || getProviderApiKey("xai"));
     return {
       modelId: target.id,

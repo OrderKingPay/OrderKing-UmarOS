@@ -5,7 +5,6 @@ import { useI18n } from "@/lib/rider/i18n-context";
 import {
   sendRiderOtpFn,
   verifyRiderOtpFn,
-  verifyTruecallerRiderFn,
   setLocaleFn,
 } from "@/lib/server/rider-fns";
 import type { LocaleCode } from "@/lib/rider/types";
@@ -17,9 +16,7 @@ import {
   ArrowLeft,
   Bike,
   Globe,
-  MessageCircle,
   RefreshCw,
-  ShieldCheck,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -39,7 +36,7 @@ function sanitizePhone(input: string): string {
 }
 
 function Login() {
-  const { locale, setLocale, t } = useI18n();
+  const { locale, setLocale } = useI18n();
 
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [mobileNumber, setMobileNumber] = useState(() => {
@@ -251,85 +248,6 @@ function Login() {
     }
   }
 
-  async function handleTruecallerVerify() {
-    if (!isPhoneValid) {
-      setError("Please enter a valid 10-digit Indian mobile number.");
-      return;
-    }
-    setPending(true);
-    setError(null);
-    try {
-      const verifyRes = await verifyTruecallerRiderFn({
-        data: { phone: cleanPhone },
-      });
-      if (!verifyRes.ok) throw new Error("Truecaller verification could not be completed.");
-
-      const { email, credential, destination, name } = verifyRes as {
-        email: string;
-        credential: string;
-        destination: string;
-        name?: string;
-      };
-
-      try {
-        setPhoneSession({
-          id: "rd_" + cleanPhone,
-          phone: cleanPhone,
-          email: `${cleanPhone}@rider.orderking.in`,
-          name: name || "Delivery Partner",
-          role: "rider",
-        });
-      } catch {}
-
-      try {
-        const sessionPayload = encodeURIComponent(
-          JSON.stringify({
-            phone: cleanPhone,
-            email: `${cleanPhone}@rider.orderking.in`,
-          }),
-        );
-        document.cookie = `orderking_rider_session=${sessionPayload}; path=/; max-age=2592000; SameSite=Lax; Secure`;
-        localStorage.setItem("orderking_rider_prefill", JSON.stringify({ phone: cleanPhone }));
-        localStorage.setItem(
-          "orderking_rider_session",
-          JSON.stringify({ phone: cleanPhone, email: `${cleanPhone}@rider.orderking.in` }),
-        );
-      } catch {}
-
-      try {
-        const signInRes = await authClient.signIn.email({
-          email,
-          password: credential,
-          callbackURL: destination,
-        });
-
-        if (signInRes.error) {
-          const signUpRes = await authClient.signUp.email({
-            email,
-            password: credential,
-            name: name || "Delivery Partner",
-            callbackURL: destination,
-          });
-
-          if (signUpRes.error) {
-            await authClient.signIn.email({
-              email,
-              password: credential,
-              callbackURL: destination,
-            });
-          }
-        }
-      } catch {}
-
-      window.location.href = destination;
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Truecaller 1-tap verification failed.";
-      setError(msg);
-    } finally {
-      setPending(false);
-    }
-  }
-
   return (
     <main className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between selection:bg-rose-500/20 selection:text-rose-900 font-sans">
       {/* Top Header */}
@@ -492,31 +410,12 @@ function Login() {
                   )}
                 </Button>
 
-                <div className="relative my-1">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-gray-200" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase">
-                    <span className="bg-white px-2 text-gray-400 font-semibold tracking-wider">Or</span>
-                  </div>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={pending || !isPhoneValid}
-                  onClick={() => void handleTruecallerVerify()}
-                  className="w-full rounded-2xl border-sky-300 bg-sky-50/70 hover:bg-sky-100 text-sky-800 h-12 text-sm font-bold flex items-center justify-center gap-2 transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none"
-                >
-                  <ShieldCheck className="size-4 text-sky-600" />
-                  <span>Verify with Truecaller (1-Tap)</span>
-                </Button>
                 <div className="pt-2 text-center">
                   <Link
                     to="/benefits"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E23744] hover:underline"
                   >
-                    <span>View Partner Benefits &amp; Earning Guide</span>
+                    <span>View Partner Rate Card &amp; Benefits</span>
                     <span aria-hidden="true">&rarr;</span>
                   </Link>
                 </div>

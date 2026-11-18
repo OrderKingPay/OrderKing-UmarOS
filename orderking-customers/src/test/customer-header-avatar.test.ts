@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { DeviceAvatar } from "@/components/common/device-avatar";
-import { SOVEREIGN_ECOSYSTEM_TABS } from "@/components/market/shell";
+import { ECOSYSTEM_TABS } from "@/components/market/shell";
 import type { AppUser } from "@/lib/auth/use-current-user";
 
 describe("Customer Header Authenticated User Profile Picture & Top-Right Menu Suite", () => {
@@ -50,7 +50,7 @@ describe("Customer Header Authenticated User Profile Picture & Top-Right Menu Su
   });
 
   it("validates sovereign ecosystem header navigation tabs include Food, KingPay, and Orders", () => {
-    const tabIds = SOVEREIGN_ECOSYSTEM_TABS.map((t) => t.id);
+    const tabIds = ECOSYSTEM_TABS.map((t) => t.id);
     expect(tabIds).toContain("food");
     expect(tabIds).toContain("kingpay");
     expect(tabIds).toContain("orders");

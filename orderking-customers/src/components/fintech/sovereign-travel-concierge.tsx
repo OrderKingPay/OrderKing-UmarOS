@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export interface SovereignConciergeTrip {
+export interface ConciergeTrip {
   id: string;
   bookingType: "Train" | "Flight" | "Hotel" | "Bus";
   providerName: string;
@@ -20,10 +20,10 @@ export interface SovereignConciergeTrip {
   createdAt: string;
 }
 
-export function SovereignTravelConcierge({
+export function TravelConcierge({
   onSaveTrip,
 }: {
-  onSaveTrip?: (trip: SovereignConciergeTrip) => void;
+  onSaveTrip?: (trip: ConciergeTrip) => void;
 } = {}) {
   // PNR Live State
   const [pnrInput, setPnrInput] = useState("");
@@ -98,7 +98,7 @@ export function SovereignTravelConcierge({
 
   const handleSavePnrToTrips = () => {
     if (!pnrResult) return;
-    const trip: SovereignConciergeTrip = {
+    const trip: ConciergeTrip = {
       id: `trip-${Date.now()}`,
       bookingType: "Train",
       providerName: `${pnrResult.trainNumber || "IRCTC"} ${pnrResult.trainName || "Express"}`.trim(),
@@ -125,7 +125,7 @@ export function SovereignTravelConcierge({
 
   const handleSaveFlightToTrips = () => {
     if (!flightResult) return;
-    const trip: SovereignConciergeTrip = {
+    const trip: ConciergeTrip = {
       id: `trip-${Date.now()}`,
       bookingType: "Flight",
       providerName: `${flightResult.carrierName || "Aviation"} (${flightResult.flightNumber})`,
@@ -343,4 +343,4 @@ export function SovereignTravelConcierge({
   );
 }
 
-export { SovereignTravelConcierge as TravelConcierge };
+export { TravelConcierge as SovereignTravelConcierge };

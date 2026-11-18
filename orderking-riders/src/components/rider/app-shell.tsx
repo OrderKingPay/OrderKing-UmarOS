@@ -13,22 +13,20 @@ import {
   AlertTriangle,
   Bot,
   CircleHelp,
-  FileCheck2,
   MapPin,
   RefreshCw,
   ShieldAlert,
-  ShieldCheck,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { user, isPending } = useCurrentUserState();
   const { t } = useI18n();
   const [online, setOnline] = useState(true);
   const [geoOk, setGeoOk] = useState(true);
+  const [dutyOnline, setDutyOnline] = useState(false);
   const [retryingGeo, setRetryingGeo] = useState(false);
   const [riderProfile, setRiderProfile] = useState<RiderProfile | null>(null);
   const [sosModalOpen, setSosModalOpen] = useState(false);
@@ -51,14 +49,25 @@ export function AppShell({ children }: { children: ReactNode }) {
       const d = (ev as CustomEvent<{ ok: boolean }>).detail;
       setGeoOk(d.ok);
     };
+    const dutyHandler = (ev: Event) => {
+      const d = (ev as CustomEvent<{ online: boolean }>).detail;
+      setDutyOnline(Boolean(d.online));
+    };
     window.addEventListener("orderking-geo", handler);
-    return () => window.removeEventListener("orderking-geo", handler);
+    window.addEventListener("orderking-duty-status", dutyHandler);
+    return () => {
+      window.removeEventListener("orderking-geo", handler);
+      window.removeEventListener("orderking-duty-status", dutyHandler);
+    };
   }, []);
 
   useEffect(() => {
     if (!user) return;
     void bootstrapRiderFn()
-      .then(setRiderProfile)
+      .then((profile) => {
+        setRiderProfile(profile);
+        setDutyOnline(profile.status === "ONLINE" || profile.status === "BUSY");
+      })
       .catch(() => undefined);
   }, [user, path]);
 
@@ -205,8 +214,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           riderPhone={riderProfile?.phone}
         />
 
-        {/* Docked Bottom Navigation (All 5 Benchmark Tabs) */}
-        <RiderFloatingBottomNav isDutyOnline={online && geoOk} />
+        {/* Docked Bottom Navigation */}
+        <RiderFloatingBottomNav isDutyOnline={online && dutyOnline} />
       </div>
     </div>
   );

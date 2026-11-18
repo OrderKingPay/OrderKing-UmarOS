@@ -170,7 +170,7 @@ export type ViralSharePayload = {
   orderId?: string;
   customerName?: string;
   restaurantName?: string;
-  jackpotRewardText?: string;
+  cashbackRewardText?: string;
   goldMgWon?: number;
   savingsPaise?: number;
   referralCode: string;
@@ -631,11 +631,11 @@ export function generateViralShareUrl(payload: ViralSharePayload, platform: Vira
   const baseUrl = "https://orderking.in";
   const utmSource = platform.toLowerCase();
   const refCode = payload.referralCode;
-  const link = `${baseUrl}?ref=${refCode}&utm_source=${utmSource}&utm_medium=viral_share&utm_campaign=jackpot_viral`;
+  const link = `${baseUrl}?ref=${refCode}&utm_source=${utmSource}&utm_medium=viral_share&utm_campaign=referral_reward`;
 
   const town = payload.townName ?? "Karimganj";
-  const rewardSnippet = payload.jackpotRewardText
-    ? `Unlocked ${payload.jackpotRewardText} on OrderKing.`
+  const rewardSnippet = payload.cashbackRewardText
+    ? `Unlocked ${payload.cashbackRewardText} on OrderKing.`
     : `Ordered at direct menu pricing on OrderKing.`;
 
   const savingsSnippet = payload.savingsPaise && payload.savingsPaise > 0

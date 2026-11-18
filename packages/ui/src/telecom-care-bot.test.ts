@@ -14,7 +14,7 @@ import {
   type TelemetryPoint,
 } from "./telecom-care-bot.ts";
 
-describe("Sovereign Telecom Care & Zero-Employee Dispatch Suite", () => {
+describe("Telecom Care & Zero-Employee Dispatch Suite", () => {
   describe("1. Multilingual Language & Dialect Detector", () => {
     it("identifies English query correctly", () => {
       assert.equal(detectLanguage("Where is my order?"), "en");

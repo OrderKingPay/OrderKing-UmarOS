@@ -20,7 +20,7 @@ interface WhatsAppGiftCardProps {
  * Compact, attractive Gift-style Referral Widget
  * Designed to feel like sending a treat/gift voucher to friends on WhatsApp.
  */
-export function WhatsAppViralBountiesWidget({ className = "", source = "general" }: WhatsAppGiftCardProps) {
+export function WhatsAppReferralWidget({ className = "", source = "general" }: WhatsAppGiftCardProps) {
   const { user } = useCurrentUserState();
   const [referralCode, setReferralCode] = useState<string>("");
   const [copied, setCopied] = useState(false);
@@ -128,4 +128,4 @@ export function WhatsAppViralBountiesWidget({ className = "", source = "general"
 }
 
 // Named alias for cleaner readability in new screens
-export const WhatsAppGiftCard = WhatsAppViralBountiesWidget;
+export const WhatsAppGiftCard = WhatsAppReferralWidget;

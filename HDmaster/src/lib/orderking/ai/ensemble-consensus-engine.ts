@@ -113,7 +113,7 @@ export class EnsembleConsensusEngine {
         connectionStatus: hasGemini ? "CONNECTED" : "CONFIGURATION_REQUIRED",
       },
       {
-        modelId: "codex-supreme",
+        modelId: "codex-engine",
         modelName: "Codex Architecture Engine",
         provider: "Sovereign",
         confidenceScore: 100.0,

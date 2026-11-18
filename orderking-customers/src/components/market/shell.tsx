@@ -64,7 +64,7 @@ const SEARCH_PLACEHOLDERS = [
   "burger",
 ];
 
-export const SOVEREIGN_ECOSYSTEM_TABS = [
+export const ECOSYSTEM_TABS = [
   {
     id: "food", name: "Food Delivery", icon: UtensilsCrossed, iconGradient: "from-amber-400 to-orange-700", to: "/",
     match: (p: string) => p === "/" || ["/delivery", "/r/", "/search", "/cart", "/checkout", "/dining", "/offers"].some((v) => p.startsWith(v))
@@ -91,7 +91,7 @@ export const SOVEREIGN_ECOSYSTEM_TABS = [
   },
 ];
 
-export const PLATFORM_ECOSYSTEM_TABS = SOVEREIGN_ECOSYSTEM_TABS;
+export const PLATFORM_ECOSYSTEM_TABS = ECOSYSTEM_TABS;
 
 export const POPULAR_INDIAN_DISH_CHIPS = [
   { name: "Biryani", query: "Biryani", emoji: "🍚", hindi: "बिरयानी", bengali: "বিরিয়ানি" },

@@ -284,10 +284,10 @@ class PremiumWebAudioDsp {
   }
 }
 
-export const supremeAudioDsp = new PremiumWebAudioDsp();
-export const SupremeAudioDsp = supremeAudioDsp;
-export const EnterpriseAudioDsp = supremeAudioDsp;
-export type SupremeAudioDsp = PremiumWebAudioDsp;
+export const audioDsp = new PremiumWebAudioDsp();
+export const AudioDsp = audioDsp;
+export const EnterpriseAudioDsp = audioDsp;
+export type AudioDsp = PremiumWebAudioDsp;
 export type EnterpriseAudioDsp = PremiumWebAudioDsp;
 
 // Best Voice Finder Heuristics

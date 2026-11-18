@@ -665,7 +665,7 @@ export const FOUNDER_COMMAND_ACTIONS: readonly FounderActionItem[] = [
     riskLevel: "P0_CRITICAL",
     requiresConfirmation: true,
     description:
-      "Instantly engages the platform kill-switch: pauses all incoming order creation, halts automated bank payouts, stops auto-dispatch runs, and arms the Military Anti-Fraud Shield.",
+      "Instantly engages the platform kill-switch: pauses all incoming order creation, halts automated bank payouts, stops auto-dispatch runs, and arms the Fraud Prevention Shield.",
     impactScope:
       "All consumer apps, courier dispatch cycles, merchant order intake, and payment gateway capture endpoints.",
     auditRequirement:

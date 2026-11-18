@@ -794,13 +794,13 @@ export async function executeFounderAiChat(
 
   // 3. Resolve Model & Provider Selection
   const registry = getVerifiedModelRegistry();
-  const requestedModelId = request.modelId || "auto-supreme-orchestrator";
+  const requestedModelId = request.modelId || "auto-orchestrator";
 
   let activeRecord = registry.find((m) => m.id === requestedModelId) || registry[0];
 
 
   // Auto-Select Logic:
-  if (requestedModelId === "auto-supreme-orchestrator") {
+  if (requestedModelId === "auto-orchestrator") {
     const geminiKey = getProviderApiKey("gemini");
     const anthropicKey = getProviderApiKey("anthropic");
     const openaiKey = getProviderApiKey("openai");

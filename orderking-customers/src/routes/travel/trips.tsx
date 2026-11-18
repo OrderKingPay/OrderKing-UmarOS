@@ -5,7 +5,7 @@ import { CalendarDays, Crown, FileText, Plane, ShieldCheck, TrainFront, CheckCir
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getStoredETickets, type SovereignETicket } from "@/lib/travel/in-app-booking-service";
-import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
+import { CarrierETicketModal } from "@/components/fintech/sovereign-eticket-modal";
 import { listMyOrders } from "@/lib/server/orders";
 import { formatPaise } from "@/lib/money";
 
@@ -482,7 +482,7 @@ function MyTripsPage() {
       </div>
 
       {selectedTicket && (
-        <SovereignETicketModal
+        <CarrierETicketModal
           ticket={selectedTicket}
           onClose={() => setSelectedTicket(null)}
         />

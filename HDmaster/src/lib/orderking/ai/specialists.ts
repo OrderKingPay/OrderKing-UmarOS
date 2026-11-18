@@ -884,7 +884,7 @@ export const MANDATE_1_SPECIALIST_DEPARTMENTS: Mandate1SpecialistDepartment[] = 
     departmentNumber: 13,
     name: "Blue-Team Security & Reliability",
     leadSpecialistId: "devops",
-    mandateScope: "6-tier military anti-fraud shield, optical proof deduplication, and 2G offline resilience.",
+    mandateScope: "6-tier fraud prevention shield, optical proof deduplication, and 2G offline resilience.",
     responsibilities: [
       "Operate the 6-tier anti-fraud shield against fake orders, duplicate photo refunds, and GPS spoofing",
       "Monitor database latency, queue health, and offline token reconciliation",

@@ -9,7 +9,7 @@ import { useCartStore } from "@/lib/stores/cart";
 import { getLoyalty, listPromos } from "@/lib/server/account";
 import { formatPaise } from "@/lib/money";
 import { toast } from "sonner";
-import { WhatsAppViralBountiesWidget } from "@/components/market/whatsapp-viral-bounties-widget";
+import { WhatsAppReferralWidget } from "@/components/market/whatsapp-viral-bounties-widget";
 
 export const Route = createFileRoute("/rewards")({ component: RewardsPage });
 
@@ -90,7 +90,7 @@ function RewardsPage() {
         </div>
 
         {/* Referral Program */}
-        <WhatsAppViralBountiesWidget source="rewards_vault" />
+        <WhatsAppReferralWidget source="rewards_vault" />
 
         {/* Live Database Promotions */}
         <div className="space-y-3">

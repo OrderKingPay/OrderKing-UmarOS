@@ -389,26 +389,24 @@ function AssistantPage() {
         setMessages((prev) => [...prev, sparkMsg]);
         speakResponse(sparkMsg.text);
       } else {
-        const fallback = orderKingSpark.handleRestaurantQuery(questionText);
+        const liveItemsCount = ((menuQ.data as any)?.items ?? []).length;
         const sparkMsg: WorkstationMessage = {
           id: `spark-${Date.now()}`,
           sender: "spark",
-          text: fallback.text,
+          text: `Assistant service did not return a reply for this query. Your connected outlet currently has ${liveItemsCount} menu item(s) synced. Please retry or use the quick action buttons above.`,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages((prev) => [...prev, sparkMsg]);
-        speakResponse(sparkMsg.text);
       }
-    } catch {
-      const fallback = orderKingSpark.handleRestaurantQuery(questionText);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Assistant service unavailable";
       const sparkMsg: WorkstationMessage = {
         id: `spark-${Date.now()}`,
         sender: "spark",
-        text: fallback.text,
+        text: `Unable to reach live assistant backend (${errMsg}). No synthetic data was generated — please check connectivity and retry.`,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, sparkMsg]);
-      speakResponse(sparkMsg.text);
     } finally {
       setIsLoading(false);
     }

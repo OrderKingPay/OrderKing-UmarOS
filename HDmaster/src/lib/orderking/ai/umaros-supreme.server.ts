@@ -3,7 +3,7 @@ import { authMiddleware } from "../../auth/middleware.ts";
 import { getSql } from "../../db.ts";
 import { runAlgorithmicAutoDispatch, type AutoDispatchResult } from "../server/auto-dispatch-engine.server.ts";
 import {
-  militaryAntiFraudShield,
+  fraudShield,
   type SecurityShieldAuditReport,
   type RefundClaimPayload
 } from "../security/military-anti-fraud-shield.ts";
@@ -94,7 +94,7 @@ export interface UmarOsTelemetryData {
  * Core implementation: Fetch real-time UmarOS operational telemetry from PostgreSQL.
  */
 export async function fetchUmarOsTelemetry(): Promise<UmarOsTelemetryData> {
-  const securityShield = militaryAntiFraudShield.getAuditReport();
+  const securityShield = fraudShield.getAuditReport();
 
   try {
     const sql = await getSql();
@@ -245,7 +245,7 @@ export const getUmarOsTelemetry = createServerFn({ method: "GET" })
 export async function applyUmarOsSettings(data: Partial<UmarOsEngineSettings>): Promise<{ ok: boolean; settings: UmarOsEngineSettings }> {
   engineSettings = { ...engineSettings, ...data };
   if (typeof data.dailyLossLimitInr === "number") {
-    militaryAntiFraudShield.setDailyLossCeilingInr(data.dailyLossLimitInr);
+    fraudShield.setDailyLossCeilingInr(data.dailyLossLimitInr);
   }
   if (typeof data.maxRefundLimitInr === "number") {
     try {
@@ -341,7 +341,7 @@ export async function executeAutonomousRefundCore(params: {
   }
 
   // Validate with Anti-Fraud Shield
-  const validation = militaryAntiFraudShield.validateRefundClaim(claim, signature, {
+  const validation = fraudShield.validateRefundClaim(claim, signature, {
     orderTotalPaise,
     orderStatus,
     customerTrustScore,
@@ -377,7 +377,7 @@ export async function executeAutonomousRefundCore(params: {
   return {
     ok: true,
     status: "APPROVED",
-    reason: "Claim cryptographically authenticated and approved by Military Anti-Fraud Shield.",
+    reason: "Claim cryptographically authenticated and approved by Fraud Prevention Shield.",
     code: "APPROVED",
     amountInr: claim.claimedAmountPaise / 100,
     claimId: claim.claimId
@@ -584,7 +584,7 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
         amountInr = parseInt(refunds[0]?.amount || "0", 10) / 100;
       } catch (_e) { }
     }
-    const shieldReport = militaryAntiFraudShield.getAuditReport();
+    const shieldReport = fraudShield.getAuditReport();
     const executionMs = Date.now() - startTime;
     return {
       status: "SUCCESS",
@@ -604,12 +604,12 @@ export async function runFounderConsoleCommandCore(payload: { command: string; m
 
   // 6. Anti-Fraud Shield Command
   if (normalized === "/shield" || normalized === "/security" || normalized.includes("anti-fraud") || normalized.includes("defense") || normalized.includes("security shield")) {
-    const report = militaryAntiFraudShield.getAuditReport();
+    const report = fraudShield.getAuditReport();
     const executionMs = Date.now() - startTime;
     return {
       status: "SUCCESS",
       title: "Anti-Fraud Cryptographic Shield",
-      response: `Military Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Orders Blocked: ${report.fakeOrdersIntercepted}, Refunds Blocked: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
+      response: `Fraud Shield Status: ${report.status}. Exploits Blocked: ${report.totalExploitsBlocked} (Orders Blocked: ${report.fakeOrdersIntercepted}, Refunds Blocked: ${report.fakeRefundsBlocked}, Tampered Signatures: ${report.tamperedSignaturesDetected}, Replay Attacks: ${report.replayAttacksPrevented}, GPS Spoofs: ${report.gpsSpoofingIntercepted}). Rate Violations: ${report.rateLimitViolations}. Quarantined Entities: ${report.quarantinedEntitiesCount}. Circuit Breaker: ${report.circuitBreakerTripped ? "TRIPPED" : "NOMINAL"}.`,
       toolExecuted: "audit_military_anti_fraud_shield",
       executionMs,
       data: report

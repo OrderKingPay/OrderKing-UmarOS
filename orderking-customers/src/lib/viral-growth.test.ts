@@ -24,7 +24,7 @@ describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
     orderId: "ord_test_881",
     customerName: "Hasan",
     restaurantName: "Biryani Darbar",
-    jackpotRewardText: "₹75 Dining Voucher",
+    cashbackRewardText: "₹75 Dining Voucher",
     savingsPaise: 8500, // ₹85 saved
     referralCode: "HASAN777",
     townName: "Karimganj",

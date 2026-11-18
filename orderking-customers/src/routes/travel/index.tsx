@@ -1,7 +1,7 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, useCallback } from "react";
 import { CustomerShell } from "@/components/market/shell";
-import { SovereignETicketModal } from "@/components/fintech/sovereign-eticket-modal";
+import { CarrierETicketModal } from "@/components/fintech/sovereign-eticket-modal";
 import { TravelQuotationModal } from "@/components/fintech/travel-quotation-modal";
 import { CabBookingEngine } from "@/components/fintech/cab-booking-engine";
 import {
@@ -2993,7 +2993,7 @@ export function TravelPage() {
 
         {/* Digital E-Ticket Modal */}
         {activeTicketModal && (
-          <SovereignETicketModal
+          <CarrierETicketModal
             ticket={activeTicketModal}
             onClose={() => setActiveTicketModal(null)}
           />

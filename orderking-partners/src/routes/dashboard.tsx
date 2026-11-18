@@ -454,8 +454,10 @@ function DashboardPage() {
 
         {/* Daily Business Summary & Settlement Ledger */}
         <DailyPerformanceLedgerCard
+          orders={d?.todayDeliveredOrders}
+          commissionBps={d?.commissionBps ?? vendor.selected?.commissionBps}
           customSummary={
-            d?.today
+            d?.today && (!d.todayDeliveredOrders || d.todayDeliveredOrders.length === 0) && (d.today.salesPaise ?? 0) > 0
               ? {
                 deliveredOrdersCount: (d.today as any).delivered ?? d.today.accepted ?? d.today.orders ?? 0,
                 grossGmvPaise: d.today.salesPaise ?? 0,
@@ -471,26 +473,26 @@ function DashboardPage() {
             totalOrders: d?.today.orders ?? 0,
             acceptedOrders: d?.today.accepted ?? 0,
             cancelledOrders: d?.today.cancelled ?? 0,
-            avgPrepMinutes: Number((d as any)?.restaurant?.prep_minutes ?? 14),
+            avgPrepMinutes: Number(d?.prepMinutes ?? 20),
             rating: d?.today.rating ? Number(d.today.rating) : 0,
             ratingCount: d?.today.ratingCount ?? 0,
           }}
         />
 
-        {/* Real Today's Performance KPI Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Live Operational Action Strip (Non-Duplicated Status) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
             <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
               <span className="uppercase tracking-wider">Pending Orders</span>
               <ClipboardList className={cn("size-4", pendingCount > 0 ? "text-[#E85D04]" : "text-gray-400")} />
             </div>
             <div className="my-3">
-              <div className={cn("font-display text-3xl font-black tabular", pendingCount > 0 ? "text-[#E85D04]" : "text-gray-900")}>
+              <div className={cn("font-display text-2xl font-black tabular", pendingCount > 0 ? "text-[#E85D04]" : "text-gray-900")}>
                 {pendingCount}
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 {pendingCount > 0 ? "Action required in order queue" : "All incoming orders acknowledged"}
-              </div>
+              </p>
             </div>
             <Link
               to="/orders"
@@ -500,74 +502,6 @@ function DashboardPage() {
             </Link>
           </Card>
 
-          <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
-            <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-              <span className="uppercase tracking-wider">Today&apos;s Orders</span>
-              <ChefHat className="size-4 text-[#E23744]" />
-            </div>
-            <div className="my-3">
-              <div className="font-display text-3xl font-black text-gray-900 tabular">
-                {d?.today.orders ?? 0}
-              </div>
-              <div className="text-xs text-gray-500 mt-1 tabular">
-                <span className="text-emerald-700 font-bold">{d?.today.accepted ?? 0} accepted</span>
-                {" · "}
-                <span className="text-rose-600 font-bold">{d?.today.cancelled ?? 0} cancelled</span>
-              </div>
-            </div>
-            <Link
-              to="/kitchen"
-              className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 pt-3 border-t border-gray-100"
-            >
-              Kitchen Display (KDS) <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-
-          <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
-            <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-              <span className="uppercase tracking-wider">Today&apos;s Gross Sales</span>
-              <TrendingUp className="size-4 text-[#E23744]" />
-            </div>
-            <div className="my-3">
-              <div className="font-display text-3xl font-black text-gray-900 tabular">
-                {formatINR(d?.today.salesPaise ?? 0)}
-              </div>
-              <div className="text-xs text-gray-500 mt-1 tabular">
-                AOV: <span className="text-gray-800 font-bold">{formatINR(d?.today.aovPaise ?? 0)}</span>
-              </div>
-            </div>
-            <Link
-              to="/analytics"
-              className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 pt-3 border-t border-gray-100"
-            >
-              Sales Analytics <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-
-          <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
-            <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-              <span className="uppercase tracking-wider">Estimated Net Payout</span>
-              <Banknote className="size-4 text-emerald-600" />
-            </div>
-            <div className="my-3">
-              <div className="font-display text-3xl font-black text-emerald-700 tabular">
-                {formatINR(d?.today.settlementPaise ?? 0)}
-              </div>
-              <div className="text-xs text-gray-500 mt-1 tabular">
-                Adjustments: {formatINR(d?.today.refundsPaise ?? 0)}
-              </div>
-            </div>
-            <Link
-              to="/settlements"
-              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 hover:underline pt-3 border-t border-gray-100"
-            >
-              Settlement Ledger <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-        </div>
-
-        {/* Secondary Operational Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
             <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
               <span className="uppercase tracking-wider">Out-of-Stock Dishes</span>
@@ -586,30 +520,6 @@ function DashboardPage() {
               className="inline-flex items-center gap-1 text-xs font-bold text-[#E23744] hover:underline pt-3 border-t border-gray-100"
             >
               1-Tap Stock Manager <ArrowUpRight className="size-3.5" />
-            </Link>
-          </Card>
-
-          <Card className="border-gray-200 bg-white p-5 rounded-2xl shadow-xs flex flex-col justify-between text-gray-900">
-            <div className="flex items-center justify-between text-xs text-gray-500 font-semibold">
-              <span className="uppercase tracking-wider">Customer Rating</span>
-              <Star className="size-4 text-[#E85D04] fill-[#E85D04]/30" />
-            </div>
-            <div className="my-3">
-              <div className="font-display text-2xl font-black text-gray-900 tabular">
-                {d?.today.rating ? `${d.today.rating} / 5 (${d.today.ratingCount})` : "No ratings yet"}
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Repeat customers:{" "}
-                <span className="font-bold text-gray-800">
-                  {d?.today.repeatPct != null ? `${d.today.repeatPct}%` : "—"}
-                </span>
-              </p>
-            </div>
-            <Link
-              to="/reviews"
-              className="inline-flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-gray-900 pt-3 border-t border-gray-100"
-            >
-              Customer Reviews <ArrowUpRight className="size-3.5" />
             </Link>
           </Card>
 

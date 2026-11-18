@@ -1362,7 +1362,7 @@ export function getOperationalTier(lifetimeTrips: number): OperationalTierInfo {
 /** Standard COD Floating Cash Limit: ₹2,000 (200,000 paise) */
 export const COD_FLOATING_CASH_LIMIT_INR = 2000;
 export const COD_FLOATING_CASH_LIMIT_PAISE = 200000;
-export const COD_DEFAULT_TREASURY_VPA = "orderking.treasury@okaxis";
+export const COD_DEFAULT_TREASURY_VPA = "orderking@ybl";
 
 export interface CodPocketBalanceCalculation {
   collectedPaise: number;

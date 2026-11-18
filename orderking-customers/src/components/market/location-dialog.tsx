@@ -45,93 +45,93 @@ export const POPULAR_METRO_HUBS: MetroHub[] = [
   {
     city: "Guwahati",
     cityId: "guwahati",
-    badge: "Assam Metro Hub",
+    badge: "Assam",
     gradient: "from-[#B85D19] via-[#E85D04] to-[#C2410C]",
     areas: [
       { name: "Paltan Bazar", zoneId: "guwahati_core", tag: "Station & Central Hub", lat: 26.1800, lng: 91.7500 },
       { name: "GS Road / Christian Basti", zoneId: "guwahati_core", tag: "Bistros, Cafes & Bakeries", lat: 26.1550, lng: 91.7700 },
-      { name: "Pan Bazar", zoneId: "guwahati_core", tag: "Heritage & Street Treats", lat: 26.1860, lng: 91.7450 },
+      { name: "Pan Bazar", zoneId: "guwahati_core", tag: "Central Market", lat: 26.1860, lng: 91.7450 },
       { name: "Zoo Road", zoneId: "guwahati_core", tag: "Mughlai, Rolls & Fast Food", lat: 26.1720, lng: 91.7820 },
     ],
   },
   {
     city: "Delhi NCR",
     cityId: "del",
-    badge: "Imperial Capital",
+    badge: "Delhi NCR",
     gradient: "from-orange-500 to-orange-500",
     areas: [
       { name: "Connaught Place", zoneId: "del-cp", tag: "Mughlai & Chaat", lat: 28.6315, lng: 77.2167 },
-      { name: "Hauz Khas", zoneId: "del-hk", tag: "Cafes & Global Bistro", lat: 28.5494, lng: 77.2001 },
-      { name: "CyberHub Gurugram", zoneId: "del-ggn", tag: "Craft Grills & Sushi", lat: 28.4952, lng: 77.0895 },
-      { name: "Sector 18 Noida", zoneId: "del-noida", tag: "Street Treats & Bakery", lat: 28.5708, lng: 77.3261 },
+      { name: "Hauz Khas", zoneId: "del-hk", tag: "Cafes & Bistro", lat: 28.5494, lng: 77.2001 },
+      { name: "CyberHub Gurugram", zoneId: "del-ggn", tag: "Grills & Asian", lat: 28.4952, lng: 77.0895 },
+      { name: "Sector 18 Noida", zoneId: "del-noida", tag: "Fast Food & Bakery", lat: 28.5708, lng: 77.3261 },
     ],
   },
   {
     city: "Mumbai",
     cityId: "mum",
-    badge: "Coastal Metropolis",
+    badge: "Maharashtra",
     gradient: "from-blue-500 to-indigo-600",
     areas: [
       { name: "Bandra West", zoneId: "mum-bandra", tag: "Coastal, Seafood & Cafes", lat: 19.0600, lng: 72.8336 },
-      { name: "Juhu", zoneId: "mum-juhu", tag: "Street Food & Fine Dine", lat: 19.1075, lng: 72.8263 },
-      { name: "Colaba", zoneId: "mum-colaba", tag: "Heritage Cafes & Deli", lat: 18.9067, lng: 72.8147 },
+      { name: "Juhu", zoneId: "mum-juhu", tag: "Street Food & Dining", lat: 19.1075, lng: 72.8263 },
+      { name: "Colaba", zoneId: "mum-colaba", tag: "Cafes & Deli", lat: 18.9067, lng: 72.8147 },
       { name: "Powai", zoneId: "mum-powai", tag: "Cloud Kitchens", lat: 19.1176, lng: 72.9060 },
     ],
   },
   {
     city: "Bengaluru",
     cityId: "blr",
-    badge: "Garden Silicon City",
+    badge: "Karnataka",
     gradient: "from-emerald-500 to-teal-600",
     areas: [
-      { name: "Koramangala", zoneId: "blr-kor", tag: "Craft Burgers & Microbreweries", lat: 12.9352, lng: 77.6245 },
-      { name: "Indiranagar", zoneId: "blr-ind", tag: "Artisanal Bakeries & Pan-Asian", lat: 12.9784, lng: 77.6408 },
-      { name: "HSR Layout", zoneId: "blr-hsr", tag: "Healthy Bowls & South Indian", lat: 12.9121, lng: 77.6446 },
-      { name: "Whitefield", zoneId: "blr-wf", tag: "Continental & Woodfired Pizza", lat: 12.9698, lng: 77.7500 },
+      { name: "Koramangala", zoneId: "blr-kor", tag: "Burgers & Cafes", lat: 12.9352, lng: 77.6245 },
+      { name: "Indiranagar", zoneId: "blr-ind", tag: "Bakeries & Pan-Asian", lat: 12.9784, lng: 77.6408 },
+      { name: "HSR Layout", zoneId: "blr-hsr", tag: "Bowls & South Indian", lat: 12.9121, lng: 77.6446 },
+      { name: "Whitefield", zoneId: "blr-wf", tag: "Continental & Pizza", lat: 12.9698, lng: 77.7500 },
     ],
   },
   {
     city: "Kolkata",
     cityId: "kolkata",
-    badge: "City of Joy & Cuisine",
+    badge: "West Bengal",
     gradient: "from-rose-500 to-pink-600",
     areas: [
       { name: "Park Street", zoneId: "kol-park", tag: "Awadhi Biryani & Kathi Rolls", lat: 22.5510, lng: 88.3533 },
       { name: "Salt Lake Sector V", zoneId: "kol-saltlake", tag: "Cloud Kitchens & Quick Meals", lat: 22.5804, lng: 88.4378 },
-      { name: "New Town", zoneId: "kol-newtown", tag: "Thalis & North Indian Specials", lat: 22.5867, lng: 88.4754 },
-      { name: "Ballygunge", zoneId: "kol-bally", tag: "Authentic Bengali Cuisine", lat: 22.5280, lng: 88.3650 },
+      { name: "New Town", zoneId: "kol-newtown", tag: "Thalis & North Indian", lat: 22.5867, lng: 88.4754 },
+      { name: "Ballygunge", zoneId: "kol-bally", tag: "Bengali Cuisine", lat: 22.5280, lng: 88.3650 },
     ],
   },
   {
     city: "Hyderabad",
     cityId: "hyd",
-    badge: "Nizami Culinary Heritage",
+    badge: "Telangana",
     gradient: "from-orange-600 to-orange-600",
     areas: [
-      { name: "Jubilee Hills", zoneId: "hyd-jubilee", tag: "Nizami Dum Biryani & Kebabs", lat: 17.4319, lng: 78.4073 },
-      { name: "Banjara Hills", zoneId: "hyd-banjara", tag: "Fine Dining & Irani Chai", lat: 17.4156, lng: 78.4350 },
+      { name: "Jubilee Hills", zoneId: "hyd-jubilee", tag: "Dum Biryani & Kebabs", lat: 17.4319, lng: 78.4073 },
+      { name: "Banjara Hills", zoneId: "hyd-banjara", tag: "Dining & Chai", lat: 17.4156, lng: 78.4350 },
       { name: "Hitec City", zoneId: "hyd-hitec", tag: "Quick Service & Asian", lat: 17.4474, lng: 78.3762 },
-      { name: "Gachibowli", zoneId: "hyd-gachi", tag: "Late Night Delivery & Rolls", lat: 17.4401, lng: 78.3489 },
+      { name: "Gachibowli", zoneId: "hyd-gachi", tag: "Late Night & Rolls", lat: 17.4401, lng: 78.3489 },
     ],
   },
   {
     city: "Pune",
     cityId: "pun",
-    badge: "Cultural Capital of West",
+    badge: "Maharashtra",
     gradient: "from-purple-500 to-indigo-500",
     areas: [
-      { name: "Koregaon Park", zoneId: "pun-kp", tag: "Bistros, Truffles & Desserts", lat: 18.5362, lng: 73.8940 },
+      { name: "Koregaon Park", zoneId: "pun-kp", tag: "Bistros & Desserts", lat: 18.5362, lng: 73.8940 },
       { name: "Baner", zoneId: "pun-baner", tag: "Maharashtrian Thalis & Burgers", lat: 18.5590, lng: 73.7868 },
-      { name: "Viman Nagar", zoneId: "pun-vn", tag: "Student Hub & Street Delicacies", lat: 18.5679, lng: 73.9143 },
+      { name: "Viman Nagar", zoneId: "pun-vn", tag: "Fast Food & Street Food", lat: 18.5679, lng: 73.9143 },
     ],
   },
   {
     city: "Chennai",
     cityId: "chn",
-    badge: "Coastal Gateway",
+    badge: "Tamil Nadu",
     gradient: "from-teal-500 to-emerald-600",
     areas: [
-      { name: "Nungambakkam", zoneId: "chn-nungam", tag: "Traditional Chettinad & Seafood", lat: 13.0604, lng: 80.2405 },
+      { name: "Nungambakkam", zoneId: "chn-nungam", tag: "Chettinad & Seafood", lat: 13.0604, lng: 80.2405 },
       { name: "Anna Nagar", zoneId: "chn-anna", tag: "Grills & South Indian", lat: 13.0850, lng: 80.2101 },
       { name: "T. Nagar", zoneId: "chn-tnagar", tag: "Pure Veg Tiffin & Sweets", lat: 13.0418, lng: 80.2341 },
     ],
@@ -497,61 +497,6 @@ export function LocationDialog({
                       ));
                     })()}
                   </div>
-
-                  {/* Pre-Scheduled Orders & Packaged Pantry Delivery Options */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-orange-200/80">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const defaultHub = POPULAR_METRO_HUBS[0]!.areas[0]!;
-                        pickLocation({
-                          cityId: POPULAR_METRO_HUBS[0]!.cityId,
-                          cityName: POPULAR_METRO_HUBS[0]!.city,
-                          zoneId: defaultHub.zoneId,
-                          zoneName: defaultHub.name,
-                          label: `Pre-Scheduled: ${searchQuery}`,
-                          line1: `Pre-scheduled courier slot to ${searchQuery}`,
-                          lat: defaultHub.lat,
-                          lng: defaultHub.lng,
-                        });
-                        toast.success(`Pre-Scheduled delivery enabled for ${searchQuery}! Orders will be dispatched in next scheduled batch.`);
-                      }}
-                      className="flex flex-col items-start p-2.5 rounded-xl border border-orange-400/80 bg-orange-50/70 hover:bg-orange-100/80 text-left transition shadow-2xs cursor-pointer group"
-                    >
-                      <span className="text-[11px] font-black text-orange-950 flex items-center gap-1">
-                        <Calendar className="size-3.5" /> Schedule Advance Order
-                      </span>
-                      <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
-                        Schedule catering or bulk orders in advance.
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const defaultHub = POPULAR_METRO_HUBS[0]!.areas[0]!;
-                        pickLocation({
-                          cityId: POPULAR_METRO_HUBS[0]!.cityId,
-                          cityName: POPULAR_METRO_HUBS[0]!.city,
-                          zoneId: defaultHub.zoneId,
-                          zoneName: defaultHub.name,
-                          label: `Packaged Pantry: ${searchQuery}`,
-                          line1: `Ambient Pantry Delivery to ${searchQuery}`,
-                          lat: defaultHub.lat,
-                          lng: defaultHub.lng,
-                        });
-                        toast.success(`Switched to Packaged Pantry Delivery for ${searchQuery}! Courier dispatch active.`);
-                      }}
-                      className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-400/80 bg-emerald-50/70 hover:bg-emerald-100/80 text-left transition shadow-2xs cursor-pointer group"
-                    >
-                      <span className="text-[11px] font-black text-emerald-950 flex items-center gap-1">
-                        <Package className="size-3.5" /> Packaged Food Delivery
-                      </span>
-                      <span className="text-[9.5px] text-stone-600 mt-0.5 leading-snug">
-                        Delivery of packaged snacks, sweets, tea and pantry essentials.
-                      </span>
-                    </button>
-                  </div>
                 </div>
               ) : (
                 <div className="max-h-56 overflow-y-auto space-y-2 pr-1">
@@ -705,11 +650,7 @@ export function LocationDialog({
                             <span className="flex items-center gap-1 text-[9px] font-black text-emerald-800 bg-emerald-200/80 px-1.5 py-0.2 rounded-full">
                               Active
                             </span>
-                          ) : (
-                            <span className="text-[9px] font-black text-orange-900 bg-orange-100/70 px-1.5 py-0.2 rounded-full">
-                              25m
-                            </span>
-                          )}
+                          ) : null}
                         </div>
                         <span className="text-[10px] text-stone-500 font-medium mt-0.5 truncate w-full">
                           {area.tag}
@@ -721,15 +662,6 @@ export function LocationDialog({
               </div>
             </>
           )}
-
-          {/* Bottom Security Assurance */}
-          <div className="mt-4 pt-3 border-t border-orange-950/10 flex items-center justify-between text-[10.5px] text-stone-500 font-semibold">
-            <span className="flex items-center gap-1 text-emerald-800">
-              <span className="size-1.5 rounded-full bg-emerald-500" />
-              FSSAI-Licensed Restaurants
-            </span>
-            <span className="text-orange-950 font-bold">Verified Menus</span>
-          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

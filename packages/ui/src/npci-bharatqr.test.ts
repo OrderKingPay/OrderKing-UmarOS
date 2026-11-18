@@ -15,7 +15,7 @@ import {
 } from "./npci-bharatqr.ts";
 
 describe("Production NPCI Direct UPI & BharatQR Integration Engine", () => {
-  describe("1. Sovereign Direct Founder VPAs", () => {
+  describe("1. Direct Founder VPAs", () => {
     it("binds primary founder VPA to orderking@ybl", () => {
       assert.equal(PRIMARY_FOUNDER_VPA, "orderking@ybl");
       assert.equal(isValidVPA(PRIMARY_FOUNDER_VPA), true);

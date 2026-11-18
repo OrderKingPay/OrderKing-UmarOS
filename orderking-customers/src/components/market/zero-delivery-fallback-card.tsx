@@ -83,10 +83,10 @@ export function SmartZeroDeliveryFallbackCard({
               </p>
             ) : isNightHour ? (
               <p>
-                <strong className="font-bold text-stone-900">24/7 KingPay UPI:</strong> Instant dynamic BharatQR, peer-to-peer transfers, and bank wallet settlements.</p>
+                <strong className="font-bold text-stone-900">24/7 KingPay UPI:</strong> Direct UPI payments and dynamic BharatQR.</p>
             ) : (
               <p>
-                <strong className="font-bold text-stone-900">Mart Groceries:</strong> Essential pantry goods, groceries, and packaged foods shipped across verified zones.</p>
+                <strong className="font-bold text-stone-900">Mart Groceries:</strong> Pantry goods, groceries, and packaged foods across serviceable zones.</p>
             )}
           </div>
         </div>
@@ -103,7 +103,7 @@ export function SmartZeroDeliveryFallbackCard({
                   {currentCartCount} {currentCartCount === 1 ? "item" : "items"} in your active cart
                 </p>
                 <p className="text-[11px] text-emerald-800 font-medium">
-                  Add Mart essentials with ₹0 extra delivery fee.
+                  Browse available Mart essentials.
                 </p>
               </div>
             </div>
@@ -118,7 +118,7 @@ export function SmartZeroDeliveryFallbackCard({
           </div>
         )}
 
-        {/* High-Converting 4 Real Platform Services (2x2 Grid) */}
+        {/* Platform Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left pt-1">
           {/* Service 1: KingPay UPI */}
           <div className="flex flex-col justify-between p-5 rounded-2xl border border-orange-200/90 bg-white hover:border-orange-400 hover:shadow-md transition-all duration-200">
@@ -128,14 +128,14 @@ export function SmartZeroDeliveryFallbackCard({
                   <Crown className="size-5" />
                 </div>
                 <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-950 border border-orange-300">
-                  24/7 NATIONWIDE
+                  24/7 ACTIVE
                 </span>
               </div>
               <h4 className="font-black text-base text-stone-900">
-                KingPay UPI &amp; Bill Payments
+                KingPay Direct UPI
               </h4>
               <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Instant 256-bit zero-fee UPI transfers, mobile recharges, and utility bill payments available 24/7 across India.
+                Direct UPI payments, dynamic BharatQR, travel search, and AI Tutor available across India.
               </p>
             </div>
             <Link
@@ -156,14 +156,14 @@ export function SmartZeroDeliveryFallbackCard({
                   <Store className="size-5" />
                 </div>
                 <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 border border-emerald-300">
-                  NATIONWIDE DELIVERY
+                  SERVICEABLE ZONES
                 </span>
               </div>
               <h4 className="font-black text-base text-stone-900">
                 Mart &amp; Regional Essentials
               </h4>
               <p className="text-xs text-stone-500 mt-1.5 leading-relaxed font-medium">
-                Non-perishable regional food, spices, and groceries delivered anywhere across India with verified tracking.
+                Non-perishable regional food, spices, and groceries with order tracking.
               </p>
             </div>
             <Link
@@ -178,17 +178,12 @@ export function SmartZeroDeliveryFallbackCard({
           </div>
         </div>
 
-        {/* Verification and Trust Footnote */}
+        {/* Statutory Footnote */}
         <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-[11px] text-stone-500 font-medium">
           <span className="flex items-center gap-1.5">
             <ShieldCheck className="size-3.5 text-emerald-600" />
-            <span>256-bit encrypted transactions</span>
+            <span>Orderkingpay · GSTIN 18AFXPH9838M1Z9</span>
           </span>
-          <span>·</span>
-          <span>Official IRCTC PNR tracking</span>
-          <span>·</span>
-
-          <span>₹0 extra delivery fee with active cart</span>
         </div>
       </div>
     </section>

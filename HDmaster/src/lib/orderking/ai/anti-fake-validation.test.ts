@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import {
-  militaryAntiFraudShield,
+  fraudShield,
   type CryptographicOrderPayload,
   type RefundClaimPayload,
   type RiderGpsTelemetry
@@ -13,7 +13,7 @@ import {
   executeAutonomousRefundCore
 } from "./umaros-supreme.server.ts";
 
-test("Military Anti-Fraud Shield - Order Cryptographic Signature & Tamper Detection", () => {
+test("Fraud Prevention Shield - Order Cryptographic Signature & Tamper Detection", () => {
   const customerId = `cust_${Date.now()}`;
   const orderPayload: CryptographicOrderPayload = {
     orderId: "ord_1001",
@@ -25,11 +25,11 @@ test("Military Anti-Fraud Shield - Order Cryptographic Signature & Tamper Detect
     clientFingerprint: "fp_chrome_win11_ind"
   };
 
-  const validSignature = militaryAntiFraudShield.createOrderSignature(orderPayload);
+  const validSignature = fraudShield.createOrderSignature(orderPayload);
   assert.ok(validSignature.length === 64, "HMAC-SHA256 signature must be 64-char hex string");
 
   // 1. Valid signature passes
-  const validRes = militaryAntiFraudShield.validateOrderIntegrity(orderPayload, validSignature, "103.21.244.1");
+  const validRes = fraudShield.validateOrderIntegrity(orderPayload, validSignature, "103.21.244.1");
   assert.equal(validRes.valid, true, "Authentic order must pass cryptographic verification");
   assert.equal(validRes.code, "OK");
 
@@ -39,21 +39,21 @@ test("Military Anti-Fraud Shield - Order Cryptographic Signature & Tamper Detect
     totalPaise: 1000, // Attacker lowered price from ₹450 to ₹10
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const tamperedRes = militaryAntiFraudShield.validateOrderIntegrity(tamperedPayload, validSignature, "103.21.244.2");
+  const tamperedRes = fraudShield.validateOrderIntegrity(tamperedPayload, validSignature, "103.21.244.2");
   assert.equal(tamperedRes.valid, false, "Tampered order must be rejected");
   assert.equal(tamperedRes.code, "SIGNATURE_VERIFICATION_FAILED");
 
   // 3. Forger entity is quarantined
-  assert.equal(militaryAntiFraudShield.isQuarantined(tamperedPayload.customerId), true, "Tampering customer must be quarantined");
-  assert.equal(militaryAntiFraudShield.isQuarantined("103.21.244.2"), true, "Tampering IP must be quarantined");
+  assert.equal(fraudShield.isQuarantined(tamperedPayload.customerId), true, "Tampering customer must be quarantined");
+  assert.equal(fraudShield.isQuarantined("103.21.244.2"), true, "Tampering IP must be quarantined");
 
   // 4. Quarantined entity cannot place orders
-  const blockedRes = militaryAntiFraudShield.validateOrderIntegrity(orderPayload, validSignature, "103.21.244.2");
+  const blockedRes = fraudShield.validateOrderIntegrity(orderPayload, validSignature, "103.21.244.2");
   assert.equal(blockedRes.valid, false);
   assert.equal(blockedRes.code, "QUARANTINED");
 });
 
-test("Military Anti-Fraud Shield - Anti-Replay Nonce & Timestamp Skew", () => {
+test("Fraud Prevention Shield - Anti-Replay Nonce & Timestamp Skew", () => {
   const nonce = crypto.randomBytes(16).toString("hex");
   const payload: CryptographicOrderPayload = {
     orderId: "ord_replay_1",
@@ -63,14 +63,14 @@ test("Military Anti-Fraud Shield - Anti-Replay Nonce & Timestamp Skew", () => {
     timestamp: Date.now(),
     nonce
   };
-  const sig = militaryAntiFraudShield.createOrderSignature(payload);
+  const sig = fraudShield.createOrderSignature(payload);
 
   // First consumption: success
-  const first = militaryAntiFraudShield.validateOrderIntegrity(payload, sig);
+  const first = fraudShield.validateOrderIntegrity(payload, sig);
   assert.equal(first.valid, true);
 
   // Second consumption with same nonce: REPLAY ATTACK BLOCKED
-  const replay = militaryAntiFraudShield.validateOrderIntegrity(payload, sig);
+  const replay = fraudShield.validateOrderIntegrity(payload, sig);
   assert.equal(replay.valid, false);
   assert.equal(replay.code, "REPLAY_ATTACK_DETECTED");
 
@@ -81,13 +81,13 @@ test("Military Anti-Fraud Shield - Anti-Replay Nonce & Timestamp Skew", () => {
     timestamp: Date.now() - (10 * 60 * 1000), // 10 minutes ago
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const expiredSig = militaryAntiFraudShield.createOrderSignature(expiredPayload);
-  const expiredRes = militaryAntiFraudShield.validateOrderIntegrity(expiredPayload, expiredSig);
+  const expiredSig = fraudShield.createOrderSignature(expiredPayload);
+  const expiredRes = fraudShield.validateOrderIntegrity(expiredPayload, expiredSig);
   assert.equal(expiredRes.valid, false);
   assert.equal(expiredRes.code, "TIMESTAMP_DRIFT_EXCEEDED");
 });
 
-test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Photo Defense", () => {
+test("Fraud Prevention Shield - Autonomous Refund Claim Validation & Sybil Photo Defense", () => {
   const customerId = `cust_refund_${Date.now()}`;
   const photoHash = crypto.createHash("sha256").update("sample_rotten_food_image_bytes_1").digest("hex");
 
@@ -102,10 +102,10 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
     nonce: crypto.randomBytes(16).toString("hex")
   };
 
-  const validSig = militaryAntiFraudShield.createRefundClaimSignature(claimPayload);
+  const validSig = fraudShield.createRefundClaimSignature(claimPayload);
 
   // 1. Valid refund claim passes
-  const validRes = militaryAntiFraudShield.validateRefundClaim(claimPayload, validSig, {
+  const validRes = fraudShield.validateRefundClaim(claimPayload, validSig, {
     orderTotalPaise: 35000,
     orderStatus: "DELIVERED",
     customerTrustScore: 92,
@@ -128,8 +128,8 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
     timestamp: Date.now(),
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const sybilSig = militaryAntiFraudShield.createRefundClaimSignature(sybilClaim);
-  const sybilRes = militaryAntiFraudShield.validateRefundClaim(sybilClaim, sybilSig, {
+  const sybilSig = fraudShield.createRefundClaimSignature(sybilClaim);
+  const sybilRes = fraudShield.validateRefundClaim(sybilClaim, sybilSig, {
     orderTotalPaise: 20000,
     orderStatus: "DELIVERED",
     customerTrustScore: 88,
@@ -145,8 +145,8 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
     proofPhotoHash: crypto.randomBytes(32).toString("hex"),
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const doubleSig = militaryAntiFraudShield.createRefundClaimSignature(doubleClaim);
-  const doubleRes = militaryAntiFraudShield.validateRefundClaim(doubleClaim, doubleSig, {
+  const doubleSig = fraudShield.createRefundClaimSignature(doubleClaim);
+  const doubleRes = fraudShield.validateRefundClaim(doubleClaim, doubleSig, {
     orderTotalPaise: 35000,
     orderStatus: "DELIVERED",
     customerTrustScore: 92,
@@ -163,8 +163,8 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
     proofPhotoHash: crypto.randomBytes(32).toString("hex"),
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const collusionSig = militaryAntiFraudShield.createRefundClaimSignature(collusionClaim);
-  const collusionRes = militaryAntiFraudShield.validateRefundClaim(collusionClaim, collusionSig, {
+  const collusionSig = fraudShield.createRefundClaimSignature(collusionClaim);
+  const collusionRes = fraudShield.validateRefundClaim(collusionClaim, collusionSig, {
     orderTotalPaise: 35000,
     orderStatus: "DELIVERED",
     customerTrustScore: 95,
@@ -183,8 +183,8 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
     proofPhotoHash: crypto.randomBytes(32).toString("hex"),
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const untrustedSig = militaryAntiFraudShield.createRefundClaimSignature(untrustedClaim);
-  const untrustedRes = militaryAntiFraudShield.validateRefundClaim(untrustedClaim, untrustedSig, {
+  const untrustedSig = fraudShield.createRefundClaimSignature(untrustedClaim);
+  const untrustedRes = fraudShield.validateRefundClaim(untrustedClaim, untrustedSig, {
     orderTotalPaise: 35000,
     orderStatus: "DELIVERED",
     customerTrustScore: 65, // Below 80 cutoff
@@ -194,7 +194,7 @@ test("Military Anti-Fraud Shield - Autonomous Refund Claim Validation & Sybil Ph
   assert.equal(untrustedRes.code, "TRUST_SCORE_INSUFFICIENT");
 });
 
-test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing", () => {
+test("Fraud Prevention Shield - Rider GPS Teleportation & Simulated Spoofing", () => {
   const riderId = "rdr_silchar_01";
 
   // 1. Valid coordinates in Silchar, Assam (Lat ~24.8, Lng ~92.8)
@@ -204,7 +204,7 @@ test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing"
     lng: 92.7789,
     timestamp: Date.now()
   };
-  const validRes = militaryAntiFraudShield.validateRiderTelemetry(validTelemetry);
+  const validRes = fraudShield.validateRiderTelemetry(validTelemetry);
   assert.equal(validRes.valid, true);
 
   // 2. Simulated GPS / Emulator flag
@@ -215,7 +215,7 @@ test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing"
     timestamp: Date.now(),
     isSimulatedGps: true
   };
-  const mockRes = militaryAntiFraudShield.validateRiderTelemetry(mockTelemetry);
+  const mockRes = fraudShield.validateRiderTelemetry(mockTelemetry);
   assert.equal(mockRes.valid, false);
   assert.equal(mockRes.code, "MOCK_GPS_DETECTED");
 
@@ -226,7 +226,7 @@ test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing"
     lng: 0.0,
     timestamp: Date.now()
   };
-  const oobRes = militaryAntiFraudShield.validateRiderTelemetry(oobTelemetry);
+  const oobRes = fraudShield.validateRiderTelemetry(oobTelemetry);
   assert.equal(oobRes.valid, false);
   assert.equal(oobRes.code, "GEOFENCE_BREACH");
 
@@ -240,14 +240,14 @@ test("Military Anti-Fraud Shield - Rider GPS Teleportation & Simulated Spoofing"
     lng: 91.7362,
     timestamp: Date.now()
   };
-  const teleportRes = militaryAntiFraudShield.validateRiderTelemetry(teleportTelemetry);
+  const teleportRes = fraudShield.validateRiderTelemetry(teleportTelemetry);
   assert.equal(teleportRes.valid, false);
   assert.equal(teleportRes.code, "GPS_TELEPORTATION_DETECTED");
 });
 
-test("Military Anti-Fraud Shield - Financial Circuit Breaker", () => {
+test("Fraud Prevention Shield - Financial Circuit Breaker", () => {
   // Set low daily ceiling for testing
-  militaryAntiFraudShield.setDailyLossCeilingInr(100); // ₹100 limit = 10,000 paise
+  fraudShield.setDailyLossCeilingInr(100); // ₹100 limit = 10,000 paise
 
   const claim: RefundClaimPayload = {
     claimId: `clm_circuit_${Date.now()}`,
@@ -259,9 +259,9 @@ test("Military Anti-Fraud Shield - Financial Circuit Breaker", () => {
     timestamp: Date.now(),
     nonce: crypto.randomBytes(16).toString("hex")
   };
-  const sig = militaryAntiFraudShield.createRefundClaimSignature(claim);
+  const sig = fraudShield.createRefundClaimSignature(claim);
 
-  const res = militaryAntiFraudShield.validateRefundClaim(claim, sig, {
+  const res = fraudShield.validateRefundClaim(claim, sig, {
     orderTotalPaise: 20000,
     orderStatus: "DELIVERED",
     customerTrustScore: 90,
@@ -272,7 +272,7 @@ test("Military Anti-Fraud Shield - Financial Circuit Breaker", () => {
   assert.equal(res.code, "CIRCUIT_BREAKER_TRIPPED");
 
   // Reset back to normal ₹5000 ceiling
-  militaryAntiFraudShield.setDailyLossCeilingInr(5000);
+  fraudShield.setDailyLossCeilingInr(5000);
 });
 
 test("UmarOS Premium - Founder Console Security Commands & Telemetry Integration", async () => {
@@ -281,7 +281,7 @@ test("UmarOS Premium - Founder Console Security Commands & Telemetry Integration
   assert.equal(shieldCmdRes.status, "SUCCESS");
   assert.equal(shieldCmdRes.toolExecuted, "audit_military_anti_fraud_shield");
   assert.ok(shieldCmdRes.data.totalExploitsBlocked >= 0);
-  assert.ok(shieldCmdRes.response.includes("Military Shield Status:"));
+  assert.ok(shieldCmdRes.response.includes("Fraud Shield Status:"));
 
   // 2. /refunds command with anti-fraud shield metrics
   const refundsCmdRes = await runFounderConsoleCommandCore({ command: "/refunds" });

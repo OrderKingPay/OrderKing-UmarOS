@@ -136,7 +136,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
     acceptedOrders: data?.acceptedOrders ?? 0,
     cancelledOrders: data?.cancelledOrders ?? 0,
     avgPrepMinutes: data?.avgPrepMinutes ?? 14,
-    rating: data?.rating ?? 5.0,
+    rating: data?.rating ?? 0,
     ratingCount: data?.ratingCount ?? 0,
   });
 
@@ -148,7 +148,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
           <div className="flex items-center gap-2">
             <ShieldCheck className="size-4 text-emerald-600" />
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 font-mono">
-              OrderKing Partner / Industry Benchmark Parity
+              OrderKing Partner SLA Scorecard
             </span>
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-gray-900 mt-0.5">
@@ -222,8 +222,8 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
               {scorecard.acceptanceStatus === "OPTIMAL"
                 ? "Optimal (Zero Auto-Rejection)"
                 : scorecard.acceptanceStatus === "ATTENTION"
-                ? "Attention (&lt;98% Target)"
-                : "Alert: High Rejections (&lt;95%)"}
+                ? "Attention (<98% Target)"
+                : "Alert: High Rejections (<95%)"}
             </span>
           </div>
         </div>
@@ -267,8 +267,8 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
               {scorecard.cancellationStatus === "EXCELLENT"
                 ? "Excellent (Zero Fault Fees)"
                 : scorecard.cancellationStatus === "ACCEPTABLE"
-                ? "Acceptable (&lt;1.0%)"
-                : "Warning: High Fault Penalty (&gt;=1%)"}
+                ? "Acceptable (<1.0%)"
+                : "Warning: High Fault Penalty (>=1%)"}
             </span>
           </div>
         </div>
@@ -302,7 +302,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
                 ? "Fast Prep (Rider Ready)"
                 : scorecard.prepTimeStatus === "NORMAL"
                 ? "Standard Pacing"
-                : "Delayed (&gt;25 mins)"}
+                : "Delayed (>25 mins)"}
             </span>
           </div>
         </div>
@@ -315,13 +315,19 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
               <Star className="size-4 text-[#E85D04] fill-[#E85D04]/30" />
             </div>
             <div className="text-2xl font-black text-gray-900 mt-1 tabular font-display flex items-baseline gap-1">
-              {scorecard.rating} <span className="text-xs font-normal text-gray-500">/ 5.0</span>
+              {scorecard.rating > 0 ? (
+                <>
+                  {scorecard.rating.toFixed(1)} <span className="text-xs font-normal text-gray-500">/ 5.0</span>
+                </>
+              ) : (
+                <span className="text-lg font-bold text-gray-400">No ratings yet</span>
+              )}
               {scorecard.ratingCount > 0 && (
                 <span className="text-xs font-normal text-gray-400">({scorecard.ratingCount})</span>
               )}
             </div>
             <div className="text-[11px] text-gray-500">
-              Benchmark: <span className="font-bold text-gray-800">4.5+ Industry Benchmark</span>
+              Target: <span className="font-bold text-gray-800">4.5+ Top Rated</span>
             </div>
           </div>
           <div className="pt-2 border-t border-gray-200/60 flex items-center justify-between text-[11px]">
@@ -335,8 +341,10 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
                   : "text-rose-700"
               )}
             >
-              {scorecard.ratingStatus === "TOP_RATED"
-                ? "Top Rated Outlets"
+              {scorecard.rating === 0
+                ? "Awaiting verified diner reviews"
+                : scorecard.ratingStatus === "TOP_RATED"
+                ? "Top Rated Outlet"
                 : scorecard.ratingStatus === "GOOD"
                 ? "Good Standing"
                 : "Needs Quality Attention"}

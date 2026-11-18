@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import type { CoolingOffInfo } from "@/lib/rider/types";
-import { Clock, ShieldAlert, Sparkles, Coffee } from "lucide-react";
+import { Clock, Coffee } from "lucide-react";
 
 export function CoolingOffBanner({
   coolingOff,
@@ -78,13 +78,6 @@ export function CoolingOffBanner({
             <p className="text-[10px] text-muted-foreground font-medium">Resumes Automatically</p>
           </div>
         </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2 rounded-md bg-muted/40 px-2.5 py-1.5 text-[11px] text-muted-foreground">
-        <Sparkles className="size-3.5 text-primary shrink-0" />
-        <span>
-          Take a short hydration break! Maintaining an acceptance rate above 70% keeps your account in prime status for high-payout orders.
-        </span>
       </div>
     </Card>
   );

@@ -132,7 +132,7 @@ export type ChatMessage = {
   timestamp: string;
 };
 
-export interface SovereignResolveOptions {
+export interface ConciergeResolveOptions {
   outOfStockItems?: string[];
   suppressSuggestions?: boolean;
   area?: ConciergeArea;
@@ -143,10 +143,10 @@ export interface SovereignResolveOptions {
  * Strictly produces 1-2 sentence replies across 10 regional dialects without paid external APIs.
  * Supports connected ecosystem 86'd stockout filtering and zero-annoyance irritation radar suppression.
  */
-export function resolveSovereignResponse(
+export function resolveConciergeResponse(
   queryText: string,
   dialect: SupportedDialect,
-  options?: SovereignResolveOptions
+  options?: ConciergeResolveOptions
 ): { reply: string; action?: ActionPayload } {
   const raw = queryText.trim();
   const q = raw.toLowerCase();
@@ -1198,7 +1198,7 @@ export function CustomerConciergeDrawer({
     }
 
     // Deterministic fallback response & action payload
-    const localResolution = resolveSovereignResponse(raw, matchedDialect, {
+    const localResolution = resolveConciergeResponse(raw, matchedDialect, {
       outOfStockItems,
       suppressSuggestions: nextSuppress,
       area,

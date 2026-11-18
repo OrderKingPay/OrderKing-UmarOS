@@ -63,7 +63,7 @@ export const getDashboard = createServerFn({ method: "GET" }).middleware([authMi
     const rating = await sql<{ avg: number | null; n: number }>`select avg(rating)::float as avg, count(*)::int as n from reviews where restaurant_id = ${ctx.restaurantId}`;
     
     const hours = await sql<{ weekday: number; open_minutes: number; close_minutes: number }>`select weekday, open_minutes, close_minutes from restaurant_hours where restaurant_id = ${ctx.restaurantId}`;
-    const rest = await sql<{ emergency_closed: boolean; vacation_mode: boolean; admin_hours_override: boolean; weekly_holidays: string; verification_status: string; fssai_number: string }>`select emergency_closed, vacation_mode, admin_hours_override, weekly_holidays, verification_status, fssai_number from restaurants where id = ${ctx.restaurantId}`;
+    const rest = await sql<{ emergency_closed: boolean; vacation_mode: boolean; admin_hours_override: boolean; weekly_holidays: string; verification_status: string; fssai_number: string; prep_minutes: number | null; peak_prep_minutes: number | null; commission_bps: number | null }>`select emergency_closed, vacation_mode, admin_hours_override, weekly_holidays, verification_status, fssai_number, prep_minutes, peak_prep_minutes, commission_bps from restaurants where id = ${ctx.restaurantId}`;
     const r = rest[0]; const shifts: Shift[] = hours.map((h) => ({ weekday: h.weekday as Weekday, openMinutes: h.open_minutes, closeMinutes: h.close_minutes }));
     const holidays = (r?.weekly_holidays ?? "").split(",").map((x) => Number(x.trim())).filter((n) => n >= 0 && n <= 6) as Weekday[];
     const nowIso = new Date().toISOString(); const open = r ? isOpenAt({ nowIso, shifts, closures: [], weeklyHolidays: holidays, emergencyClosed: r.emergency_closed === true || (r.emergency_closed as unknown) === "t", adminOverride: r.admin_hours_override === true }) : false; const untilClose = minutesUntilClose({ nowIso, shifts });
@@ -77,7 +77,30 @@ export const getDashboard = createServerFn({ method: "GET" }).middleware([authMi
     if (asInt(pendingSettle[0]?.c) > 0) attention.push({ id: "settle", key: "dashboard.attnSettle", tone: "info" });
     const deliveredCustomers = await sql<{ c: number; repeats: number }>`select count(distinct customer_ref)::int as c, count(distinct customer_ref) filter (where cnt > 1)::int as repeats from (select customer_ref, count(*) as cnt from orders where restaurant_id = ${ctx.restaurantId} and state = 'DELIVERED' and customer_ref is not null group by customer_ref) t`;
     const cust = deliveredCustomers[0]; const repeatPct = asInt(cust?.c) > 0 ? Math.round((asInt(cust?.repeats) * 100) / asInt(cust?.c)) : null;
-    return { dataLabel: ctx.dataLabel, restaurantName: ctx.restaurantName, role: ctx.role, verificationStatus: ctx.verificationStatus, fssaiNumber: r?.fssai_number ?? null, isOpen: open, serverTime: nowIso, today: { orders: asInt(hdStats.orders), salesPaise: asInt(hdStats.sales), aovPaise: asInt(hdStats.aov), accepted: asInt(hdStats.accepted), pending: asInt(hdStats.pending), cancelled: asInt(hdStats.cancelled), refundsPaise: asInt(hdStats.refunds), settlementPaise: asInt(hdStats.payable), unavailableItems: asInt(unavailable[0]?.c), rating: rating[0]?.avg != null ? Math.round(Number(rating[0].avg) * 10) / 10 : null, ratingCount: asInt(rating[0]?.n), repeatPct }, attention };
+    let todayDeliveredOrders: { id: string; orderNumber: string; foodValuePaise: number; packingPaise: number; restaurantDiscountPaise: number; platformFundedDiscountPaise: number; commissionBps: number; isCod: boolean }[] = [];
+    try {
+      const deliveredRows = await sql<{ id: string; order_number: string; food_value_paise: number; packing_paise: number; restaurant_discount_paise: number; platform_funded_discount_paise: number; is_cod: boolean }>`
+        select id, order_number, food_value_paise, packing_paise, restaurant_discount_paise, platform_funded_discount_paise, is_cod
+        from orders
+        where restaurant_id = ${ctx.restaurantId}
+          and state = 'DELIVERED'
+          and placed_at >= date_trunc('day', now())
+      `;
+      const effectiveBps = asInt(r?.commission_bps, 2500);
+      todayDeliveredOrders = deliveredRows.map((o) => ({
+        id: o.id,
+        orderNumber: o.order_number,
+        foodValuePaise: asInt(o.food_value_paise),
+        packingPaise: asInt(o.packing_paise),
+        restaurantDiscountPaise: asInt(o.restaurant_discount_paise),
+        platformFundedDiscountPaise: asInt(o.platform_funded_discount_paise),
+        commissionBps: effectiveBps,
+        isCod: Boolean(o.is_cod),
+      }));
+    } catch {
+      todayDeliveredOrders = [];
+    }
+    return { dataLabel: ctx.dataLabel, restaurantName: ctx.restaurantName, role: ctx.role, verificationStatus: ctx.verificationStatus, fssaiNumber: r?.fssai_number ?? null, prepMinutes: asInt(r?.prep_minutes, 20), peakPrepMinutes: asInt(r?.peak_prep_minutes, 35), commissionBps: asInt(r?.commission_bps, 2500), isOpen: open, serverTime: nowIso, todayDeliveredOrders, today: { orders: asInt(hdStats.orders), salesPaise: asInt(hdStats.sales), aovPaise: asInt(hdStats.aov), accepted: asInt(hdStats.accepted), pending: asInt(hdStats.pending), cancelled: asInt(hdStats.cancelled), refundsPaise: asInt(hdStats.refunds), settlementPaise: asInt(hdStats.payable), unavailableItems: asInt(unavailable[0]?.c), rating: rating[0]?.avg != null ? Math.round(Number(rating[0].avg) * 10) / 10 : null, ratingCount: asInt(rating[0]?.n), repeatPct }, attention };
   });
 });
 

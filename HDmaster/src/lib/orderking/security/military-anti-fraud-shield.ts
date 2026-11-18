@@ -708,4 +708,4 @@ export class MilitaryAntiFraudShield {
   }
 }
 
-export const militaryAntiFraudShield = MilitaryAntiFraudShield.getInstance();
+export const fraudShield = MilitaryAntiFraudShield.getInstance();

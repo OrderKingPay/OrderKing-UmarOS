@@ -135,7 +135,7 @@ export class PgStore implements RiderStore {
               coolingOffConsecutiveRejections: Number(rd.cooling_off_consecutive_rejections ?? base.discipline?.coolingOffConsecutiveRejections ?? 3),
               coolingOffAcceptanceRateThresholdPct: Number(rd.cooling_off_acceptance_rate_threshold_pct ?? base.discipline?.coolingOffAcceptanceRateThresholdPct ?? 70),
               coolingOffDurationMinutes,
-              upiDepositVpa: rd.upi_deposit_vpa ?? base.discipline?.upiDepositVpa ?? "orderking.treasury@okaxis",
+              upiDepositVpa: rd.upi_deposit_vpa ?? base.discipline?.upiDepositVpa ?? "orderking@ybl",
             },
           };
         }

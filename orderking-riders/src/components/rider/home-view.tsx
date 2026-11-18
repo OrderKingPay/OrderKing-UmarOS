@@ -455,6 +455,15 @@ export function HomeView() {
   }, [home?.offer?.id, home?.offer?.orderCode]);
 
   useEffect(() => {
+    if (typeof window === "undefined" || !home?.rider) return;
+    window.dispatchEvent(
+      new CustomEvent("orderking-duty-status", {
+        detail: { online: home.rider.status === "ONLINE" || home.rider.status === "BUSY" },
+      }),
+    );
+  }, [home?.rider?.status]);
+
+  useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 250);
     return () => window.clearInterval(id);
   }, []);
