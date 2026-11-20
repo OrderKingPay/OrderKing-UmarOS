@@ -95,6 +95,11 @@ describe("Founder Master Command Center — Dials, Promos, TBO Sync & Dispute Qu
       }
     };
 
+    // Reset travel partner governance to default state before tests run
+    await seedQuery(
+      `DELETE FROM app_configurations WHERE key = 'travel_partner_governance'`
+    );
+
     // Ensure city and zone exist
     await seedQuery(
       `INSERT INTO cities (id, name, state)
@@ -177,6 +182,13 @@ describe("Founder Master Command Center — Dials, Promos, TBO Sync & Dispute Qu
        ON CONFLICT (id) DO NOTHING`,
       [`tm_${testTicketId}_01`, testTicketId, orgId]
     );
+  });
+
+  afterAll(async () => {
+    try {
+      const sql = await getSql();
+      await sql.query(`DELETE FROM app_configurations WHERE key = 'travel_partner_governance'`);
+    } catch {}
   });
 
   // =========================================================================

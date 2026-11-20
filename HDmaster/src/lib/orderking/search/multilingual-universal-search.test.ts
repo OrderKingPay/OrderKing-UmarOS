@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach } from "vitest";
 import {
   createMultilingualSearchEngine,
   detectLocale,
@@ -15,6 +15,9 @@ import {
 } from "./multilingual-universal-search";
 
 describe("Multilingual Universal Search & Control Center", () => {
+  beforeEach(() => {
+    universalSearchEngine.resetToDefault();
+  });
   // ==========================================================================
   // 1. PLATFORM DOMAINS & CATEGORIES COVERAGE
   // ==========================================================================

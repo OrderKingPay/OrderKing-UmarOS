@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { getSql } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth/verify.server";
 import {
@@ -9,7 +10,7 @@ import { DEFAULT_ORG_ID, DEFAULT_SETTINGS, type PlatformSettings } from "@/lib/o
 import { seedIfNeeded } from "./seed.server";
 
 function nid(prefix: string) {
-  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  return `${prefix}_${Date.now().toString(36)}_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
 }
 
 export const FOUNDER_EMAILS = [
@@ -119,7 +120,8 @@ export async function appendAudit(input: {
       id, org_id, employee_id, user_id, role_key, action, target_type, target_id,
       previous_json, new_json, reason, ip, user_agent, lat, lng, h3_index, gps_accuracy,
       entity, entity_id, actor_user_id, actor_role, metadata
-    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
+    ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+    on conflict (id) do nothing`,
     [
       nid("aud"),
       input.orgId,
