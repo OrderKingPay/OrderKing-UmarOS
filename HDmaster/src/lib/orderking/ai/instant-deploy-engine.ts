@@ -65,7 +65,7 @@ export class InstantDeployEngine {
       ${customPrompt || "Engineered autonomously in 1 command with high-conversion UI, edge database integration, and sub-10ms CDN routing."}
     </p>
     <div class="pt-6 flex flex-wrap justify-center gap-4">
-      <button onclick="alert('System operational! In-browser sandbox fully reactive.')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-sm shadow-xl hover:scale-105 transition">
+      <button onclick="console.info('System operational! In-browser sandbox fully reactive.')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black text-sm shadow-xl hover:scale-105 transition">
         Launch Local Core
       </button>
       <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-sm border border-white/20 transition">

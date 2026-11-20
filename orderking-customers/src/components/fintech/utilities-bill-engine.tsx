@@ -1295,7 +1295,7 @@ export function UtilitiesBillEngine({ initialCategory }: UtilitiesBillEngineProp
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
-                ⚡ Instant Mobile Recharge
+                ⚡ Mobile Recharge
               </span>
               <h3 className="text-base sm:text-lg font-black text-white mt-0.5">
                 Select Operator &amp; Mobile Number

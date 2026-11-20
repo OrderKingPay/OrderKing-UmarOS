@@ -278,7 +278,7 @@ export function TravelpayoutsWhiteLabel({
             <div className="flex items-center gap-2">
               <AlertCircle className="size-4 text-orange-700 shrink-0" />
               <span>
-                Travelpayouts white label script is ready. Use the search bar above for instant live rates or reload widget.
+                Travelpayouts white label script is ready. Use the search bar above for live rates or reload widget.
               </span>
             </div>
             <Button

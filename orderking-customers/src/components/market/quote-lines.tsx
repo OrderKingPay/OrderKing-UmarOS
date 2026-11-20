@@ -2,7 +2,7 @@
 import { useT } from "@/components/providers";
 import { formatPaise } from "@/lib/money";
 import type { QuoteLine } from "@/lib/pricing";
-import { Sparkles, ShieldCheck, Crown } from "lucide-react";
+import { Sparkles, ShieldCheck, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: string }) {
@@ -76,7 +76,7 @@ export function QuoteLines({ lines, locale }: { lines: QuoteLine[]; locale: stri
           <div className="relative z-10 space-y-1">
             <div className="flex items-center gap-1.5">
               <span className="flex size-5 items-center justify-center rounded-md bg-orange-400/20 border border-orange-400/40 text-orange-300 shadow-2xs">
-                <Crown className="size-3 text-orange-300" />
+                <Receipt className="size-3 text-orange-300" />
               </span>
               <span className="font-display text-sm sm:text-base font-black tracking-tight text-orange-100">
                 {t("cart.toPay") || "To Pay"}

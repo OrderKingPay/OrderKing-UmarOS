@@ -156,7 +156,7 @@ const ROYAL_THEME_PRESETS = [
     desc: "High-conversion appetite crimson paired with crisp executive slate",
   },
   {
-    id: "midnight_sovereign",
+    id: "midnight_dark",
     name: "Midnight Dark Mode",
     primaryColor: "#4F46E5",
     accentColor: "#38BDF8",

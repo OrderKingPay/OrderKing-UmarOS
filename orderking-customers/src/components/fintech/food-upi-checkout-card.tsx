@@ -25,8 +25,8 @@ interface FoodUpiCheckoutCardProps {
 }
 
 /**
- * Zero-fee Direct NPCI UPI Intent Card & Instant Dynamic BharatQR Bridge.
- * Allows customers to pay merchants directly via NPCI UPI without gateway markup.
+ * Direct NPCI UPI Intent Card & Dynamic BharatQR Bridge.
+ * Allows customers to pay merchants directly via NPCI UPI.
  */
 export function FoodUpiCheckoutCard({
   className = "",

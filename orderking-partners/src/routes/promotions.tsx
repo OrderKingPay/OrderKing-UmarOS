@@ -425,7 +425,7 @@ function PromotionsPage() {
                       onClick={() =>
                         applyMealPeriodPreset({
                           label: "Dinner Family Packs",
-                          offerName: "Dinner Family Pack Privilege (19:00–22:30)",
+                          offerName: "Dinner Family Pack Discount (19:00–22:30)",
                           kind: "fixed",
                           amountRupees: "90",
                           minOrderRupees: "499",

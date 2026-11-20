@@ -1,6 +1,6 @@
 /**
  * UMAR AI - Natural Language & Voice Customization Compiler
- * Authority: Supreme Founder Autonomous AI Command & Governance
+ * Authority: Autonomous AI Command & Operations Governance
  *
  * Implements the Mandatory 10-Stage Execution Pipeline:
  * 1. Intent Understanding

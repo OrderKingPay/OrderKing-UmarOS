@@ -350,7 +350,7 @@ export type ComputeRestaurantPayableInput = {
  * - Payment Gateway Fees (184 bps = 1.84% + 18% GST) (- debit when passed through)
  * - Penalties & Merchant Deductions (- debit)
  * - CGST Act Section 9(5) 5% GST calculation (tracked and recorded as platform liability remitted directly to Govt, not debited from restaurant payable)
- * - TCS under Section 52 of CGST Act (1% on net taxable supply) (- debit)
+ * - TCS under Section 52 of CGST Act (0.5% on net taxable supply) (- debit)
  * - TDS under Section 194-O of Income Tax Act (1% on gross sales) (- debit)
  * - Express Daily (T+1) early liquidity fee (0.5% + 18% GST) (- debit when cycleType = "EXPRESS_DAILY")
  * - Amortized Onboarding Fee (₹99.00 / 9900 paise recurring deduction per batch/cycle) (- debit)
@@ -429,7 +429,7 @@ export function computeRestaurantPayable(input: ComputeRestaurantPayableInput): 
   const sec9_5Sgst = subPaise(sec9_5Gst, sec9_5Cgst);
   const platformLiabilitySec9_5 = sec9_5Gst;
 
-  // 7. TCS under Section 52 of CGST Act (1% on net taxable supply) (- debit)
+  // 7. TCS under Section 52 of CGST Act (0.5% on net taxable supply) (- debit)
   const tcsBps = input.tcsSec52Bps ?? STATUTORY_TAX_RATES.TCS_SEC52_BPS;
   const tcsSec52 = input.applyTcsSec52 === false ? 0 : mulBps(taxableBase, tcsBps);
   const tcsCgst = Math.floor(tcsSec52 / 2);

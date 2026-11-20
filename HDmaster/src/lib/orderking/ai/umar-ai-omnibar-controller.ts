@@ -1,6 +1,6 @@
 /**
  * UMAR AI Interactive Command Omnibar Controller
- * Authority: Supreme Founder Autonomous AI Command & Governance
+ * Authority: Autonomous AI Command & Operations Governance
  *
  * Coordinates:
  * 1. Global Keyboard Shortcut Handling (Ctrl+K / Cmd+K / Escape)

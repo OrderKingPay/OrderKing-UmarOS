@@ -1,6 +1,6 @@
 /**
  * UMAR OS - Universal Customization & Configuration Operating Engine
- * Authority: Supreme Universal Systems Architect & Founder Command Plane
+ * Authority: Systems Architect & Operations Command Plane
  *
  * Mandate:
  * Complete, centralized, intelligent, founder-controlled universal customization

@@ -19,7 +19,8 @@ export async function loadMemberships(
   sql: Sql,
   userId: string,
 ): Promise<StaffContext[]> {
-  const rows = await sql<{
+  const cleanPhone = userId.replace(/^prt_/, "").replace(/\D/g, "");
+  let rows: Array<{
     restaurant_id: string;
     outlet_id: string | null;
     role: string;
@@ -27,18 +28,64 @@ export async function loadMemberships(
     data_label: string;
     verification_status: string;
     commission_bps: number;
-  }>`
-    select s.restaurant_id, s.outlet_id, s.role,
-           coalesce(nullif(r.display_name, ''), nullif(r.name, ''), 'Restaurant Operations Center') as restaurant_name,
-           r.data_label, r.verification_status, r.commission_bps
-    from restaurant_staff s
-    join restaurants r on r.id = s.restaurant_id
-    where s.user_id = ${userId} and s.is_active = true
-    order by s.created_at asc
-  `;
-  return rows
-    .filter((row) => isRestaurantRole(row.role))
-    .map((row) => ({
+  }> = [];
+
+  try {
+    rows = await sql<{
+      restaurant_id: string;
+      outlet_id: string | null;
+      role: string;
+      restaurant_name: string;
+      data_label: string;
+      verification_status: string;
+      commission_bps: number;
+    }>`
+      select s.restaurant_id, s.outlet_id, s.role,
+             coalesce(nullif(r.display_name, ''), nullif(r.name, ''), 'Restaurant Operations Center') as restaurant_name,
+             r.data_label, r.verification_status, r.commission_bps
+      from restaurant_staff s
+      join restaurants r on r.id = s.restaurant_id
+      where (s.user_id = ${userId} or (length(${cleanPhone}) >= 10 and s.user_id = ${cleanPhone}))
+        and s.is_active = true
+      union
+      select r.id as restaurant_id, null as outlet_id, 'OWNER' as role,
+             coalesce(nullif(r.display_name, ''), nullif(r.name, ''), 'Restaurant Operations Center') as restaurant_name,
+             r.data_label, r.verification_status, r.commission_bps
+      from restaurants r
+      where r.owner_user_id = ${userId}
+         or (length(${cleanPhone}) >= 10 and (r.owner_user_id = ${cleanPhone} or r.phone = ${cleanPhone}))
+      order by restaurant_id asc
+    `;
+  } catch {
+    try {
+      rows = await sql<{
+        restaurant_id: string;
+        outlet_id: string | null;
+        role: string;
+        restaurant_name: string;
+        data_label: string;
+        verification_status: string;
+        commission_bps: number;
+      }>`
+        select r.id as restaurant_id, null as outlet_id, 'OWNER' as role,
+               coalesce(nullif(r.display_name, ''), nullif(r.name, ''), 'Restaurant Operations Center') as restaurant_name,
+               r.data_label, r.verification_status, r.commission_bps
+        from restaurants r
+        where r.owner_user_id = ${userId}
+           or (length(${cleanPhone}) >= 10 and (r.owner_user_id = ${cleanPhone} or r.phone = ${cleanPhone}))
+      `;
+    } catch {
+      rows = [];
+    }
+  }
+
+  const seen = new Set<string>();
+  const results: StaffContext[] = [];
+  for (const row of rows) {
+    if (!isRestaurantRole(row.role)) continue;
+    if (seen.has(row.restaurant_id)) continue;
+    seen.add(row.restaurant_id);
+    results.push({
       userId,
       restaurantId: row.restaurant_id,
       outletId: row.outlet_id,
@@ -46,8 +93,10 @@ export async function loadMemberships(
       restaurantName: row.restaurant_name || "Restaurant Operations Center",
       dataLabel: (row.data_label as StaffContext["dataLabel"]) ?? "REAL",
       verificationStatus: row.verification_status,
-      commissionBps: Number(row.commission_bps),
-    }));
+      commissionBps: Number(row.commission_bps || 0),
+    });
+  }
+  return results;
 }
 
 export async function requireRestaurant(

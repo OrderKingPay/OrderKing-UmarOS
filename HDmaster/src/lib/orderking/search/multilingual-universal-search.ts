@@ -1,6 +1,6 @@
 /**
  * UMAR OS - Universal Intelligent Search & Multilingual Control Center
- * Authority: Supreme Founder Control Plane & Universal Systems Architect
+ * Authority: Operations Control Plane & Universal Systems Architect
  *
  * Core Capabilities:
  * 1. Indexes all 12 platform domains (UmarOS, Customer App, Partner App, Rider App,
@@ -964,8 +964,8 @@ export const CORE_SYNONYM_CLUSTERS: readonly SynonymCluster[] = [
     canonical: "emergency",
     terms: [
       "emergency",
-      "killswitch",
-      "kill_switch",
+      "emergency_stop",
+      "emergency_halt",
       "freeze",
       "lockdown",
       "shutdown",
@@ -2142,19 +2142,19 @@ export const DEFAULT_INDEX_ITEMS: readonly SearchIndexItem[] = [
     domain: "infra_security",
     category: "feature_switch",
     title: {
-      en: "Global Emergency Operational & Financial Killswitch Freeze",
-      hi: "वैश्विक आपातकालीन परिचालन और वित्तीय किल-स्विच फ्रीज",
-      bn: "গ্লোবাল জরুরী পরিচালনা ও আর্থিক কিলসুইচ ফ্রিজ",
+      en: "Global Emergency Operational & Financial Circuit Breaker",
+      hi: "वैश्विक आपातकालीन परिचालन और वित्तीय सर्किट ब्रेकर",
+      bn: "গ্লোবাল জরুরী পরিচালনা ও আর্থিক সার্কিট ব্রেকার",
       as: "গোলকীয় জৰুৰী বিত্তীয় আৰু কাৰ্য্যকৰী চুইচ বন্ধ",
     },
     description: {
-      en: "Founder-level killswitch: instantly halts all payment disbursements and incoming customer orders.",
-      hi: "संस्थापक-स्तरीय किल-स्विच: सभी भुगतान वितरण और आने वाले ग्राहक ऑर्डर को तुरंत रोक देता है।",
-      bn: "প্রতিষ্ঠাতা-স্তরের কিলসুইচ: সমস্ত পেমেন্ট বিতরণ এবং আগত গ্রাহক অর্ডার তাত্ক্ষণিকভাবে স্থগিত করে।",
+      en: "Founder-level safety circuit: instantly halts all payment disbursements and incoming customer orders during crisis.",
+      hi: "संस्थापक-स्तरीय सुरक्षा सर्किट: संकट के समय सभी भुगतान वितरण और आने वाले ग्राहक ऑर्डर को तुरंत रोक देता है।",
+      bn: "প্রতিষ্ঠাতা-স্তরের সুরক্ষা সার্কিট: সমস্ত পেমেন্ট বিতরণ এবং আগত গ্রাহক অর্ডার তাত্ক্ষণিকভাবে স্থগিত করে।",
       as: "প্ৰতিষ্ঠাপক-স্তৰৰ জৰুৰী চুইচ: সকলো উপাৰ্জন পৰিশোধ আৰু গ্ৰাহক অৰ্ডাৰ তৎক্ষণাৎ বন্ধ কৰে।",
     },
     keywords: {
-      en: ["killswitch", "freeze", "emergency", "lockdown", "halt", "shutdown", "security freeze"],
+      en: ["circuit_breaker", "freeze", "emergency", "lockdown", "halt", "shutdown", "security freeze"],
       hi: ["आपातकाल", "आपातकालीन", "रोक", "बंद", "किल-स्विच", "सुरक्षा"],
       bn: ["জরুরী", "জরুরি", "স্থগিত", "বন্ধ", "কিলসুইচ", "নিরাপত্তা"],
       as: ["জৰুৰী", "জৰুৰীকালীন", "বন্ধ", "স্থগিত", "সুৰক্ষা"],

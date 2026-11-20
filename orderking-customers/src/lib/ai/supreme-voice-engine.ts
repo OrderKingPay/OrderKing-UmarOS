@@ -35,7 +35,7 @@ export const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   { code: "hi-IN", name: "Hindi", nativeName: "हिन्दी", flag: "IN", greetingText: "नमस्ते फाउंडर, मैं क्लाइंट्स क्लोज़ करने और आपके लिए रियल इनकम जनरेट करने के लिए तैयार हूँ।" },
   { code: "as-IN", name: "Assamese", nativeName: "অসমীয়া", flag: "IN", greetingText: "নমস্কাৰ ফাউণ্ডাৰ, মই ব্যৱসায়িক চুক্তি আৰু এপ্লিকেচন নিৰ্মাণৰ বাবে সাজু আছোঁ।" },
   { code: "ur-IN", name: "Urdu", nativeName: "اردو", flag: "IN", greetingText: "آداب فاؤنڈر، میں کلائنٹس اور پروجیکٹس کو حتمی شکل دینے کے لیے مکمل تیار ہوں۔" },
-  { code: "en-US", name: "US English", nativeName: "English (US)", flag: "US", greetingText: "Welcome Founder. Sovereign autonomous executive intelligence is online." },
+  { code: "en-US", name: "US English", nativeName: "English (US)", flag: "US", greetingText: "Welcome. Operations Assistant is online." },
   { code: "en-GB", name: "British English", nativeName: "English (UK)", flag: "GB", greetingText: "Good day Founder. Ready to acquire high-value contracts and scaffold enterprise systems." },
   { code: "es-ES", name: "Spanish", nativeName: "Español", flag: "ES", greetingText: "Hola Fundador. Estoy lista para conseguir clientes y construir aplicaciones de alto valor." },
   { code: "fr-FR", name: "French", nativeName: "Français", flag: "FR", greetingText: "Bonjour Fondateur. Je suis prête à convertir des contrats et développer des architectures." },

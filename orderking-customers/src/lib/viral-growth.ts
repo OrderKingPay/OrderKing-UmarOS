@@ -1271,7 +1271,7 @@ export function generateMetaMarketingApiPayload(
       call_to_action: {
         type: "ORDER_NOW",
         value: {
-          link: `https://orderking.in?utm_source=meta_graph_api&utm_medium=paid_social&utm_campaign=${townName.toLowerCase()}_domination`,
+          link: `https://orderking.in?utm_source=meta_graph_api&utm_medium=paid_social&utm_campaign=${townName.toLowerCase()}_growth`,
         },
       },
       image_url: "https://orderking.in/assets/promo/meta_gold_biryani_1080x1080.jpg",
@@ -1304,7 +1304,7 @@ export function generateGoogleAdsPMaxPayload(
   return {
     customer_id: "ORDERKING_GOOGLE_ADS_ID",
     campaign: {
-      name: `OrderKing_${townName}_Google_PMax_Domination`,
+      name: `OrderKing_${townName}_Google_PMax_Campaign`,
       advertising_channel_type: "PERFORMANCE_MAX",
       status: "ENABLED",
       daily_budget_micros: dailyBudgetInr * 1_000_000,

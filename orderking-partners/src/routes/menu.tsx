@@ -1306,6 +1306,31 @@ function MenuPage() {
     !generatingAiPhoto
   );
 
+  if (!vendor.restaurantId && !vendor.isPending) {
+    return (
+      <VendorShell title={t("menu.title")}>
+        <div className="mx-auto max-w-2xl space-y-4 py-8">
+          <Card className="p-8 space-y-5 rounded-3xl border-gray-200 bg-white text-gray-900 shadow-lg">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#E23744]">
+                Restaurant Setup Required
+              </span>
+            </div>
+            <h2 className="font-display text-2xl font-black text-gray-900">
+              No Restaurant Outlet Found
+            </h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Register and set up your restaurant profile first to manage dishes, categories, and live pricing.
+            </p>
+            <Button asChild size="lg" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold h-12 px-8 rounded-xl shadow-md shadow-red-500/20">
+              <Link to="/onboarding">Complete Restaurant Registration</Link>
+            </Button>
+          </Card>
+        </div>
+      </VendorShell>
+    );
+  }
+
   return (
     <VendorShell
       title={t("menu.title")}

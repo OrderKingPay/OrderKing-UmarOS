@@ -67,7 +67,7 @@ export class TrueLTVMaximizer {
 
   /**
    * Determines the absolute maximum allowable CAC based on true ecosystem LTV.
-   * Competitors cap CAC at ₹100-200. We can sustainably cap it at ₹800-₹1500, crushing their acquisition.
+   * Competitors cap CAC at ₹100-200. We can sustainably cap it at ₹800-₹1500, sustaining long-term unit economics.
    */
   public getMaximumSustainableCac(trueLtv: number): number {
     // We can spend up to 25% of the TRUE ecosystem LTV on acquisition.

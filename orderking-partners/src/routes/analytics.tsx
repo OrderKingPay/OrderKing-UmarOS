@@ -102,7 +102,7 @@ function AnalyticsPage() {
             disabled={!q.data}
             className="text-xs border-gray-300 bg-gray-100 hover:bg-gray-200 text-gray-900"
           >
-            <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-400" />
+            <FileSpreadsheet className="mr-1.5 size-3.5 text-emerald-600" />
             Download Performance &amp; Tax Report (CSV)
           </Button>
         </Card>
@@ -121,7 +121,7 @@ function AnalyticsPage() {
 
           <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="text-xs font-mono uppercase text-gray-500">{t("dashboard.sales")}</div>
-            <div className="font-display text-2xl font-bold text-emerald-400 mt-1 tabular">
+            <div className="font-display text-2xl font-bold text-emerald-700 mt-1 tabular">
               {s ? <MoneyText paise={s.salesPaise} /> : "—"}
             </div>
             <div className="text-[11px] text-gray-500 mt-0.5">Delivered gross sales</div>
@@ -140,7 +140,7 @@ function AnalyticsPage() {
             <div className="font-display text-2xl font-bold text-gray-900 mt-1 tabular">
               {q.data?.avgPrepMinutes != null ? `${q.data.avgPrepMinutes}m` : "—"}
             </div>
-            <div className="text-[11px] text-emerald-400 mt-0.5">
+            <div className="text-[11px] text-emerald-700 font-medium mt-0.5">
               Fulfillment rate: {fulfillmentPct}%
             </div>
           </Card>
@@ -151,12 +151,12 @@ function AnalyticsPage() {
           <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <TrendingUp className="size-4 text-emerald-400" />
+                <TrendingUp className="size-4 text-emerald-600" />
                 <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   Kitchen Efficiency &amp; SLA Reliability
                 </h2>
               </div>
-              <span className="text-xs font-mono text-emerald-400">{fulfillmentPct}% SLA</span>
+              <span className="text-xs font-mono font-semibold text-emerald-700">{fulfillmentPct}% SLA</span>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-1 text-xs">
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
@@ -165,11 +165,11 @@ function AnalyticsPage() {
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">CANCELLED</span>
-                <span className="font-bold text-orange-400 text-sm tabular">{cancelledOrders}</span>
+                <span className="font-bold text-amber-700 text-sm tabular">{cancelledOrders}</span>
               </div>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5">
                 <span className="text-[10px] font-mono text-gray-500 block">REJECTED</span>
-                <span className="font-bold text-rose-400 text-sm tabular">{rejectedOrders}</span>
+                <span className="font-bold text-rose-700 text-sm tabular">{rejectedOrders}</span>
               </div>
             </div>
           </Card>
@@ -177,7 +177,7 @@ function AnalyticsPage() {
           <Card className="border-gray-200 bg-white shadow-xs p-4 space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <LineChart className="size-4 text-emerald-400" />
+                <LineChart className="size-4 text-emerald-600" />
                 <h2 className="font-display text-sm font-bold uppercase tracking-wider text-gray-900">
                   {t("analytics.promos")} ({q.data?.promotions.orders ?? 0} Orders)
                 </h2>
@@ -189,7 +189,7 @@ function AnalyticsPage() {
                 <span className="text-[10px] font-mono text-gray-500 block">
                   {t("promotions.restaurantFunded")}
                 </span>
-                <span className="font-bold text-rose-400 text-sm tabular">
+                <span className="font-bold text-rose-700 text-sm tabular">
                   {q.data ? formatINR(q.data.promotions.restaurantFundedPaise) : "—"}
                 </span>
               </div>
@@ -222,7 +222,7 @@ function AnalyticsPage() {
         <div className="grid gap-3 md:grid-cols-2">
           <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="flex items-center gap-2 mb-3">
-              <UtensilsCrossed className="size-4 text-emerald-400" />
+              <UtensilsCrossed className="size-4 text-emerald-600" />
               <h2 className="font-display text-base font-bold text-gray-900">{t("analytics.best")}</h2>
             </div>
             {items.length === 0 ? (
@@ -233,7 +233,7 @@ function AnalyticsPage() {
                   <li key={i.name} className="flex items-center justify-between py-2">
                     <span className="font-medium text-gray-800">{i.name}</span>
                     <span className="tabular font-mono text-gray-700">
-                      {i.qty} sold · <strong className="text-emerald-400">{formatINR(i.revenuePaise)}</strong>
+                      {i.qty} sold · <strong className="text-emerald-700">{formatINR(i.revenuePaise)}</strong>
                     </span>
                   </li>
                 ))}
@@ -243,7 +243,7 @@ function AnalyticsPage() {
 
           <Card className="border-gray-200 bg-white shadow-xs p-4">
             <div className="flex items-center gap-2 mb-3">
-              <UtensilsCrossed className="size-4 text-orange-400" />
+              <UtensilsCrossed className="size-4 text-amber-600" />
               <h2 className="font-display text-base font-bold text-gray-900">{t("analytics.low")}</h2>
             </div>
             {items.length === 0 ? (

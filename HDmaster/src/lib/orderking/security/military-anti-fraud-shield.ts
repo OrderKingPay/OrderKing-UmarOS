@@ -3,7 +3,7 @@ import type { Sql } from "../../db.ts";
 
 /**
  * ============================================================================
- * MILITARY-GRADE ANTI-FRAUD SHIELD (HDmaster Security Kernel)
+ * FRAUD PREVENTION & INTEGRITY SHIELD (HDmaster Security Kernel)
  * ============================================================================
  * Zero fake orders. Zero fake refund claims. Zero exploit penetration.
  * Real operations only.
@@ -223,11 +223,11 @@ export class MilitaryAntiFraudShield {
     // 1. Quarantine Check
     if (clientIp && this.isQuarantined(clientIp)) {
       this.fakeOrdersIntercepted++;
-      return { valid: false, code: "QUARANTINED", reason: "Client IP is under military quarantine." };
+      return { valid: false, code: "QUARANTINED", reason: "Client IP is under security quarantine." };
     }
     if (this.isQuarantined(payload.customerId)) {
       this.fakeOrdersIntercepted++;
-      return { valid: false, code: "QUARANTINED", reason: "Customer identity is under military quarantine." };
+      return { valid: false, code: "QUARANTINED", reason: "Customer identity is under security quarantine." };
     }
 
     // 2. Rate Limiting Check (Max 5 orders per 60s per customer)
@@ -296,11 +296,11 @@ export class MilitaryAntiFraudShield {
     // 1. Quarantine Check
     if (context.clientIp && this.isQuarantined(context.clientIp)) {
       this.fakeRefundsBlocked++;
-      return { valid: false, code: "QUARANTINED", reason: "Client IP is under military quarantine." };
+      return { valid: false, code: "QUARANTINED", reason: "Client IP is under security quarantine." };
     }
     if (this.isQuarantined(payload.customerId)) {
       this.fakeRefundsBlocked++;
-      return { valid: false, code: "QUARANTINED", reason: "Customer is under military quarantine." };
+      return { valid: false, code: "QUARANTINED", reason: "Customer is under security quarantine." };
     }
 
     // 2. Anti-Collusion Check (Merchant and customer cannot share same IP)

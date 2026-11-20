@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { redirect, createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
 import { Button } from "@/components/ui/button";
@@ -110,6 +110,31 @@ function SettlementsPage() {
       setExpressSettling(false);
     }
   };
+
+  if (!vendor.restaurantId && !vendor.isPending) {
+    return (
+      <VendorShell title={t("nav.settlements")}>
+        <div className="mx-auto max-w-2xl space-y-4 py-8">
+          <Card className="p-8 space-y-5 rounded-3xl border-gray-200 bg-white text-gray-900 shadow-lg">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#E23744]">
+                Restaurant Setup Required
+              </span>
+            </div>
+            <h2 className="font-display text-2xl font-black text-gray-900">
+              Settlements & Direct Bank Payouts
+            </h2>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Register your restaurant and bank account details (IFSC, Account Number) to access daily T+1 automated payouts and statutory GSTR-1 tax invoices.
+            </p>
+            <Button asChild size="lg" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold h-12 px-8 rounded-xl shadow-md shadow-red-500/20">
+              <Link to="/onboarding">Complete Restaurant Registration</Link>
+            </Button>
+          </Card>
+        </div>
+      </VendorShell>
+    );
+  }
 
   if (vendor.role && !allowed) {
     return (

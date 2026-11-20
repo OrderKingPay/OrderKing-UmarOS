@@ -4,7 +4,7 @@ import { useCartStore, cartKey, toCartItem, type CartItem } from "@/lib/stores/c
 import { useDietStore } from "@/lib/stores/diet";
 import { getCheckoutUpsells, type CheckoutUpsellItem } from "@/lib/server/upsell";
 import { formatPaise } from "@/lib/money";
-import { Sparkles, Check, Plus, Zap, Crown } from "lucide-react";
+import { Sparkles, Check, Plus, Zap } from "lucide-react";
 
 interface CheckoutUpsellEngineProps {
   restaurantId: string;

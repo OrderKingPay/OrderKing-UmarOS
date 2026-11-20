@@ -342,5 +342,3 @@ export function TravelConcierge({
     </div>
   );
 }
-
-export { TravelConcierge as SovereignTravelConcierge };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   FileText,
   Receipt,
@@ -128,7 +129,7 @@ export function B2BFranchiseOnboardingEngine() {
   const handleCreateContract = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formRestaurantName.trim() || !formLegalEntity.trim() || !formSignatoryName.trim()) {
-      alert("Please provide the Restaurant Name, Legal Entity Name, and Authorized Signatory.");
+      toast.warning("Please provide the Restaurant Name, Legal Entity Name, and Authorized Signatory.");
       return;
     }
 
@@ -163,11 +164,11 @@ export function B2BFranchiseOnboardingEngine() {
         setActiveTab("ledger");
         setTimeout(() => setBannerNotice(null), 6000);
       } else {
-        alert(res.error || "Failed to create franchise contract.");
+        toast.error(res.error || "Failed to create franchise contract.");
       }
     } catch (err: any) {
       console.error(err);
-      alert(err.message || "Failed to generate contract.");
+      toast.error(err.message || "Failed to generate contract.");
     } finally {
       setActionLoading(false);
     }
@@ -176,7 +177,7 @@ export function B2BFranchiseOnboardingEngine() {
   const handleRecordPayment = async () => {
     if (!paymentModalContract) return;
     if (!paymentReference.trim()) {
-      alert("Please enter the UTR or Bank Settlement Reference Number.");
+      toast.warning("Please enter the UTR or Bank Settlement Reference Number.");
       return;
     }
 
@@ -196,10 +197,10 @@ export function B2BFranchiseOnboardingEngine() {
         await loadData();
         setTimeout(() => setBannerNotice(null), 5000);
       } else {
-        alert(res.error || "Failed to update payment status.");
+        toast.error(res.error || "Failed to update payment status.");
       }
     } catch (err: any) {
-      alert(err.message || "Failed to settle payment.");
+      toast.error(err.message || "Failed to settle payment.");
     } finally {
       setActionLoading(false);
     }
@@ -208,7 +209,7 @@ export function B2BFranchiseOnboardingEngine() {
   const handleExecuteSignature = async () => {
     if (!signatureModalContract) return;
     if (!signatoryNameInput.trim()) {
-      alert("Please enter the Signatory Full Legal Name.");
+      toast.warning("Please enter the Signatory Full Legal Name.");
       return;
     }
 
@@ -227,10 +228,10 @@ export function B2BFranchiseOnboardingEngine() {
         await loadData();
         setTimeout(() => setBannerNotice(null), 5000);
       } else {
-        alert(res.error || "Failed to attest digital signature.");
+        toast.error(res.error || "Failed to attest digital signature.");
       }
     } catch (err: any) {
-      alert(err.message || "Failed to attest digital signature.");
+      toast.error(err.message || "Failed to attest digital signature.");
     } finally {
       setActionLoading(false);
     }

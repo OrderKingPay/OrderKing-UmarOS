@@ -74,7 +74,7 @@ export class InstantDeployEngine {
     </p>
     <div class="flex flex-wrap justify-center gap-4 pt-4">
       <a href="https://orderking.in/king-pay" target="_blank" rel="noreferrer" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold shadow-lg hover:scale-105 transition">Open via KingPay UPI</a>
-      <button onclick="alert('OrderKing Local Preview operational. All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
+      <button onclick="console.info('OrderKing Local Preview operational. All reactive states functional.')" class="px-6 py-3 rounded-xl border border-white/20 bg-surface hover:bg-surface-2 font-semibold text-zinc-200 transition">Verify Local State</button>
     </div>
   </main>
   <footer class="max-w-4xl mx-auto w-full text-center text-xs text-subtle border-t border-white/10 pt-4">

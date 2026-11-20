@@ -507,7 +507,7 @@ export function ScanQrModal({
                   {isProcessing ? (
                     <span className="flex items-center gap-2">
                       <span className="size-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                      <span>Transacting Instant UPI...</span>
+                      <span>Transacting UPI...</span>
                     </span>
                   ) : (
                     <>

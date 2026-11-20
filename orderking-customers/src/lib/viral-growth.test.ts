@@ -115,7 +115,7 @@ describe("OrderKing Omni-Prestige, Subsidies & Hyper-Viral Engine", () => {
     assert.ok(metaSpec.adCreatives[0].headline.includes("Karimganj"));
   });
 
-  it("generates Google Local SEO Schema for map and search domination", () => {
+  it("generates Google Local SEO Schema for local search visibility", () => {
     const seoSchema = generateGoogleLocalSeoSchema("Karimganj");
     assert.equal(seoSchema.type, "FoodDeliveryService");
     assert.equal(seoSchema.context, "https://schema.org");

@@ -1,6 +1,6 @@
 /**
  * UMAR OS - Universal Customization Real-Time Sync Bus
- * Authority: Supreme Universal Systems Architect & Founder Command Plane
+ * Authority: Systems Architect & Operations Command Plane
  *
  * Mandate:
  * High-performance Server-Sent Events (SSE) Real-Time Sync Bus delivering instant,

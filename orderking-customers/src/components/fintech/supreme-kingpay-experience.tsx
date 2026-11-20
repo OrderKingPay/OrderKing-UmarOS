@@ -164,7 +164,7 @@ export const ALL_OMNIPRESENT_CATALOG: CatalogSearchHit[] = [
 
   // Utility Bills & BBPS
   { id: "s-bb-1", category: "Bills", title: "APDCL Assam Electricity Bill", sub: "Assam Electricity Distribution · Fees ₹0 (Waived)", icon: "bill-electric", action: "bills", keywords: "bill electricity apdcl assam power current light bijli" },
-  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Instant 1-Tap Prepaid Top-Up", icon: "bill-mobile", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
+  { id: "s-bb-2", category: "Bills", title: "Mobile Prepaid Recharge (Jio/Airtel/Vi)", sub: "Prepaid Mobile Recharge", icon: "bill-mobile", action: "bills", keywords: "bill recharge mobile jio airtel vi phone talktime" },
   { id: "s-bb-3", category: "Bills", title: "FASTag Toll Balance Top-Up", sub: "NHAI National Highway Toll Wallet", icon: "garage", action: "bills", keywords: "bill fastag toll car highway netc rfid" },
   { id: "s-bb-4", category: "Bills", title: "DTH & Cable TV Subscription", sub: "Tata Play, Airtel DTH, DishTV", icon: "bill-tv", action: "bills", keywords: "bill dth tata play airtel dishtv television" },
 
@@ -269,7 +269,7 @@ export function KingPayExperience() {
   const [customPayeeVpa, setCustomPayeeVpa] = useState("");
   const [useCustomVpa, setUseCustomVpa] = useState(false);
   const [upiAmountInr, setUpiAmountInr] = useState<number>(250);
-  const [upiNote, setUpiNote] = useState("OrderKing Instant Settlement");
+  const [upiNote, setUpiNote] = useState("OrderKing UPI Payment");
 
   // Masked display vs background routing
   const activePayeeVpa =
@@ -965,7 +965,7 @@ export function KingPayExperience() {
                 </div>
                 <div>
                   <h3 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-2">
-                    <span>Daily Utility Bills &amp; Instant Recharge</span>
+                    <span>Daily Utility Bills &amp; Recharge</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-400/20 text-orange-300 border border-orange-400/30 font-bold uppercase">
                       Bharat BillPay (BBPS)
                     </span>
@@ -1046,7 +1046,7 @@ export function KingPayExperience() {
                     Pay Anyone via Direct UPI
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Generate Instant Dynamic QR or Pay with PhonePe, Paytm, GPay, BHIM
+                    Generate Dynamic QR or Pay with PhonePe, Paytm, GPay, BHIM
                   </p>
                 </div>
               </div>
@@ -1158,7 +1158,7 @@ export function KingPayExperience() {
               {/* Dynamic QR Code Card */}
               <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white border border-slate-200 text-slate-900 shadow-inner space-y-3">
                 <span className="text-[11px] font-black uppercase tracking-wider text-slate-600">
-                  Instant Dynamic BharatQR
+                  Dynamic BharatQR
                 </span>
                 <div className="p-2.5 rounded-2xl bg-white border border-slate-300 shadow-md">
                   <img

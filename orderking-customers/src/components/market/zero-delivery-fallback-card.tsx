@@ -3,7 +3,7 @@ import {
   MapPin,
   Sparkles,
   Clock,
-  Crown,
+  Wallet,
   Store,
   ArrowRight,
   ShieldCheck,
@@ -125,7 +125,7 @@ export function SmartZeroDeliveryFallbackCard({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-orange-500/15 text-orange-700">
-                  <Crown className="size-5" />
+                  <Wallet className="size-5" />
                 </div>
                 <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-orange-100 text-orange-950 border border-orange-300">
                   24/7 ACTIVE

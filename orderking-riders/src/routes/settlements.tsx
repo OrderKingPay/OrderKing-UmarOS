@@ -316,7 +316,7 @@ export function SettlementsDesk() {
         </div>
 
         {error ? (
-          <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs font-semibold text-rose-800">
+          <div className="flex items-center gap-2 rounded-xl border border-rose-500/40 bg-rose-500/10 p-3.5 text-xs font-semibold text-rose-800 dark:text-rose-300">
             <AlertCircle className="size-4 shrink-0" />
             <span>{error}</span>
           </div>
@@ -536,7 +536,7 @@ export function SettlementsDesk() {
                         {s.status}
                       </Badge>
                       {isConfirmed && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
                           <CheckCircle2 className="size-3" />
                           Statement Verified by Partner
                         </span>

@@ -15,7 +15,6 @@ import {
   Briefcase,
   X,
   ChevronRight,
-  Crown,
   Calendar,
   Package,
 } from "lucide-react";

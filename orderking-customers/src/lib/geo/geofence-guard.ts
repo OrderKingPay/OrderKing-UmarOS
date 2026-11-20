@@ -1,5 +1,5 @@
 
-// 1,000x Strict Geofencing & Sovereign Territory Guard for Order King & King Pay
+// Deterministic Geofencing & Delivery Zone Guard for Order King & King Pay
 // Enforces mandatory rule: Order King FOODS only appears where delivery is strictly active.
 // Everywhere else across India, users ONLY see and experience King Pay.
 
@@ -119,7 +119,7 @@ export function calculateDistanceKm(lat1: number, lon1: number, lat2: number, lo
 }
 
 /**
- * 1,000x Strict Evaluation: Checks whether food delivery is legally active at the coordinates.
+ * Deterministic Spatial Evaluation: Checks whether food delivery is legally active at the coordinates.
  * If false, the app MUST hide all food restaurants, carts, and delivery menus,
  * presenting ONLY the King Pay FinTech ecosystem.
  */

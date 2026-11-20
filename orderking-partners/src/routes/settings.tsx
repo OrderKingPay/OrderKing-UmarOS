@@ -109,8 +109,8 @@ const LEGAL_SECTIONS = [
     body: [
       "Settlement Formula: Net Restaurant Payable = (Food Value + Packaging Charges − Restaurant Discount) − Platform Commission + Platform-Funded Promo − Refund Adjustments.",
       "GST on Restaurant Services (Section 9(5) CGST Act, 2017): For notified restaurant dining and delivery services, 5% GST is collected from the customer and remitted directly to the Government by Order King under Section 9(5) without debiting your payout.",
-      "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 1% TCS (0.5% CGST + 0.5% SGST or 1% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
-      "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 1% under Section 194-O is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
+      "Tax Collected at Source (Section 52 CGST Act): Where applicable on net taxable supplies, 0.5% TCS (0.25% CGST + 0.25% SGST or 0.5% IGST) is deposited with the Government and credited to your GSTR-8 ledger.",
+      "Tax Deducted at Source (Section 194-O Income Tax Act, 1961): TDS of 0.1% under Section 194-O (10 bps) is credited directly against your registered PAN, backed by quarterly Form 16A certificates.",
     ],
   },
   {
@@ -651,7 +651,7 @@ function SettingsPage() {
                   </span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Delivery orders are processed according to the restaurant partner's agreed contract schedule (18.0% to 28.0% + 18% GST on platform services, 1.84% payment gateway fee, 1.0% Section 52 TCS, and 0.1%/1.0% Section 194-O TDS). Dine-in and takeaway orders have 0.0% commission (self-fulfillment). All net sales are settled directly into your registered bank account on an automated daily T+1 schedule.
+                  Delivery orders are processed according to the restaurant partner's agreed contract schedule (18.0% to 28.0% + 18% GST on platform services, 1.84% payment gateway fee, 0.5% Section 52 TCS, and 0.1% Section 194-O TDS). Dine-in and takeaway orders have 0.0% commission (self-fulfillment). All net sales are settled directly into your registered bank account on an automated daily T+1 schedule.
                 </p>
               </div>
 
@@ -732,10 +732,10 @@ function SettingsPage() {
                     </span>
                   </div>
 
-                  {/* 1% TCS */}
+                  {/* 0.5% TCS */}
                   <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">1% TCS under Section 52 of CGST Act 2017</span>
+                      <span className="text-gray-700">0.5% TCS under Section 52 of CGST Act 2017</span>
                       <span className="text-[10px] font-mono text-gray-500">
                         ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
                       </span>
@@ -745,10 +745,10 @@ function SettingsPage() {
                     </span>
                   </div>
 
-                  {/* 1% TDS */}
+                  {/* 0.1% TDS */}
                   <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">1% TDS under Section 194-O Income Tax Act 1961</span>
+                      <span className="text-gray-700">0.1% TDS under Section 194-O Income Tax Act 1961</span>
                       <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
                     </div>
                     <span className="font-mono font-semibold text-rose-600">

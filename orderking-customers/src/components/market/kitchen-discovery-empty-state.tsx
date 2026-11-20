@@ -63,6 +63,3 @@ export function KitchenDiscoveryEmptyState() {
   );
 }
 
-// Aliased export for backwards compatibility
-export { KitchenDiscoveryEmptyState as RoyalDiscoveryShowcase };
-

@@ -7,6 +7,8 @@ import {
   Crown,
   Languages,
   UtensilsCrossed,
+  Utensils,
+  Percent,
   Plane,
   Train,
   GraduationCap,
@@ -16,6 +18,7 @@ import {
   Package,
   CreditCard,
   Wallet,
+  Zap,
   Settings,
   LogOut,
   Mic,
@@ -296,61 +299,85 @@ export function CustomerShell({
               )}
             </div>
 
-            {/* Row 1 Center: Fork & Spoon "Food" and KingPay Symbol Pill '✈️ 🚆 🎓' */}
-            <nav aria-label="OrderKing Core Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
-              {/* Minimal Micro-Pill 1: Food Delivery (UtensilsCrossed) */}
+            {/* Row 1 Center: Zomato Food Delivery Navigation: Delivery | Dining Out | Offers */}
+            <nav aria-label="Food Delivery Navigation" className="flex items-center gap-1.5 sm:gap-2 shrink-0 py-0.5">
+              {/* Delivery Tab */}
               <Link
                 to="/"
-                title="OrderKing Food Delivery"
-                aria-label="OrderKing Food Delivery"
+                title="Food Delivery"
+                aria-label="Delivery"
                 className={cn(
-                  "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                  path === "/" || path.startsWith("/r/") || path.startsWith("/delivery") || path.startsWith("/dining")
+                  "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-xs active:scale-95 no-underline shrink-0 cursor-pointer",
+                  path === "/" || path.startsWith("/r/") || path.startsWith("/delivery")
                     ? isDark
-                      ? "border-amber-400 bg-gradient-to-b from-amber-500/30 to-amber-600/20 text-amber-200 ring-1 ring-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
-                      : "border-amber-500 bg-gradient-to-b from-amber-100 to-amber-200/80 text-amber-950 ring-1 ring-amber-400 shadow-[0_2px_8px_rgba(245,158,11,0.2)]"
+                      ? "border-amber-400 bg-amber-500/20 text-amber-200 ring-1 ring-amber-400/50"
+                      : "border-amber-500 bg-amber-100 text-amber-950 ring-1 ring-amber-400"
                     : isDark
-                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-amber-400/40"
-                      : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800 hover:border-amber-400/60"
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200"
+                      : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800"
                 )}
               >
                 <UtensilsCrossed className="size-3.5 text-amber-600 shrink-0" />
-                <span className="hidden md:inline text-[11px] font-black uppercase tracking-tight">Food</span>
+                <span className="text-[11px] font-black uppercase tracking-tight">Delivery</span>
               </Link>
 
-              {/* Super-App Link (Flights, Trains, AI Tutor) */}
+              {/* Dining Out Tab */}
               <Link
-                to="/travel"
-                title="KingPay (Flights, Trains, AI Tutor)"
-                aria-label="Flights, Trains, AI Tutor"
-                  className={cn(
-                    "inline-flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-[0_2px_4px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] active:scale-95 no-underline shrink-0 cursor-pointer",
-                    isKingPayDomain || path.startsWith("/tutor")
-                      ? isDark
-                        ? "border-sky-400 bg-gradient-to-b from-sky-500/30 to-indigo-600/20 text-sky-200 ring-1 ring-sky-400/50 shadow-[0_0_12px_rgba(14,165,233,0.25)]"
-                        : "border-sky-500 bg-gradient-to-b from-sky-100 to-indigo-100 text-sky-950 ring-1 ring-sky-400 shadow-[0_2px_8px_rgba(14,165,233,0.2)]"
-                      : isDark
-                        ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200 hover:border-sky-400/40"
-                        : "border-slate-200 bg-white/90 hover:bg-sky-50/80 text-gray-800 hover:border-sky-400/60"
-                  )}
-                >
-                  <Plane className="size-3 text-sky-600" />
-                  <Train className="size-3 text-sky-600" />
-                  <GraduationCap className="size-3 text-sky-600" />
-                </Link>
+                to="/dining"
+                title="Dining Out"
+                aria-label="Dining Out"
+                className={cn(
+                  "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-xs active:scale-95 no-underline shrink-0 cursor-pointer",
+                  path.startsWith("/dining")
+                    ? isDark
+                      ? "border-amber-400 bg-amber-500/20 text-amber-200 ring-1 ring-amber-400/50"
+                      : "border-amber-500 bg-amber-100 text-amber-950 ring-1 ring-amber-400"
+                    : isDark
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200"
+                      : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800"
+                )}
+              >
+                <Utensils className="size-3.5 text-amber-600 shrink-0" />
+                <span className="text-[11px] font-black uppercase tracking-tight hidden sm:inline">Dining Out</span>
+              </Link>
+
+              {/* Offers Tab */}
+              <Link
+                to="/offers"
+                title="Offers & Discounts"
+                aria-label="Offers"
+                className={cn(
+                  "inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-black transition-all shadow-xs active:scale-95 no-underline shrink-0 cursor-pointer",
+                  path.startsWith("/offers")
+                    ? isDark
+                      ? "border-amber-400 bg-amber-500/20 text-amber-200 ring-1 ring-amber-400/50"
+                      : "border-amber-500 bg-amber-100 text-amber-950 ring-1 ring-amber-400"
+                    : isDark
+                      ? "border-white/10 bg-white/5 hover:bg-white/10 text-slate-200"
+                      : "border-slate-200 bg-white/90 hover:bg-amber-50/80 text-gray-800"
+                )}
+              >
+                <Percent className="size-3.5 text-emerald-600 shrink-0" />
+                <span className="text-[11px] font-black uppercase tracking-tight hidden sm:inline">Offers</span>
+              </Link>
             </nav>
 
             {/* Row 1 Right: Gold Crown Wallet + Cart Icon with Counter + User Profile / Sign In */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* Gold Crown Wallet - Direct link to KingPay */}
+              {/* Wallet - Direct link to KingPay */}
               <Link
                 to="/kingpay"
-                className="relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-stone-950 bg-gradient-to-r from-amber-500/25 via-yellow-500/20 to-amber-500/15 border border-amber-400/80 text-amber-300 hover:border-amber-300 shadow-2xs hover:shadow-[0_0_12px_rgba(245,158,11,0.25)] transition-all active:scale-95 shrink-0 no-underline cursor-pointer"
-                title="OrderKing Gold Crown Wallet &amp; KingPay"
-                aria-label="Gold Crown Wallet"
+                className={cn(
+                  "relative flex items-center gap-1.5 px-2.5 py-1 rounded-xl border transition-all active:scale-95 shrink-0 no-underline cursor-pointer",
+                  isDark
+                    ? "bg-white/10 hover:bg-white/20 border-white/15 text-slate-200"
+                    : "bg-stone-100/80 hover:bg-stone-200/80 border-stone-200 text-stone-800"
+                )}
+                title="KingPay Wallet"
+                aria-label="Wallet"
               >
-                <Crown className="size-3.5 text-amber-300 fill-amber-400" />
-                <span className="text-[10.5px] font-black uppercase tracking-tight text-amber-300 hidden xs:inline">
+                <Wallet className="size-3.5 text-amber-600" />
+                <span className="text-[11px] font-bold hidden xs:inline">
                   Wallet
                 </span>
               </Link>
@@ -620,7 +647,7 @@ export function CustomerShell({
                     onClick={() => setOneTapDrawerOpen(true)}
                     className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 px-3 py-1.5 text-xs font-black text-slate-950 shadow-md hover:brightness-105 active:scale-95 transition-all border border-amber-200 cursor-pointer"
                   >
-                    <Crown className="size-3.5 fill-slate-950" />
+                    <Zap className="size-3.5 fill-slate-950" />
                     <span>1-Tap Pay</span>
                   </button>
 

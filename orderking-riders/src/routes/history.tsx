@@ -370,7 +370,7 @@ export function Page() {
           <Card className="space-y-3.5 p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-red-50 text-[#E23744] border border-red-200">
+                <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
                   <CalendarClock className="size-5" />
                 </span>
                 <div>

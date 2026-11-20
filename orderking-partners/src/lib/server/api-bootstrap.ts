@@ -260,10 +260,14 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       }
     }
 
-    await sql`
-      insert into outlets (id, restaurant_id, name, address, is_primary)
-      values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, true)
-    `;
+    try {
+      await sql`
+        insert into outlets (id, restaurant_id, name, address, is_primary)
+        values (${outletId}, ${restaurantId}, ${displayName}, ${(data.address || "").trim()}, true)
+      `;
+    } catch (e) {
+      console.warn("[createRestaurantDraft] Non-fatal outlets insert error:", e);
+    }
 
     try {
       await sql`
@@ -275,23 +279,51 @@ export const createRestaurantDraft = createServerFn({ method: "POST" })
       // Non-fatal if outlet already exists or schema table constraint handles migration
     }
 
-    await sql`
-      insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role)
-      values (${newId("stf")}, ${restaurantId}, ${outletId}, ${context.userId}, 'OWNER')
-    `;
-    for (let day = 0; day <= 6; day++) {
+    try {
       await sql`
-        insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minutes, close_minutes)
-        values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${22 * 60})
+        insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role, is_active)
+        values (${newId("stf")}, ${restaurantId}, ${outletId}, ${context.userId}, 'OWNER', true)
       `;
+    } catch {
+      try {
+        await sql`
+          insert into restaurant_staff (id, restaurant_id, outlet_id, user_id, role)
+          values (${newId("stf")}, ${restaurantId}, ${outletId}, ${context.userId}, 'OWNER')
+        `;
+      } catch (staffErr) {
+        console.warn("[createRestaurantDraft] Non-fatal staff insert error:", staffErr);
+      }
     }
-    await writeAudit(sql, {
-      restaurantId,
-      actorUserId: context.userId,
-      action: "create_draft",
-      entityType: "restaurant",
-      entityId: restaurantId,
-    });
+
+    for (let day = 0; day <= 6; day++) {
+      try {
+        await sql`
+          insert into restaurant_hours (id, restaurant_id, outlet_id, weekday, open_minutes, close_minutes)
+          values (${newId("hrs")}, ${restaurantId}, ${outletId}, ${day}, ${11 * 60}, ${22 * 60})
+        `;
+      } catch {
+        try {
+          await sql`
+            insert into restaurant_hours (id, restaurant_id, weekday, open_minutes, close_minutes)
+            values (${newId("hrs")}, ${restaurantId}, ${day}, ${11 * 60}, ${22 * 60})
+          `;
+        } catch {
+          // Non-fatal
+        }
+      }
+    }
+
+    try {
+      await writeAudit(sql, {
+        restaurantId,
+        actorUserId: context.userId,
+        action: "create_draft",
+        entityType: "restaurant",
+        entityId: restaurantId,
+      });
+    } catch (auditErr) {
+      console.warn("[createRestaurantDraft] Non-fatal audit log error:", auditErr);
+    }
 
     // HDmaster transition or external sync hook:
     // Safely wrap URL parsing and synchronization so draft creation NEVER fails due to external URL errors

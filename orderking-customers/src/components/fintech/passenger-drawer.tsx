@@ -412,7 +412,7 @@ export function PassengerDrawer({
               <span className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                 <Phone className="size-4 text-slate-500" /> Primary Contact &amp; E-Ticket Delivery
               </span>
-              <span className="text-[11px] text-slate-500">Instant SMS &amp; WhatsApp Ticket</span>
+              <span className="text-[11px] text-slate-500">SMS &amp; WhatsApp Ticket</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -569,7 +569,7 @@ export function PassengerDrawer({
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    1-Tap Instant deduction with zero gateway hops and instant cancellation refunds.
+                    Direct deduction with zero gateway hops and wallet cancellation refunds.
                   </p>
                 </div>
               </label>

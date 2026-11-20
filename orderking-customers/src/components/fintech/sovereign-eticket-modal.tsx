@@ -323,7 +323,7 @@ export function CarrierETicketModal({ ticket, onClose }: Props) {
                   Scan at airport security e-gates, railway TTE scanner, or bus conductor reader.
                 </p>
                 <p className="text-[11px] font-mono text-slate-500 mt-1">
-                  SHA-256 Auth Token Verified · 100% In-App
+                  SHA-256 Auth Token Verified · In-App
                 </p>
               </div>
             </div>
@@ -367,7 +367,7 @@ export function CarrierETicketModal({ ticket, onClose }: Props) {
                   • <strong>Refund Timeline:</strong> {ticket.cancellationPolicy.refundableUntil}.
                 </p>
                 <p className="text-emerald-800 leading-relaxed">
-                  • <strong>Instant Credit:</strong> 100% eligible refund ({formatPaise(ticket.fareBreakdown.totalCheckoutPaise)}) is credited instantly back to your KingPay Loyalty Wallet with ₹0 OrderKing penalty.
+                  • <strong>Wallet Credit:</strong> Eligible refund ({formatPaise(ticket.fareBreakdown.totalCheckoutPaise)}) is credited back to your KingPay Wallet.
                 </p>
                 <p className="text-emerald-700 text-[11px]">
                   • <strong>Loyalty Reward:</strong> {ticket.payment.rebateAmountCredited} was credited to your portfolio.
@@ -424,5 +424,3 @@ export function CarrierETicketModal({ ticket, onClose }: Props) {
     </div>
   );
 }
-
-export { CarrierETicketModal as SovereignETicketModal };

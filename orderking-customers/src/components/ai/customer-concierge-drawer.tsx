@@ -570,7 +570,7 @@ export function resolveConciergeResponse(
           quantity: 1,
           pricePaise: 26000,
           estimatedPaise: 26000,
-          restaurantName: "OrderKing Partner Kitchen",
+          restaurantName: "Local Restaurant",
           deliveryEta: "20-25 mins",
         },
       };
@@ -629,7 +629,7 @@ export function resolveConciergeResponse(
         quantity,
         pricePaise: estimatedPaise,
         estimatedPaise,
-        restaurantName: "OrderKing Partner Kitchen",
+        restaurantName: "Local Restaurant",
         deliveryEta: "24-28 mins",
         suggestedAddons: availableBiryaniAddons.length > 0 ? availableBiryaniAddons : undefined,
       },
@@ -650,7 +650,7 @@ export function resolveConciergeResponse(
           quantity: 1,
           pricePaise: 18000,
           estimatedPaise: 18000,
-          restaurantName: "OrderKing Partner Kitchen",
+          restaurantName: "Local Restaurant",
           deliveryEta: "15-20 mins",
         },
       };
@@ -695,7 +695,7 @@ export function resolveConciergeResponse(
         quantity,
         pricePaise: estimatedPaise,
         estimatedPaise,
-        restaurantName: "OrderKing Partner Kitchen",
+        restaurantName: "Local Restaurant",
         deliveryEta: "20-25 mins",
         suggestedAddons: availablePizzaAddons.length > 0 ? availablePizzaAddons : undefined,
       },
@@ -736,7 +736,7 @@ export function resolveConciergeResponse(
     q.includes("রেস্তোরাঁ") ||
     q.includes("ৰেষ্টুৰেণ্ট")
   ) {
-    let reply = "Partner kitchens register at partner.orderkingpay.com to publish live menus and fulfill orders. You can browse active restaurants in your area on OrderKing Food.";
+    let reply = "Restaurants register at partner.orderkingpay.com to publish live menus and fulfill orders. You can browse active restaurants in your area on OrderKing Food.";
     if (dialect.code === "hi") {
       reply = "पार्टनर रेस्टोरेंट partner.orderkingpay.com पर जुड़कर लाइव मेन्यू और आर्डर मैनेज करते हैं। आप फ़ूड पेज पर लाइव उपलब्ध रेस्टोरेंट देख सकते हैं।";
     } else if (dialect.code === "bn") {
@@ -765,7 +765,7 @@ export function resolveConciergeResponse(
     q.includes("খাদ্য")
   ) {
     if (options?.area === "kingpay") {
-      let reply = "Food ordering is available on OrderKing Food. You can browse partner kitchens and menus there.";
+      let reply = "Food ordering is available on OrderKing Food. You can browse restaurants and menus there.";
       if (dialect.code === "hi") {
         reply = "फ़ूड आर्डरिंग आर्डरकिंग फ़ूड पर उपलब्ध है। आप वहाँ पार्टनर किचन और मेन्यू देख सकते हैं।";
       } else if (dialect.code === "bn") {
@@ -783,7 +783,7 @@ export function resolveConciergeResponse(
       };
     }
 
-    let reply = "You can browse verified partner kitchens and live menus in your locality on OrderKing Food.";
+    let reply = "You can browse verified restaurants and live menus in your locality on OrderKing Food.";
     if (dialect.code === "hi") {
       reply = "आप आर्डरकिंग फ़ूड पर अपने क्षेत्र के सत्यापित किचन और लाइव मेन्यू देख सकते हैं।";
     } else if (dialect.code === "bn") {
@@ -1424,7 +1424,7 @@ export function CustomerConciergeDrawer({
                         setActivePopup({
                           type: "CHECKOUT_POPUP",
                           dishName: m.action?.dishName || "Chicken Dum Biryani",
-                          restaurantName: m.action?.restaurantName || "Verified Partner Kitchen",
+                          restaurantName: m.action?.restaurantName || "Verified Restaurant",
                           pricePaise: m.action?.pricePaise || 28000,
                           deliveryEta: m.action?.deliveryEta || "24-28 mins",
                           suggestedAddons: m.action?.suggestedAddons,

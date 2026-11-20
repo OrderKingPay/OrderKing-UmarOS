@@ -1319,6 +1319,10 @@ export function LaunchPlaybookView() {
                       >
                         <button
                           type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleTask(taskId);
+                          }}
                           className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 border transition-all ${
                             isDone
                               ? "bg-emerald-600 border-emerald-600 text-white"
@@ -1377,6 +1381,10 @@ export function LaunchPlaybookView() {
                         >
                           <button
                             type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleTask(auditId);
+                            }}
                             className={`w-5 h-5 rounded flex items-center justify-center shrink-0 border transition-all ${
                               isDone
                                 ? "bg-emerald-600 border-emerald-600 text-white"

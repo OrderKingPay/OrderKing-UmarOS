@@ -103,8 +103,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const kycStatus = riderProfile?.kycStatus;
 
   return (
-    <div className="min-h-dvh bg-slate-100/70 dark:bg-zinc-950 text-fg">
-      <div className="mx-auto min-h-dvh max-w-md bg-white dark:bg-card shadow-2xl relative flex flex-col pb-24 border-x border-border/40">
+    <div className="min-h-dvh bg-muted/40 text-foreground">
+      <div className="mx-auto min-h-dvh max-w-md bg-card shadow-2xl relative flex flex-col pb-24 border-x border-border/40">
         {!geoOk ? (
           <div className="bg-busy px-3 py-2 text-xs text-primary-foreground">
             <div className="flex items-center justify-between gap-2">
@@ -126,7 +126,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         ) : null}
 
         {kycStatus === "REJECTED" && path !== "/onboarding" ? (
-          <div className="border-b border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-900">
+          <div className="border-b border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs text-rose-800 dark:text-rose-300">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="flex items-center gap-1.5 font-semibold">
                 <AlertTriangle className="size-4 shrink-0 text-rose-700" />

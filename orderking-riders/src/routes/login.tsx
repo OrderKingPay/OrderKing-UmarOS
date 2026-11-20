@@ -249,20 +249,20 @@ function Login() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8FAFC] text-gray-900 flex flex-col justify-between selection:bg-rose-500/20 selection:text-rose-900 font-sans">
+    <main className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-rose-500/20 selection:text-rose-900 font-sans">
       {/* Top Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-40">
+      <header className="border-b border-border bg-card sticky top-0 z-40">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 py-3">
           {/* Brand Mark */}
           <div className="flex items-center gap-2.5">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-[#E23744] text-white shadow-xs">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-xs">
               <Bike className="size-5" />
             </div>
             <div>
-              <p className="text-sm font-black tracking-tight leading-none text-gray-900">
-                ORDERKING <span className="text-[#E23744]">DELIVERY</span>
+              <p className="text-sm font-black tracking-tight leading-none text-foreground">
+                ORDERKING <span className="text-primary">DELIVERY</span>
               </p>
-              <p className="text-[11px] text-gray-500 font-medium">
+              <p className="text-[11px] text-muted-foreground font-medium">
                 Delivery Partner
               </p>
             </div>
@@ -270,7 +270,7 @@ function Login() {
 
           {/* Language Quick Selector */}
           <div className="flex items-center gap-1">
-            <div className="flex items-center rounded-full bg-gray-100 p-0.5 border border-gray-200">
+            <div className="flex items-center rounded-full bg-muted p-0.5 border border-border">
               {PRIMARY_LANGUAGES.map((lang) => {
                 const isActive = locale === lang.code;
                 return (
@@ -278,10 +278,11 @@ function Login() {
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageSwitch(lang.code)}
-                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${isActive
-                        ? "bg-[#E23744] text-white shadow-xs"
-                        : "text-gray-600 hover:text-gray-900"
-                      }`}
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold transition ${
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-xs"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     {lang.native}
                   </button>
@@ -291,7 +292,7 @@ function Login() {
             <button
               type="button"
               onClick={() => setShowAllLanguages((v) => !v)}
-              className="flex size-7 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-gray-600 hover:text-gray-900 transition"
+              className="flex size-7 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground hover:text-foreground transition"
               title="Select Partner Language"
               aria-label="Select Partner Language"
             >
@@ -302,14 +303,14 @@ function Login() {
 
         {/* Expandable Regional Languages Dropdown Tray */}
         {showAllLanguages && (
-          <div className="border-t border-gray-200 bg-gray-50 px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
+          <div className="border-t border-border bg-muted/60 px-4 py-3 text-xs animate-in slide-in-from-top-2 duration-150">
             <div className="mx-auto max-w-lg">
-              <div className="flex items-center justify-between pb-2 text-[11px] font-semibold text-gray-600">
+              <div className="flex items-center justify-between pb-2 text-[11px] font-semibold text-muted-foreground">
                 <span>Select Delivery Partner Language:</span>
                 <button
                   type="button"
                   onClick={() => setShowAllLanguages(false)}
-                  className="text-[#E23744] font-bold hover:underline"
+                  className="text-primary font-bold hover:underline"
                 >
                   Close
                 </button>
@@ -323,13 +324,14 @@ function Login() {
                       handleLanguageSwitch(l.code);
                       setShowAllLanguages(false);
                     }}
-                    className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${locale === l.code
-                        ? "bg-[#E23744]/10 text-[#E23744] font-bold border border-[#E23744]/30"
-                        : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                      }`}
+                    className={`rounded-lg px-2.5 py-1.5 text-left text-xs transition truncate ${
+                      locale === l.code
+                        ? "bg-primary/10 text-primary font-bold border border-primary/30"
+                        : "bg-card text-foreground hover:bg-muted border border-border"
+                    }`}
                   >
                     <span className="font-medium">{l.nativeLabel}</span>
-                    <span className="block text-[10px] text-gray-500">{l.englishName}</span>
+                    <span className="block text-[10px] text-muted-foreground">{l.englishName}</span>
                   </button>
                 ))}
               </div>
@@ -340,14 +342,14 @@ function Login() {
 
       {/* Main Delivery Partner Card */}
       <div className="mx-auto w-full max-w-md px-4 py-6 sm:py-8 flex-1 flex flex-col justify-center">
-        <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-7 shadow-xs">
+        <div className="rounded-3xl border border-border bg-card p-6 sm:p-7 shadow-xs">
           {step === "phone" ? (
             <div className="space-y-5">
               <div>
-                <h1 className="text-2xl font-black tracking-tight text-gray-900">
+                <h1 className="text-2xl font-black tracking-tight text-foreground">
                   Enter Mobile Number
                 </h1>
-                <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
                   We'll send a 6-digit OTP to verify your delivery partner account.
                 </p>
               </div>
@@ -360,12 +362,12 @@ function Login() {
                 className="space-y-4"
               >
                 <div className="space-y-1.5">
-                  <Label htmlFor="mobile-input" className="text-xs font-semibold text-gray-700">
+                  <Label htmlFor="mobile-input" className="text-xs font-semibold text-foreground">
                     10-Digit Mobile Number
                   </Label>
                   <div className="relative flex items-center">
-                    <div className="absolute left-3 flex items-center gap-1.5 border-r border-gray-200 pr-2.5 text-sm font-bold text-gray-800 select-none">
-                      <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-gray-700" aria-label="India">IN</span>
+                    <div className="absolute left-3 flex items-center gap-1.5 border-r border-border pr-2.5 text-sm font-bold text-foreground select-none">
+                      <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold tracking-wider text-muted-foreground" aria-label="India">IN</span>
                       <span>+91</span>
                     </div>
                     <Input
@@ -383,13 +385,13 @@ function Login() {
                         setMobileNumber(val);
                         if (error) setError(null);
                       }}
-                      className="border-gray-300 bg-white pl-20 text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] focus:ring-2 focus:ring-[#E23744]/20 h-12 text-base font-semibold tracking-wide rounded-2xl shadow-xs"
+                      className="border-border bg-background pl-20 text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 text-base font-semibold tracking-wide rounded-2xl shadow-xs"
                     />
                   </div>
                 </div>
 
                 {error && (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 animate-in fade-in duration-150">
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300 animate-in fade-in duration-150">
                     {error}
                   </div>
                 )}
@@ -398,11 +400,11 @@ function Login() {
                   type="submit"
                   disabled={pending || !isPhoneValid}
                   size="lg"
-                  className="w-full rounded-2xl bg-[#E23744] hover:bg-[#d02e3b] py-3.5 text-base font-bold text-white shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
+                  className="w-full rounded-2xl bg-primary hover:bg-primary/90 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
                   {pending ? (
                     <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      <span className="size-4 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />
                       Sending OTP...
                     </span>
                   ) : (
@@ -413,7 +415,7 @@ function Login() {
                 <div className="pt-2 text-center">
                   <Link
                     to="/benefits"
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E23744] hover:underline"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
                   >
                     <span>View Partner Rate Card &amp; Benefits</span>
                     <span aria-hidden="true">&rarr;</span>
@@ -421,18 +423,18 @@ function Login() {
                 </div>
               </form>
 
-              <p className="text-center text-[11px] leading-relaxed text-gray-500">
+              <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
                 By continuing, you agree to the{" "}
                 <Link
                   to="/terms"
-                  className="font-medium text-[#E23744] underline hover:text-red-700 transition"
+                  className="font-medium text-primary underline hover:text-primary/80 transition"
                 >
                   Delivery Partner Terms
                 </Link>{" "}
                 &amp;{" "}
                 <Link
                   to="/privacy"
-                  className="font-medium text-[#E23744] underline hover:text-red-700 transition"
+                  className="font-medium text-primary underline hover:text-primary/80 transition"
                 >
                   Privacy Policy
                 </Link>
@@ -448,27 +450,27 @@ function Login() {
                     setStep("phone");
                     setError(null);
                   }}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#E23744] transition mb-2"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary transition mb-2"
                 >
                   <ArrowLeft className="size-3.5" />
                   Change Mobile Number
                 </button>
-                <h1 className="text-2xl font-black tracking-tight text-gray-900">
+                <h1 className="text-2xl font-black tracking-tight text-foreground">
                   Verify Mobile Number
                 </h1>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-muted-foreground">
                   Enter the 6-digit code sent to{" "}
-                  <span className="font-bold text-gray-900">+91-{cleanPhone}</span>
+                  <span className="font-bold text-foreground">+91-{cleanPhone}</span>
                 </p>
               </div>
 
               <form onSubmit={(e) => void verifyCode(undefined, e)} className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="otp-input" className="text-xs font-semibold text-gray-700">
+                    <Label htmlFor="otp-input" className="text-xs font-semibold text-foreground">
                       6-Digit OTP Code
                     </Label>
-                    <span className="text-[11px] text-gray-400">Auto-detecting SMS</span>
+                    <span className="text-[11px] text-muted-foreground">Auto-detecting SMS</span>
                   </div>
 
                   <div className="relative">
@@ -480,16 +482,17 @@ function Login() {
                         return (
                           <div
                             key={idx}
-                            className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${isFocused
-                                ? "border-[#E23744] bg-white ring-2 ring-[#E23744]/20 text-gray-900 scale-[1.02]"
+                            className={`relative flex h-14 flex-1 items-center justify-center rounded-2xl border-2 text-center font-mono text-2xl font-black transition-all ${
+                              isFocused
+                                ? "border-primary bg-card ring-2 ring-primary/20 text-foreground scale-[1.02]"
                                 : isFilled
-                                  ? "border-gray-400 bg-white text-gray-900"
-                                  : "border-gray-200 bg-gray-50 text-gray-400"
-                              }`}
+                                  ? "border-muted-foreground/40 bg-card text-foreground"
+                                  : "border-border bg-muted/40 text-muted-foreground"
+                            }`}
                           >
                             {digit}
                             {isFocused && !digit && !pending && (
-                              <span className="absolute bottom-3 h-0.5 w-4 rounded-full bg-[#E23744] animate-pulse" />
+                              <span className="absolute bottom-3 h-0.5 w-4 rounded-full bg-primary animate-pulse" />
                             )}
                           </div>
                         );
@@ -520,7 +523,7 @@ function Login() {
                 </div>
 
                 {error && (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700 animate-in fade-in duration-150">
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-500/10 px-3.5 py-2.5 text-xs font-semibold text-rose-700 dark:text-rose-300 animate-in fade-in duration-150">
                     {error}
                   </div>
                 )}
@@ -529,11 +532,11 @@ function Login() {
                   type="submit"
                   disabled={pending || otp.replace(/\D/g, "").length !== 6}
                   size="lg"
-                  className="w-full rounded-2xl bg-[#E23744] hover:bg-[#d02e3b] py-3.5 text-base font-bold text-white shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
+                  className="w-full rounded-2xl bg-primary hover:bg-primary/90 py-3.5 text-base font-bold text-primary-foreground shadow-sm transition active:scale-[0.99] disabled:opacity-45 disabled:pointer-events-none h-12"
                 >
                   {pending ? (
                     <span className="flex items-center gap-2">
-                      <span className="size-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      <span className="size-4 border-2 border-primary-foreground/40 border-t-primary-foreground rounded-full animate-spin" />
                       Verifying Code...
                     </span>
                   ) : (
@@ -542,29 +545,29 @@ function Login() {
                 </Button>
 
                 <div className="pt-2 flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>Didn't receive the OTP?</span>
                     {canResend ? (
                       <div className="flex items-center gap-3">
                         <button
                           type="button"
                           onClick={() => void handleSendOtp("sms")}
-                          className="font-bold text-[#E23744] hover:underline flex items-center gap-1"
+                          className="font-bold text-primary hover:underline flex items-center gap-1"
                         >
                           <RefreshCw className="size-3" />
                           Resend via SMS
                         </button>
-                        <span className="text-gray-300">|</span>
+                        <span className="text-border">|</span>
                         <button
                           type="button"
                           onClick={() => void handleSendOtp("whatsapp")}
-                          className="font-bold text-emerald-600 hover:underline flex items-center gap-1"
+                          className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
                         >
                           Resend via WhatsApp
                         </button>
                       </div>
                     ) : (
-                      <span className="text-gray-400">Resend in {countdown}s</span>
+                      <span className="text-muted-foreground">Resend in {countdown}s</span>
                     )}
                   </div>
                 </div>
@@ -575,7 +578,7 @@ function Login() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white px-4 py-3 text-center text-[11px] text-gray-500">
+      <footer className="border-t border-border bg-card px-4 py-3 text-center text-[11px] text-muted-foreground">
         <p>
           © {DEFAULT_BRANDING.legalCompanyName} · Delivery Partner
         </p>

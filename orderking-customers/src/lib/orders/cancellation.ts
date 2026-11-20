@@ -56,7 +56,7 @@ export function calculateGraceTimeRemaining(
 }
 
 /**
- * Calculates 100% instant refund details for cancellations within the grace window.
+ * Calculates full refund details for cancellations within the grace window.
  */
 export function calculateRefundDetails(
   order: {

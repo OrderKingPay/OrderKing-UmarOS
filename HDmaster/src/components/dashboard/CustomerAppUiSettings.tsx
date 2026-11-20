@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "sonner";
 import {
   Palette,
   CheckCircle2,
@@ -1039,6 +1040,7 @@ export function CustomerAppUiSettings({ config, onSave, saving: parentSaving }: 
 
                           <button
                             type="button"
+                            onClick={() => toast.info("Visual preview: Button theme style active")}
                             className="w-full py-1.5 px-3 text-[11px] font-bold text-white flex items-center justify-center gap-1"
                             style={{
                               backgroundColor: settings.primaryColor,

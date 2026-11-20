@@ -380,7 +380,7 @@ export default function HospitalPortal() {
     setTokenNo(nextToken);
     setQueue([...queue, { token: nextToken, name: patientName, doctor: "General OPD", status: "WAITING" }]);
     setPatientName("");
-    alert(\`Token #\${nextToken} issued for \${patientName}.\`);
+    // Token registered successfully
   };
 
   return (
@@ -622,7 +622,7 @@ export default function HyperlocalMarketplace({ items = [] }: { items?: CatalogI
                 <span className="font-mono">₹{total}</span>
               </div>
               <button
-                onClick={() => alert(\`Order confirmed for ₹\${total}! King Pay UPI deep-link launched.\`)}
+                onClick={() => console.info(\`Order confirmed for ₹\${total}! King Pay UPI deep-link launched.\`)}
                 className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black py-2.5 rounded-xl text-xs shadow-lg"
               >
                 1-Tap KingPay UPI Checkout
@@ -675,7 +675,7 @@ marketplaceRouter.post("/orders/create", async (req, res) => {
         filename: "README.md",
         language: "markdown",
         code: `# Hyperlocal Multi-Vendor Marketplace
-Autonomous delivery engine with zero aggregator commission and real-time fleet dispatch.`,
+Autonomous delivery engine with direct merchant settlement and real-time fleet dispatch.`,
       },
     ],
   },

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 import {
   UniversalCustomizationEngine,
   ColorScience,
@@ -95,7 +96,7 @@ export const ROYAL_THEME_PRESETS = [
     desc: "Signature heritage green with warm gold accents",
   },
   {
-    id: "midnight_sovereign",
+    id: "midnight_dark",
     name: "Midnight Dark",
     primary: "#4F46E5",
     primaryForeground: "#FFFFFF",
@@ -1416,6 +1417,7 @@ export function UmarOsVisualCustomizationStudio({
 
                     <button
                       type="button"
+                      onClick={() => toast.info("Visual preview: Theme palette verified")}
                       className="px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition active:scale-95"
                       style={{
                         backgroundColor: palette.primary,

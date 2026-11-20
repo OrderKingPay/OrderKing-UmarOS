@@ -32,25 +32,23 @@ describe("Ultra-Luxury UI Architect Audit Suite (783ded97)", () => {
      1. TOP HEADER AUDIT (shell.tsx)
      ===================================================================== */
   describe("1. Top Header Audit & Micro-Pill Invariants", () => {
-    it("renders Lucide icon pills for Food Delivery and Flights, Trains, AI Tutor in center navigation", () => {
+    it("renders Lucide icon pills for Food Delivery, Dining Out, and Offers in center navigation", () => {
       // Pill 1: Food Delivery
       expect(shellCode).toContain("<UtensilsCrossed");
-      expect(shellCode).toContain('title="OrderKing Food Delivery"');
       expect(shellCode).toContain('to="/"');
 
-      // Pill 2: Super-App (Travel & AI Tutor)
-      expect(shellCode).toContain("<Plane");
-      expect(shellCode).toContain("<Train");
-      expect(shellCode).toContain("<GraduationCap");
-      expect(shellCode).toContain('title="KingPay (Flights, Trains, AI Tutor)"');
-      expect(shellCode).toContain('to="/travel"');
+      // Pill 2: Dining Out
+      expect(shellCode).toContain("<Utensils");
+      expect(shellCode).toContain('to="/dining"');
+
+      // Pill 3: Offers
+      expect(shellCode).toContain("<Percent");
+      expect(shellCode).toContain('to="/offers"');
     });
 
-    it("displays Gold Crown Wallet pill linking to KingPay", () => {
+    it("displays Wallet pill linking to KingPay", () => {
       expect(shellCode).toContain('to="/kingpay"');
-      expect(shellCode).toContain('aria-label="Gold Crown Wallet"');
       expect(shellCode).toContain("Wallet");
-      expect(shellCode).toContain("Crown");
     });
 
     it("purges slogan clutter, promotional buzzwords, and marketing noise", () => {

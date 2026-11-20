@@ -503,8 +503,8 @@ export async function executeAutonomousEmployeeTask(taskType: string, payload: a
   const startTime = Date.now();
   
   // Connect to real workspace / DB
-  // Defaulting to founder/system user for supreme operations if no userId provided
-  const ws = await ensureWorkspace(userId || "system_supreme_ai_founder");
+  // Defaulting to founder/system user for automated operations if no userId provided
+  const ws = await ensureWorkspace(userId || "system_operations_founder");
   const idempotencyKey = `auto-${startTime}-${taskType}`;
 
   try {

@@ -1,5 +1,5 @@
 /**
- * Supreme Multilingual Indian Dish Autocorrect & Predictive Matcher
+ * OrderKing Multilingual Indian Dish Autocorrect & Predictive Matcher
  * Supports phonetically typed and regional language variations of popular Indian dishes
  * across English, Hindi (हिन्दी), Bengali (বাংলা), and Assamese (অসমীয়া).
  */
