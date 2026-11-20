@@ -9,7 +9,7 @@ export default defineConfig({
     testTimeout: 60000,
     hookTimeout: 60000,
     fileParallelism: false,
-    isolate: false,
+    isolate: true,
     include: [
       "src/lib/orderking/tech-registry/catalog.test.ts",
       "src/lib/orderking/finance/merchant-contracts.test.ts",

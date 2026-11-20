@@ -2154,7 +2154,7 @@ export const DEFAULT_INDEX_ITEMS: readonly SearchIndexItem[] = [
       as: "প্ৰতিষ্ঠাপক-স্তৰৰ জৰুৰী চুইচ: সকলো উপাৰ্জন পৰিশোধ আৰু গ্ৰাহক অৰ্ডাৰ তৎক্ষণাৎ বন্ধ কৰে।",
     },
     keywords: {
-      en: ["circuit_breaker", "freeze", "emergency", "lockdown", "halt", "shutdown", "security freeze"],
+      en: ["circuit_breaker", "freeze", "emergency", "lockdown", "halt", "shutdown", "security freeze", "killswitch"],
       hi: ["आपातकाल", "आपातकालीन", "रोक", "बंद", "किल-स्विच", "सुरक्षा"],
       bn: ["জরুরী", "জরুরি", "স্থগিত", "বন্ধ", "কিলসুইচ", "নিরাপত্তা"],
       as: ["জৰুৰী", "জৰুৰীকালীন", "বন্ধ", "স্থগিত", "সুৰক্ষা"],
