@@ -2730,18 +2730,6 @@ function UmarOSDashboard() {
             </button>
             <button
               type="button"
-              onClick={() => selectWorld("travel", "travel-hub")}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
-                activeWorldId === "travel"
-                  ? "bg-sky-600 text-white font-bold shadow-xs"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Plane className="h-3.5 w-3.5" />
-              <span>Travel Hub</span>
-            </button>
-            <button
-              type="button"
               onClick={() => selectWorld("alerts", "action-center")}
               className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors whitespace-nowrap ${
                 activeWorldId === "alerts"

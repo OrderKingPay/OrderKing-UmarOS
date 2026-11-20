@@ -171,19 +171,19 @@ export function CommercialBypassDialsSection() {
       updateCommercialBypassDialsFn({
         data: {
           patch,
-          reason: "Founder Silent Bypass 10 Dial Synchronization",
+          reason: "Operations Controls Synchronization",
         },
       }),
     onSuccess: (res) => {
       if (res && res.ok) {
-        toast.success("Bypass Dial persisted to PostgreSQL & audited");
+        toast.success("Settings saved to database");
         void qc.invalidateQueries({ queryKey: ["commercial-bypass-dials"] });
       } else {
         toast.error((res as any)?.message || "Failed to update dial");
       }
     },
     onError: (err) => {
-      toast.error(err instanceof Error ? err.message : "Failed to update bypass dial");
+      toast.error(err instanceof Error ? err.message : "Failed to update settings");
     },
   });
 
@@ -220,23 +220,22 @@ export function CommercialBypassDialsSection() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge className="bg-orange-500 text-black font-black uppercase text-xs tracking-wider">
-                SILENT BYPASS 10
+                OPERATIONS CONTROL
               </Badge>
               <Badge className="border-orange-500/40 bg-orange-500/10 text-orange-300 font-mono text-xs">
                 GSTIN: 18AFXPH9838M1Z9
               </Badge>
               <Badge className="border-emerald-500/40 bg-emerald-500/10 text-emerald-300 font-mono text-xs">
-                9 ACTIVE BYPASS CHANNELS
+                9 ACTIVE CONTROLS
               </Badge>
             </div>
             <h2 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
               <SlidersHorizontal className="size-5 text-orange-400" />
-              Consolidated Commercial Bypass Master Dials
+              Platform Operations Controls
             </h2>
             <p className="text-xs text-muted max-w-2xl">
-              Operational bypass dials: Direct NPCI UPI VPA routing, Section 9(5) CGST statutory dialects,
-              multi-brand kitchen virtualization, dynamic OTA convenience fee ceilings (₹499/₹1,299), rail Tatkal arbitrage,
-              telecom carrier failovers, proximity dispatch perimeters, fleet garage RSA markers, and customer referral rewards.
+              Operations settings: Direct UPI routing, GST Section 9(5) tax isolation,
+              kitchen management, telecom failovers, dispatch radius, and customer referral controls.
             </p>
           </div>
 

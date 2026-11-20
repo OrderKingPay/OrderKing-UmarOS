@@ -141,7 +141,7 @@ function Login() {
         const signUpRes = await authClient.signUp.email({
           email,
           password,
-          name: "Umar OS Administrator",
+          name: "OrderKing Administrator",
           callbackURL: "/app",
         });
         if (signUpRes.error) {
@@ -158,7 +158,7 @@ function Login() {
         id: cleanPhone,
         phone: cleanPhone,
         email,
-        name: "Umar OS Administrator",
+        name: "OrderKing Administrator",
         role: "admin",
       });
       window.location.href = "/app";

@@ -256,8 +256,8 @@ export function CommercialCommandDials() {
           },
           {
             id: "bypass_dials" as DialTabKey,
-            label: "10. Commercial Bypass Dials",
-            subtitle: "Commercial Dials: VPA, Tax, OTA, Telemetry",
+            label: "10. Operations Controls",
+            subtitle: "UPI, Tax, Telecom, Radius",
             icon: SlidersHorizontal,
             color: "amber",
           },

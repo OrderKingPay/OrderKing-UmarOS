@@ -19,7 +19,7 @@ const LazyUmarAiOmnibar = lazyWithRetry(
   "UmarAiOmnibar"
 );
 
-const APP_NAME = "Umar OS";
+const APP_NAME = "OrderKing Operations";
 
 export const Route = createRootRoute({
   pendingComponent: AdminRootSkeleton,
@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#FCFAF7" },
       {
         name: "description",
-        content: "Umar OS — Enterprise Operating System & Central Control Hub.",
+        content: "OrderKing Operations — Central Admin & Management Hub.",
       },
     ],
     links: [
@@ -223,13 +223,6 @@ function RootDocument() {
               {/* Inner boundary protecting route viewport */}
               <AdminErrorBoundary sectionName="Admin Root Outlet">
                 <ResilientRouteOutlet fallback={<AdminRootSkeleton />} />
-              </AdminErrorBoundary>
-
-              {/* Localized boundary for AI terminal so terminal faults never affect dashboard */}
-              <AdminErrorBoundary inline sectionName="Umar AI Command Bar">
-                <Suspense fallback={null}>
-                  <LazyUmarAiOmnibar />
-                </Suspense>
               </AdminErrorBoundary>
 
               <Toaster
