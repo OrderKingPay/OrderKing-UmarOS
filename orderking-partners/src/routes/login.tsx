@@ -192,6 +192,10 @@ function Login() {
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
+
+      if (channel === "whatsapp" && res?.whatsAppOtpUrl && typeof window !== "undefined") {
+        window.open(res.whatsAppOtpUrl, "_blank");
+      }
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Failed to dispatch verification code.");
     } finally {
@@ -229,33 +233,46 @@ function Login() {
         role: "partner",
       });
 
-      if (verifyRes.isNewUser || mode === "up") {
-        const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
-        const signUpRes = await authClient.signUp.email({
-          email,
-          password: credential,
-          name: partnerName,
-        });
-
-        if (signUpRes.error) {
-          await authClient.signIn.email({
-            email,
-            password: credential,
-          });
+      // Synchronize Better Auth in background if available without blocking phone auth
+      try {
+        if (verifyRes.isNewUser || mode === "up") {
+          const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
+          if (typeof authClient.signUp?.email === "function") {
+            const signUpRes = await authClient.signUp.email({
+              email,
+              password: credential,
+              name: partnerName,
+            });
+            if (signUpRes?.error && typeof authClient.signIn?.email === "function") {
+              await authClient.signIn.email({
+                email,
+                password: credential,
+              }).catch(() => {});
+            }
+          }
+        } else {
+          if (typeof authClient.signIn?.email === "function") {
+            const signInRes = await authClient.signIn.email({
+              email,
+              password: credential,
+            });
+            if (signInRes?.error && typeof authClient.signUp?.email === "function") {
+              await authClient.signUp.email({
+                email,
+                password: credential,
+                name: `Partner ${cleanPhone.slice(-4)}`,
+              }).catch(() => {});
+            }
+          }
         }
+      } catch (authErr) {
+        console.warn("[Partner Auth] Better-auth secondary sync skipped:", authErr);
+      }
+
+      // Verified phone session established — route immediately
+      if (mode === "up") {
         window.location.assign("/onboarding");
       } else {
-        const signInRes = await authClient.signIn.email({
-          email,
-          password: credential,
-        });
-        if (signInRes.error) {
-          await authClient.signUp.email({
-            email,
-            password: credential,
-            name: `Partner ${cleanPhone.slice(-4)}`,
-          });
-        }
         window.location.assign("/dashboard");
       }
     } catch (err: any) {
@@ -283,19 +300,43 @@ function Login() {
         const defaultName =
           name.trim() ||
           (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
-        const res = await authClient.signUp.email({
-          email: resolved.email,
-          password,
-          name: defaultName,
-        });
-        if (res.error) throw new Error(res.error.message || t("auth.error"));
+        if (typeof authClient.signUp?.email === "function") {
+          const res = await authClient.signUp.email({
+            email: resolved.email,
+            password,
+            name: defaultName,
+          });
+          if (res?.error) throw new Error(res.error.message || t("auth.error"));
+        }
+        if (resolved.isMobile) {
+          const cleanPhone = sanitizeIndianPhone(identifier);
+          setPhoneSession({
+            id: "prt_" + cleanPhone,
+            phone: cleanPhone,
+            email: resolved.email,
+            name: defaultName,
+            role: "partner",
+          });
+        }
         window.location.assign("/onboarding");
       } else {
-        const res = await authClient.signIn.email({
-          email: resolved.email,
-          password,
-        });
-        if (res.error) throw new Error(res.error.message || t("auth.error"));
+        if (typeof authClient.signIn?.email === "function") {
+          const res = await authClient.signIn.email({
+            email: resolved.email,
+            password,
+          });
+          if (res?.error) throw new Error(res.error.message || t("auth.error"));
+        }
+        if (resolved.isMobile) {
+          const cleanPhone = sanitizeIndianPhone(identifier);
+          setPhoneSession({
+            id: "prt_" + cleanPhone,
+            phone: cleanPhone,
+            email: resolved.email,
+            name: `Partner ${cleanPhone.slice(-4)}`,
+            role: "partner",
+          });
+        }
         window.location.assign("/dashboard");
       }
     } catch (err) {

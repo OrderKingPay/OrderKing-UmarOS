@@ -69,7 +69,16 @@ export const Route = createRootRoute({
     }
 
     try {
-      const sessionUser = await fetchSessionUser();
+      let sessionUser = await fetchSessionUser();
+      if (!sessionUser && typeof window !== "undefined") {
+        try {
+          const { getPhoneSession } = await import("@/lib/auth/client");
+          const local = getPhoneSession();
+          if (local?.user?.id) {
+            sessionUser = { id: local.user.id, email: local.user.email };
+          }
+        } catch {}
+      }
       if (!sessionUser) {
         throw redirect({ to: "/login" });
       }

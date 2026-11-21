@@ -334,7 +334,6 @@ export const authClient: typeof _rawAuthClient = new Proxy(_rawAuthClient, {
   get(target, prop, receiver) {
     if (prop === "useSession") return useOrderKingSession;
     if (prop === "getSession") return getOrderKingSession;
-    const value = Reflect.get(target, prop, receiver);
-    return typeof value === "function" ? value.bind(target) : value;
+    return Reflect.get(target, prop, receiver);
   },
 });
