@@ -94,7 +94,7 @@ export const getDeliveryAreaCatalog = createServerFn({ method: "GET" })
 
     try {
       const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Database query timeout on 2G/3G connection")), 2200)
+        setTimeout(() => reject(new Error("Database query timeout on connection")), 5000)
       );
 
       const queryPromise = Promise.allSettled([

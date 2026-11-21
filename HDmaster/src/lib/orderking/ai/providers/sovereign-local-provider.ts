@@ -168,7 +168,7 @@ export class SovereignLocalProvider implements AIProvider {
   }
 
   async generateStructuredOutput<T>(input: StructuredRequest): Promise<T> {
-    // Generate sample valid structure
+    // Build deterministic structured result from schema properties
     const result: Record<string, unknown> = {};
     for (const key of Object.keys(input.schema)) {
       result[key] = `sovereign_${key}`;

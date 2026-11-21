@@ -4,7 +4,6 @@ import {
   ShoppingBag,
   MapPin,
   ChevronDown,
-  Crown,
   Languages,
   UtensilsCrossed,
   Utensils,
@@ -362,7 +361,7 @@ export function CustomerShell({
               </Link>
             </nav>
 
-            {/* Row 1 Right: Gold Crown Wallet + Cart Icon with Counter + User Profile / Sign In */}
+            {/* Row 1 Right: Wallet + Cart Icon with Counter + User Profile / Sign In */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {/* Wallet - Direct link to KingPay */}
               <Link

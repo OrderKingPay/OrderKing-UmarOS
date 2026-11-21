@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * EarnPageSkeleton - Ultra-luxurious skeleton for /earn (Crown Opportunities)
+ * EarnPageSkeleton - Skeleton for /earn (Offers & Rewards)
  */
 export function EarnPageSkeleton({ className }: { className?: string }) {
   return (
@@ -11,7 +11,7 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
         className
       )}
       aria-busy="true"
-      aria-label="Loading Crown Opportunities"
+      aria-label="Loading Offers & Rewards"
     >
       {/* Top Header */}
       <div className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-950/10 bg-[#FFFDF9]/90 px-4 py-3 backdrop-blur-md">
@@ -28,7 +28,7 @@ export function EarnPageSkeleton({ className }: { className?: string }) {
       </div>
 
       <div className="space-y-6 px-4 py-5">
-        {/* Royal Hero Banner */}
+        {/* Offers Hero Banner */}
         <div className="relative overflow-hidden rounded-3xl border-2 border-orange-400/40 bg-gradient-to-br from-stone-900 via-stone-900 to-orange-950 p-6 shadow-xl space-y-4">
           <div className="flex items-center gap-2">
             <div className="size-7 rounded-lg bg-orange-400/40" />

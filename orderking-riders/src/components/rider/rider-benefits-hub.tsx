@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Coffee,
   CreditCard,
-  Crown,
   Download,
   Flower2,
   Gift,
@@ -394,7 +393,7 @@ export function RiderBenefitsHub({
                 Partner Welfare &amp; Statutory Cover
               </h2>
               <span className="inline-flex items-center gap-1 rounded-md bg-orange-500/15 px-2 py-0.5 text-xs font-bold text-orange-600 dark:text-orange-400">
-                <Crown className="size-3" />
+                <ShieldCheck className="size-3" />
                 {trustTier.title}
               </span>
             </div>

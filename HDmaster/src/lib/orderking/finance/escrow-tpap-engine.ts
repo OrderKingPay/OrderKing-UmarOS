@@ -343,7 +343,7 @@ export class EscrowTpapEngine {
   private activeDriver: BankingEscrowDriver;
 
   constructor(driver?: BankingEscrowDriver) {
-    this.activeDriver = driver || new MockBankingPartnerDriver();
+    this.activeDriver = driver || new RazorpayXRouteDriver();
   }
 
   public setDriver(driver: BankingEscrowDriver): void {

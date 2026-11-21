@@ -27,7 +27,6 @@ import {
   MapPin,
   Sparkles,
   Send,
-  Crown,
   Car,
   CreditCard,
   Lightbulb,

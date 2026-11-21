@@ -228,7 +228,7 @@ export function BannerCarouselSection({
       accent: "text-orange-300",
     },
     {
-      id: "gold_crown_rewards",
+      id: "available_offers_rewards",
       title: "Available Offers",
       subtitle: "View active restaurant and checkout coupons",
       tag: "Offers",

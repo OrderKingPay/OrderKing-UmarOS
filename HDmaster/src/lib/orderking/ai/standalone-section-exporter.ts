@@ -85,7 +85,7 @@ export class StandaloneSectionExporter {
       title: "Premium Founder AI Executive Chat & Voice Partner",
       category: "AI Executive Assistant",
       description: "Extract the ChatGPT-styled dark mode chat interface with young female voice synthesis and multi-model switching.",
-      icon: "Crown",
+      icon: "Sparkles",
       suggestedDomain: "ai.orderking.in",
       features: ["8 Top-Tier AI Models", "Full-Duplex Voice Call", "Universal File Attachments", "Executive Pinned Prompts"],
     },

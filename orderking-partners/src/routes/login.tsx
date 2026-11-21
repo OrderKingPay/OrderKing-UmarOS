@@ -168,7 +168,7 @@ function Login() {
 
   async function handleSendOtp(channel: "sms" | "whatsapp" = "sms") {
     if (!isPhoneValid) {
-      setError("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.");
+      setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
 
@@ -433,10 +433,13 @@ function Login() {
                       <Input
                         id="mobile-input"
                         type="tel"
-                        maxLength={10}
+                        maxLength={14}
                         required
                         value={mobileNumber}
-                        onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
+                        }}
                         placeholder="Enter 10-digit mobile"
                         className="pl-12 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono tracking-wider text-sm"
                       />

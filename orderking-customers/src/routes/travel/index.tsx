@@ -36,7 +36,6 @@ import {
   ArrowUpRight,
   ChevronRight,
   ExternalLink,
-  Crown,
   Globe,
   Loader2,
 } from "lucide-react";
@@ -643,7 +642,7 @@ export function TravelPage() {
           <div>
             <div className="inline-flex flex-wrap items-center gap-1.5 text-xs font-black uppercase tracking-wider text-orange-400 mb-1">
               <span className="inline-flex items-center gap-1">
-                <Crown className="size-3.5 text-orange-400" /> OrderKing Travel · Travel King Desk (GSTIN: 18AFXPH9838M1Z9)
+                <Plane className="size-3.5 text-orange-400" /> OrderKing Travel · Official Desk (GSTIN: 18AFXPH9838M1Z9)
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white">
@@ -2696,7 +2695,7 @@ export function TravelPage() {
                                 }}
                                 className="w-full h-11 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-900 text-white font-black text-xs shadow-md transition-all active:scale-98 flex items-center justify-center gap-2"
                               >
-                                <Crown className="size-4 text-orange-200" />
+                                <Compass className="size-4 text-orange-200" />
                                 <span>Request Tour Quote</span>
                               </Button>
                             </div>

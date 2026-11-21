@@ -8,7 +8,7 @@ describe("Customer Platform End-to-End Navigation & Integrity Suite", () => {
       { path: "/", title: "Food Delivery", category: "core" },
       { path: "/travel", title: "Travel Flights & Stays", category: "travel" },
       { path: "/travel/trips", title: "My Trips & Tracking", category: "travel" },
-      { path: "/earn", title: "Crown Opportunities", category: "growth" },
+      { path: "/earn", title: "Offers & Rewards", category: "growth" },
       { path: "/king-pay", title: "KingPay Fintech", category: "fintech" },
       { path: "/cart", title: "Cart", category: "checkout" },
       { path: "/checkout", title: "Checkout", category: "checkout" },

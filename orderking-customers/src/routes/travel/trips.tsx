@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, Crown, FileText, Plane, ShieldCheck, TrainFront, CheckCircle2, QrCode, Bus, Car, ExternalLink } from "lucide-react";
+import { CalendarDays, FileText, Plane, ShieldCheck, TrainFront, CheckCircle2, QrCode, Bus, Car, ExternalLink } from "lucide-react";
 import { CustomerShell } from "@/components/market/shell";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 import { getStoredETickets, type CarrierETicket } from "@/lib/travel/in-app-booking-service";
@@ -148,7 +148,7 @@ function MyTripsPage() {
       <div className="min-h-dvh bg-slate-50 px-4 py-6 pb-32 text-slate-900">
         <div className="mx-auto max-w-5xl space-y-5">
           <header className="rounded-3xl border border-orange-300/30 bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 p-6 text-white shadow-xl">
-            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-orange-300"><Crown className="size-5" /> OrderKing Travel Hub</p>
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.17em] text-orange-300"><Plane className="size-5" /> OrderKing Travel Hub</p>
             <h1 className="mt-3 text-3xl font-extrabold tracking-tight">My Trips &amp; Live Tracking</h1>
             <p className="mt-2 max-w-xl text-sm text-slate-200">1-Tap Direct IRCTC PNR validation, live airport gate departures, and direct fare comparisons.</p>
             <p className="mt-3 flex items-center gap-2 text-xs text-orange-200"><ShieldCheck className="size-4" /> Live carrier PNR &amp; flight status</p>

@@ -76,7 +76,7 @@ export const ViralGrowthEngine = {
   async processReferralActivation(referralCode: string, newUserId: string): Promise<{ success: boolean; message: string; amountCredited: number }> {
     // Permanent fail-closed gate: no cash reward, UPI transfer, or wallet
     // top-up may be funded from an unverified internal ad-revenue number.
-    // Server-authorized, commission-settled Crown discounts need a separate
+    // Server-authorized, commission-settled loyalty discounts need a separate
     // audited implementation before this program can ever be activated.
     const cashReferralPayoutsDisabled = true;
     if (cashReferralPayoutsDisabled) {

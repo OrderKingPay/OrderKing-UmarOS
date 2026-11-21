@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Camera, Crown, ImagePlus, Trash2, UserRound } from "lucide-react";
+import { Camera, ImagePlus, Trash2, UserRound } from "lucide-react";
 import { useDeviceAvatar } from "@/lib/hooks/use-device-avatar";
 
 export function DeviceAvatar({
@@ -88,7 +88,7 @@ export function DeviceAvatar({
       {editor && (
         <div className="space-y-2">
           <p className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-            <Crown className="size-4 text-orange-600" /> Your profile picture
+            <Camera className="size-4 text-orange-600" /> Your profile picture
           </p>
           <div className="flex flex-wrap gap-2">
             <button

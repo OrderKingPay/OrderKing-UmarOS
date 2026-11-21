@@ -3,7 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   Check,
-  Crown,
+  ShoppingBag,
   Loader2,
   Mic,
   MicOff,
@@ -1435,7 +1435,7 @@ export function CustomerConciergeDrawer({
                       className="flex w-full items-center justify-between rounded-xl border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-yellow-500/20 hover:from-amber-500/30 hover:to-yellow-500/30 px-3.5 py-2.5 text-left text-xs font-black text-amber-200 transition-all shadow-[0_2px_12px_rgba(251,191,36,0.15)] active:scale-[0.98] cursor-pointer"
                     >
                       <span className="flex items-center gap-2 truncate">
-                        <Crown className="size-4 text-amber-400 shrink-0" />
+                        <Sparkles className="size-4 text-amber-400 shrink-0" />
                         <span className="truncate">{m.action.label}</span>
                       </span>
                       <ArrowRight className="size-3.5 text-amber-400 shrink-0" />
@@ -1676,7 +1676,7 @@ export function CustomerConciergeDrawer({
                   <div className="flex items-center justify-between pb-3 border-b border-amber-500/20">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="size-9 rounded-xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0 shadow-[0_2px_10px_rgba(251,191,36,0.2)]">
-                        <Crown className="size-5" />
+                        <ShoppingBag className="size-5" />
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-sm sm:text-base font-black text-white flex items-center gap-1.5 truncate">
@@ -1901,7 +1901,7 @@ export function CustomerConciergeDrawer({
                     }}
                     className="w-full min-h-[46px] py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:brightness-110 active:scale-[0.98] text-slate-950 font-black text-xs sm:text-sm transition-all shadow-[0_4px_20px_rgba(251,191,36,0.3)] flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Crown className="size-4 text-slate-950" />
+                    <CreditCard className="size-4 text-slate-950" />
                     <span>Confirm &amp; Pay {formatPaise(grandTotalPaise)} via KingPay UPI</span>
                   </button>
                 </>

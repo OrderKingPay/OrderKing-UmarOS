@@ -442,7 +442,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cac
     };
   }
 
-  // 2. Unlimited Free AI Image Generation
+  // 2. AI Culinary & Marketing Image Studio
   if (
     q.startsWith("/image") ||
     q.includes("generate image") ||
@@ -456,7 +456,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to clear cac
       .replace(/generate (an )?image (of )?/i, "")
       .replace(/create (an )?image (of )?/i, "")
       .replace(/make (an )?image (of )?/i, "")
-      .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
+      .trim() || "Professional Indian culinary restaurant packaging and dish presentation, high-resolution commercial food photography";
 
     const seed = Math.floor(Math.random() * 999999);
     // @ts-ignore

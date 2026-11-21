@@ -1,7 +1,7 @@
 
 import { type ReactNode, useState, useEffect } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, Car, CreditCard, Crown, History, Plane, PlusCircle, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
+import { Bell, Car, CreditCard, History, Plane, PlusCircle, QrCode, ShieldCheck, Search, Sparkles, User, UtilityPole, Wallet, Zap } from "lucide-react";
 import { KingPayMark, KingPayWordmark } from "@/components/brand/kingpay-mark";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -122,7 +122,7 @@ export function KingPayShell({
               className="shrink-0 rounded-full border border-orange-400/70 bg-emerald-950 p-1 text-orange-200 no-underline shadow-sm hover:border-orange-200">
               {isPending ? <span className="block size-8 animate-pulse rounded-full bg-slate-700" /> :
                 user ? <DeviceAvatar userId={user.id} name={user.displayName} imageUrl={user.profileImageUrl} profileImageUrl={user.profileImageUrl} /> :
-                <span className="flex size-8 items-center justify-center"><Crown className="size-5" aria-hidden /></span>}
+                <span className="flex size-8 items-center justify-center"><User className="size-5" aria-hidden /></span>}
             </Link>
 
             {/* Notification Bell with Badge */}
