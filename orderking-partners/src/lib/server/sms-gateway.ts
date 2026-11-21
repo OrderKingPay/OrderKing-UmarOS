@@ -1128,7 +1128,29 @@ export const sendPartnerOtpFn = createServerFn({ method: "POST" })
 export const verifyPartnerOtpFn = createServerFn({ method: "POST" })
   .validator((input: { phone: string; otp: string }) => input)
   .handler(async ({ data }) => {
-    return handleVerifyPartnerOtp(data);
+    const res = await handleVerifyPartnerOtp(data);
+    if (res.success) {
+      try {
+        const { setCookie } = await import("@tanstack/react-start/server");
+        const profile = {
+          id: "prt_" + res.phone,
+          phone: res.phone,
+          email: res.email,
+          name: `Partner ${res.phone.slice(-4)}`,
+          role: "partner",
+        };
+        const cookieVal = encodeURIComponent(JSON.stringify(profile));
+        setCookie("orderking_partner_session", cookieVal, {
+          path: "/",
+          maxAge: 30 * 24 * 3600,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+      } catch (cookieErr) {
+        console.warn("[verifyPartnerOtpFn] Server setCookie non-fatal error:", cookieErr);
+      }
+    }
+    return res;
   });
 
 export async function verifyVia2Factor(phone: string, otp: string): Promise<boolean> {

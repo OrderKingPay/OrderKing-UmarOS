@@ -76,18 +76,29 @@ export const Route = createRootRoute({
           const local = getPhoneSession();
           if (local?.user?.id) {
             sessionUser = { id: local.user.id, email: local.user.email };
+            try {
+              const cookieVal = encodeURIComponent(JSON.stringify(local.user));
+              const sec = window.location.protocol === "https:" ? "; Secure" : "";
+              document.cookie = `orderking_partner_session=${cookieVal}; path=/; max-age=2592000; SameSite=Lax${sec}`;
+            } catch {}
           }
         } catch {}
       }
       if (!sessionUser) {
-        throw redirect({ to: "/login" });
+        if (typeof window !== "undefined") {
+          throw redirect({ to: "/login" });
+        }
+        return { sessionUser: null };
       }
       return { sessionUser };
     } catch (err) {
       if ((err as any)?.to || (err as any)?.status === 307 || (err as any)?.status === 302) {
         throw err;
       }
-      throw redirect({ to: "/login" });
+      if (typeof window !== "undefined") {
+        throw redirect({ to: "/login" });
+      }
+      return { sessionUser: null };
     }
   },
   head: () => ({

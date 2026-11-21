@@ -45,7 +45,7 @@ export async function loadMemberships(
              r.data_label, r.verification_status, r.commission_bps
       from restaurant_staff s
       join restaurants r on r.id = s.restaurant_id
-      where (s.user_id = ${userId} or (length(${cleanPhone}) >= 10 and s.user_id = ${cleanPhone}))
+      where (s.user_id = ${userId} or (length(${cleanPhone}) >= 10 and (s.user_id = ${cleanPhone} or s.user_id = ${'prt_' + cleanPhone})))
         and s.is_active = true
       union
       select r.id as restaurant_id, null as outlet_id, 'OWNER' as role,
@@ -53,7 +53,13 @@ export async function loadMemberships(
              r.data_label, r.verification_status, r.commission_bps
       from restaurants r
       where r.owner_user_id = ${userId}
-         or (length(${cleanPhone}) >= 10 and (r.owner_user_id = ${cleanPhone} or r.phone = ${cleanPhone}))
+         or (length(${cleanPhone}) >= 10 and (
+              r.owner_user_id = ${cleanPhone}
+              or r.owner_user_id = ${'prt_' + cleanPhone}
+              or r.phone = ${cleanPhone}
+              or r.phone = ${'+91' + cleanPhone}
+              or right(regexp_replace(coalesce(r.phone, ''), '\\D', '', 'g'), 10) = ${cleanPhone.slice(-10)}
+            ))
       order by restaurant_id asc
     `;
   } catch {
@@ -72,7 +78,13 @@ export async function loadMemberships(
                r.data_label, r.verification_status, r.commission_bps
         from restaurants r
         where r.owner_user_id = ${userId}
-           or (length(${cleanPhone}) >= 10 and (r.owner_user_id = ${cleanPhone} or r.phone = ${cleanPhone}))
+           or (length(${cleanPhone}) >= 10 and (
+                r.owner_user_id = ${cleanPhone}
+                or r.owner_user_id = ${'prt_' + cleanPhone}
+                or r.phone = ${cleanPhone}
+                or r.phone = ${'+91' + cleanPhone}
+                or right(regexp_replace(coalesce(r.phone, ''), '\\D', '', 'g'), 10) = ${cleanPhone.slice(-10)}
+              ))
       `;
     } catch {
       rows = [];
