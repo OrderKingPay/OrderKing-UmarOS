@@ -49,7 +49,7 @@ export function PartnerLandingPage() {
   const { user, isPending } = useCurrentUserState();
   const branding = useMerchantBranding();
 
-  // If already authenticated via client-side phone session, seamlessly route to dashboard
+  // If already authenticated via client-side phone session, route directly to dashboard
   useEffect(() => {
     if (typeof window !== "undefined") {
       const s = getPhoneSession();
@@ -105,6 +105,10 @@ export function PartnerLandingPage() {
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
+
+      if (channel === "whatsapp" && res?.whatsAppOtpUrl && typeof window !== "undefined") {
+        window.open(res.whatsAppOtpUrl, "_blank");
+      }
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Failed to dispatch verification code.");
     } finally {
@@ -161,30 +165,42 @@ export function PartnerLandingPage() {
           } catch {}
         }
 
-        const signUpRes = await authClient.signUp.email({
-          email,
-          password: credential,
-          name: partnerDisplayName,
-        });
-
-        if (signUpRes.error) {
-          await authClient.signIn.email({
-            email,
-            password: credential,
-          });
+        // Synchronize Better Auth in background if available without blocking phone auth
+        try {
+          if (typeof authClient.signUp?.email === "function") {
+            const signUpRes = await authClient.signUp.email({
+              email,
+              password: credential,
+              name: partnerDisplayName,
+            });
+            if (signUpRes?.error && typeof authClient.signIn?.email === "function") {
+              await authClient.signIn.email({
+                email,
+                password: credential,
+              }).catch(() => {});
+            }
+          }
+        } catch (authErr) {
+          console.warn("[Partner Auth] Better-auth background sync skipped:", authErr);
         }
         window.location.assign("/onboarding");
       } else {
-        const signInRes = await authClient.signIn.email({
-          email,
-          password: credential,
-        });
-        if (signInRes.error) {
-          await authClient.signUp.email({
-            email,
-            password: credential,
-            name: `Partner ${cleanPhone.slice(-4)}`,
-          });
+        try {
+          if (typeof authClient.signIn?.email === "function") {
+            const signInRes = await authClient.signIn.email({
+              email,
+              password: credential,
+            });
+            if (signInRes?.error && typeof authClient.signUp?.email === "function") {
+              await authClient.signUp.email({
+                email,
+                password: credential,
+                name: `Partner ${cleanPhone.slice(-4)}`,
+              }).catch(() => {});
+            }
+          }
+        } catch (authErr) {
+          console.warn("[Partner Auth] Better-auth background sync skipped:", authErr);
         }
         window.location.assign("/dashboard");
       }
