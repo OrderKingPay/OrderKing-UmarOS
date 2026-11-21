@@ -7,7 +7,7 @@ export type NavItem = {
   permission: Permission | Permission[];
   icon:
     | "layout"
-    | "crown"
+    | "sparkles"
     | "radio"
     | "receipt"
     | "bike"

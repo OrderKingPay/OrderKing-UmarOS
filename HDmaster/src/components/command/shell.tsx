@@ -16,7 +16,6 @@ import {
   ChevronDown,
   ChevronRight,
   Command as CommandIcon,
-  Crown,
   FileText,
   Flag,
   Gift,
@@ -67,7 +66,7 @@ import { UmarAiOmnibar } from "./UmarAiOmnibar";
 
 const ICONS = {
   layout: LayoutDashboard,
-  crown: Crown,
+  sparkles: Sparkles,
   radio: Radio,
   receipt: Receipt,
   bike: Bike,

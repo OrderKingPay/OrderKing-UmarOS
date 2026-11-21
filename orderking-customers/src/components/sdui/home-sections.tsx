@@ -7,7 +7,6 @@ import {
   Search,
   ChevronRight,
   ChevronDown,
-  Crown,
   Sparkles,
   Zap,
   Star,

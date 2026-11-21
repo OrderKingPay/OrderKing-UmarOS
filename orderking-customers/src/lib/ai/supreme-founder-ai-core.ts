@@ -1082,7 +1082,7 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
     };
   }
 
-  // 2. Unlimited Free AI Image Generation
+  // 2. Real Multimodal Image Synthesis
   if (
     q.startsWith("/image") ||
     q.includes("generate image") ||
@@ -1096,13 +1096,13 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
       .replace(/generate (an )?image (of )?/i, "")
       .replace(/create (an )?image (of )?/i, "")
       .replace(/make (an )?image (of )?/i, "")
-      .trim() || "Futuristic OrderKing luxury food delivery hub with golden drones and neon lights, 8k octane render";
+      .trim() || "OrderKing authentic hyper-local restaurant storefront in Assam, high resolution clean photograph";
 
     const seed = crypto.getRandomValues(new Uint32Array(1))[0] % 999999;
     // @ts-ignore
     const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(String(
       // @ts-ignore
-      rawPrompt + ", 8k resolution, cinematic lighting, photorealistic, commercial grade, award winning"
+      rawPrompt + ", realistic commercial product shot, accurate lighting, natural colors"
       ?? ""))}?width=1024&height=1024&nologo=true&seed=${seed}`;
 
     // Auto-save to Media Storage Vault
@@ -1118,24 +1118,24 @@ Click **"1-Click Purge All Junk"** below or in the Purifier Cockpit to free disk
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 4, label: "Parsing High-Precision Visual Prompt", status: "COMPLETED", detail: rawPrompt },
       { stepNumber: 2, totalSteps: 4, label: "Routing to Image Generation Service", status: "COMPLETED", detail: "1024x1024 resolution configured" },
-      { stepNumber: 3, totalSteps: 4, label: "Synthesizing Photorealistic Asset", status: "COMPLETED", detail: "Ray-traced lighting and dynamic shaders rendered" },
-      { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent cloud & local storage indexed" },
+      { stepNumber: 3, totalSteps: 4, label: "Synthesizing Asset", status: "COMPLETED", detail: "Authentic image generated" },
+      { stepNumber: 4, totalSteps: 4, label: "Archiving in HD Master Media Vault", status: "COMPLETED", detail: "Persistent storage indexed" },
     ];
 
     const responseMarkdown = `### AI Image Generation Output
 - **Prompt**: *"${rawPrompt}"*
 - **Resolution**: **1024 × 1024** | **Provider**: Pollinations AI
-- **Vault Status**: Indexed in **HD Master Media Vault** (ready to download, enlarge, or embed in client pitch decks).
+- **Vault Status**: Indexed in **Media Vault**.
 
 ![Generated AI Image](${imageUrl})
 
-You can download this image, copy its direct CDN link, or command further edits below!`;
+You can download this image or copy its direct link below.`;
 
     const voiceSpokenText = isHindi
-      ? `Maine aapke liye high-resolution AI image generate kar diya hai aur aapke media vault me save ho gaya hai.`
+      ? `Maine aapke liye AI image generate kar diya hai aur aapke media vault me save ho gaya hai.`
       : isBengali
-        ? `Ami apnar jonno high-resolution AI image toiri korechi ebong apnar media vault e save hoyeche.`
-        : `I have generated your high-resolution AI image and saved it to your Media Vault.`;
+        ? `Ami apnar jonno AI image toiri korechi ebong apnar media vault e save hoyeche.`
+        : `I have generated your AI image and saved it to your Media Vault.`;
 
     return {
       intent: "media_generation",
@@ -1147,7 +1147,7 @@ You can download this image, copy its direct CDN link, or command further edits 
         type: "image",
         prompt: rawPrompt,
         url: imageUrl,
-        style: "Photorealistic 8K",
+        style: "Realistic",
       },
       actionCard: {
         type: "media_generator",
@@ -1160,7 +1160,7 @@ You can download this image, copy its direct CDN link, or command further edits 
     };
   }
 
-  // 3. Unlimited Free AI Video Generation
+  // 3. AI Video Processing Check
   if (
     q.startsWith("/video") ||
     q.includes("generate video") ||
@@ -1174,7 +1174,7 @@ You can download this image, copy its direct CDN link, or command further edits 
       .replace(/generate (a )?video (of )?/i, "")
       .replace(/create (a )?video (of )?/i, "")
       .replace(/make (a )?video (of )?/i, "")
-      .trim() || "Cinematic OrderKing 15-minute drone delivery flight through neon city streets";
+      .trim() || "OrderKing local delivery route through city streets";
 
     const executionSteps: AgentExecutionStep[] = [
       { stepNumber: 1, totalSteps: 2, label: "Validating Video Prompt", status: "COMPLETED", detail: rawPrompt },

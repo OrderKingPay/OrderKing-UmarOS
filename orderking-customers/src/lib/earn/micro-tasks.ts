@@ -1,5 +1,5 @@
 /**
- * Crown Promotional Credits — safe eligibility calculations.
+ * OrderKing Promotional Credits — safe eligibility calculations.
  *
  * This module deliberately contains NO browser wallet, cash payout, UPI transfer,
  * stored credit balance, or self-approval. Amounts shown to customers are NOT
@@ -51,7 +51,7 @@ export const TASK_DEFINITIONS: Record<MicroTaskType, TaskDefinition> = {
  * This function returns a QUOTE, never a redeemable credit or wallet balance.
  * All currency amounts are non-negative integer paise.
  */
-export interface CrownCreditFunding {
+export interface PromotionalCreditFunding {
   verifiedSettled: boolean;
   settledCommissionPaise: number;
   providerFeePaise: number;
@@ -61,18 +61,20 @@ export interface CrownCreditFunding {
   founderRetainedMinimumPaise: number;
   rewardShareBps?: number;
 }
+export type CrownCreditFunding = PromotionalCreditFunding;
 
-export interface CrownCreditQuote {
+export interface PromotionalCreditQuote {
   eligibleForConsideration: boolean;
   maxPromotionalCreditPaise: number;
   founderContributionAfterCreditPaise: number;
   reason: string;
 }
+export type CrownCreditQuote = PromotionalCreditQuote;
 
 const isWholeNonnegative = (value: number) =>
   Number.isSafeInteger(value) && value >= 0;
 
-export function quoteCrownPromotionalCredits(f: CrownCreditFunding): CrownCreditQuote {
+export function quotePromotionalCredits(f: PromotionalCreditFunding): PromotionalCreditQuote {
   const values = [
     f.settledCommissionPaise, f.providerFeePaise, f.taxPaise,
     f.refundReservePaise, f.serviceCostPaise, f.founderRetainedMinimumPaise,
@@ -103,6 +105,7 @@ export function quoteCrownPromotionalCredits(f: CrownCreditFunding): CrownCredit
       ? "Quote only; server-side authorization and eligible food order required."
       : "No promotional entitlement available." };
 }
+export const quoteCrownPromotionalCredits = quotePromotionalCredits;
 
 export interface FoodDiscountLimit {
   eligibleOrder: boolean;
