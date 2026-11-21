@@ -30,7 +30,14 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-export const Route = createFileRoute("/login")({ component: Login });
+export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>): { mode?: "in" | "up"; phone?: string; name?: string } => ({
+    mode: search.mode === "up" ? "up" : "in",
+    phone: typeof search.phone === "string" ? search.phone : undefined,
+    name: typeof search.name === "string" ? search.name : undefined,
+  }),
+  component: Login,
+});
 
 function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: boolean; valid: boolean } {
   const trimmed = rawInput.trim();

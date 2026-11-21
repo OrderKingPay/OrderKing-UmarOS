@@ -34,8 +34,7 @@ import { canonicalLedger, type LedgerTransaction } from "./canonical-ledger.ts";
 export type EscrowBankingProviderType =
   | "RAZORPAYX_ROUTE"
   | "CASHFREE_ESCROW"
-  | "ICICI_NODAL"
-  | "MOCK_ESCROW";
+  | "ICICI_NODAL";
 
 export type JobMilestoneState =
   | "PENDING_FUNDING"
@@ -165,101 +164,6 @@ export interface BankingEscrowDriver {
   getEscrowStatus(escrowReference: string): Promise<EscrowStatusResult>;
 }
 
-/**
- * MOCK / TEST DRIVER FOR REGULATED BANKING ESCROW
- * Deterministic in-memory simulation with zero external HTTP reliance for offline testing.
- */
-export class MockBankingPartnerDriver implements BankingEscrowDriver {
-  public providerType: EscrowBankingProviderType = "MOCK_ESCROW";
-  private subAccounts = new Map<string, SubAccountResult>();
-  private escrows = new Map<string, { amountPaise: number; status: EscrowStatusResult["status"] }>();
-
-  async createSubAccount(params: SubAccountParams): Promise<SubAccountResult> {
-    const subAccountId = `sub_${params.entityId}_${Date.now()}`;
-    const result: SubAccountResult = {
-      subAccountId,
-      provider: this.providerType,
-      status: "ACTIVE",
-      settlementAccount: params.bankAccountOrVpa,
-      createdAt: new Date().toISOString(),
-    };
-    this.subAccounts.set(params.entityId, result);
-    return result;
-  }
-
-  async depositToEscrow(params: EscrowDepositParams): Promise<EscrowDepositResult> {
-    const escrowRef = `nodal_esc_${params.orderOrJobId}_${Date.now()}`;
-    this.escrows.set(escrowRef, { amountPaise: params.amountPaise, status: "HELD" });
-    return {
-      escrowReference: escrowRef,
-      provider: this.providerType,
-      amountPaise: params.amountPaise,
-      status: "ESCROW_LOCKED",
-      depositedAt: new Date().toISOString(),
-      nodalAccountMasked: "ICICI-NODAL-X-9901",
-    };
-  }
-
-  async routeSplitPayout(params: RouteSplitPayoutParams): Promise<RouteSplitPayoutResult> {
-    const entry = this.escrows.get(params.escrowReference);
-    if (entry) {
-      entry.status = "RELEASED";
-    }
-    const utr = `UTR${Date.now().toString().slice(-8)}${Math.floor(1000 + Math.random() * 9000)}`;
-    return {
-      splitTransactionId: `spl_${params.orderId}_${Date.now()}`,
-      provider: this.providerType,
-      merchantPayoutUtr: utr,
-      merchantAmountPaise: params.merchantNetPaise,
-      platformFeeTransferredPaise: params.platformFeePaise,
-      riderPayoutUtr: params.riderFeePaise ? `${utr}_RIDER` : undefined,
-      status: "SPLIT_COMPLETED",
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  async releaseEscrow(params: ReleaseEscrowParams): Promise<ReleaseEscrowResult> {
-    const entry = this.escrows.get(params.escrowReference);
-    if (entry) {
-      entry.status = "RELEASED";
-    }
-    const utr = `UTR${Date.now().toString().slice(-8)}${Math.floor(1000 + Math.random() * 9000)}`;
-    return {
-      releaseId: `rel_${params.escrowReference}_${Date.now()}`,
-      payoutUtr: utr,
-      amountReleasedPaise: params.netPayoutPaise,
-      beneficiaryAccount: params.beneficiaryUpiOrAccount,
-      status: "DISBURSED",
-      releasedAt: new Date().toISOString(),
-    };
-  }
-
-  async reverseRefund(params: RefundParams): Promise<RefundResult> {
-    const entry = this.escrows.get(params.escrowReference);
-    if (entry) {
-      entry.status = "REFUNDED";
-    }
-    const utr = `REV${Date.now().toString().slice(-8)}${Math.floor(1000 + Math.random() * 9000)}`;
-    return {
-      refundId: `ref_${params.escrowReference}_${Date.now()}`,
-      refundUtr: utr,
-      amountRefundedPaise: params.refundAmountPaise,
-      status: "REFUNDED",
-      refundedAt: new Date().toISOString(),
-    };
-  }
-
-  async getEscrowStatus(escrowReference: string): Promise<EscrowStatusResult> {
-    const item = this.escrows.get(escrowReference);
-    return {
-      escrowReference,
-      provider: this.providerType,
-      heldAmountPaise: item ? item.amountPaise : 0,
-      status: item ? item.status : "HELD",
-      nodalBank: "ICICI Bank Nodal Services",
-    };
-  }
-}
 
 /**
  * RAZORPAYX ROUTE DRIVER (RBI-Licensed Payment Aggregator Escrow)

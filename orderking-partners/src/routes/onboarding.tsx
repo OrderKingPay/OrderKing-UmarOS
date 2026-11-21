@@ -31,9 +31,9 @@ import {
 
 export const Route = createFileRoute("/onboarding")({
   beforeLoad: ({ context }) => {
-    if (!context?.sessionUser) throw redirect({ to: "/login" });
+    if (!context?.sessionUser) throw redirect({ to: "/login", search: { mode: "up" } });
   },
-  component: OnboardingPage
+  component: OnboardingPage,
 });
 
 export const ORDERKING_ONBOARDING_DRAFT_KEY = "orderking_partner_onboarding_draft";

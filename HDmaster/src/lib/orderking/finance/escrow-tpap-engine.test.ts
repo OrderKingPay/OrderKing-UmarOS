@@ -6,7 +6,6 @@ vi.mock("../../db.ts", () => ({
 import {
   EscrowTpapEngine,
   MilestoneEscrowEngine,
-  MockBankingPartnerDriver,
   RazorpayXRouteDriver,
   type SubAccountParams,
   type CreateMilestoneParams,
@@ -14,13 +13,13 @@ import {
 import { canonicalLedger } from "./canonical-ledger.ts";
 
 describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
-  let mockDriver: MockBankingPartnerDriver;
+  let rzpDriver: RazorpayXRouteDriver;
   let escrowEngine: EscrowTpapEngine;
   let milestoneEngine: MilestoneEscrowEngine;
 
   beforeEach(() => {
-    mockDriver = new MockBankingPartnerDriver();
-    escrowEngine = new EscrowTpapEngine(mockDriver);
+    rzpDriver = new RazorpayXRouteDriver();
+    escrowEngine = new EscrowTpapEngine(rzpDriver);
     milestoneEngine = new MilestoneEscrowEngine(escrowEngine);
   });
 
@@ -37,11 +36,11 @@ describe("Fintech Escrow & TPAP Architecture (Council Domains 3 & 7)", () => {
         gstin: "29ABCDE1234F1Z5",
       };
 
-      const result = await mockDriver.createSubAccount(merchant);
+      const result = await rzpDriver.createSubAccount(merchant);
       expect(result.subAccountId).toBeDefined();
       expect(result.status).toBe("ACTIVE");
       expect(result.settlementAccount).toBe("royaldining@icici");
-      expect(result.provider).toBe("MOCK_ESCROW");
+      expect(result.provider).toBe("RAZORPAYX_ROUTE");
     });
 
     it("RazorpayX Route driver initializes and provides correct provider type", () => {
