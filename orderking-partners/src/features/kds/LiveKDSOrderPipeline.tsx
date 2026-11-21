@@ -570,7 +570,7 @@ export const LiveKDSOrderPipeline: React.FC<LiveKDSOrderPipelineProps> = ({
           <div style={{ backgroundColor: "#1E293B", borderRadius: "10px", padding: "20px", maxWidth: "420px", width: "90%", border: "1px solid #991B1B" }}>
             <h3 style={{ margin: "0 0 8px 0", fontSize: "18px", color: "#EF4444" }}>Decline Order & Fault Penalty</h3>
             <p style={{ fontSize: "12px", color: "#CBD5E1", margin: "0 0 12px 0" }}>
-              Merchant-initiated order cancellations disrupt customer experience and levy platform operational penalty against daily settlement ledger.
+              Merchant-initiated order cancellations impact customer delivery SLAs and levy platform operational penalty against daily settlement ledger.
             </p>
             <label style={{ fontSize: "12px", color: "#94A3B8", display: "block", marginBottom: "4px" }}>Operational Reason:</label>
             <select

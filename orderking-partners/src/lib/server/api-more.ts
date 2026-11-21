@@ -662,7 +662,7 @@ export const askAssistant = createServerFn({ method: "POST" })
       "4. If an image or menu photo is attached, analyze and transcribe all dish names, categories, dietary tags (VEG, NONVEG, EGG), and prices in INR accurately.";
 
     // 1. Google Gemini 2.5 Flash / 1.5 Flash via official REST API
-    if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("dummy")) {
+    if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("placeholder")) {
       try {
         const userParts: any[] = [];
         if (data.imageBase64) {
@@ -716,7 +716,7 @@ export const askAssistant = createServerFn({ method: "POST" })
     }
 
     // 2. OpenAI GPT-4o-mini via standard Chat Completions API
-    if (openaiKey && openaiKey.trim().length > 10 && !openaiKey.includes("dummy")) {
+    if (openaiKey && openaiKey.trim().length > 10 && !openaiKey.includes("placeholder")) {
       try {
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
