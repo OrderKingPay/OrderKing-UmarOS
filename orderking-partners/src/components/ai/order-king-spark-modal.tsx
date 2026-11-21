@@ -585,22 +585,22 @@ export function OrderKingSparkModal({
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200"
     >
       <div className="relative flex h-[92dvh] sm:h-[86vh] w-full max-w-2xl flex-col rounded-t-3xl sm:rounded-3xl border border-amber-500/30 bg-[#0B0F19] text-white shadow-2xl overflow-hidden font-sans">
-        {/* Luxury Gold & Obsidian Header */}
-        <header className="flex items-center justify-between border-b border-amber-500/20 bg-gradient-to-r from-[#111827] via-[#0F172A] to-[#111827] px-4 py-3 sm:px-6">
+        {/* Operational Partner Assistant Header */}
+        <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 text-slate-950 shadow-md shadow-amber-500/20">
-              <Sparkles className="size-5 fill-slate-950" />
+            <div className="flex size-10 items-center justify-center rounded-2xl bg-red-50 text-[#E23744] border border-red-200 shadow-xs">
+              <Sparkles className="size-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-base font-black tracking-wide text-white">
-                  King Spark AI
+                <span className="font-display text-base font-black tracking-wide text-gray-900">
+                  Kitchen Assistant
                 </span>
-                <span className="rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold text-amber-300">
-                  Kitchen Operations
+                <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-bold text-[#E23744]">
+                  Operations
                 </span>
               </div>
-              <div className="text-xs text-slate-400 truncate max-w-[200px]">
+              <div className="text-xs text-gray-500 truncate max-w-[200px]">
                 {restaurantName}
               </div>
             </div>

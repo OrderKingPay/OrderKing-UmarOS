@@ -53,6 +53,7 @@ export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
     const pathname = location.pathname;
     const isPublic =
+      pathname === "/" ||
       pathname === "/login" ||
       pathname === "/privacy" ||
       pathname === "/terms" ||
