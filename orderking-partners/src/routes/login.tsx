@@ -107,6 +107,8 @@ function Login() {
   });
 
   const [error, setError] = useState<string | null>(null);
+  const [infoMsg, setInfoMsg] = useState<string | null>(null);
+  const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
@@ -169,6 +171,7 @@ function Login() {
   function handleSwitchMode(target: "in" | "up") {
     setMode(target);
     setError(null);
+    setInfoMsg(null);
     setOtpStep("phone");
     setOtpCode("");
   }
@@ -181,6 +184,7 @@ function Login() {
 
     setWorking(true);
     setError(null);
+    setInfoMsg(null);
 
     try {
       const res = await sendPartnerOtpFn({
@@ -192,6 +196,13 @@ function Login() {
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
+
+      if (res?.providerNotice) {
+        setInfoMsg(res.providerNotice);
+      }
+      if (res?.whatsAppOtpUrl) {
+        setWhatsAppUrl(res.whatsAppOtpUrl);
+      }
 
       if (channel === "whatsapp" && res?.whatsAppOtpUrl && typeof window !== "undefined") {
         window.open(res.whatsAppOtpUrl, "_blank");
@@ -223,7 +234,6 @@ function Login() {
       }
 
       const email = verifyRes.email;
-      const credential = verifyRes.credential;
       const partnerDisplayName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
       setPhoneSession({
         id: "prt_" + cleanPhone,
@@ -232,42 +242,6 @@ function Login() {
         name: partnerDisplayName,
         role: "partner",
       });
-
-      // Synchronize Better Auth in background if available without blocking phone auth
-      try {
-        if (verifyRes.isNewUser || mode === "up") {
-          const partnerName = name.trim() || `Partner ${cleanPhone.slice(-4)}`;
-          if (typeof authClient.signUp?.email === "function") {
-            const signUpRes = await authClient.signUp.email({
-              email,
-              password: credential,
-              name: partnerName,
-            });
-            if (signUpRes?.error && typeof authClient.signIn?.email === "function") {
-              await authClient.signIn.email({
-                email,
-                password: credential,
-              }).catch(() => {});
-            }
-          }
-        } else {
-          if (typeof authClient.signIn?.email === "function") {
-            const signInRes = await authClient.signIn.email({
-              email,
-              password: credential,
-            });
-            if (signInRes?.error && typeof authClient.signUp?.email === "function") {
-              await authClient.signUp.email({
-                email,
-                password: credential,
-                name: `Partner ${cleanPhone.slice(-4)}`,
-              }).catch(() => {});
-            }
-          }
-        }
-      } catch (authErr) {
-        console.warn("[Partner Auth] Better-auth secondary sync skipped:", authErr);
-      }
 
       // Verified phone session established — route immediately
       if (mode === "up") {
@@ -497,6 +471,12 @@ function Login() {
                     </p>
                   </div>
 
+                  {infoMsg ? (
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
+                      {infoMsg}
+                    </div>
+                  ) : null}
+
                   {error ? (
                     <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
                       {error}
@@ -565,6 +545,12 @@ function Login() {
                       />
                     </div>
                   </div>
+
+                  {infoMsg ? (
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
+                      {infoMsg}
+                    </div>
+                  ) : null}
 
                   {error ? (
                     <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">

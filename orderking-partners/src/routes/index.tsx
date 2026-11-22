@@ -164,44 +164,8 @@ export function PartnerLandingPage() {
             );
           } catch {}
         }
-
-        // Synchronize Better Auth in background if available without blocking phone auth
-        try {
-          if (typeof authClient.signUp?.email === "function") {
-            const signUpRes = await authClient.signUp.email({
-              email,
-              password: credential,
-              name: partnerDisplayName,
-            });
-            if (signUpRes?.error && typeof authClient.signIn?.email === "function") {
-              await authClient.signIn.email({
-                email,
-                password: credential,
-              }).catch(() => {});
-            }
-          }
-        } catch (authErr) {
-          console.warn("[Partner Auth] Better-auth background sync skipped:", authErr);
-        }
         window.location.assign("/onboarding");
       } else {
-        try {
-          if (typeof authClient.signIn?.email === "function") {
-            const signInRes = await authClient.signIn.email({
-              email,
-              password: credential,
-            });
-            if (signInRes?.error && typeof authClient.signUp?.email === "function") {
-              await authClient.signUp.email({
-                email,
-                password: credential,
-                name: `Partner ${cleanPhone.slice(-4)}`,
-              }).catch(() => {});
-            }
-          }
-        } catch (authErr) {
-          console.warn("[Partner Auth] Better-auth background sync skipped:", authErr);
-        }
         window.location.assign("/dashboard");
       }
     } catch (err: any) {

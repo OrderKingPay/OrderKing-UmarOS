@@ -60,7 +60,12 @@ const BEARER_KEY = "grok-auth.bearer-token";
 export function getBearerToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return window.sessionStorage.getItem(BEARER_KEY);
+    const grokToken = window.sessionStorage.getItem(BEARER_KEY);
+    if (grokToken) return grokToken;
+    const phoneSession = getPhoneSession();
+    if (phoneSession?.session?.token) return phoneSession.session.token;
+    if (phoneSession?.user?.id) return "ok_tok_" + phoneSession.user.id;
+    return null;
   } catch {
     return null;
   }

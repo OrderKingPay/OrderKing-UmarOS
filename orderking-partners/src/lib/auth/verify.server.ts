@@ -76,6 +76,19 @@ export async function getSessionUser(
     }
   }
 
+  // 2. Check bearer token for phone session token
+  if (bearerToken) {
+    if (bearerToken.startsWith("ok_tok_prt_") || bearerToken.startsWith("ok_tok_")) {
+      const id = bearerToken.replace(/^ok_tok_/, "");
+      const cleanPhone = id.replace(/\D/g, "").slice(-10);
+      return { id, email: `${cleanPhone || id}@partner.orderking.in` };
+    }
+    if (bearerToken.startsWith("prt_")) {
+      const cleanPhone = bearerToken.replace(/\D/g, "").slice(-10);
+      return { id: bearerToken, email: `${cleanPhone || bearerToken}@partner.orderking.in` };
+    }
+  }
+
   if (!authConfigured && !gateIdentityEnabled()) return null;
   if (!headers.get("host")) {
     headers.set("host", "partner.orderkingpay.com");
