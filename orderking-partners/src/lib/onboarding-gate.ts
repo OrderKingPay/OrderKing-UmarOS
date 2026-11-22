@@ -49,7 +49,7 @@ export class PartnerOnboardingGate {
 
   /**
    * Authoritative check for dashboard access. 
-   * Connects strictly to the DigitalContractEngine for ultimate compliance verification.
+   * Connects strictly to the DigitalContractEngine for statutory compliance verification.
    */
   public async authorizeDashboardAccess(partnerId: string): Promise<boolean> {
     const complianceMet = await this.digitalContractEngine.verifyComplianceStatus(partnerId);
