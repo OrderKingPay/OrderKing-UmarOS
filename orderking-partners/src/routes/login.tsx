@@ -5,7 +5,7 @@ export const Route = createFileRoute("/login")({
   validateSearch: (
     search: Record<string, unknown>
   ): { mode?: "in" | "up"; phone?: string; name?: string } => ({
-    mode: search.mode === "up" ? "up" : "in",
+    mode: search.mode === "up" ? "up" : search.mode === "in" ? "in" : undefined,
     phone: typeof search.phone === "string" ? search.phone : undefined,
     name: typeof search.name === "string" ? search.name : undefined,
   }),
