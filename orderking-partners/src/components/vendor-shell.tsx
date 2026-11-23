@@ -128,14 +128,12 @@ export function VendorShell({
     };
   }, [vendor.restaurantId, qc]);
 
-  if (isPending) {
+  if (isPending || vendor.isPending) {
     return (
-      <div className="min-h-dvh bg-[#F4F5F7] p-6 text-gray-900 font-sans">
-        <div className="mx-auto max-w-md space-y-3">
-          <div className="font-display text-xl text-gray-900">{branding.appName || t("app.name")}</div>
-          <div className="h-10 w-40 animate-pulse rounded-full bg-gray-200" />
-          <div className="h-32 animate-pulse rounded-2xl bg-gray-200" />
-          <div className="h-32 animate-pulse rounded-2xl bg-gray-200" />
+      <div className="min-h-dvh bg-[#F4F5F7] p-6 text-gray-900 font-sans flex items-center justify-center">
+        <div className="mx-auto max-w-md space-y-3 text-center">
+          <OrderKingMark className="size-10 mx-auto text-[#E23744] animate-pulse" />
+          <div className="text-sm font-bold text-gray-700">Loading partner workspace...</div>
         </div>
       </div>
     );
@@ -143,7 +141,7 @@ export function VendorShell({
   if (!user) return <RedirectToSignIn />;
 
   // Zomato Parity Gate: Un-onboarded merchants must complete restaurant registration before accessing operational facilities
-  if (!vendor.isPending && vendor.memberships.length === 0 && pathname !== "/onboarding") {
+  if (vendor.memberships.length === 0 && pathname !== "/onboarding") {
     if (typeof window !== "undefined") {
       window.location.replace("/onboarding");
     }
