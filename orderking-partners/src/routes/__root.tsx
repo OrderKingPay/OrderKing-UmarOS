@@ -131,8 +131,17 @@ function Root() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const isPublic = location === "/login" || location === "/privacy" || location === "/terms" || location.startsWith("/api");
-    const hasStorage = Boolean(window.localStorage.getItem("orderking_phone_session") || window.localStorage.getItem("orderking_user"));
+    const isPublic =
+      location === "/" ||
+      location === "/login" ||
+      location === "/privacy" ||
+      location === "/terms" ||
+      location.startsWith("/api");
+    const hasStorage = Boolean(
+      window.localStorage.getItem("orderking.phone.session") ||
+      window.localStorage.getItem("orderking_phone_session") ||
+      window.localStorage.getItem("orderking_user")
+    );
     const hasCookie = document.cookie.includes("orderking_partner_session");
     if (!isPublic && !hasStorage && !hasCookie) {
       window.location.replace("/login");
