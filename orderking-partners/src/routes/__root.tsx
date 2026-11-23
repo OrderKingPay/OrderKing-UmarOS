@@ -55,6 +55,7 @@ export const Route = createRootRoute({
     const isPublic =
       pathname === "/" ||
       pathname === "/login" ||
+      pathname === "/onboarding" ||
       pathname === "/privacy" ||
       pathname === "/terms" ||
       pathname.startsWith("/api");
@@ -134,6 +135,7 @@ function Root() {
     const isPublic =
       location === "/" ||
       location === "/login" ||
+      location === "/onboarding" ||
       location === "/privacy" ||
       location === "/terms" ||
       location.startsWith("/api");
