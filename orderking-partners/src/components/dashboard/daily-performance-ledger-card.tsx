@@ -254,7 +254,7 @@ export function DailyPerformanceLedgerCard({
 
               <div className="flex justify-between rounded-xl bg-emerald-50 border border-emerald-200 p-2 text-emerald-800">
                 <span>• Statutory GST §9(5) Remitted to Govt (5%):</span>
-                <span className="font-bold">{formatINR(summary.sec9_5GstPaise)} (Zero Merchant Liability)</span>
+                <span className="font-bold">{formatINR(summary.sec9_5GstPaise)} (No Merchant Liability)</span>
               </div>
 
               <div className="flex justify-between border-t-2 border-gray-200 pt-2 text-sm font-black text-emerald-800 font-sans">

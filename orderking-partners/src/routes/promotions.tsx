@@ -479,7 +479,7 @@ function PromotionsPage() {
                     </div>
                     <p className="text-xs text-gray-500 leading-relaxed">
                       {totalMenuCount === 0
-                        ? "Add active dishes in Dish Studio and upload 4:3 studio-lit photos so customers can see authentic portion presentation."
+                        ? "Add active dishes in Dish Studio and upload 4:3 photos so customers can see portion sizes."
                         : itemsWithPhotoCount === totalMenuCount
                           ? "All active dishes have verified photographs. Well-lit 4:3 photos build immediate visual trust on your menu page."
                           : `${totalMenuCount - itemsWithPhotoCount} active dish(es) are missing photos. Prioritize top-selling mains and combos in Dish Studio.`}

@@ -292,9 +292,9 @@ function ReviewsPage() {
                   <CheckCircle2 className="size-6" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-base text-gray-900">Zero Active Complaints</h3>
+                  <h3 className="font-bold text-base text-gray-900">No Active Complaints</h3>
                   <p className="text-xs text-gray-500 max-w-md mx-auto">
-                    Your kitchen maintains 100% order accuracy. No unresolved customer claims or packaging disputes exist for your restaurant.
+                    Your kitchen maintains full order accuracy. No unresolved customer claims or packaging disputes exist for your restaurant.
                   </p>
                 </div>
                 {/* Standard Operational Policy */}
@@ -304,7 +304,7 @@ function ReviewsPage() {
                       <Bike className="size-3.5 text-emerald-600" /> Transit Spillage
                     </div>
                     <div className="text-[11px] text-gray-500 mt-1">
-                      100% platform delivery liability. ₹0 deducted from restaurant payout when containers are properly sealed.
+                      Platform delivery liability covers this. ₹0 deducted from restaurant payout when containers are properly sealed.
                     </div>
                   </div>
                   <div className="p-3 rounded-xl bg-gray-50 border border-gray-100">
@@ -320,7 +320,7 @@ function ReviewsPage() {
                       <Clock className="size-3.5 text-blue-600" /> Rider Delays
                     </div>
                     <div className="text-[11px] text-gray-500 mt-1">
-                      Rider traffic or delayed pickup is logged automatically as logistics fault. Zero restaurant penalty.
+                      Rider traffic or delayed pickup is logged automatically as logistics fault. No restaurant penalty.
                     </div>
                   </div>
                 </div>

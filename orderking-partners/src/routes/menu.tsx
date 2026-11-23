@@ -2783,7 +2783,7 @@ function MenuPage() {
                           Dish Photo Presentation
                         </span>
                         <span className="text-gray-700 block leading-relaxed">
-                          This studio visual has been automatically calibrated to authentic portion sizes and standard culinary presentation. Pre-certified and ready for immediate catalog publishing.
+                          This studio visual has been calibrated to portion sizes and standard culinary presentation. Ready for catalog publishing.
                         </span>
                       </div>
                     </div>
@@ -3369,7 +3369,7 @@ function MenuPage() {
             <div className="border-t border-gray-200 bg-white/95 px-5 py-3.5 space-y-2">
               {editor.photoModified && editor.imageUrl && !editor.photoAttested && !editor.aiGenerated ? (
                 <p className="text-[11px] font-medium text-orange-400">
-                  Please check the mandatory FSSAI &amp; Consumer Authenticity Attestation above to enable saving this modified dish image.
+                  Please check the FSSAI attestation above to enable saving this modified dish image.
                 </p>
               ) : null}
               <div className="flex items-center justify-between gap-3">

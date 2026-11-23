@@ -512,7 +512,7 @@ export function OrderCard({
           <div class="footer" style="border-top:2px dashed #000;padding-top:8px;margin-top:8px;text-align:center">
             <div style="font-weight:bold;font-size:12px;margin-bottom:4px">SCAN TO REORDER DIRECTLY FROM KITCHEN</div>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`https://orderkingpay.com/checkout?reorder=${order.orderNumber}&src=receipt_qr`)}" style="width:34mm;height:34mm;margin:4px auto;display:block" alt="Reorder QR" />
-            <div style="font-size:10px;font-weight:bold">Authentic Kitchen Pricing • Transparent Itemized Billing</div>
+            <div style="font-size:10px;font-weight:bold">Kitchen Pricing • Itemized Billing</div>
             <div style="font-size:9px;color:#444;margin-top:2px">OrderKing • FSSAI &amp; CGST Sec 9(5) Compliant</div>
           </div>
         </body>
@@ -662,7 +662,7 @@ export function OrderCard({
 
       {error ? <p className="text-sm text-danger">{error}</p> : null}
 
-      {/* Authentic Tier-1 Leader Structured Order Rejection Dialog */}
+      {/* Structured Order Rejection Dialog */}
       <StructuredRejectionModal
         isOpen={rejectOpen}
         onClose={() => setRejectOpen(false)}

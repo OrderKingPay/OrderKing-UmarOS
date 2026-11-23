@@ -188,9 +188,6 @@ export function PartnerLandingPage() {
               </div>
             </div>
           </Link>
-          <div className="text-xs text-gray-500 font-medium">
-            Food Safety & Merchant Payout Network
-          </div>
         </div>
       </header>
 
@@ -353,35 +350,18 @@ export function PartnerLandingPage() {
               </div>
             )}
           </div>
-
-          {/* Statutory Badges */}
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs">
-              <div className="text-[10px] font-bold text-gray-500 uppercase">Food Safety</div>
-              <div className="text-xs font-bold text-gray-900 mt-0.5">14-Digit FSSAI</div>
-            </div>
-            <div className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs">
-              <div className="text-[10px] font-bold text-gray-500 uppercase">Tax Remittance</div>
-              <div className="text-xs font-bold text-gray-900 mt-0.5">Section 9(5) CGST</div>
-            </div>
-            <div className="p-2.5 rounded-xl bg-white border border-gray-200 shadow-xs">
-              <div className="text-[10px] font-bold text-gray-500 uppercase">Settlements</div>
-              <div className="text-xs font-bold text-emerald-700 mt-0.5">Daily T+1 Payouts</div>
-            </div>
-          </div>
         </div>
       </main>
 
-      {/* 3. Clean Statutory Footer */}
-      <footer className="bg-white py-6 border-t border-gray-200 text-xs text-gray-500">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* 3. Statutory Compliance Footer */}
+      <footer className="bg-white py-4 border-t border-gray-200 text-xs text-gray-500">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <OrderKingMark className="size-5 text-[#E23744]" />
-            <span className="font-bold text-gray-900">OrderKing Restaurant Partner Portal</span>
+            <OrderKingMark className="size-4 text-[#E23744]" />
+            <span className="font-semibold text-gray-800">OrderKing Restaurant Partner Portal</span>
           </div>
-          <div className="text-center sm:text-right">
-            <div>Order King Foods Private Limited • GSTIN: 18AFXPH9838M1Z9 • Assam - 788710</div>
-            <div className="text-[11px] text-gray-400 mt-0.5">Section 9(5) CGST Compliance • SAC 996331 Restaurant Services</div>
+          <div className="text-[11px] text-gray-400">
+            Order King Foods Private Limited • GSTIN: 18AFXPH9838M1Z9 • Assam - 788710
           </div>
         </div>
       </footer>

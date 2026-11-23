@@ -220,7 +220,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
               )}
             >
               {scorecard.acceptanceStatus === "OPTIMAL"
-                ? "Optimal (Zero Auto-Rejection)"
+                ? "Optimal (No Auto-Rejection)"
                 : scorecard.acceptanceStatus === "ATTENTION"
                 ? "Attention (<98% Target)"
                 : "Alert: High Rejections (<95%)"}
@@ -265,7 +265,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
               )}
             >
               {scorecard.cancellationStatus === "EXCELLENT"
-                ? "Excellent (Zero Fault Fees)"
+                ? "Excellent (No Fault Fees)"
                 : scorecard.cancellationStatus === "ACCEPTABLE"
                 ? "Acceptable (<1.0%)"
                 : "Warning: High Fault Penalty (>=1%)"}
