@@ -215,7 +215,10 @@ function Login() {
       });
 
       // Verified phone session established — route immediately
-      if (mode === "up" || verifyRes.isNewUser) {
+      const hasRestaurant = Boolean((verifyRes as any)?.hasRestaurant);
+      const shouldOnboard = !hasRestaurant || verifyRes.isNewUser || mode === "up";
+
+      if (shouldOnboard) {
         if (typeof window !== "undefined") {
           try {
             const rawDraft = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);

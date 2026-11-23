@@ -1091,6 +1091,7 @@ export async function handleVerifyPartnerOtp(data: {
   const credential = `PartnerOtp#${cleanPhone}!2026`;
 
   let isNewUser = true;
+  let hasRestaurant = false;
   try {
     const { getSql } = await import("@/lib/db");
     const sql = await getSql();
@@ -1106,6 +1107,18 @@ export async function handleVerifyPartnerOtp(data: {
         // ignore hash update error
       }
     }
+    // Check if phone or user already has an active restaurant
+    const restRows = await sql`
+      SELECT id FROM restaurants
+      WHERE owner_user_id = ${'prt_' + cleanPhone}
+         OR owner_user_id = ${cleanPhone}
+         OR phone = ${cleanPhone}
+         OR phone = ${'+91' + cleanPhone}
+      LIMIT 1
+    `;
+    if (restRows && restRows.length > 0) {
+      hasRestaurant = true;
+    }
   } catch {
     // non-fatal
   }
@@ -1116,6 +1129,7 @@ export async function handleVerifyPartnerOtp(data: {
     email,
     credential,
     isNewUser,
+    hasRestaurant,
   };
 }
 

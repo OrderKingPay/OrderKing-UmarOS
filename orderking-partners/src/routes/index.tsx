@@ -138,7 +138,10 @@ export function PartnerLandingPage() {
         role: "partner",
       });
 
-      if (verifyRes.isNewUser || mode === "up") {
+      const hasRestaurant = Boolean((verifyRes as any)?.hasRestaurant);
+      const shouldOnboard = !hasRestaurant || verifyRes.isNewUser;
+
+      if (shouldOnboard) {
         if (typeof window !== "undefined") {
           try {
             const rawDraft = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
@@ -185,106 +188,28 @@ export function PartnerLandingPage() {
               </div>
             </div>
           </Link>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("in");
-                setOtpStep("phone");
-                setError(null);
-              }}
-              className={cn(
-                "text-xs font-bold px-3 py-2 rounded-lg transition-colors cursor-pointer",
-                mode === "in" ? "text-[#E23744] bg-red-50" : "text-gray-700 hover:text-gray-900"
-              )}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("up");
-                setOtpStep("phone");
-                setError(null);
-              }}
-              className={cn(
-                "text-xs font-bold px-3.5 py-2 rounded-xl transition-all cursor-pointer",
-                mode === "up" ? "bg-[#E23744] text-white shadow-xs" : "text-gray-700 hover:bg-gray-100"
-              )}
-            >
-              Register Restaurant
-            </button>
+          <div className="text-xs text-gray-500 font-medium">
+            Food Safety & Merchant Payout Network
           </div>
         </div>
       </header>
 
-      {/* 2. Focused Center Card: OTP Signup & Login */}
+      {/* 2. Focused Center Card: Native Phone OTP Access */}
       <main className="flex-1 flex items-center justify-center py-10 px-4 sm:px-6">
         <div className="w-full max-w-md space-y-6">
           <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xl">
-            {/* Segmented Switcher */}
-            <div className="grid grid-cols-2 rounded-xl bg-gray-100 p-1 border border-gray-200 mb-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("up");
-                  setOtpStep("phone");
-                  setError(null);
-                }}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-bold transition-all cursor-pointer",
-                  mode === "up" ? "bg-[#E23744] text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                <UserPlus className="size-3.5" />
-                <span>Register Restaurant</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMode("in");
-                  setOtpStep("phone");
-                  setError(null);
-                }}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-bold transition-all cursor-pointer",
-                  mode === "in" ? "bg-[#E23744] text-white shadow-xs" : "text-gray-600 hover:text-gray-900"
-                )}
-              >
-                <LogIn className="size-3.5" />
-                <span>Partner Sign In</span>
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <h1 className="font-display text-xl sm:text-2xl font-black text-gray-900">
-                {mode === "up" ? "Register Your Restaurant" : "Partner Sign In"}
+            <div className="mb-6 text-center">
+              <OrderKingMark className="size-12 mx-auto text-[#E23744] mb-3" />
+              <h1 className="font-display text-2xl font-black text-gray-900">
+                Partner with OrderKing
               </h1>
-              <p className="text-xs text-gray-500 mt-0.5">
-                {mode === "up"
-                  ? "Enter your mobile number to begin step-by-step restaurant onboarding."
-                  : "Enter your registered mobile number to manage orders & payouts."}
+              <p className="text-xs text-gray-500 mt-1 max-w-xs mx-auto">
+                Enter your mobile number to access your restaurant partner dashboard or register a new outlet.
               </p>
             </div>
 
             {otpStep === "phone" ? (
               <div className="space-y-4">
-                {mode === "up" && (
-                  <div>
-                    <Label htmlFor="reg-owner" className="text-xs font-semibold text-gray-700">
-                      Owner / Manager Full Name *
-                    </Label>
-                    <Input
-                      id="reg-owner"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Full name as on PAN card"
-                      className="mt-1 border-gray-300 bg-white text-gray-900 h-11 focus:border-[#E23744]"
-                    />
-                  </div>
-                )}
-
                 <div>
                   <Label htmlFor="reg-phone" className="text-xs font-semibold text-gray-700">
                     10-Digit Mobile Number *
@@ -295,16 +220,22 @@ export function PartnerLandingPage() {
                       id="reg-phone"
                       type="tel"
                       maxLength={10}
+                      autoFocus
                       value={mobileNumber}
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, "");
                         setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
                       }}
-                      placeholder="Enter 10-digit mobile"
-                      className="pl-12 border-gray-300 bg-white text-gray-900 h-11 font-mono text-sm focus:border-[#E23744]"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && isPhoneValid && !working) {
+                          void handleSendOtp("sms");
+                        }
+                      }}
+                      placeholder="Enter mobile number"
+                      className="pl-12 border-gray-300 bg-white text-gray-900 h-12 font-mono text-base focus:border-[#E23744] rounded-xl"
                     />
                   </div>
-                  <p className="mt-1 text-[11px] text-gray-500">
+                  <p className="mt-1 text-[11px] text-gray-400">
                     We will send a 6-digit OTP code to verify your phone number.
                   </p>
                 </div>
@@ -319,18 +250,30 @@ export function PartnerLandingPage() {
                   type="button"
                   disabled={working || !isPhoneValid}
                   onClick={() => void handleSendOtp("sms")}
-                  className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer"
+                  className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
                 >
                   {working ? <RefreshCw className="size-4 animate-spin" /> : <Phone className="size-4" />}
-                  <span>{mode === "up" ? "Continue to Onboarding" : "Send Login Code"}</span>
+                  <span>Continue with OTP</span>
                 </Button>
+
+                <div className="pt-2 text-center">
+                  <button
+                    type="button"
+                    disabled={working || !isPhoneValid}
+                    onClick={() => void handleSendOtp("whatsapp")}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:underline cursor-pointer disabled:opacity-50"
+                  >
+                    <MessageCircle className="size-3.5" />
+                    <span>Get OTP on WhatsApp</span>
+                  </button>
+                </div>
               </div>
             ) : (
               /* Step 2: OTP Verification */
               <div className="space-y-4">
                 <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
                   <div>
-                    <div className="text-[11px] text-gray-500">Verifying mobile:</div>
+                    <div className="text-[11px] text-gray-500">OTP dispatched to:</div>
                     <div className="text-sm font-bold text-gray-900 font-mono">+91 {cleanPhone}</div>
                   </div>
                   <button
@@ -354,6 +297,7 @@ export function PartnerLandingPage() {
                     id="reg-code"
                     type="text"
                     maxLength={6}
+                    autoFocus
                     value={otpCode}
                     onChange={(e) => {
                       const val = e.target.value.replace(/\D/g, "").slice(0, 6);
@@ -363,7 +307,7 @@ export function PartnerLandingPage() {
                       }
                     }}
                     placeholder="••••••"
-                    className="mt-1 text-center font-mono text-lg tracking-widest border-gray-300 bg-white text-gray-900 h-12 focus:border-[#E23744]"
+                    className="mt-1 text-center font-mono text-2xl tracking-widest border-gray-300 bg-white text-gray-900 h-14 focus:border-[#E23744] rounded-xl"
                   />
                 </div>
 
@@ -377,10 +321,10 @@ export function PartnerLandingPage() {
                   type="button"
                   disabled={working || otpCode.length !== 6}
                   onClick={() => void handleVerifyOtp()}
-                  className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer"
+                  className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
                 >
                   {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-                  <span>{mode === "up" ? "Verify & Open Onboarding" : "Verify & Open Dashboard"}</span>
+                  <span>Verify & Continue</span>
                 </Button>
 
                 <div className="pt-2 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100">
