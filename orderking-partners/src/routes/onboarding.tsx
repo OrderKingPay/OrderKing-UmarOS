@@ -1,7 +1,8 @@
-import { redirect, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { redirect, createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { VendorShell } from "@/components/vendor-shell";
+import { OrderKingMark } from "@/components/mark";
+import { signOut } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
@@ -455,41 +456,77 @@ function OnboardingPage() {
   }
 
   return (
-    <VendorShell title="Restaurant Partner Onboarding">
-      <div className="mx-auto max-w-3xl py-4 space-y-6 text-gray-900 font-sans">
-        {/* 3-Step Progress Header */}
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { num: 1, title: "1. Restaurant Information", sub: "Details & Location" },
-            { num: 2, title: "2. Legal Documents", sub: "FSSAI & PAN" },
-            { num: 3, title: "3. Bank & Agreement", sub: "Daily T+1 Payouts" },
-          ].map((item) => {
-            const active = step === item.num;
-            const done = step > item.num;
-            return (
-              <button
-                key={item.num}
-                type="button"
-                onClick={() => {
-                  if (item.num < step) setStep(item.num as 1 | 2 | 3);
-                }}
-                className={`rounded-2xl border p-3.5 text-left transition-all ${
-                  active
-                    ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
-                    : done
-                    ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
-                }`}
-              >
-                <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
-                  <span>{item.title}</span>
-                  {done && <CheckCircle2 className="size-4 text-emerald-600" />}
-                </div>
-                <div className="text-[11px] text-gray-500 mt-0.5">{item.sub}</div>
-              </button>
-            );
-          })}
+    <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans flex flex-col justify-between">
+      {/* 1. Dedicated Header (Zomato for Business Onboarding Standard) */}
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <OrderKingMark className="size-9 text-[#E23744] transition-transform group-hover:scale-105" />
+            <div>
+              <div className="font-display text-xl font-black tracking-tight text-gray-900 flex items-center gap-1.5">
+                <span>OrderKing</span>
+                <span className="rounded-md border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E23744]">
+                  Partner
+                </span>
+              </div>
+              <div className="text-[11px] text-gray-500 font-medium leading-none">
+                Restaurant Onboarding Portal
+              </div>
+            </div>
+          </Link>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5">
+              <span className="size-2 rounded-full bg-emerald-500" />
+              <span>Step {step} of 3</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => void signOut("/")}
+              className="text-xs font-bold text-gray-600 hover:text-red-600 transition-colors px-3 py-2 cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
+      </header>
+
+      {/* 2. Onboarding Main Body */}
+      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl space-y-6">
+          {/* 3-Step Progress Header */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { num: 1, title: "1. Restaurant Information", sub: "Details & Location" },
+              { num: 2, title: "2. Legal Documents", sub: "FSSAI & PAN" },
+              { num: 3, title: "3. Bank & Agreement", sub: "Daily T+1 Payouts" },
+            ].map((item) => {
+              const active = step === item.num;
+              const done = step > item.num;
+              return (
+                <button
+                  key={item.num}
+                  type="button"
+                  onClick={() => {
+                    if (item.num < step) setStep(item.num as 1 | 2 | 3);
+                  }}
+                  className={`rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
+                    active
+                      ? "border-red-500 bg-red-50/70 text-red-900 ring-2 ring-red-500/20"
+                      : done
+                      ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                      : "border-gray-200 bg-white text-gray-500 hover:bg-gray-50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs sm:text-sm font-bold">
+                    <span>{item.title}</span>
+                    {done && <CheckCircle2 className="size-4 text-emerald-600" />}
+                  </div>
+                  <div className="text-[11px] text-gray-500 mt-0.5">{item.sub}</div>
+                </button>
+              );
+            })}
+          </div>
 
         <Card className="border-gray-200 bg-white p-6 sm:p-8 space-y-6 rounded-3xl shadow-xs">
           {error && (
@@ -1098,6 +1135,21 @@ function OnboardingPage() {
           )}
         </Card>
       </div>
-    </VendorShell>
-  );
+    </main>
+
+    {/* 3. Statutory Footer */}
+    <footer className="bg-white py-6 border-t border-gray-200 text-xs text-gray-500">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <OrderKingMark className="size-5" />
+          <span className="font-bold text-gray-900">OrderKing Restaurant Partner Network</span>
+        </div>
+        <div className="text-center sm:text-right">
+          <div>Order King Foods Private Limited • GSTIN: 18AFXPH9838M1Z9 • Assam - 788710</div>
+          <div className="text-[11px] text-gray-400 mt-0.5">Section 9(5) CGST Compliance • SAC 996331 Restaurant Services</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+);
 }

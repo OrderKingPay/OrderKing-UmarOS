@@ -142,6 +142,22 @@ export function VendorShell({
   }
   if (!user) return <RedirectToSignIn />;
 
+  // Zomato Parity Gate: Un-onboarded merchants must complete restaurant registration before accessing operational facilities
+  if (!vendor.isPending && vendor.memberships.length === 0 && pathname !== "/onboarding") {
+    if (typeof window !== "undefined") {
+      window.location.replace("/onboarding");
+    }
+    return (
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6 text-gray-900 font-sans">
+        <div className="mx-auto max-w-md text-center space-y-4">
+          <OrderKingMark className="size-12 mx-auto text-[#E23744] animate-pulse" />
+          <h2 className="text-xl font-bold text-gray-900">Restaurant Registration Required</h2>
+          <p className="text-sm text-gray-500">Redirecting to step-by-step restaurant onboarding...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh bg-[#F4F5F7] text-gray-900 font-sans">
       <div className="mx-auto flex min-h-dvh max-w-7xl">

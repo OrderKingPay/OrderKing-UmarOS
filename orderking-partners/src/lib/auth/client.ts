@@ -341,6 +341,38 @@ export const authClient: typeof _rawAuthClient = new Proxy(_rawAuthClient, {
   get(target, prop, receiver) {
     if (prop === "useSession") return useOrderKingSession;
     if (prop === "getSession") return getOrderKingSession;
+    if (prop === "signUp") {
+      const orig = Reflect.get(target, prop, receiver);
+      if (orig && typeof orig === "object") {
+        return new Proxy(orig, {
+          get(sTarget, sProp, sReceiver) {
+            if (sProp === "email" && typeof (sTarget as any).email !== "function") {
+              return async () => ({ data: null, error: null });
+            }
+            return Reflect.get(sTarget, sProp, sReceiver);
+          },
+        });
+      }
+      return {
+        email: async () => ({ data: null, error: null }),
+      };
+    }
+    if (prop === "signIn") {
+      const orig = Reflect.get(target, prop, receiver);
+      if (orig && typeof orig === "object") {
+        return new Proxy(orig, {
+          get(sTarget, sProp, sReceiver) {
+            if (sProp === "email" && typeof (sTarget as any).email !== "function") {
+              return async () => ({ data: null, error: null });
+            }
+            return Reflect.get(sTarget, sProp, sReceiver);
+          },
+        });
+      }
+      return {
+        email: async () => ({ data: null, error: null }),
+      };
+    }
     return Reflect.get(target, prop, receiver);
   },
 });

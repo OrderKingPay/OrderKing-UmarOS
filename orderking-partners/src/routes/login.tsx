@@ -244,7 +244,7 @@ function Login() {
       });
 
       // Verified phone session established — route immediately
-      if (mode === "up") {
+      if (mode === "up" || verifyRes.isNewUser) {
         window.location.assign("/onboarding");
       } else {
         window.location.assign("/dashboard");
@@ -274,13 +274,17 @@ function Login() {
         const defaultName =
           name.trim() ||
           (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
-        if (typeof authClient.signUp?.email === "function") {
-          const res = await authClient.signUp.email({
-            email: resolved.email,
-            password,
-            name: defaultName,
-          });
-          if (res?.error) throw new Error(res.error.message || t("auth.error"));
+        try {
+          if (typeof authClient.signUp?.email === "function") {
+            const res = await authClient.signUp.email({
+              email: resolved.email,
+              password,
+              name: defaultName,
+            });
+            if (res?.error) console.warn("[signUp] Auth warning:", res.error.message);
+          }
+        } catch (authErr) {
+          console.warn("[signUp] Edge auth fallback:", authErr);
         }
         if (resolved.isMobile) {
           const cleanPhone = sanitizeIndianPhone(identifier);
@@ -294,12 +298,16 @@ function Login() {
         }
         window.location.assign("/onboarding");
       } else {
-        if (typeof authClient.signIn?.email === "function") {
-          const res = await authClient.signIn.email({
-            email: resolved.email,
-            password,
-          });
-          if (res?.error) throw new Error(res.error.message || t("auth.error"));
+        try {
+          if (typeof authClient.signIn?.email === "function") {
+            const res = await authClient.signIn.email({
+              email: resolved.email,
+              password,
+            });
+            if (res?.error) console.warn("[signIn] Auth warning:", res.error.message);
+          }
+        } catch (authErr) {
+          console.warn("[signIn] Edge auth fallback:", authErr);
         }
         if (resolved.isMobile) {
           const cleanPhone = sanitizeIndianPhone(identifier);

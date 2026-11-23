@@ -18,6 +18,7 @@ import {
 import { formatINR } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import { useKitchenRushStore } from "@/lib/orders/kitchen-rush";
+import { OrderKingMark } from "@/components/mark";
 import { FssaiExpiryBanner } from "@/components/fssai-expiry-banner";
 import { DailyPerformanceLedgerCard } from "@/components/dashboard/daily-performance-ledger-card";
 import { MerchantPerformanceScorecard } from "@/components/dashboard/merchant-performance-scorecard";
@@ -158,47 +159,22 @@ function DashboardPage() {
   }
 
   if (!vendor.isPending && vendor.memberships.length === 0) {
+    if (typeof window !== "undefined") {
+      window.location.replace("/onboarding");
+    }
     return (
-      <VendorShell title="Restaurant Partner Onboarding">
-        <div className="mx-auto max-w-2xl space-y-4 py-8">
-          <Card className="border-gray-200 bg-white p-8 space-y-5 rounded-3xl shadow-lg text-gray-900">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#E23744]">
-                <Store className="size-4" />
-                OrderKing Partner
-              </div>
-              <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-[#E23744]">
-                SELF-SERVICE REGISTRATION
-              </span>
-            </div>
-            <h2 className="font-display text-2xl sm:text-3xl font-black text-gray-900">
-              Register Your Restaurant &amp; Complete Details
-            </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Your partner account is ready. Complete your restaurant profile, FSSAI food license, and bank account to start receiving online customer orders.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200">
-                <div className="text-[10px] uppercase font-bold text-gray-500">Food Safety</div>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">14-Digit FSSAI License</div>
-              </div>
-              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200">
-                <div className="text-[10px] uppercase font-bold text-gray-500">Legal Proof</div>
-                <div className="text-sm font-bold text-gray-900 mt-0.5">PAN &amp; Outlet Address</div>
-              </div>
-              <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200">
-                <div className="text-[10px] uppercase font-bold text-gray-500">Payouts</div>
-                <div className="text-sm font-bold text-emerald-700 mt-0.5">Daily T+1 Bank Payout</div>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 pt-3">
-              <Button asChild size="lg" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold h-12 px-8 rounded-xl shadow-md shadow-red-500/20">
-                <Link to="/onboarding">Complete Restaurant Registration</Link>
-              </Button>
-            </div>
-          </Card>
+      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6 text-gray-900 font-sans">
+        <div className="mx-auto max-w-md text-center space-y-4">
+          <OrderKingMark className="size-12 mx-auto text-[#E23744] animate-pulse" />
+          <h2 className="text-xl font-bold text-gray-900">Setting Up Partner Workspace</h2>
+          <p className="text-sm text-gray-500">Redirecting to restaurant onboarding...</p>
+          <div className="pt-2">
+            <Button asChild size="sm" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl">
+              <Link to="/onboarding">Open Restaurant Registration</Link>
+            </Button>
+          </div>
         </div>
-      </VendorShell>
+      </div>
     );
   }
 
