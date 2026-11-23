@@ -1,12 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useEffect, useMemo, type FormEvent } from "react";
-import { authClient, setPhoneSession, getPhoneSession } from "@/lib/auth/client";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState, useEffect, useMemo } from "react";
+import { setPhoneSession, getPhoneSession } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
 import { OrderKingMark } from "@/components/mark";
-import { useT } from "@/components/use-t";
-import { platformConfig } from "@/lib/platform-config";
 import { useMerchantBranding } from "@orderking/ui";
+import { platformConfig } from "@/lib/platform-config";
 import { cn } from "@/lib/utils";
 import {
   sendPartnerOtpFn,
@@ -17,17 +16,11 @@ import {
 import { ORDERKING_ONBOARDING_DRAFT_KEY } from "@/routes/onboarding";
 import {
   ShieldCheck,
-  ArrowRight,
   Phone,
-  Mail,
-  Globe,
-  LogIn,
-  UserPlus,
-  Lock,
-  CheckCircle2,
-  KeyRound,
   MessageCircle,
   RefreshCw,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
@@ -39,25 +32,7 @@ export const Route = createFileRoute("/login")({
   component: Login,
 });
 
-function resolveIdentifierToEmail(rawInput: string): { email: string; isMobile: boolean; valid: boolean } {
-  const trimmed = rawInput.trim();
-  if (trimmed.includes("@")) {
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
-    return { email: trimmed.toLowerCase(), isMobile: false, valid: emailValid };
-  }
-  const digitsOnly = trimmed.replace(/\D/g, "");
-  const normalizedMobile =
-    digitsOnly.length === 12 && digitsOnly.startsWith("91") ? digitsOnly.slice(2) : digitsOnly;
-  const mobileValid = /^[6-9]\d{9}$/.test(normalizedMobile);
-  return {
-    email: `${normalizedMobile}@partner.orderking.in`,
-    isMobile: true,
-    valid: mobileValid,
-  };
-}
-
 function Login() {
-  const t = useT();
   const branding = useMerchantBranding();
 
   const [mode, setMode] = useState<"in" | "up">(() => {
@@ -67,8 +42,6 @@ function Login() {
     }
     return "in";
   });
-
-  const [authMethod, setAuthMethod] = useState<"otp" | "password">("otp");
 
   const [otpStep, setOtpStep] = useState<"phone" | "code">("phone");
   const [mobileNumber, setMobileNumber] = useState(() => {
@@ -89,8 +62,6 @@ function Login() {
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
   const [name, setName] = useState(() => {
     if (typeof window !== "undefined") {
       const n = new URLSearchParams(window.location.search).get("name");
@@ -108,7 +79,6 @@ function Login() {
 
   const [error, setError] = useState<string | null>(null);
   const [infoMsg, setInfoMsg] = useState<string | null>(null);
-  const [whatsAppUrl, setWhatsAppUrl] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
 
   const cleanPhone = useMemo(() => sanitizeIndianPhone(mobileNumber), [mobileNumber]);
@@ -181,6 +151,10 @@ function Login() {
       setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
+    if (mode === "up" && !name.trim()) {
+      setError("Please enter the restaurant owner / manager full name.");
+      return;
+    }
 
     setWorking(true);
     setError(null);
@@ -199,9 +173,6 @@ function Login() {
 
       if (res?.providerNotice) {
         setInfoMsg(res.providerNotice);
-      }
-      if (res?.whatsAppOtpUrl) {
-        setWhatsAppUrl(res.whatsAppOtpUrl);
       }
 
       if (channel === "whatsapp" && res?.whatsAppOtpUrl && typeof window !== "undefined") {
@@ -245,6 +216,22 @@ function Login() {
 
       // Verified phone session established — route immediately
       if (mode === "up" || verifyRes.isNewUser) {
+        if (typeof window !== "undefined") {
+          try {
+            const rawDraft = window.localStorage.getItem(ORDERKING_ONBOARDING_DRAFT_KEY);
+            const prev = rawDraft ? JSON.parse(rawDraft) : {};
+            window.localStorage.setItem(
+              ORDERKING_ONBOARDING_DRAFT_KEY,
+              JSON.stringify({
+                ...prev,
+                phone: cleanPhone,
+                ownerName: name.trim() || prev.ownerName || "",
+                name: prev.name || "",
+                savedAt: new Date().toISOString(),
+              })
+            );
+          } catch {}
+        }
         window.location.assign("/onboarding");
       } else {
         window.location.assign("/dashboard");
@@ -252,77 +239,6 @@ function Login() {
     } catch (err: any) {
       setError(err instanceof Error ? err.message : "Verification failed. Please check the code.");
     } finally {
-      setWorking(false);
-    }
-  }
-
-  async function onSubmitPassword(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    const resolved = resolveIdentifierToEmail(identifier);
-    if (!resolved.valid) {
-      setError(
-        "Please enter a valid 10-digit Indian mobile number (starting with 6–9) or a valid business email address.",
-      );
-      return;
-    }
-
-    setWorking(true);
-    try {
-      if (mode === "up") {
-        const defaultName =
-          name.trim() ||
-          (resolved.isMobile ? `Partner ${identifier.trim().slice(-4)}` : resolved.email.split("@")[0]);
-        try {
-          if (typeof authClient.signUp?.email === "function") {
-            const res = await authClient.signUp.email({
-              email: resolved.email,
-              password,
-              name: defaultName,
-            });
-            if (res?.error) console.warn("[signUp] Auth warning:", res.error.message);
-          }
-        } catch (authErr) {
-          console.warn("[signUp] Edge auth fallback:", authErr);
-        }
-        if (resolved.isMobile) {
-          const cleanPhone = sanitizeIndianPhone(identifier);
-          setPhoneSession({
-            id: "prt_" + cleanPhone,
-            phone: cleanPhone,
-            email: resolved.email,
-            name: defaultName,
-            role: "partner",
-          });
-        }
-        window.location.assign("/onboarding");
-      } else {
-        try {
-          if (typeof authClient.signIn?.email === "function") {
-            const res = await authClient.signIn.email({
-              email: resolved.email,
-              password,
-            });
-            if (res?.error) console.warn("[signIn] Auth warning:", res.error.message);
-          }
-        } catch (authErr) {
-          console.warn("[signIn] Edge auth fallback:", authErr);
-        }
-        if (resolved.isMobile) {
-          const cleanPhone = sanitizeIndianPhone(identifier);
-          setPhoneSession({
-            id: "prt_" + cleanPhone,
-            phone: cleanPhone,
-            email: resolved.email,
-            name: `Partner ${cleanPhone.slice(-4)}`,
-            role: "partner",
-          });
-        }
-        window.location.assign("/dashboard");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t("auth.error"));
       setWorking(false);
     }
   }
@@ -354,9 +270,9 @@ function Login() {
               type="button"
               onClick={() => handleSwitchMode("in")}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150",
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150 cursor-pointer",
                 mode === "in"
-                  ? "bg-[#E23744] text-white shadow-sm"
+                  ? "bg-[#E23744] text-white shadow-xs"
                   : "text-gray-600 hover:text-gray-900",
               )}
             >
@@ -367,9 +283,9 @@ function Login() {
               type="button"
               onClick={() => handleSwitchMode("up")}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150",
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold transition-all duration-150 cursor-pointer",
                 mode === "up"
-                  ? "bg-[#E23744] text-white shadow-sm"
+                  ? "bg-[#E23744] text-white shadow-xs"
                   : "text-gray-600 hover:text-gray-900",
               )}
             >
@@ -390,324 +306,189 @@ function Login() {
             </p>
           </div>
 
-          {/* Auth Method Selector */}
-          <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-4">
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setError(null);
-                  setAuthMethod("otp");
-                }}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5",
-                  authMethod === "otp"
-                    ? "bg-red-50 text-[#E23744] border border-red-200"
-                    : "text-gray-500 hover:text-gray-800",
-                )}
-              >
-                <Phone className="size-3" />
-                <span>Mobile OTP</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setError(null);
-                  setAuthMethod("password");
-                }}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5",
-                  authMethod === "password"
-                    ? "bg-red-50 text-[#E23744] border border-red-200"
-                    : "text-gray-500 hover:text-gray-800",
-                )}
-              >
-                <KeyRound className="size-3" />
-                <span>Password</span>
-              </button>
-            </div>
-            <span className="text-[10px] text-gray-400 font-medium">Merchant Access</span>
-          </div>
-
-          {/* Method 1: 1-Tap OTP Flow */}
-          {authMethod === "otp" ? (
-            <div className="space-y-4">
-              {otpStep === "phone" ? (
-                <>
-                  {mode === "up" ? (
-                    <div>
-                      <Label htmlFor="owner-name" className="text-xs font-semibold text-gray-700">
-                        Owner / Manager Full Name
-                      </Label>
-                      <div className="relative mt-1">
-                        <Input
-                          id="owner-name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter owner / manager name"
-                          className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
-                        />
-                      </div>
-                    </div>
-                  ) : null}
-
+          {/* 1-Tap OTP Flow */}
+          <div className="space-y-4">
+            {otpStep === "phone" ? (
+              <>
+                {mode === "up" ? (
                   <div>
-                    <Label htmlFor="mobile-input" className="flex items-center justify-between text-xs font-semibold text-gray-700">
-                      <span>Mobile Number</span>
-                      <span className="text-[11px] text-gray-400 font-normal">
-                        10-digit number
-                      </span>
-                    </Label>
-                    <div className="relative mt-1 flex items-center">
-                      <span className="absolute left-3 text-xs font-bold text-gray-500">+91</span>
-                      <Input
-                        id="mobile-input"
-                        type="tel"
-                        maxLength={14}
-                        required
-                        value={mobileNumber}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
-                        }}
-                        placeholder="Enter 10-digit mobile"
-                        className="pl-12 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono tracking-wider text-sm"
-                      />
-                    </div>
-                    <p className="mt-1 text-[11px] text-gray-500">
-                      We will send an OTP verification code.
-                    </p>
-                  </div>
-
-                  {infoMsg ? (
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
-                      {infoMsg}
-                    </div>
-                  ) : null}
-
-                  {error ? (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
-                      {error}
-                    </div>
-                  ) : null}
-
-                  <div className="space-y-2.5 pt-1">
-                    <Button
-                      type="button"
-                      disabled={working || !isPhoneValid}
-                      onClick={() => void handleSendOtp("sms")}
-                      className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2"
-                    >
-                      {working ? (
-                        <RefreshCw className="size-4 animate-spin" />
-                      ) : (
-                        <Phone className="size-4" />
-                      )}
-                      <span>Send code by SMS</span>
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                /* Step 2: Code Verification */
-                <div className="space-y-4">
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] text-gray-500">Verifying mobile number:</div>
-                      <div className="text-sm font-bold text-gray-900 font-mono tracking-wider">
-                        +91 {cleanPhone}
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOtpStep("phone");
-                        setError(null);
-                        setOtpCode("");
-                      }}
-                      className="text-xs font-bold text-[#E23744] hover:underline"
-                    >
-                      Change
-                    </button>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="otp-input" className="text-xs font-semibold text-gray-700">
-                      Enter 6-Digit Verification Code
+                    <Label htmlFor="owner-name" className="text-xs font-semibold text-gray-700">
+                      Owner / Manager Full Name *
                     </Label>
                     <div className="relative mt-1">
                       <Input
-                        id="otp-input"
-                        type="text"
-                        maxLength={6}
-                        required
-                        value={otpCode}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                          setOtpCode(val);
-                          if (val.length === 6) {
-                            void handleVerifyOtp(val);
-                          }
-                        }}
-                        placeholder="••••••"
-                        className="text-center tracking-widest text-lg font-mono border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-12"
+                        id="owner-name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Full name as on PAN card"
+                        className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
                       />
                     </div>
                   </div>
+                ) : null}
 
-                  {infoMsg ? (
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
-                      {infoMsg}
-                    </div>
-                  ) : null}
+                <div>
+                  <Label htmlFor="mobile-input" className="flex items-center justify-between text-xs font-semibold text-gray-700">
+                    <span>Mobile Number *</span>
+                    <span className="text-[11px] text-gray-400 font-normal">
+                      10-digit number
+                    </span>
+                  </Label>
+                  <div className="relative mt-1 flex items-center">
+                    <span className="absolute left-3 text-xs font-bold text-gray-500">+91</span>
+                    <Input
+                      id="mobile-input"
+                      type="tel"
+                      maxLength={10}
+                      required
+                      value={mobileNumber}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "");
+                        setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
+                      }}
+                      placeholder="Enter 10-digit mobile"
+                      className="pl-12 border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11 font-mono tracking-wider text-sm"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-gray-500">
+                    We will send an OTP verification code.
+                  </p>
+                </div>
 
-                  {error ? (
-                    <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
-                      {error}
-                    </div>
-                  ) : null}
+                {infoMsg ? (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
+                    {infoMsg}
+                  </div>
+                ) : null}
 
+                {error ? (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
+                    {error}
+                  </div>
+                ) : null}
+
+                <div className="space-y-2.5 pt-1">
                   <Button
                     type="button"
-                    disabled={working || otpCode.length !== 6}
-                    onClick={() => void handleVerifyOtp()}
-                    className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2"
+                    disabled={working || !isPhoneValid}
+                    onClick={() => void handleSendOtp("sms")}
+                    className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-                    <span>Verify &amp; Continue</span>
+                    {working ? (
+                      <RefreshCw className="size-4 animate-spin" />
+                    ) : (
+                      <Phone className="size-4" />
+                    )}
+                    <span>{mode === "up" ? "Continue to Onboarding" : "Send Login Code"}</span>
                   </Button>
-
-                  <div className="pt-2 flex flex-col gap-2 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-xs text-gray-500">
-                      <span>Didn&apos;t receive the SMS code?</span>
-                      <div className="flex items-center gap-3">
-                        <button
-                          type="button"
-                          disabled={working}
-                          onClick={() => void handleSendOtp("whatsapp")}
-                          className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline disabled:opacity-50"
-                        >
-                          <MessageCircle className="size-3.5" />
-                          <span>WhatsApp OTP</span>
-                        </button>
-                      </div>
-                      {canResend ? (
-                        <button
-                          type="button"
-                          onClick={() => void handleSendOtp("sms")}
-                          className="font-bold text-[#E23744] hover:underline"
-                        >
-                          Resend SMS
-                        </button>
-                      ) : (
-                        <span className="font-mono text-gray-400">Resend in {countdown}s</span>
-                      )}
+                </div>
+              </>
+            ) : (
+              /* Step 2: Code Verification */
+              <div className="space-y-4">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-3.5 flex items-center justify-between">
+                  <div>
+                    <div className="text-[11px] text-gray-500">Verifying mobile number:</div>
+                    <div className="text-sm font-bold text-gray-900 font-mono tracking-wider">
+                      +91 {cleanPhone}
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpStep("phone");
+                      setError(null);
+                      setOtpCode("");
+                    }}
+                    className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
+                  >
+                    Change
+                  </button>
                 </div>
-              )}
-            </div>
-          ) : (
-            /* Method 2: Password Sign In Flow */
-            <form className="space-y-4" onSubmit={onSubmitPassword}>
-              {mode === "up" ? (
+
                 <div>
-                  <Label htmlFor="name" className="text-xs font-semibold text-gray-700">
-                    Owner / Manager Full Name
+                  <Label htmlFor="otp-input" className="text-xs font-semibold text-gray-700">
+                    Enter 6-Digit Verification Code
                   </Label>
                   <div className="relative mt-1">
                     <Input
-                      id="name"
+                      id="otp-input"
+                      type="text"
+                      maxLength={6}
                       required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      autoComplete="name"
-                      placeholder="Enter owner / manager full name"
-                      className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
+                      value={otpCode}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                        setOtpCode(val);
+                        if (val.length === 6) {
+                          void handleVerifyOtp(val);
+                        }
+                      }}
+                      placeholder="••••••"
+                      className="text-center tracking-widest text-lg font-mono border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-12"
                     />
                   </div>
                 </div>
-              ) : null}
 
-              <div>
-                <Label htmlFor="identifier" className="flex items-center justify-between text-xs font-semibold text-gray-700">
-                  <span>10-Digit Mobile or Business Email</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
-                    <Phone className="size-3" /> / <Mail className="size-3" />
-                  </span>
-                </Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="identifier"
-                    type="text"
-                    required
-                    value={identifier}
-                    onChange={(e) => setIdentifier(e.target.value)}
-                    autoComplete="username"
-                    placeholder="Mobile number or restaurant email"
-                    className="border-gray-300 bg-white text-gray-900 placeholder:text-gray-400 focus:border-[#E23744] h-11"
-                  />
+                {infoMsg ? (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs text-emerald-800">
+                    {infoMsg}
+                  </div>
+                ) : null}
+
+                {error ? (
+                  <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
+                    {error}
+                  </div>
+                ) : null}
+
+                <Button
+                  type="button"
+                  disabled={working || otpCode.length !== 6}
+                  onClick={() => void handleVerifyOtp()}
+                  className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
+                  <span>{mode === "up" ? "Verify & Open Onboarding" : "Verify & Open Dashboard"}</span>
+                </Button>
+
+                <div className="pt-2 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100">
+                  <button
+                    type="button"
+                    disabled={working}
+                    onClick={() => void handleSendOtp("whatsapp")}
+                    className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline cursor-pointer"
+                  >
+                    <MessageCircle className="size-3.5" />
+                    <span>Send on WhatsApp</span>
+                  </button>
+
+                  {canResend ? (
+                    <button
+                      type="button"
+                      onClick={() => void handleSendOtp("sms")}
+                      className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                    >
+                      Resend SMS
+                    </button>
+                  ) : (
+                    <span className="font-mono text-gray-400">Resend in {countdown}s</span>
+                  )}
                 </div>
-                <p className="mt-1 text-[11px] text-gray-500">
-                  Indian 10-digit mobile number (starts with 6–9) or registered restaurant email.
-                </p>
               </div>
-
-              <div>
-                <Label htmlFor="password" className="flex items-center justify-between text-xs font-semibold text-gray-700">
-                  <span>{t("auth.password")}</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-gray-500">
-                    <Lock className="size-3" /> Minimum 8 characters
-                  </span>
-                </Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete={mode === "up" ? "new-password" : "current-password"}
-                    placeholder="••••••••"
-                    className="border-gray-300 bg-white text-gray-900 focus:border-[#E23744] h-11"
-                  />
-                </div>
-              </div>
-
-              {error ? (
-                <div className="rounded-xl border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs text-red-700">
-                  {error}
-                </div>
-              ) : null}
-
-              <Button
-                type="submit"
-                className="h-12 w-full bg-[#E23744] font-bold text-white shadow-md shadow-red-500/20 hover:bg-[#d32f2f] text-sm rounded-xl transition-all"
-                size="lg"
-                disabled={working}
-              >
-                {working
-                  ? t("auth.working")
-                  : mode === "in"
-                    ? "Sign In to Partner Portal"
-                    : "Begin Partner Onboarding"}
-              </Button>
-            </form>
-          )}
+            )}
+          </div>
 
           {/* Bottom Switch Link */}
           <div className="mt-5 pt-4 border-t border-gray-100 text-center">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-[#E23744] transition-colors"
+              className="text-xs font-semibold text-gray-600 hover:text-[#E23744] transition-colors cursor-pointer"
               onClick={() => handleSwitchMode(mode === "in" ? "up" : "in")}
             >
-              <span>
-                {mode === "in"
-                  ? "New to OrderKing? Join our restaurant network"
-                  : "Already registered? Sign in to your portal"}
-              </span>
-              <ArrowRight className="size-3 text-[#E23744]" />
+              {mode === "in"
+                ? "New to OrderKing? Register your restaurant →"
+                : "Already registered? Sign in to your portal →"}
             </button>
           </div>
         </div>
