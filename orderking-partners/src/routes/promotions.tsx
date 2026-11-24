@@ -16,18 +16,18 @@ import {
   getAnalytics,
 } from "@/lib/server/api-finance";
 import { getMenu } from "@/lib/server/api-menu";
-import { computeRestaurantPayable, formatINR, mulBps, rupeesToPaise } from "@/lib/money";
+import { formatINR, rupeesToPaise } from "@/lib/money";
 import { can } from "@/lib/rbac";
 import { platformConfig } from "@/lib/platform-config";
 import type { PromotionKind } from "@/lib/contracts";
 import { InStoreMarketingKit } from "@/components/in-store-marketing-kit";
 import {
-  Calculator,
   Camera,
   CheckCircle2,
   Clock,
   Layers,
   Megaphone,
+  ShieldCheck,
   Sparkles,
   Tag,
   TrendingUp,
@@ -93,74 +93,11 @@ function PromotionsPage() {
   // Ad Campaign Budget Selection
   const [adBudgetRupees, setAdBudgetRupees] = useState("250");
 
-  // Interactive Self-Service Discount Margin Calculator State
-  const [simOrderRupees, setSimOrderRupees] = useState("300");
-  const [simPackingRupees, setSimPackingRupees] = useState("20");
   const [activeMarketingSection, setActiveMarketingSection] = useState<"digital_promos" | "in_store_qr">("digital_promos");
 
   const rest = q.data?.promotions.filter((p) => p.funder === "RESTAURANT" && p.name !== "SPONSORED_BOOST") ?? [];
   const plat = q.data?.promotions.filter((p) => p.funder === "PLATFORM") ?? [];
   const activeRestCount = rest.filter((p) => p.isActive).length;
-
-  // Calculate exact integer-paise margin breakdown for the simulator
-  const simFoodPaise = rupeesToPaise(Math.max(0, Number(simOrderRupees) || 0));
-  const simPackingPaise = rupeesToPaise(Math.max(0, Number(simPackingRupees) || 0));
-  const minOrderPaise = rupeesToPaise(Math.max(0, Number(minOrderRupees) || 0));
-  const maxCapPaise =
-    maxDiscountRupees.trim() !== ""
-      ? rupeesToPaise(Math.max(0, Number(maxDiscountRupees) || 0))
-      : null;
-
-  // Side-by-side comparison: Percentage Discount vs Flat ₹ Discount on the same basket
-  const pctRate = Math.max(0, Math.min(90, Math.round(Number(percent) || 0)));
-  const rawPctDiscPaise = simFoodPaise >= minOrderPaise ? mulBps(simFoodPaise, pctRate * 100) : 0;
-  const comparePctDiscPaise =
-    maxCapPaise != null && maxCapPaise > 0 ? Math.min(rawPctDiscPaise, maxCapPaise) : rawPctDiscPaise;
-
-  const flatOfferPaise = rupeesToPaise(Math.max(0, Number(amountRupees) || 0));
-  const compareFlatDiscPaise =
-    simFoodPaise >= minOrderPaise ? Math.min(simFoodPaise, flatOfferPaise) : 0;
-
-  let simDiscountPaise = 0;
-  if (simFoodPaise >= minOrderPaise) {
-    if (kind === "percent") {
-      simDiscountPaise = comparePctDiscPaise;
-    } else if (kind === "fixed") {
-      simDiscountPaise = compareFlatDiscPaise;
-    } else if (kind === "bogo") {
-      simDiscountPaise = Math.round(simFoodPaise * 0.5);
-    }
-  }
-
-  const commissionBps = vendor.selected?.commissionBps ?? platformConfig.commission.targetBps;
-  const simSettlement = computeRestaurantPayable({
-    foodValuePaise: simFoodPaise,
-    packingPaise: simPackingPaise,
-    restaurantDiscountPaise: simDiscountPaise,
-    platformFundedDiscountPaise: 0,
-    commissionBps,
-  });
-
-  const comparePctSettlement = computeRestaurantPayable({
-    foodValuePaise: simFoodPaise,
-    packingPaise: simPackingPaise,
-    restaurantDiscountPaise: comparePctDiscPaise,
-    platformFundedDiscountPaise: 0,
-    commissionBps,
-  });
-
-  const compareFlatSettlement = computeRestaurantPayable({
-    foodValuePaise: simFoodPaise,
-    packingPaise: simPackingPaise,
-    restaurantDiscountPaise: compareFlatDiscPaise,
-    platformFundedDiscountPaise: 0,
-    commissionBps,
-  });
-
-  const taxableCustomerBasePaise = Math.max(0, simFoodPaise + simPackingPaise - simDiscountPaise);
-  const statutoryGst95Paise = mulBps(taxableCustomerBasePaise, 500); // 5% GST u/s 9(5)
-  const statutoryTds194OPaise = mulBps(taxableCustomerBasePaise, 10); // 0.1% TDS u/s 194-O
-  const customerPaysFoodAndTaxPaise = taxableCustomerBasePaise + statutoryGst95Paise;
 
   const activeDailyBudgetPaise =
     adQuery.data?.dailyBudgetPaise ?? rupeesToPaise(Math.max(0, Number(adBudgetRupees) || 250));
@@ -204,7 +141,6 @@ function PromotionsPage() {
     amountRupees?: string;
     minOrderRupees: string;
     maxDiscountRupees?: string;
-    benchmarkBasketRupees: string;
   }) {
     setName(preset.offerName);
     setKind(preset.kind);
@@ -212,9 +148,8 @@ function PromotionsPage() {
     if (preset.amountRupees) setAmountRupees(preset.amountRupees);
     setMinOrderRupees(preset.minOrderRupees);
     if (preset.maxDiscountRupees !== undefined) setMaxDiscountRupees(preset.maxDiscountRupees);
-    setSimOrderRupees(preset.benchmarkBasketRupees);
     setPlaybookAppliedNotice(
-      `Loaded "${preset.offerName}" into the calculator and offer builder below. Review your net take-home margin before activating.`,
+      `Applied "${preset.offerName}" to the offer form below.`,
     );
   }
 
@@ -361,11 +296,10 @@ function PromotionsPage() {
                           kind: "fixed",
                           amountRupees: "40",
                           minOrderRupees: "199",
-                          benchmarkBasketRupees: "220",
                         })
                       }
                     >
-                      Load Lunch Preset into Calculator
+                      Apply Lunch Preset
                     </Button>
                   </div>
 
@@ -400,11 +334,10 @@ function PromotionsPage() {
                           percent: "15",
                           minOrderRupees: "149",
                           maxDiscountRupees: "45",
-                          benchmarkBasketRupees: "180",
                         })
                       }
                     >
-                      Load Evening Snack Preset
+                      Apply Evening Snack Preset
                     </Button>
                   </div>
 
@@ -438,11 +371,10 @@ function PromotionsPage() {
                           kind: "fixed",
                           amountRupees: "90",
                           minOrderRupees: "499",
-                          benchmarkBasketRupees: "540",
                         })
                       }
                     >
-                      Load Dinner Family Preset
+                      Apply Dinner Family Preset
                     </Button>
                   </div>
                 </div>
@@ -521,158 +453,48 @@ function PromotionsPage() {
               </div>
             </Card>
 
-            {/* Customer Retention & Repeat-Order Strategy: Flat ₹ Off vs Percentage Discount Unit-Economics Calculator */}
+            {/* Commercial Terms & Statutory Policy for Restaurant-Funded Promotions */}
             <Card className="space-y-4 border-gray-200 bg-white shadow-xs p-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200 pb-3">
                 <div className="flex items-center gap-2.5">
-                  <Calculator className="size-5 text-emerald-400" />
+                  <ShieldCheck className="size-5 text-[#E23744]" />
                   <div>
                     <h3 className="font-display text-base font-bold text-gray-900">
-                      Estimated Payout &amp; Discount Margin Preview
+                      Promotional Terms &amp; Settlement Policy
                     </h3>
                     <p className="text-xs text-gray-500">
-                      Compare Flat ₹ Off vs Percentage Discount take-home earnings on a sample order before publishing your promotion.
+                      Official commercial guidelines and statutory tax treatment for restaurant-funded customer offers.
                     </p>
                   </div>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-400">
-                  Sample Order Simulation
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs text-gray-700">Benchmark Order Value (₹)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={simOrderRupees}
-                    onChange={(e) => setSimOrderRupees(e.target.value)}
-                    className="mt-1 h-9 text-xs bg-white border-gray-200"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-gray-700">Benchmark Packaging Fee (₹)</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    value={simPackingRupees}
-                    onChange={(e) => setSimPackingRupees(e.target.value)}
-                    className="mt-1 h-9 text-xs bg-white border-gray-200"
-                  />
-                </div>
-              </div>
-
-              {/* Side-by-Side Retention Structure Comparison: Flat ₹ Off vs Percentage Discount */}
-              <div className="grid gap-3 md:grid-cols-2">
-                <div
-                  className={`rounded-xl border p-3.5 space-y-1.5 ${kind === "percent"
-                      ? "border-emerald-300 bg-emerald-50/70"
-                      : "border-gray-200 bg-gray-50"
-                    }`}
+                <Link
+                  to="/settlements"
+                  className="text-xs font-bold text-[#E23744] hover:underline"
                 >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-gray-900">
-                      Structure A: {pctRate}% Off {maxCapPaise ? `(Cap ${formatINR(maxCapPaise)})` : "(Uncapped)"}
-                    </span>
-                    <span className="font-mono text-[11px] text-gray-500">
-                      Min Order {formatINR(minOrderPaise)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-gray-500">Merchant Discount Funded:</span>
-                    <span className="font-mono font-semibold text-rose-400 tabular">
-                      −{formatINR(comparePctDiscPaise)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">Net Merchant Take-Home:</span>
-                    <span className="font-mono font-bold text-emerald-400 tabular">
-                      {formatINR(comparePctSettlement.restaurantPayablePaise)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 pt-1">
-                    Best for acquiring first-time diners searching by percentage badge; always pair with a ₹ cap so large family baskets do not erode margin.
+                  View Settlements Ledger →
+                </Link>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3 text-xs">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                  <div className="font-bold text-gray-900">1. Restaurant-Funded Discounts</div>
+                  <p className="text-gray-600 leading-relaxed">
+                    Customer discounts configured here are funded by the restaurant. The discount is deducted directly from gross food sales before platform fees are calculated.
                   </p>
                 </div>
 
-                <div
-                  className={`rounded-xl border p-3.5 space-y-1.5 ${kind === "fixed"
-                      ? "border-emerald-300 bg-emerald-50/70"
-                      : "border-gray-200 bg-gray-50"
-                    }`}
-                >
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-gray-900">
-                      Structure B: Flat {formatINR(flatOfferPaise)} Off
-                    </span>
-                    <span className="font-mono text-[11px] text-gray-500">
-                      Min Order {formatINR(minOrderPaise)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs pt-1">
-                    <span className="text-gray-500">Merchant Discount Funded:</span>
-                    <span className="font-mono font-semibold text-rose-400 tabular">
-                      −{formatINR(compareFlatDiscPaise)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">Net Merchant Take-Home:</span>
-                    <span className="font-mono font-bold text-emerald-400 tabular">
-                      {formatINR(compareFlatSettlement.restaurantPayablePaise)}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-gray-500 pt-1">
-                    Best for repeat-order retention and AOV step-ups: your subsidy is fixed in exact rupees even when the customer adds extra sides or beverages.
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                  <div className="font-bold text-gray-900">2. Section 9(5) CGST Remittance</div>
+                  <p className="text-gray-600 leading-relaxed">
+                    OrderKing remits the statutory 5% GST directly to the Government on discounted order values. Partners carry zero tax liability on delivery orders.
                   </p>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-xs pt-1">
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <div className="text-[10px] font-mono text-gray-500">CUSTOMER PAYS (INC 5% GST)</div>
-                  <div className="text-sm font-bold text-gray-900 mt-1 tabular">
-                    {formatINR(customerPaysFoodAndTaxPaise)}
-                  </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">
-                    Includes {formatINR(statutoryGst95Paise)} GST §9(5)
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <div className="text-[10px] font-mono text-gray-500">MERCHANT DISCOUNT COST</div>
-                  <div className="text-sm font-bold text-rose-400 mt-1 tabular">
-                    −{formatINR(simDiscountPaise)}
-                  </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">
-                    {simFoodPaise < minOrderPaise ? "Below min order" : `Active Form: ${kind.toUpperCase()}`}
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <div className="text-[10px] font-mono text-gray-500">PLATFORM COMMISSION</div>
-                  <div className="text-sm font-bold text-rose-400 mt-1 tabular">
-                    −{formatINR(simSettlement.commissionPaise)}
-                  </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">
-                    {(commissionBps / 100).toFixed(1)}% on net food+packing
-                  </div>
-                </div>
-
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <div className="text-[10px] font-mono text-gray-500">STATUTORY TDS §194-O (0.1%)</div>
-                  <div className="text-sm font-bold text-gray-700 mt-1 tabular">
-                    {formatINR(statutoryTds194OPaise)}
-                  </div>
-                  <div className="text-[10px] text-gray-400 mt-0.5">Credited to your PAN Form 16A</div>
-                </div>
-
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
-                  <div className="text-[10px] font-mono text-emerald-700">NET MERCHANT TAKE-HOME</div>
-                  <div className="text-base font-bold text-emerald-700 mt-1 tabular">
-                    {formatINR(simSettlement.restaurantPayablePaise)}
-                  </div>
-                  <div className="text-[10px] text-emerald-700 mt-0.5">Settled to your bank</div>
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-1.5">
+                  <div className="font-bold text-gray-900">3. Daily T+1 Bank Settlements</div>
+                  <p className="text-gray-600 leading-relaxed">
+                    All promotional orders are settled on the next business day (T+1) via NEFT/RTGS with itemized order-level deduction breakdowns and unique UTR.
+                  </p>
                 </div>
               </div>
             </Card>
