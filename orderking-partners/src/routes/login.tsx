@@ -19,20 +19,13 @@ import {
   Phone,
   MessageCircle,
   RefreshCw,
-  Store,
-  FileCheck2,
-  Banknote,
   HelpCircle,
   Lock,
   Mail,
   Eye,
   EyeOff,
   X,
-  Sparkles,
   Headphones,
-  CheckCircle2,
-  Clock,
-  UtensilsCrossed,
 } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
@@ -235,9 +228,9 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans flex flex-col justify-between selection:bg-red-500 selection:text-white">
+    <div className="min-h-screen bg-[#F4F5F7] text-gray-900 font-sans flex flex-col justify-between selection:bg-red-500 selection:text-white">
       {/* 1. Header (Zomato for Business Standard) */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200">
+      <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
             <OrderKingMark className="size-9 text-[#E23744] transition-transform group-hover:scale-105" />
@@ -277,7 +270,7 @@ export function LoginPage() {
                 setError(null);
                 setOtpStep("phone");
               }}
-              className="text-xs font-bold text-[#E23744] hover:bg-red-50 border border-red-200 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
+              className="text-xs font-bold text-[#E23744] hover:bg-red-50 border border-red-200 px-3.5 py-1.5 rounded-xl transition-colors cursor-pointer"
             >
               {mode === "in" ? "Register Restaurant" : "Partner Sign In"}
             </button>
@@ -285,367 +278,120 @@ export function LoginPage() {
         </div>
       </header>
 
-      {/* 2. Main Login Workstation (Focused, Native, Distraction-Free Zomato Parity) */}
-      <main className="flex-1 flex items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left 6 Columns: Clean Operational Context */}
-          <div className="hidden lg:flex lg:col-span-6 flex-col space-y-6 pr-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-xs font-bold text-[#E23744] w-fit">
-              <Store className="size-3.5" />
-              <span>Restaurant Partner Network</span>
-            </div>
-
-            <div className="space-y-2">
-              <h1 className="font-display text-3xl font-black text-gray-900 tracking-tight leading-tight">
-                {mode === "in" ? "Sign in to your restaurant portal" : "Register your restaurant with OrderKing"}
+      {/* 2. Main Login Card (Focused, Centered, Native Zomato Partner Experience) */}
+      <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6">
+        <div className="w-full max-w-[440px]">
+          <div className="rounded-3xl border border-gray-200 bg-white p-7 sm:p-9 shadow-lg">
+            {/* Card Header */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                  {mode === "up" ? "Restaurant Registration" : "Partner Sign In"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode(mode === "in" ? "up" : "in");
+                    setError(null);
+                    setOtpStep("phone");
+                  }}
+                  className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
+                >
+                  {mode === "in" ? "Register outlet →" : "Sign in instead →"}
+                </button>
+              </div>
+              <h1 className="font-display text-2xl font-black text-gray-900">
+                {mode === "up" ? "Register Your Restaurant" : "Sign In to Partner Portal"}
               </h1>
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {mode === "in"
-                  ? "Access your live kitchen display system, menu studio, and daily bank payouts."
-                  : "Begin your digital onboarding in minutes with 14-digit FSSAI and bank account."}
+              <p className="text-xs text-gray-500 mt-1">
+                {mode === "up"
+                  ? "Enter your mobile number to begin digital restaurant onboarding."
+                  : "Enter your registered mobile number to receive an OTP."}
               </p>
             </div>
 
-            {/* 4 Quiet Operational Guarantees */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <Banknote className="size-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">Daily T+1 Automated Settlements</div>
-                  <div className="text-[11px] text-gray-500">Direct NEFT/RTGS/IMPS bank transfer with unique UTR reference.</div>
-                </div>
+            {/* Auth Method Selector (Mobile OTP vs Corporate Email & Password) */}
+            {mode === "in" && (
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-gray-100 p-1 mb-5 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMethod("otp");
+                    setError(null);
+                  }}
+                  className={`py-2 rounded-lg transition-all cursor-pointer ${
+                    authMethod === "otp"
+                      ? "bg-white text-gray-900 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  Mobile OTP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMethod("password");
+                    setError(null);
+                  }}
+                  className={`py-2 rounded-lg transition-all cursor-pointer ${
+                    authMethod === "password"
+                      ? "bg-white text-gray-900 shadow-xs"
+                      : "text-gray-500 hover:text-gray-900"
+                  }`}
+                >
+                  Email &amp; Password
+                </button>
               </div>
+            )}
 
-              <div className="flex items-start gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
-                  <ShieldCheck className="size-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">Section 9(5) CGST Direct Remittance</div>
-                  <div className="text-[11px] text-gray-500">OrderKing remits 5% food GST to the Government; zero merchant tax liability.</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-red-50 text-[#E23744] border border-red-200">
-                  <UtensilsCrossed className="size-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">Live Kitchen Queue &amp; 1-Tap Stockout</div>
-                  <div className="text-[11px] text-gray-500">Real-time KDS, 880Hz acoustic alerts, and automated 06:00 AM next-day reset.</div>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  <Sparkles className="size-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-gray-900">King Spark AI Partner Assistant</div>
-                  <div className="text-[11px] text-gray-500">24/7 autonomous support for transit spillage disputes and shift reconciliations.</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-gray-200 text-xs text-gray-500">
-              Need technical or onboarding support? Call{" "}
-              <a href="tel:+919395065587" className="font-bold text-[#E23744] hover:underline">
-                +91 9395065587
-              </a>
-            </div>
-          </div>
-
-          {/* Right 6 Columns: Clean, Focused Auth Card */}
-          <div className="lg:col-span-6 w-full">
-            <div className="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-xl">
-              <div className="mb-5">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                    {mode === "up" ? "Restaurant Registration" : "Partner Sign In"}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMode(mode === "in" ? "up" : "in");
-                      setError(null);
-                      setOtpStep("phone");
-                    }}
-                    className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
-                  >
-                    {mode === "in" ? "Register outlet →" : "Sign in instead →"}
-                  </button>
-                </div>
-                <h2 className="font-display text-2xl font-black text-gray-900">
-                  {mode === "up" ? "Register Your Restaurant" : "Sign In to Partner Portal"}
-                </h2>
-                <p className="text-xs text-gray-500 mt-1">
-                  {mode === "up"
-                    ? "Enter your mobile number to begin digital restaurant onboarding."
-                    : "Enter your registered mobile number to receive a verification code."}
-                </p>
-              </div>
-
-              {/* Mode Selector Tabs (Mobile OTP vs Corporate Password) */}
-              {mode === "in" && (
-                <div className="grid grid-cols-2 gap-1 rounded-xl bg-gray-100 p-1 mb-4 text-xs font-bold">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMethod("otp");
-                      setError(null);
-                    }}
-                    className={`py-2 rounded-lg transition-all cursor-pointer ${
-                      authMethod === "otp"
-                        ? "bg-white text-gray-900 shadow-xs"
-                        : "text-gray-500 hover:text-gray-900"
-                    }`}
-                  >
-                    Mobile OTP
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAuthMethod("password");
-                      setError(null);
-                    }}
-                    className={`py-2 rounded-lg transition-all cursor-pointer ${
-                      authMethod === "password"
-                        ? "bg-white text-gray-900 shadow-xs"
-                        : "text-gray-500 hover:text-gray-900"
-                    }`}
-                  >
-                    Email &amp; Password
-                  </button>
-                </div>
-              )}
-
-              {/* Flow A: Mobile Phone OTP Flow */}
-              {authMethod === "otp" ? (
-                otpStep === "phone" ? (
-                  <div className="space-y-4">
-                    {mode === "up" && (
-                      <div>
-                        <Label htmlFor="login-owner-name" className="text-xs font-semibold text-gray-700">
-                          Owner / Manager Full Name *
-                        </Label>
-                        <Input
-                          id="login-owner-name"
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Full name as on PAN card"
-                          className="mt-1 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
-                        />
-                      </div>
-                    )}
-
-                    <div>
-                      <Label htmlFor="login-reg-phone" className="text-xs font-semibold text-gray-700">
-                        10-Digit Mobile Number *
-                      </Label>
-                      <div className="relative mt-1 flex items-center">
-                        <span className="absolute left-3 text-xs font-bold text-gray-500">+91</span>
-                        <Input
-                          id="login-reg-phone"
-                          type="tel"
-                          maxLength={10}
-                          autoFocus
-                          value={mobileNumber}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "");
-                            setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && isPhoneValid && !working) {
-                              void handleSendOtp("sms");
-                            }
-                          }}
-                          placeholder="Enter mobile number"
-                          className="pl-12 border-gray-300 bg-white text-gray-900 h-12 font-mono text-base focus:border-[#E23744] rounded-xl"
-                        />
-                      </div>
-                      <p className="mt-1 text-[11px] text-gray-400">
-                        We will send a 6-digit verification code to this phone number.
-                      </p>
-                    </div>
-
-                    {error && (
-                      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
-                        {error}
-                      </div>
-                    )}
-
-                    <Button
-                      type="button"
-                      disabled={working || !isPhoneValid}
-                      onClick={() => void handleSendOtp("sms")}
-                      className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
-                    >
-                      {working ? <RefreshCw className="size-4 animate-spin" /> : <Phone className="size-4" />}
-                      <span>Continue with OTP</span>
-                    </Button>
-
-                    <div className="pt-2 text-center">
-                      <button
-                        type="button"
-                        disabled={working || !isPhoneValid}
-                        onClick={() => void handleSendOtp("whatsapp")}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:underline cursor-pointer disabled:opacity-50"
-                      >
-                        <MessageCircle className="size-3.5" />
-                        <span>Get OTP on WhatsApp</span>
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  /* Step 2: OTP Verification Code with Individual 6 Digits */
-                  <div className="space-y-4">
-                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
-                      <div>
-                        <div className="text-[11px] text-gray-500">OTP dispatched to:</div>
-                        <div className="text-sm font-bold text-gray-900 font-mono">+91 {cleanPhone}</div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setOtpStep("phone");
-                          setError(null);
-                          setOtpCode("");
-                          setOtpDigits(["", "", "", "", "", ""]);
-                        }}
-                        className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
-                      >
-                        Change
-                      </button>
-                    </div>
-
-                    <div>
-                      <Label className="text-xs font-semibold text-gray-700 block mb-2">
-                        Enter 6-Digit Verification Code
-                      </Label>
-
-                      {/* 6 Individual Digit Inputs with Auto-Advance */}
-                      <div className="grid grid-cols-6 gap-2">
-                        {otpDigits.map((digit, idx) => (
-                          <input
-                            key={idx}
-                            ref={(el) => {
-                              digitRefs.current[idx] = el;
-                            }}
-                            type="text"
-                            inputMode="numeric"
-                            maxLength={1}
-                            autoFocus={idx === 0}
-                            value={digit}
-                            onChange={(e) => handleDigitChange(idx, e.target.value)}
-                            onKeyDown={(e) => handleDigitKeyDown(idx, e)}
-                            onPaste={idx === 0 ? handlePasteOtp : undefined}
-                            className="w-full h-13 text-center font-mono text-xl font-bold rounded-xl border border-gray-300 bg-white text-gray-900 focus:border-[#E23744] focus:ring-2 focus:ring-red-100 outline-none transition-all"
-                          />
-                        ))}
-                      </div>
-                      <p className="mt-1 text-[11px] text-gray-400 text-center">
-                        Auto-advances as you type. Paste supported.
-                      </p>
-                    </div>
-
-                    {error && (
-                      <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
-                        {error}
-                      </div>
-                    )}
-
-                    <Button
-                      type="button"
-                      disabled={working || otpCode.length !== 6}
-                      onClick={() => void handleVerifyOtp()}
-                      className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
-                    >
-                      {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
-                      <span>Verify &amp; Sign In</span>
-                    </Button>
-
-                    <div className="pt-2 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100">
-                      <button
-                        type="button"
-                        disabled={working}
-                        onClick={() => void handleSendOtp("whatsapp")}
-                        className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline cursor-pointer"
-                      >
-                        <MessageCircle className="size-3.5" />
-                        <span>Send on WhatsApp</span>
-                      </button>
-
-                      {canResend ? (
-                        <button
-                          type="button"
-                          onClick={() => void handleSendOtp("sms")}
-                          className="font-bold text-[#E23744] hover:underline cursor-pointer"
-                        >
-                          Resend SMS
-                        </button>
-                      ) : (
-                        <span className="font-mono text-gray-400">Resend in {countdown}s</span>
-                      )}
-                    </div>
-                  </div>
-                )
-              ) : (
-                /* Flow B: Corporate Email & Password Sign In */
+            {/* Flow A: Mobile Phone OTP Flow */}
+            {authMethod === "otp" ? (
+              otpStep === "phone" ? (
                 <div className="space-y-4">
+                  {mode === "up" && (
+                    <div>
+                      <Label htmlFor="login-owner-name" className="text-xs font-semibold text-gray-700">
+                        Owner / Manager Full Name *
+                      </Label>
+                      <Input
+                        id="login-owner-name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Full name as on PAN card"
+                        className="mt-1 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
+                      />
+                    </div>
+                  )}
+
                   <div>
-                    <Label htmlFor="login-corporate-email" className="text-xs font-semibold text-gray-700">
-                      Corporate / Registered Business Email *
+                    <Label htmlFor="login-reg-phone" className="text-xs font-semibold text-gray-700">
+                      10-Digit Mobile Number *
                     </Label>
                     <div className="relative mt-1 flex items-center">
-                      <Mail className="size-4 absolute left-3 text-gray-400" />
+                      <span className="absolute left-3 text-xs font-bold text-gray-500">+91</span>
                       <Input
-                        id="login-corporate-email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="partner@restaurant.com"
-                        className="pl-10 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="login-corporate-password" className="text-xs font-semibold text-gray-700">
-                        Password *
-                      </Label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuthMethod("otp");
-                          setError("Enter your phone number to sign in via verified OTP.");
+                        id="login-reg-phone"
+                        type="tel"
+                        maxLength={10}
+                        autoFocus
+                        value={mobileNumber}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setMobileNumber(val.startsWith("91") && val.length > 10 ? val.slice(2, 12) : val.slice(0, 10));
                         }}
-                        className="text-[11px] font-semibold text-[#E23744] hover:underline cursor-pointer"
-                      >
-                        Sign in with OTP instead
-                      </button>
-                    </div>
-                    <div className="relative mt-1 flex items-center">
-                      <Lock className="size-4 absolute left-3 text-gray-400" />
-                      <Input
-                        id="login-corporate-password"
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••••••"
-                        className="pl-10 pr-10 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && isPhoneValid && !working) {
+                            void handleSendOtp("sms");
+                          }
+                        }}
+                        placeholder="Enter mobile number"
+                        className="pl-12 border-gray-300 bg-white text-gray-900 h-12 font-mono text-base focus:border-[#E23744] rounded-xl"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
-                      >
-                        {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                      </button>
                     </div>
+                    <p className="mt-1 text-[11px] text-gray-400">
+                      We will send a 6-digit verification code to this phone number.
+                    </p>
                   </div>
 
                   {error && (
@@ -656,52 +402,228 @@ export function LoginPage() {
 
                   <Button
                     type="button"
-                    disabled={working || !email || !password}
-                    onClick={() => {
-                      setError("For security, restaurant accounts use direct mobile phone OTP authentication. Switch to Mobile OTP tab to sign in.");
-                    }}
+                    disabled={working || !isPhoneValid}
+                    onClick={() => void handleSendOtp("sms")}
                     className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
                   >
-                    <Lock className="size-4" />
-                    <span>Sign In with Password</span>
+                    {working ? <RefreshCw className="size-4 animate-spin" /> : <Phone className="size-4" />}
+                    <span>Continue with OTP</span>
                   </Button>
-                </div>
-              )}
 
-              {/* Bottom Quick Switch Link */}
-              <div className="mt-6 pt-4 border-t border-gray-100 text-center">
-                {mode === "in" ? (
-                  <p className="text-xs text-gray-500">
-                    New to OrderKing?{" "}
+                  <div className="pt-2 text-center">
+                    <button
+                      type="button"
+                      disabled={working || !isPhoneValid}
+                      onClick={() => void handleSendOtp("whatsapp")}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:underline cursor-pointer disabled:opacity-50"
+                    >
+                      <MessageCircle className="size-3.5" />
+                      <span>Get OTP on WhatsApp</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Step 2: OTP Verification Code with Individual 6 Digits */
+                <div className="space-y-4">
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] text-gray-500">OTP dispatched to:</div>
+                      <div className="text-sm font-bold text-gray-900 font-mono">+91 {cleanPhone}</div>
+                    </div>
                     <button
                       type="button"
                       onClick={() => {
-                        setMode("up");
-                        setError(null);
                         setOtpStep("phone");
+                        setError(null);
+                        setOtpCode("");
+                        setOtpDigits(["", "", "", "", "", ""]);
                       }}
-                      className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                      className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
                     >
-                      Register your restaurant
+                      Change
                     </button>
-                  </p>
-                ) : (
-                  <p className="text-xs text-gray-500">
-                    Already registered?{" "}
+                  </div>
+
+                  <div>
+                    <Label className="text-xs font-semibold text-gray-700 block mb-2">
+                      Enter 6-Digit Verification Code
+                    </Label>
+
+                    {/* 6 Individual Digit Inputs with Auto-Advance */}
+                    <div className="grid grid-cols-6 gap-2">
+                      {otpDigits.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => {
+                            digitRefs.current[idx] = el;
+                          }}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          autoFocus={idx === 0}
+                          value={digit}
+                          onChange={(e) => handleDigitChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleDigitKeyDown(idx, e)}
+                          onPaste={idx === 0 ? handlePasteOtp : undefined}
+                          className="w-full h-13 text-center font-mono text-xl font-bold rounded-xl border border-gray-300 bg-white text-gray-900 focus:border-[#E23744] focus:ring-2 focus:ring-red-100 outline-none transition-all"
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-1 text-[11px] text-gray-400 text-center">
+                      Auto-advances as you type. Paste supported.
+                    </p>
+                  </div>
+
+                  {error && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                      {error}
+                    </div>
+                  )}
+
+                  <Button
+                    type="button"
+                    disabled={working || otpCode.length !== 6}
+                    onClick={() => void handleVerifyOtp()}
+                    className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
+                  >
+                    {working ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-5" />}
+                    <span>Verify &amp; Sign In</span>
+                  </Button>
+
+                  <div className="pt-2 flex items-center justify-between text-xs text-gray-500 border-t border-gray-100">
+                    <button
+                      type="button"
+                      disabled={working}
+                      onClick={() => void handleSendOtp("whatsapp")}
+                      className="inline-flex items-center gap-1 font-bold text-emerald-700 hover:underline cursor-pointer"
+                    >
+                      <MessageCircle className="size-3.5" />
+                      <span>Send on WhatsApp</span>
+                    </button>
+
+                    {canResend ? (
+                      <button
+                        type="button"
+                        onClick={() => void handleSendOtp("sms")}
+                        className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                      >
+                        Resend SMS
+                      </button>
+                    ) : (
+                      <span className="font-mono text-gray-400">Resend in {countdown}s</span>
+                    )}
+                  </div>
+                </div>
+              )
+            ) : (
+              /* Flow B: Corporate Email & Password Sign In */
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="login-corporate-email" className="text-xs font-semibold text-gray-700">
+                    Corporate / Registered Business Email *
+                  </Label>
+                  <div className="relative mt-1 flex items-center">
+                    <Mail className="size-4 absolute left-3 text-gray-400" />
+                    <Input
+                      id="login-corporate-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="partner@restaurant.com"
+                      className="pl-10 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="login-corporate-password" className="text-xs font-semibold text-gray-700">
+                      Password *
+                    </Label>
                     <button
                       type="button"
                       onClick={() => {
-                        setMode("in");
-                        setError(null);
-                        setOtpStep("phone");
+                        setAuthMethod("otp");
+                        setError("Enter your phone number to sign in via verified OTP.");
                       }}
-                      className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                      className="text-[11px] font-semibold text-[#E23744] hover:underline cursor-pointer"
                     >
-                      Sign in to your account
+                      Sign in with OTP instead
                     </button>
-                  </p>
+                  </div>
+                  <div className="relative mt-1 flex items-center">
+                    <Lock className="size-4 absolute left-3 text-gray-400" />
+                    <Input
+                      id="login-corporate-password"
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      className="pl-10 pr-10 border-gray-300 bg-white text-gray-900 h-12 text-sm focus:border-[#E23744] rounded-xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 text-gray-400 hover:text-gray-600 cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">
+                    {error}
+                  </div>
                 )}
+
+                <Button
+                  type="button"
+                  disabled={working || !email || !password}
+                  onClick={() => {
+                    setError("For security, restaurant accounts use direct mobile phone OTP authentication. Switch to Mobile OTP tab to sign in.");
+                  }}
+                  className="w-full h-12 bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-md shadow-red-500/20 text-sm cursor-pointer transition-all"
+                >
+                  <Lock className="size-4" />
+                  <span>Sign In with Password</span>
+                </Button>
               </div>
+            )}
+
+            {/* Bottom Quick Switch Link */}
+            <div className="mt-6 pt-4 border-t border-gray-100 text-center">
+              {mode === "in" ? (
+                <p className="text-xs text-gray-500">
+                  New to OrderKing?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("up");
+                      setError(null);
+                      setOtpStep("phone");
+                    }}
+                    className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                  >
+                    Register your restaurant
+                  </button>
+                </p>
+              ) : (
+                <p className="text-xs text-gray-500">
+                  Already registered?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("in");
+                      setError(null);
+                      setOtpStep("phone");
+                    }}
+                    className="font-bold text-[#E23744] hover:underline cursor-pointer"
+                  >
+                    Sign in to your account
+                  </button>
+                </p>
+              )}
             </div>
           </div>
         </div>
