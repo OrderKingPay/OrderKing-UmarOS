@@ -272,19 +272,6 @@ export function PartnerLandingPage({
     window.location.assign("/dashboard");
   }
 
-  // ── Commercial Calculator State ───────────────────────────────────────────
-  const [aov, setAov] = useState(350);
-  const [dailyOrders, setDailyOrders] = useState(45);
-  const monthlyOrders = dailyOrders * 30;
-  const monthlyGmv = monthlyOrders * aov;
-  const platformCommissionPaise = Math.round(monthlyGmv * 0.20 * 100);
-  const sec9_5GstPaise = Math.round(monthlyGmv * 0.05 * 100);
-  const paymentGatewayPaise = Math.round(monthlyGmv * 0.0184 * 100);
-  const netMonthlyPayoutPaise = Math.round(
-    monthlyGmv * 100 - platformCommissionPaise - sec9_5GstPaise - paymentGatewayPaise
-  );
-  const netDailyPayoutPaise = Math.round(netMonthlyPayoutPaise / 30);
-
   // ── Interactive Facility Test-Bench State ─────────────────────────────────
   const [activeTab, setActiveTab] = useState<"kds" | "menu" | "hours" | "settlements" | "reviews" | "spark">("kds");
 
@@ -871,142 +858,19 @@ export function PartnerLandingPage({
         </div>
       </section>
 
-      {/* 4. Commercial Transparency Calculator (AOV & Net Payout Math) */}
+      {/* 4. Live Interactive Feature Showcase (Explore 6 Core Facilities) */}
       <section className="py-12 lg:py-16 bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-800 mb-2">
-              <Calculator className="size-3.5" />
-              <span>Commercial Transparency Calculator</span>
-            </div>
-            <h2 className="font-display text-2xl sm:text-3xl font-black text-gray-900">
-              Calculate your restaurant earnings &amp; daily payouts
-            </h2>
-            <p className="text-sm text-gray-500 mt-2">
-              OrderKing operates with complete financial transparency. Zero hidden deductions.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-gray-50 border border-gray-200 rounded-3xl p-6 sm:p-10">
-            {/* Left 6 Cols: Sliders */}
-            <div className="lg:col-span-6 space-y-6">
-              <div>
-                <div className="flex items-center justify-between text-sm font-bold text-gray-900 mb-2">
-                  <span>Average Order Value (AOV)</span>
-                  <span className="font-mono text-base text-[#E23744]">₹{aov}</span>
-                </div>
-                <input
-                  type="range"
-                  min={150}
-                  max={1200}
-                  step={25}
-                  value={aov}
-                  onChange={(e) => setAov(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#E23744] h-2 bg-gray-200 rounded-lg cursor-pointer"
-                />
-                <div className="flex justify-between text-[11px] text-gray-400 mt-1">
-                  <span>₹150 (Fast Food)</span>
-                  <span>₹350 (Casual Dining)</span>
-                  <span>₹1,200 (Fine Dining)</span>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between text-sm font-bold text-gray-900 mb-2">
-                  <span>Estimated Orders per Day</span>
-                  <span className="font-mono text-base text-[#E23744]">{dailyOrders} orders</span>
-                </div>
-                <input
-                  type="range"
-                  min={10}
-                  max={250}
-                  step={5}
-                  value={dailyOrders}
-                  onChange={(e) => setDailyOrders(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#E23744] h-2 bg-gray-200 rounded-lg cursor-pointer"
-                />
-                <div className="flex justify-between text-[11px] text-gray-400 mt-1">
-                  <span>10 orders/day</span>
-                  <span>50 orders/day</span>
-                  <span>250 orders/day</span>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-white border border-gray-200 space-y-2 text-xs text-gray-600">
-                <div className="font-bold text-gray-900 flex items-center gap-1.5">
-                  <ShieldCheck className="size-4 text-emerald-600" />
-                  <span>Statutory Section 9(5) CGST Protection</span>
-                </div>
-                <p className="leading-relaxed">
-                  As an Electronic Commerce Operator, OrderKing directly collects and remits the 5% GST to the Government. You carry zero merchant liability for GST on delivery food sales.
-                </p>
-              </div>
-            </div>
-
-            {/* Right 6 Cols: Mathematical Ledger Output */}
-            <div className="lg:col-span-6 bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 space-y-4 shadow-sm">
-              <div className="border-b border-gray-100 pb-3">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
-                  Estimated Monthly Performance
-                </div>
-                <div className="text-2xl font-black text-gray-900 font-mono mt-0.5">
-                  {formatINR(monthlyGmv * 100)} GMV
-                </div>
-                <div className="text-xs text-gray-500">Based on {monthlyOrders} completed orders / month</div>
-              </div>
-
-              <div className="space-y-2.5 text-xs">
-                <div className="flex justify-between text-gray-600">
-                  <span>Monthly Gross Sales (Food Subtotal):</span>
-                  <span className="font-bold text-gray-900 font-mono">{formatINR(monthlyGmv * 100)}</span>
-                </div>
-
-                <div className="flex justify-between text-gray-600">
-                  <span>Platform Commission (20% Base Rate):</span>
-                  <span className="font-bold text-red-700 font-mono">- {formatINR(platformCommissionPaise)}</span>
-                </div>
-
-                <div className="flex justify-between text-emerald-700 bg-emerald-50/70 p-2 rounded-lg">
-                  <span>5% GST Remitted to Govt under §9(5) CGST:</span>
-                  <span className="font-bold font-mono">- {formatINR(sec9_5GstPaise)} (Zero Merchant Liability)</span>
-                </div>
-
-                <div className="flex justify-between text-gray-600">
-                  <span>Payment Gateway &amp; Processing (1.84%):</span>
-                  <span className="font-bold text-gray-900 font-mono">- {formatINR(paymentGatewayPaise)}</span>
-                </div>
-
-                <div className="border-t-2 border-gray-200 pt-3 flex items-baseline justify-between">
-                  <div>
-                    <div className="text-sm font-black text-gray-900">Estimated Net Bank Settlement:</div>
-                    <div className="text-[11px] text-emerald-700 font-semibold">T+1 Daily Direct NEFT/IMPS Transfer</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-black text-emerald-700 font-mono">
-                      {formatINR(netMonthlyPayoutPaise)}
-                    </div>
-                    <div className="text-[11px] text-gray-500 font-mono">~ {formatINR(netDailyPayoutPaise)} / day</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. Live Interactive Feature Test-Bench (Explore 6 Core Facilities) */}
-      <section className="py-12 lg:py-16 bg-[#F8F9FA] border-b border-gray-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-gray-200 px-3 py-1 text-xs font-bold text-gray-800 mb-2">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-xs font-bold text-gray-800 mb-2">
               <ChefHat className="size-3.5 text-[#E23744]" />
-              <span>Interactive Operational Facility Explorer</span>
+              <span>Partner Software &amp; Kitchen Facilities</span>
             </div>
             <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900">
-              Test every partner feature in real time
+              Explore your kitchen management tools
             </h2>
             <p className="text-sm text-gray-500 mt-2">
-              Click through the 6 core operational modules built for restaurant owners, kitchen managers, and chefs.
+              OrderKing provides modern, high-reliability software built for restaurant owners, kitchen managers, and chefs.
             </p>
           </div>
 
@@ -1759,7 +1623,7 @@ export function PartnerLandingPage({
         </div>
       </section>
 
-      {/* 6. Documents Required Checklist */}
+      {/* 5. Documents Required Checklist */}
       <section className="py-12 bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
@@ -1805,7 +1669,7 @@ export function PartnerLandingPage({
         </div>
       </section>
 
-      {/* 7. Operational Frequently Asked Questions (FAQ) */}
+      {/* 6. Operational Frequently Asked Questions (FAQ) */}
       <section className="py-12 bg-[#F8F9FA] border-b border-gray-200">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="text-center">
@@ -1856,7 +1720,7 @@ export function PartnerLandingPage({
         </div>
       </section>
 
-      {/* 8. Statutory Compliance Footer */}
+      {/* 7. Statutory Compliance Footer */}
       <footer className="bg-white py-6 border-t border-gray-200 text-xs text-gray-500">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -1870,7 +1734,7 @@ export function PartnerLandingPage({
         </div>
       </footer>
 
-      {/* 9. "Need Help Signing In?" Drawer / Modal */}
+      {/* 8. "Need Help Signing In?" Drawer / Modal */}
       {helpOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-gray-200">
