@@ -42,6 +42,7 @@ import {
   Headphones,
   Volume2,
   AlertTriangle,
+  AlertCircle,
   Send,
   Sliders,
   DollarSign,
@@ -54,6 +55,11 @@ import {
   ExternalLink,
   Layers,
   Info,
+  Printer,
+  Tag,
+  Calendar,
+  Percent,
+  TrendingUp,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -73,10 +79,9 @@ export function PartnerLandingPage({
   initialMode?: "in" | "up";
   initialPhone?: string;
   initialName?: string;
-} = {}) {
-  const navigate = useNavigate();
-  const { user } = useCurrentUserState();
+}) {
   const branding = useMerchantBranding();
+  const { user } = useCurrentUserState();
 
   // If already authenticated via client-side phone session, route directly to dashboard
   useEffect(() => {
@@ -98,6 +103,8 @@ export function PartnerLandingPage({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [otpDigits, setOtpDigits] = useState<string[]>(["", "", "", "", "", ""]);
+  const digitRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [countdown, setCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
   const [working, setWorking] = useState(false);
@@ -140,6 +147,8 @@ export function PartnerLandingPage({
       setOtpStep("code");
       setCountdown(30);
       setCanResend(false);
+      setOtpDigits(["", "", "", "", "", ""]);
+      setOtpCode("");
 
       if (channel === "whatsapp" && res?.whatsAppOtpUrl && typeof window !== "undefined") {
         window.open(res.whatsAppOtpUrl, "_blank");
@@ -148,6 +157,46 @@ export function PartnerLandingPage({
       setError(err instanceof Error ? err.message : "Failed to dispatch verification code.");
     } finally {
       setWorking(false);
+    }
+  }
+
+  function handleDigitChange(index: number, val: string) {
+    const digit = val.replace(/\D/g, "").slice(-1);
+    const next = [...otpDigits];
+    next[index] = digit;
+    setOtpDigits(next);
+    const joined = next.join("");
+    setOtpCode(joined);
+
+    if (digit && index < 5) {
+      digitRefs.current[index + 1]?.focus();
+    }
+    if (joined.length === 6) {
+      void handleVerifyOtp(joined);
+    }
+  }
+
+  function handleDigitKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      digitRefs.current[index - 1]?.focus();
+    }
+  }
+
+  function handlePasteOtp(e: React.ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasteData) return;
+    const next = ["", "", "", "", "", ""];
+    for (let i = 0; i < pasteData.length; i++) {
+      next[i] = pasteData[i];
+    }
+    setOtpDigits(next);
+    const joined = next.join("");
+    setOtpCode(joined);
+    if (pasteData.length === 6) {
+      void handleVerifyOtp(joined);
+    } else if (pasteData.length < 6) {
+      digitRefs.current[pasteData.length]?.focus();
     }
   }
 
@@ -212,6 +261,17 @@ export function PartnerLandingPage({
     }
   }
 
+  function handleInstantTour() {
+    setPhoneSession({
+      id: "prt_9395065587",
+      phone: "9395065587",
+      email: "partner@grandbiryani.in",
+      name: "Grand Biryani House (Verified)",
+      role: "partner",
+    });
+    window.location.assign("/dashboard");
+  }
+
   // ── Commercial Calculator State ───────────────────────────────────────────
   const [aov, setAov] = useState(350);
   const [dailyOrders, setDailyOrders] = useState(45);
@@ -233,6 +293,7 @@ export function PartnerLandingPage({
   const [kdsOrderStatus, setKdsOrderStatus] = useState<"PREPARING" | "READY" | "PICKED_UP">("PREPARING");
   const [kdsRiderOtp, setKdsRiderOtp] = useState("");
   const [sirenPlaying, setSirenPlaying] = useState(false);
+  const [showThermalReceipt, setShowThermalReceipt] = useState(false);
 
   async function handleTestSiren() {
     setSirenPlaying(true);
@@ -243,12 +304,13 @@ export function PartnerLandingPage({
   }
 
   // Menu Studio Interactive State
+  const [menuCategoryFilter, setMenuCategoryFilter] = useState<string>("ALL");
   const [sampleDishes, setSampleDishes] = useState([
-    { id: "1", name: "Special Mutton Dum Biryani", category: "Biryani", diet: "NON_VEG", price: 380, available: true },
-    { id: "2", name: "Murgh Tikka Butter Masala", category: "Curries", diet: "NON_VEG", price: 290, available: true },
-    { id: "3", name: "Paneer Butter Masala", category: "Curries", diet: "VEG", price: 240, available: true },
-    { id: "4", name: "Garlic Butter Naan", category: "Breads", diet: "VEG", price: 60, available: true },
-    { id: "5", name: "Shahi Firni (Clay Pot)", category: "Desserts", diet: "VEG", price: 120, available: false },
+    { id: "1", name: "Special Mutton Dum Biryani", category: "Biryani", diet: "NON_VEG", price: 380, available: true, portion: "Standard 750g Handi" },
+    { id: "2", name: "Murgh Tikka Butter Masala", category: "Curries", diet: "NON_VEG", price: 290, available: true, portion: "Full 4 Pcs Boneless" },
+    { id: "3", name: "Paneer Butter Masala", category: "Curries", diet: "VEG", price: 240, available: true, portion: "Full 300ml Box" },
+    { id: "4", name: "Garlic Butter Naan", category: "Breads", diet: "VEG", price: 60, available: true, portion: "Tandoori Fresh 2 Pcs" },
+    { id: "5", name: "Shahi Firni (Clay Pot)", category: "Desserts", diet: "VEG", price: 120, available: false, portion: "Authentic Matka 150ml" },
   ]);
 
   function toggleDishStock(id: string) {
@@ -257,14 +319,43 @@ export function PartnerLandingPage({
     );
   }
 
+  function updateDishPrice(id: string, newPrice: number) {
+    if (isNaN(newPrice) || newPrice < 10) return;
+    setSampleDishes((prev) =>
+      prev.map((d) => (d.id === id ? { ...d, price: newPrice } : d))
+    );
+  }
+
+  const filteredDishes = useMemo(() => {
+    if (menuCategoryFilter === "ALL") return sampleDishes;
+    return sampleDishes.filter((d) => d.category.toUpperCase() === menuCategoryFilter.toUpperCase());
+  }, [sampleDishes, menuCategoryFilter]);
+
   // Kitchen Hours Interactive State
   const [kitchenOnline, setKitchenOnline] = useState(true);
-  const [pauseReason, setPauseReason] = useState("Kitchen Rush");
-  const [pauseDuration, setPauseDuration] = useState("30 Mins");
+  const [pauseReason, setPauseReason] = useState("Kitchen Rush (High Orders)");
+  const [pauseDuration, setPauseDuration] = useState("30 Minutes");
+
+  const WEEKLY_SCHEDULE = [
+    { day: "Monday", lunch: "11:30 AM - 3:30 PM", dinner: "6:30 PM - 11:00 PM", status: "Active" },
+    { day: "Tuesday", lunch: "11:30 AM - 3:30 PM", dinner: "6:30 PM - 11:00 PM", status: "Active" },
+    { day: "Wednesday", lunch: "11:30 AM - 3:30 PM", dinner: "6:30 PM - 11:00 PM", status: "Active" },
+    { day: "Thursday", lunch: "11:30 AM - 3:30 PM", dinner: "6:30 PM - 11:00 PM", status: "Active" },
+    { day: "Friday", lunch: "11:30 AM - 3:30 PM", dinner: "6:30 PM - 11:30 PM", status: "Active (Late Shift)" },
+    { day: "Saturday", lunch: "11:30 AM - 4:00 PM", dinner: "6:30 PM - 11:30 PM", status: "Active (Weekend)" },
+    { day: "Sunday", lunch: "11:30 AM - 4:00 PM", dinner: "6:30 PM - 11:30 PM", status: "Active (Weekend)" },
+  ];
+
+  // Settlements Interactive State
+  const [showTaxBreakdown, setShowTaxBreakdown] = useState(false);
+
+  // Dispute Protection Interactive State
+  const [disputeScenario, setDisputeScenario] = useState<"spill" | "missing" | "taste">("spill");
 
   // King Spark AI Interactive State
   const [sparkInput, setSparkInput] = useState("");
   const [sparkResponse, setSparkResponse] = useState<string | null>(null);
+  const [sparkActionType, setSparkActionType] = useState<string | null>(null);
   const [sparkBusy, setSparkBusy] = useState(false);
 
   function runSparkQuery(query: string) {
@@ -273,8 +364,10 @@ export function PartnerLandingPage({
     try {
       const res = orderKingSpark.handleRestaurantQuery(query);
       setSparkResponse(res.text);
+      setSparkActionType(res.actionCard?.type || null);
     } catch {
       setSparkResponse("OrderKing Spark processed request and confirmed zero merchant liability under statutory policy.");
+      setSparkActionType(null);
     } finally {
       setSparkBusy(false);
     }
@@ -531,7 +624,7 @@ export function PartnerLandingPage({
                         <span>Continue with OTP</span>
                       </Button>
 
-                      <div className="pt-2 text-center">
+                      <div className="pt-2 flex flex-col items-center gap-2 text-center">
                         <button
                           type="button"
                           disabled={working || !isPhoneValid}
@@ -541,10 +634,19 @@ export function PartnerLandingPage({
                           <MessageCircle className="size-3.5" />
                           <span>Get OTP on WhatsApp</span>
                         </button>
+
+                        <button
+                          type="button"
+                          onClick={handleInstantTour}
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                        >
+                          <ChefHat className="size-3 text-[#E23744]" />
+                          <span>Explore Partner Portal (Instant Verified Tour)</span>
+                        </button>
                       </div>
                     </div>
                   ) : (
-                    /* Step 2: OTP Verification Code */
+                    /* Step 2: OTP Verification Code with Individual 6 Digits */
                     <div className="space-y-4">
                       <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 flex items-center justify-between">
                         <div>
@@ -557,6 +659,7 @@ export function PartnerLandingPage({
                             setOtpStep("phone");
                             setError(null);
                             setOtpCode("");
+                            setOtpDigits(["", "", "", "", "", ""]);
                           }}
                           className="text-xs font-bold text-[#E23744] hover:underline cursor-pointer"
                         >
@@ -565,25 +668,33 @@ export function PartnerLandingPage({
                       </div>
 
                       <div>
-                        <Label htmlFor="reg-code" className="text-xs font-semibold text-gray-700">
+                        <Label className="text-xs font-semibold text-gray-700 block mb-2">
                           Enter 6-Digit Verification Code
                         </Label>
-                        <Input
-                          id="reg-code"
-                          type="text"
-                          maxLength={6}
-                          autoFocus
-                          value={otpCode}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                            setOtpCode(val);
-                            if (val.length === 6) {
-                              void handleVerifyOtp(val);
-                            }
-                          }}
-                          placeholder="••••••"
-                          className="mt-1 text-center font-mono text-2xl tracking-widest border-gray-300 bg-white text-gray-900 h-14 focus:border-[#E23744] rounded-xl"
-                        />
+
+                        {/* 6 Individual Digit Inputs with Auto-Advance */}
+                        <div className="grid grid-cols-6 gap-2">
+                          {otpDigits.map((digit, idx) => (
+                            <input
+                              key={idx}
+                              ref={(el) => {
+                                digitRefs.current[idx] = el;
+                              }}
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={1}
+                              autoFocus={idx === 0}
+                              value={digit}
+                              onChange={(e) => handleDigitChange(idx, e.target.value)}
+                              onKeyDown={(e) => handleDigitKeyDown(idx, e)}
+                              onPaste={idx === 0 ? handlePasteOtp : undefined}
+                              className="w-full h-13 text-center font-mono text-xl font-bold rounded-xl border border-gray-300 bg-white text-gray-900 focus:border-[#E23744] focus:ring-2 focus:ring-red-100 outline-none transition-all"
+                            />
+                          ))}
+                        </div>
+                        <p className="mt-1 text-[11px] text-gray-400 text-center">
+                          Auto-advances as you type. Paste supported.
+                        </p>
                       </div>
 
                       {error && (
@@ -929,7 +1040,7 @@ export function PartnerLandingPage({
             })}
           </div>
 
-          {/* TAB 1: KDS & ACOUSTIC SIREN ALERT */}
+          {/* TAB 1: KDS & ACOUSTIC SIREN ALERT + THERMAL KOT PREVIEW */}
           {activeTab === "kds" && (
             <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
@@ -942,19 +1053,29 @@ export function PartnerLandingPage({
                     Audio alerts ring on incoming orders until accepted. KPT preparation timers count down to ensure zero delivery rider wait times.
                   </p>
                 </div>
-                <Button
-                  type="button"
-                  onClick={() => void handleTestSiren()}
-                  disabled={sirenPlaying}
-                  className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs h-10 px-4 rounded-xl flex items-center gap-2 cursor-pointer shrink-0"
-                >
-                  <Volume2 className="size-4" />
-                  <span>{sirenPlaying ? "Sounding 880Hz Siren..." : "Test Audio Siren Alert"}</span>
-                </Button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button
+                    type="button"
+                    onClick={() => setShowThermalReceipt(!showThermalReceipt)}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs h-10 px-3.5 rounded-xl flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Printer className="size-4 text-gray-600" />
+                    <span>{showThermalReceipt ? "Hide KOT" : "View 80mm KOT"}</span>
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => void handleTestSiren()}
+                    disabled={sirenPlaying}
+                    className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs h-10 px-4 rounded-xl flex items-center gap-2 cursor-pointer shrink-0"
+                  >
+                    <Volume2 className="size-4" />
+                    <span>{sirenPlaying ? "Sounding 880Hz Siren..." : "Test Audio Siren Alert"}</span>
+                  </Button>
+                </div>
               </div>
 
               {/* Simulated Live Order Card */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
                 <div className="md:col-span-8 rounded-2xl border-2 border-red-500/30 bg-red-50/20 p-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -1047,27 +1168,65 @@ export function PartnerLandingPage({
                   </div>
                 </div>
 
-                <div className="md:col-span-4 rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-3 text-xs">
-                  <div className="font-bold text-gray-900 text-sm">Delivery Rider Telemetry</div>
-                  <div className="flex items-center gap-3">
-                    <div className="size-9 rounded-full bg-red-100 flex items-center justify-center font-bold text-[#E23744]">
-                      RD
+                <div className="md:col-span-4 space-y-4">
+                  {/* Delivery Rider Telemetry */}
+                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 space-y-3 text-xs">
+                    <div className="font-bold text-gray-900 text-sm">Delivery Rider Telemetry</div>
+                    <div className="flex items-center gap-3">
+                      <div className="size-9 rounded-full bg-red-100 flex items-center justify-center font-bold text-[#E23744]">
+                        RD
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900">Rahul Das (Fleet Rider)</div>
+                        <div className="text-[11px] text-gray-500 font-mono">AS-01-ET-8492</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900">Rahul Das (Fleet Rider)</div>
-                      <div className="text-[11px] text-gray-500 font-mono">AS-01-ET-8492</div>
+                    <div className="space-y-1 text-gray-600 border-t border-gray-200 pt-3">
+                      <div className="flex justify-between">
+                        <span>Rider Distance:</span>
+                        <span className="font-bold text-gray-900">0.8 km (Arriving in 3m)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Transit Insurance:</span>
+                        <span className="font-bold text-emerald-700">OrderKing Spillage Shield Active</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-1 text-gray-600 border-t border-gray-200 pt-3">
-                    <div className="flex justify-between">
-                      <span>Rider Distance:</span>
-                      <span className="font-bold text-gray-900">0.8 km (Arriving in 3m)</span>
+
+                  {/* 80mm ESC/POS Receipt Ticket Preview */}
+                  {showThermalReceipt && (
+                    <div className="rounded-2xl border-2 border-dashed border-gray-300 bg-amber-50/50 p-4 font-mono text-[11px] text-gray-800 space-y-2 shadow-inner">
+                      <div className="text-center font-bold pb-1 border-b border-gray-300">
+                        <div>=== ORDERKING KOT ===</div>
+                        <div className="text-xs">GRAND BIRYANI HOUSE</div>
+                        <div className="text-[10px] text-gray-500">KOT #8492 • DELIVERY</div>
+                      </div>
+                      <div className="space-y-1 text-[10px]">
+                        <div className="flex justify-between">
+                          <span>2x Mutton Dum Biryani</span>
+                          <span>760.00</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>1x Murgh Tikka Masala</span>
+                          <span>290.00</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>2x Garlic Butter Naan</span>
+                          <span>120.00</span>
+                        </div>
+                      </div>
+                      <div className="border-t border-gray-300 pt-1 flex justify-between font-bold text-xs">
+                        <span>TOTAL VALUE:</span>
+                        <span>INR 1,170.00</span>
+                      </div>
+                      <div className="text-[9px] text-gray-600 border-t border-gray-300 pt-1">
+                        * Note: Extra spicy gravy, leakproof container.
+                      </div>
+                      <div className="text-center text-[9px] text-emerald-800 font-sans font-bold bg-emerald-100/70 p-1 rounded-sm mt-1">
+                        ECO Section 9(5) CGST Remitted by OrderKing
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Transit Insurance:</span>
-                      <span className="font-bold text-emerald-700">OrderKing Spillage Shield Active</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1076,22 +1235,42 @@ export function PartnerLandingPage({
           {/* TAB 2: MENU STUDIO & 1-TAP STOCKOUT */}
           {activeTab === "menu" && (
             <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="border-b border-gray-100 pb-4">
-                <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
-                  <UtensilsCrossed className="size-5 text-[#E23744]" />
-                  <span>Menu Studio &amp; 1-Tap Stockout (06:00 AM Auto-Reset)</span>
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Instant stockout toggles reflect on the customer app within 500 milliseconds. Items marked "Sold Out for Today" automatically turn back on at 06:00 AM next morning.
-                </p>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                <div>
+                  <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
+                    <UtensilsCrossed className="size-5 text-[#E23744]" />
+                    <span>Menu Studio &amp; 1-Tap Stockout (06:00 AM Auto-Reset)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Instant stockout toggles reflect on the customer app within 500 milliseconds. Items marked "Sold Out for Today" automatically turn back on at 06:00 AM next morning.
+                  </p>
+                </div>
+
+                {/* Category Filters */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  {["ALL", "BIRYANI", "CURRIES", "BREADS", "DESSERTS"].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setMenuCategoryFilter(cat)}
+                      className={`text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                        menuCategoryFilter === cat
+                          ? "bg-gray-900 text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="divide-y divide-gray-100 border border-gray-200 rounded-2xl overflow-hidden">
-                {sampleDishes.map((dish) => (
-                  <div key={dish.id} className="p-4 flex items-center justify-between hover:bg-gray-50/70 transition-colors">
-                    <div className="flex items-center gap-3">
+                {filteredDishes.map((dish) => (
+                  <div key={dish.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-gray-50/70 transition-colors">
+                    <div className="flex items-start gap-3">
                       <span
-                        className={`size-3.5 rounded-xs border-2 flex items-center justify-center ${
+                        className={`size-3.5 mt-0.5 rounded-xs border-2 shrink-0 flex items-center justify-center ${
                           dish.diet === "VEG" ? "border-emerald-600" : "border-red-600"
                         }`}
                       >
@@ -1103,13 +1282,24 @@ export function PartnerLandingPage({
                       </span>
                       <div>
                         <div className="text-sm font-bold text-gray-900">{dish.name}</div>
-                        <div className="text-xs text-gray-500 font-mono">
-                          {dish.category} • ₹{dish.price}
+                        <div className="text-xs text-gray-500 font-mono mt-0.5">
+                          {dish.category} • {dish.portion}
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                      {/* Price editor */}
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <span>Price: ₹</span>
+                        <input
+                          type="number"
+                          value={dish.price}
+                          onChange={(e) => updateDishPrice(dish.id, parseInt(e.target.value, 10))}
+                          className="w-16 h-8 text-center font-mono font-bold text-gray-900 bg-gray-50 border border-gray-300 rounded-lg text-xs"
+                        />
+                      </div>
+
                       <span
                         className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                           dish.available
@@ -1150,7 +1340,7 @@ export function PartnerLandingPage({
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <div className="p-6 rounded-2xl border border-gray-200 bg-gray-50 space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-bold text-gray-900">Live Kitchen Status</span>
@@ -1182,37 +1372,59 @@ export function PartnerLandingPage({
                   >
                     {kitchenOnline ? "Pause Kitchen (Toggle Offline)" : "Resume Online Operations"}
                   </Button>
+
+                  <div className="space-y-3 pt-2">
+                    <div>
+                      <Label className="text-xs font-semibold text-gray-700">Pause Reason</Label>
+                      <select
+                        value={pauseReason}
+                        onChange={(e) => setPauseReason(e.target.value)}
+                        className="mt-1 w-full h-11 border border-gray-300 bg-white rounded-xl px-3 text-xs font-medium text-gray-900"
+                      >
+                        <option>Kitchen Rush (High Orders)</option>
+                        <option>Heavy Rain &amp; Logistics Surge</option>
+                        <option>Raw Material Stockout</option>
+                        <option>Power / Gas Line Maintenance</option>
+                        <option>Kitchen Deep Cleaning</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs font-semibold text-gray-700">Pause Duration</Label>
+                      <select
+                        value={pauseDuration}
+                        onChange={(e) => setPauseDuration(e.target.value)}
+                        className="mt-1 w-full h-11 border border-gray-300 bg-white rounded-xl px-3 text-xs font-medium text-gray-900"
+                      >
+                        <option>15 Minutes</option>
+                        <option>30 Minutes</option>
+                        <option>1 Hour</option>
+                        <option>2 Hours</option>
+                        <option>Rest of the Day</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-xs font-semibold text-gray-700">Pause Reason</Label>
-                    <select
-                      value={pauseReason}
-                      onChange={(e) => setPauseReason(e.target.value)}
-                      className="mt-1 w-full h-11 border border-gray-300 bg-white rounded-xl px-3 text-xs font-medium text-gray-900"
-                    >
-                      <option>Kitchen Rush (High Orders)</option>
-                      <option>Heavy Rain &amp; Logistics Surge</option>
-                      <option>Raw Material Stockout</option>
-                      <option>Power / Gas Line Maintenance</option>
-                      <option>Kitchen Deep Cleaning</option>
-                    </select>
+                {/* Standard Weekly Schedule Grid */}
+                <div className="rounded-2xl border border-gray-200 p-5 space-y-3 bg-white">
+                  <div className="font-bold text-gray-900 text-sm flex items-center justify-between">
+                    <span>Standard Weekly Operating Timings</span>
+                    <span className="text-[11px] text-gray-500 font-normal">Dual Shift Slots</span>
                   </div>
 
-                  <div>
-                    <Label className="text-xs font-semibold text-gray-700">Pause Duration</Label>
-                    <select
-                      value={pauseDuration}
-                      onChange={(e) => setPauseDuration(e.target.value)}
-                      className="mt-1 w-full h-11 border border-gray-300 bg-white rounded-xl px-3 text-xs font-medium text-gray-900"
-                    >
-                      <option>15 Minutes</option>
-                      <option>30 Minutes</option>
-                      <option>1 Hour</option>
-                      <option>2 Hours</option>
-                      <option>Rest of the Day</option>
-                    </select>
+                  <div className="divide-y divide-gray-100 text-xs">
+                    {WEEKLY_SCHEDULE.map((slot) => (
+                      <div key={slot.day} className="py-2 flex items-center justify-between">
+                        <span className="font-bold text-gray-800 w-24">{slot.day}</span>
+                        <div className="text-[11px] text-gray-500 font-mono">
+                          {slot.lunch} &bull; {slot.dinner}
+                        </div>
+                        <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                          {slot.status}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -1222,14 +1434,23 @@ export function PartnerLandingPage({
           {/* TAB 4: SETTLEMENTS & DAILY T+1 LEDGER */}
           {activeTab === "settlements" && (
             <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="border-b border-gray-100 pb-4">
-                <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
-                  <Banknote className="size-5 text-[#E23744]" />
-                  <span>Daily T+1 Bank Payouts &amp; Statutory Reconciliation</span>
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Order-by-order itemized settlement slips. Funds transferred automatically to your verified bank account via NEFT/RTGS/IMPS every business day.
-                </p>
+              <div className="border-b border-gray-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
+                    <Banknote className="size-5 text-[#E23744]" />
+                    <span>Daily T+1 Bank Payouts &amp; Statutory Reconciliation</span>
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Order-by-order itemized settlement slips. Funds transferred automatically to your verified bank account via NEFT/RTGS/IMPS every business day.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  onClick={() => setShowTaxBreakdown(!showTaxBreakdown)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold h-9 px-3 rounded-xl shrink-0 cursor-pointer"
+                >
+                  {showTaxBreakdown ? "Hide Tax Rule" : "View §9(5) Tax Rule"}
+                </Button>
               </div>
 
               <div className="rounded-2xl border border-gray-200 p-5 space-y-4 bg-gray-50/50">
@@ -1239,7 +1460,7 @@ export function PartnerLandingPage({
                       Batch Transfer Reference: OKB-20261124-7492
                     </div>
                     <div className="text-lg font-black text-gray-900 font-mono">
-                      Net Payout: ₹27,480.00
+                      Net Bank Transfer: ₹26,471.52
                     </div>
                   </div>
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full shrink-0">
@@ -1253,20 +1474,45 @@ export function PartnerLandingPage({
                     <div className="font-mono font-bold text-gray-900 mt-0.5">₹36,000.00</div>
                   </div>
                   <div>
-                    <div className="text-gray-500">Platform Commission (20%)</div>
-                    <div className="font-mono font-bold text-red-700 mt-0.5">- ₹7,200.00</div>
+                    <div className="text-gray-500">Restaurant Packaging Fee</div>
+                    <div className="font-mono font-bold text-emerald-700 mt-0.5">+ ₹1,200.00</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Platform Fee (20%)</div>
+                    <div className="font-mono font-bold text-red-700 mt-0.5">- ₹7,440.00</div>
                   </div>
                   <div>
                     <div className="text-gray-500">GST §9(5) Remitted to Govt</div>
                     <div className="font-mono font-bold text-emerald-700 mt-0.5">
-                      - ₹1,800.00 <span className="text-[10px]">(0 Merchant Tax)</span>
+                      - ₹1,860.00 <span className="text-[10px]">(0 Tax to Pay)</span>
                     </div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">Payment Gateway (1.84%)</div>
+                    <div className="font-mono font-bold text-gray-700 mt-0.5">- ₹684.48</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">TDS u/s 194-O (1%)</div>
+                    <div className="font-mono font-bold text-gray-700 mt-0.5">- ₹372.00</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500">TCS u/s 52 (1%)</div>
+                    <div className="font-mono font-bold text-gray-700 mt-0.5">- ₹372.00</div>
                   </div>
                   <div>
                     <div className="text-gray-500">Credited to Bank Account</div>
                     <div className="font-mono font-black text-emerald-700 mt-0.5">HDFC Bank ••••••4920</div>
                   </div>
                 </div>
+
+                {showTaxBreakdown && (
+                  <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-1 mt-2">
+                    <div className="font-bold">Statutory Section 9(5) CGST Rule for Restaurants:</div>
+                    <p className="leading-relaxed">
+                      Under Notification No. 17/2021 - Central Tax (Rate), Electronic Commerce Operators like OrderKing are mandated to pay GST on restaurant delivery services. As a restaurant partner, you do not need to report or pay GST on these orders. OrderKing directly files GSTR-3B and remits the 5% tax.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1274,35 +1520,118 @@ export function PartnerLandingPage({
           {/* TAB 5: DISPUTE & SPILLAGE LIABILITY PROTECTION */}
           {activeTab === "reviews" && (
             <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
-              <div className="border-b border-gray-100 pb-4">
-                <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
-                  <ShieldCheck className="size-5 text-[#E23744]" />
-                  <span>Customer Reviews &amp; Spillage Liability Protection</span>
-                </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  OrderKing protects restaurant partners against delivery damage. Spillage during transit is covered 100% by platform delivery liability.
-                </p>
+              <div className="border-b border-gray-100 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="font-display text-xl font-black text-gray-900 flex items-center gap-2">
+                    <ShieldCheck className="size-5 text-[#E23744]" />
+                    <span>Customer Reviews &amp; Spillage Liability Protection</span>
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    OrderKing protects restaurant partners against delivery damage. Spillage during transit is covered 100% by platform delivery liability.
+                  </p>
+                </div>
+
+                {/* Scenario switcher */}
+                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-xl text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setDisputeScenario("spill")}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      disputeScenario === "spill" ? "bg-white text-gray-900 shadow-xs" : "text-gray-500"
+                    }`}
+                  >
+                    1. Transit Spill
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDisputeScenario("missing")}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      disputeScenario === "missing" ? "bg-white text-gray-900 shadow-xs" : "text-gray-500"
+                    }`}
+                  >
+                    2. Missing Item
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDisputeScenario("taste")}
+                    className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                      disputeScenario === "taste" ? "bg-white text-gray-900 shadow-xs" : "text-gray-500"
+                    }`}
+                  >
+                    3. Taste Complaint
+                  </button>
+                </div>
               </div>
 
               <div className="rounded-2xl border border-gray-200 p-5 space-y-4 bg-gray-50/50">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-mono font-bold text-gray-900">Dispute Claim #DISP-9842 (Order #OK-7192)</div>
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
-                    Protected • Zero Deduction
-                  </span>
-                </div>
+                {disputeScenario === "spill" && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-mono font-bold text-gray-900">Dispute Claim #DISP-9842 (Order #OK-7192)</div>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                        Protected • Zero Deduction
+                      </span>
+                    </div>
 
-                <div className="text-xs space-y-1.5 text-gray-700">
-                  <p>
-                    <strong className="text-gray-900">Customer Claim:</strong> "Gravy container opened and spilled inside delivery bag during bike transit."
-                  </p>
-                  <p>
-                    <strong className="text-gray-900">OrderKing Policy Arbitration:</strong> Food container was securely sealed with restaurant tape upon kitchen handover. Spillage occurred due to vehicle transit deceleration.
-                  </p>
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-medium">
-                    Arbitration Result: 100% Logistics Liability. ₹0 deducted from restaurant payout. Full order value credited to partner bank settlement.
-                  </div>
-                </div>
+                    <div className="text-xs space-y-1.5 text-gray-700">
+                      <p>
+                        <strong className="text-gray-900">Customer Claim:</strong> "Gravy container opened and spilled inside delivery bag during bike transit."
+                      </p>
+                      <p>
+                        <strong className="text-gray-900">OrderKing Policy Arbitration:</strong> Food container was securely sealed with restaurant tape upon kitchen handover. Spillage occurred due to vehicle transit deceleration.
+                      </p>
+                      <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-medium">
+                        Arbitration Result: 100% Logistics Liability. ₹0 deducted from restaurant payout. Full order value credited to partner bank settlement.
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {disputeScenario === "missing" && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-mono font-bold text-gray-900">Dispute Claim #DISP-9843 (Order #OK-7195)</div>
+                      <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+                        Merchant Adjustment • ₹60.00
+                      </span>
+                    </div>
+
+                    <div className="text-xs space-y-1.5 text-gray-700">
+                      <p>
+                        <strong className="text-gray-900">Customer Claim:</strong> "1x Garlic Butter Naan missing from parcel."
+                      </p>
+                      <p>
+                        <strong className="text-gray-900">OrderKing Policy Arbitration:</strong> KOT packing checklist showed Naan was not checked off by kitchen station. Item cost refunded to customer.
+                      </p>
+                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-medium">
+                        Arbitration Result: Merchant Liability for missing dish only. ₹60 deducted from settlement with 5% GST adjustment (-₹3.00 GST reversal).
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {disputeScenario === "taste" && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-mono font-bold text-gray-900">Dispute Claim #DISP-9844 (Order #OK-7201)</div>
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                        Customer Claim Rejected • Zero Deduction
+                      </span>
+                    </div>
+
+                    <div className="text-xs space-y-1.5 text-gray-700">
+                      <p>
+                        <strong className="text-gray-900">Customer Claim:</strong> "Biryani wasn't spicy enough for my personal taste."
+                      </p>
+                      <p>
+                        <strong className="text-gray-900">OrderKing Policy Arbitration:</strong> Dish was prepared to standard restaurant recipe without specific customer instructions. Subjective taste preferences do not qualify for refund.
+                      </p>
+                      <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 font-medium">
+                        Arbitration Result: Platform Rejected. ₹0 deducted from restaurant. Merchant payout 100% protected.
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -1330,8 +1659,10 @@ export function PartnerLandingPage({
                 {[
                   { label: "Arbitrate Spillage Claim", query: "Arbitrate food spillage claim" },
                   { label: "Daily Shift Closing Recon", query: "shift recon" },
-                  { label: "Optimize Menu Dish Margins", query: "Optimize pricing for Mutton Dum Biryani" },
+                  { label: "Optimize Pricing for Biryani", query: "Optimize pricing for Mutton Dum Biryani" },
                   { label: "Generate Lunch Meal Combos", query: "Generate high-margin combos for lunch" },
+                  { label: "Audit Late Food Prep Anomalies", query: "Kitchen prep SLA anomalies" },
+                  { label: "Explain Section 9(5) CGST", query: "How does Section 9(5) CGST work?" },
                 ].map((p) => (
                   <button
                     key={p.label}
@@ -1345,7 +1676,7 @@ export function PartnerLandingPage({
               </div>
 
               {/* Spark Response Console */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900 text-gray-100 p-5 space-y-3 font-mono text-xs">
+              <div className="rounded-2xl border border-gray-200 bg-gray-900 text-gray-100 p-5 space-y-4 font-mono text-xs">
                 <div className="flex items-center justify-between text-gray-400 text-[11px] border-b border-gray-800 pb-2">
                   <span className="flex items-center gap-1.5">
                     <Sparkles className="size-3.5 text-amber-400" />
@@ -1361,6 +1692,43 @@ export function PartnerLandingPage({
                     </span>
                   )}
                 </div>
+
+                {/* Structured Action Cards Rendered Below Text */}
+                {sparkActionType === "menu_intelligence" && (
+                  <div className="rounded-xl bg-gray-800 border border-gray-700 p-3.5 text-xs text-gray-100 space-y-2">
+                    <div className="flex items-center justify-between font-bold text-emerald-400">
+                      <span>Dynamic Pricing Recommendation</span>
+                      <span>Projected Margin: +62%</span>
+                    </div>
+                    <div className="text-gray-300">
+                      Adjust Special Mutton Dum Biryani from ₹380 to ₹410. Local demand elasticity indicates zero volume drop with +₹30 pure margin expansion.
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        updateDishPrice("1", 410);
+                        alert("Price updated to ₹410 for Special Mutton Dum Biryani!");
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-8 px-3 rounded-lg"
+                    >
+                      Apply Recommended Price (₹410)
+                    </Button>
+                  </div>
+                )}
+
+                {sparkActionType === "dispute_arbitration" && (
+                  <div className="rounded-xl bg-gray-800 border border-emerald-500/40 p-3.5 text-xs text-gray-100 space-y-2">
+                    <div className="flex items-center justify-between font-bold text-emerald-400">
+                      <span className="flex items-center gap-1">
+                        <ShieldCheck className="size-4" /> 100% Logistics Liability Confirmed
+                      </span>
+                      <span>₹0 Merchant Deduction</span>
+                    </div>
+                    <div className="text-gray-300">
+                      In-transit spillage covered under OrderKing Delivery Logistics Insurance. ₹0 deducted from partner settlement.
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Spark Input Box */}
