@@ -528,15 +528,15 @@ function PromotionsPage() {
                   <Calculator className="size-5 text-emerald-400" />
                   <div>
                     <h3 className="font-display text-base font-bold text-gray-900">
-                      3. Customer Retention &amp; Repeat-Order Unit-Economics Calculator
+                      Estimated Payout &amp; Discount Margin Preview
                     </h3>
                     <p className="text-xs text-gray-500">
-                      Compare Flat ₹ Off vs Percentage Discount margin impact in exact integer paise before launching your promotion.
+                      Compare Flat ₹ Off vs Percentage Discount take-home earnings on a sample order before publishing your promotion.
                     </p>
                   </div>
                 </div>
                 <span className="text-[11px] font-mono text-emerald-400">
-                  Platform Commission: {(commissionBps / 100).toFixed(1)}%
+                  Sample Order Simulation
                 </span>
               </div>
 

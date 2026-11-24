@@ -131,11 +131,7 @@ function MorePage() {
               </span>
               <span>·</span>
               <span>
-                Delivery Fee: <strong className="text-gray-700">{deliveryCommissionDisplay}</strong>
-              </span>
-              <span>·</span>
-              <span>
-                Dine-In: <strong className="text-emerald-700 font-semibold">{dineInCommissionDisplay}</strong>
+                Outlet ID: <strong className="text-gray-700 font-mono">{vendor.restaurantId ? vendor.restaurantId.slice(-8) : "PRT-001"}</strong>
               </span>
             </div>
           </div>

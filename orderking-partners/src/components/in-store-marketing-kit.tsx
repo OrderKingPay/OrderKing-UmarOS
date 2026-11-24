@@ -61,7 +61,7 @@ export function InStoreMarketingKit({
                   Physical Table QR Ordering &amp; Print Kit
                 </h3>
                 <span className="rounded bg-emerald-100 border border-emerald-200 px-2 py-0.5 text-[10px] font-mono font-bold text-emerald-800">
-                  {dineInCommissionDisplay} COMMISSION DINE-IN
+                  DIRECT TABLE ORDERING
                 </span>
               </div>
               <p className="text-xs text-gray-700 mt-0.5">
@@ -92,8 +92,8 @@ export function InStoreMarketingKit({
         {/* Growth ROI Stat Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-emerald-500/20 text-xs">
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
-            <span className="text-[10px] font-mono text-gray-500 uppercase">Dine-In Commission</span>
-            <div className="font-bold text-emerald-600 mt-0.5 text-sm">0.0% Commission</div>
+            <span className="text-[10px] font-mono text-gray-500 uppercase">Fulfillment Mode</span>
+            <div className="font-bold text-emerald-600 mt-0.5 text-sm">Self-Serve Table Ordering</div>
             <p className="text-[10px] text-gray-500">Self-fulfilled guest orders via physical table QR</p>
           </div>
           <div className="rounded-lg bg-gray-50 p-2.5 border border-gray-200">
@@ -353,7 +353,7 @@ export function InStoreMarketingKit({
                     <span>
                       Powered by <strong>Order King</strong>
                     </span>
-                    <span>{dineInCommissionDisplay} Commission Network</span>
+                    <span>Self-Serve Table Ordering</span>
                   </div>
                 </div>
               ))}

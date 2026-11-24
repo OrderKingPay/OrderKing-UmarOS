@@ -14,7 +14,6 @@ import {
   isValidIndianPhone,
 } from "@/lib/server/sms-gateway";
 import { ORDERKING_ONBOARDING_DRAFT_KEY } from "@/routes/onboarding";
-import { orderKingSpark } from "@/lib/ai/order-king-spark";
 import {
   ShieldCheck,
   Phone,
@@ -242,24 +241,6 @@ export function PartnerLandingPage({
 
   // ── Facility Tab State ────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<"kds" | "menu" | "hours" | "settlements" | "reviews" | "spark">("kds");
-
-  // King Spark AI Interactive Query State
-  const [sparkInput, setSparkInput] = useState("");
-  const [sparkResponse, setSparkResponse] = useState<string | null>(null);
-  const [sparkBusy, setSparkBusy] = useState(false);
-
-  function runSparkQuery(query: string) {
-    setSparkBusy(true);
-    setSparkInput(query);
-    try {
-      const res = orderKingSpark.handleRestaurantQuery(query);
-      setSparkResponse(res.text);
-    } catch {
-      setSparkResponse("OrderKing Spark verified your operational request under platform policy.");
-    } finally {
-      setSparkBusy(false);
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans flex flex-col justify-between selection:bg-red-500 selection:text-white">
@@ -995,7 +976,7 @@ export function PartnerLandingPage({
             </div>
           )}
 
-          {/* TAB 6: KING SPARK AI (ZOMATO SPARK PARITY) */}
+          {/* TAB 6: KING SPARK AI PARTNER OPERATIONS SUITE */}
           {activeTab === "spark" && (
             <div className="bg-[#F8F9FA] border border-gray-200 rounded-3xl p-6 sm:p-8 space-y-6">
               <div className="border-b border-gray-200 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1005,7 +986,7 @@ export function PartnerLandingPage({
                     <span>King Spark AI Partner Operations Assistant</span>
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Autonomous intelligence assistant for dispute arbitration, daily shift reconciliation, and menu optimization.
+                    Autonomous 24/7 operational assistant integrated directly into your kitchen display system and partner dashboard.
                   </p>
                 </div>
                 <span className="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-full shrink-0">
@@ -1013,65 +994,57 @@ export function PartnerLandingPage({
                 </span>
               </div>
 
-              {/* Quick Prompt Pills */}
-              <div className="flex flex-wrap gap-2 text-xs">
-                {[
-                  { label: "Arbitrate Spillage Claim", query: "Arbitrate food spillage claim" },
-                  { label: "Daily Shift Closing Recon", query: "shift recon" },
-                  { label: "Explain Section 9(5) CGST", query: "How does Section 9(5) CGST work?" },
-                  { label: "Menu Margin Optimization", query: "Optimize pricing for Mutton Dum Biryani" },
-                ].map((p) => (
-                  <button
-                    key={p.label}
-                    type="button"
-                    onClick={() => runSparkQuery(p.query)}
-                    className="bg-white hover:bg-gray-100 text-gray-800 font-bold px-3 py-1.5 rounded-xl border border-gray-200 transition-colors cursor-pointer"
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Spark Response Console */}
-              <div className="rounded-2xl border border-gray-200 bg-gray-900 text-gray-100 p-5 space-y-3 font-mono text-xs">
-                <div className="flex items-center justify-between text-gray-400 text-[11px] border-b border-gray-800 pb-2">
-                  <span className="flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-amber-400" />
-                    <span>King Spark Operational Response</span>
-                  </span>
-                  <span>{sparkBusy ? "Processing..." : "Ready"}</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div className="p-4 rounded-2xl bg-white border border-gray-200 space-y-2">
+                  <div className="font-bold text-gray-900 flex items-center gap-1.5">
+                    <ShieldCheck className="size-4 text-emerald-600" />
+                    <span>Dispute Arbitration &amp; Spillage Shield</span>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">
+                    Evaluates customer refund requests against handover packaging proof. In-transit liquid spillage is attributed to delivery logistics with ₹0 merchant deductions.
+                  </p>
                 </div>
 
-                <div className="whitespace-pre-wrap leading-relaxed text-gray-200 max-h-72 overflow-y-auto font-mono">
-                  {sparkResponse || (
-                    <span className="text-gray-400 font-sans">
-                      Select a prompt above or ask a question regarding kitchen operations, statutory tax, or dispute policies.
-                    </span>
-                  )}
+                <div className="p-4 rounded-2xl bg-white border border-gray-200 space-y-2">
+                  <div className="font-bold text-gray-900 flex items-center gap-1.5">
+                    <UtensilsCrossed className="size-4 text-[#E23744]" />
+                    <span>Voice &amp; Natural Language Actions</span>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">
+                    Execute kitchen commands in 10 Indian languages. Tell Spark to turn off Biryani for today or extend kitchen prep time to 35m during heavy rains.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white border border-gray-200 space-y-2">
+                  <div className="font-bold text-gray-900 flex items-center gap-1.5">
+                    <Banknote className="size-4 text-blue-600" />
+                    <span>Instant Shift &amp; Tax Reconciliation</span>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">
+                    Generate instant end-of-shift reports showing total orders, packaging charges, Section 9(5) CGST remitted by OrderKing, and estimated net bank payout.
+                  </p>
                 </div>
               </div>
 
-              {/* Spark Input Box */}
-              <div className="flex items-center gap-2">
-                <Input
-                  type="text"
-                  value={sparkInput}
-                  onChange={(e) => setSparkInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && sparkInput.trim()) {
-                      runSparkQuery(sparkInput.trim());
-                    }
-                  }}
-                  placeholder="Ask Spark AI (e.g. 'How does Section 9(5) CGST work?' or 'What is the transit spillage policy?')"
-                  className="bg-white border-gray-300 text-gray-900 text-xs h-11"
-                />
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-red-50 text-[#E23744]">
+                    <Sparkles className="size-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-gray-900">Experience King Spark in your Partner Dashboard</div>
+                    <div className="text-[11px] text-gray-500">Sign in to your restaurant portal to access voice-activated kitchen assistant, live dispute desk, and financial reconciliation.</div>
+                  </div>
+                </div>
                 <Button
                   type="button"
-                  disabled={!sparkInput.trim() || sparkBusy}
-                  onClick={() => runSparkQuery(sparkInput.trim())}
-                  className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs h-11 px-4 rounded-xl cursor-pointer"
+                  onClick={() => {
+                    setMode("in");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs h-10 px-4 rounded-xl shrink-0 cursor-pointer"
                 >
-                  <Send className="size-4" />
+                  Sign In to Open Spark →
                 </Button>
               </div>
             </div>

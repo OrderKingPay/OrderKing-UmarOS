@@ -1,4 +1,4 @@
-import { redirect, createFileRoute } from "@tanstack/react-router";
+import { redirect, createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { VendorShell } from "@/components/vendor-shell";
@@ -22,7 +22,6 @@ import { can, type RestaurantRole } from "@/lib/rbac";
 import {
   formatINR,
   rupeesToPaise,
-  computeRestaurantPayable,
   DELIVERY_COMMISSION_TIER_LIST,
   DELIVERY_COMMISSION_TIERS,
 } from "@/lib/money";
@@ -37,7 +36,6 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   Building2,
-  Calculator,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -203,7 +201,6 @@ function SettingsPage() {
       ? commissionTokens.tiers
       : DELIVERY_COMMISSION_TIER_LIST;
   const [negotiatedBps, setNegotiatedBps] = useState<number | null>(null);
-  const [previewBasketInr, setPreviewBasketInr] = useState<number>(500);
   const [commissionSaving, setCommissionSaving] = useState(false);
   const [commissionMsg, setCommissionMsg] = useState<string | null>(null);
 
@@ -236,16 +233,6 @@ function SettingsPage() {
       setCommissionSaving(false);
     }
   }
-
-  // Live itemized integer-paise calculation preview
-  const previewGrossFoodPaise = rupeesToPaise(Math.max(1, previewBasketInr));
-  const previewBreakdown = computeRestaurantPayable({
-    foodValuePaise: previewGrossFoodPaise,
-    packingPaise: 0,
-    restaurantDiscountPaise: 0,
-    platformFundedDiscountPaise: 0,
-    commissionBps: effectiveBps,
-  });
 
   const cfg = notifQ.data?.config;
   const currentWaEnabled = waEnabled ?? cfg?.whatsappShiftReport.enabled ?? true;
@@ -651,148 +638,44 @@ function SettingsPage() {
                 </div>
               </div>
 
-              {/* Commercial Payout Schedule & Terms */}
+              {/* Commercial Payout Schedule & Statutory Policy */}
               <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-2">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="size-4 text-emerald-700" />
                   <span className="font-bold text-xs text-gray-900">
-                    Commercial Payout Terms &amp; Settlement Schedule:
+                    Commercial Payout Terms & Statutory Policy
                   </span>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Delivery orders are processed according to the restaurant partner's agreed contract schedule (18.0% to 28.0% + 18% GST on platform services, 1.84% payment gateway fee, 0.5% Section 52 TCS, and 0.1% Section 194-O TDS). Dine-in and takeaway orders have 0.0% commission (self-fulfillment). All net sales are settled directly into your registered bank account on an automated daily T+1 schedule.
+                  Delivery orders are settled in strict accordance with your executed partner agreement. Statutory taxes are governed by Section 9(5) of the CGST Act 2017 (OrderKing directly collects and remits 5% GST to the Government on restaurant food sales; zero merchant tax liability). Withholding tax (0.1% TDS under Section 194-O and 0.5% TCS under Section 52) is deposited directly against your registered PAN and GSTIN.
                 </p>
-              </div>
-
-              {/* Live Itemized Payout Calculation Preview */}
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-200/80 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <Calculator className="size-4 text-emerald-700" />
-                    <span className="font-bold text-xs text-gray-900">
-                      Live Settlement Breakdown Preview ({(effectiveBps / 100).toFixed(1)}% Commission):
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-gray-500">Benchmark Basket:</span>
-                    {[250, 500, 1000, 2000].map((amt) => (
-                      <button
-                        key={amt}
-                        type="button"
-                        onClick={() => setPreviewBasketInr(amt)}
-                        className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold transition ${previewBasketInr === amt
-                            ? "bg-emerald-500 text-gray-900"
-                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                      >
-                        ₹{amt}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  {/* Gross Food */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                    <span className="text-gray-700">Gross Food Value (Customer Order Total)</span>
-                    <span className="font-mono font-semibold text-gray-900">
-                      + {formatINR(previewBreakdown.foodValuePaise)}
-                    </span>
-                  </div>
-
-                  {/* Commission */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">
-                        Delivery Commission ({(effectiveBps / 100).toFixed(1)}%)
-                      </span>
-                      <span className="text-[10px] font-mono text-orange-700 bg-orange-500/10 px-1.5 rounded">
-                        {effectiveBps} BPS
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-rose-600">
-                      - {formatINR(previewBreakdown.commissionPaise)}
-                    </span>
-                  </div>
-
-                  {/* 18% GST on Commission */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">18% GST on Delivery Commission (SAC 9985)</span>
-                      <span className="text-[10px] font-mono text-gray-500">
-                        ({formatINR(previewBreakdown.commissionCgstPaise)} CGST + {formatINR(previewBreakdown.commissionSgstPaise)} SGST)
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-rose-600">
-                      - {formatINR(previewBreakdown.commissionGstPaise)}
-                    </span>
-                  </div>
-
-                  {/* 5% §9(5) Food GST */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60 bg-emerald-50 px-2 rounded">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-emerald-800 font-medium">5% §9(5) Food GST (CGST Act 2017)</span>
-                      <span className="text-[10px] font-mono text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-                        REMITTED BY ORDER KING / NOT DEBITED
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-emerald-700">
-                      {formatINR(previewBreakdown.sec9_5GstPaise)}
-                    </span>
-                  </div>
-
-                  {/* 0.5% TCS */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">0.5% TCS under Section 52 of CGST Act 2017</span>
-                      <span className="text-[10px] font-mono text-gray-500">
-                        ({formatINR(previewBreakdown.tcsCgstPaise)} CGST + {formatINR(previewBreakdown.tcsSgstPaise)} SGST credited in GSTR-8)
-                      </span>
-                    </div>
-                    <span className="font-mono font-semibold text-rose-600">
-                      - {formatINR(previewBreakdown.tcsSec52Paise)}
-                    </span>
-                  </div>
-
-                  {/* 0.1% TDS */}
-                  <div className="flex items-center justify-between py-1 border-b border-gray-200/60">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-700">0.1% TDS under Section 194-O Income Tax Act 1961</span>
-                      <span className="text-[10px] font-mono text-gray-500">(Deposited against your registered PAN)</span>
-                    </div>
-                    <span className="font-mono font-semibold text-rose-600">
-                      - {formatINR(previewBreakdown.tdsSec194OPaise)}
-                    </span>
-                  </div>
-
-                  {/* Total Deductions */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-gray-200 font-semibold text-gray-700">
-                    <span>Total Deductions (Excl. 9(5) Remitted by Order King)</span>
-                    <span className="font-mono text-rose-600">
-                      - {formatINR(previewBreakdown.totalDeductionsPaise)}
-                    </span>
-                  </div>
-
-                  {/* Net Restaurant Payable */}
-                  <div className="flex items-center justify-between pt-2.5">
-                    <div>
-                      <div className="text-xs uppercase tracking-wider font-bold text-emerald-800">
-                        Net Restaurant Payout (NRP)
-                      </div>
-                      <div className="text-[10px] font-mono text-gray-500">
-                        Daily bank payout amount after applicable deductions
-                      </div>
-                    </div>
-                    <div className="text-2xl font-bold font-display text-emerald-700 font-mono">
-                      {formatINR(previewBreakdown.netRestaurantPayablePaise)}
-                    </div>
-                  </div>
+                <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
+                  <span className="inline-flex items-center gap-1 font-semibold text-gray-900">
+                    <CheckCircle2 className="size-3.5 text-emerald-600" /> Daily T+1 Automated Transfers
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1 font-semibold text-gray-900">
+                    <CheckCircle2 className="size-3.5 text-emerald-600" /> SAC 996331 Restaurant Services
+                  </span>
+                  <span>·</span>
+                  <span className="inline-flex items-center gap-1 font-semibold text-gray-900">
+                    <CheckCircle2 className="size-3.5 text-emerald-600" /> Unique Bank UTR per Batch
+                  </span>
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500">
-                Applied transparently on net food and packaging order value in integer paise. Every delivery order locks this exact snapshot at order acceptance.
-              </p>
+              {/* Direct Settlements Link */}
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-xs font-bold text-gray-900">View Daily Itemized Settlement Ledgers</div>
+                  <div className="text-[11px] text-gray-600 mt-0.5">
+                    Order-by-order financial breakdown, packaging fees, tax credits, and downloadable monthly GSTR-1 summaries.
+                  </div>
+                </div>
+                <Button asChild size="sm" className="bg-[#E23744] hover:bg-[#d32f2f] text-white font-bold text-xs rounded-xl shrink-0">
+                  <Link to="/settlements">Open Settlements Tab →</Link>
+                </Button>
+              </div>
             </Card>
           </div>
         )}
