@@ -216,7 +216,7 @@ function AssistantPage() {
     {
       id: "spark-welcome",
       sender: "spark",
-      text: `Hello Chef! Welcome to King Spark AI Kitchen Assistant for ${restaurantName}. I provide autonomous support for live kitchen operations, 86 dish stockouts, rush prep buffers, dispute arbitrations, and daily T+1 payout reconciliations.`,
+      text: `How can I help with ${restaurantName}'s orders, menu stock, prep buffer, or daily payouts today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -464,7 +464,7 @@ function AssistantPage() {
   };
 
   return (
-    <VendorShell title="King Spark AI Partner Assistant">
+    <VendorShell title="Partner Assistant">
       <div className="mx-auto max-w-6xl space-y-6 font-sans">
         {/* Top Control Bar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-xs">
@@ -474,13 +474,13 @@ function AssistantPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="font-display text-lg font-black text-gray-900">King Spark Workstation</h2>
+                <h2 className="font-display text-lg font-black text-gray-900">Partner Assistant Workstation</h2>
                 <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
                   Active
                 </span>
               </div>
               <p className="text-xs text-gray-500">
-                Autonomous Kitchen Operations, 86 Stockouts, Rush Buffers &amp; Section 9(5) Tax Compliance
+                Kitchen Operations, Menu Availability, Prep Buffers &amp; Daily Payouts
               </p>
             </div>
           </div>
@@ -597,7 +597,7 @@ function AssistantPage() {
               {isLoading && (
                 <div className="flex items-center gap-2 rounded-2xl bg-slate-900 border border-slate-800 px-4 py-2.5 text-xs text-amber-300 w-fit">
                   <Loader2 className="size-4 animate-spin text-amber-400" />
-                  <span>King Spark is querying verified kitchen data...</span>
+                  <span>Querying verified kitchen data...</span>
                 </div>
               )}
               <div ref={chatEndRef} />
@@ -668,7 +668,7 @@ function AssistantPage() {
                   type="text"
                   value={inputQuestion}
                   onChange={(e) => setInputQuestion(e.target.value)}
-                  placeholder={isListening ? "Listening to your voice..." : `Ask King Spark in ${selectedLang.nativeName} or English...`}
+                  placeholder={isListening ? "Listening to your voice..." : `Ask in ${selectedLang.nativeName} or English...`}
                   className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 outline-none focus:border-amber-400"
                 />
 

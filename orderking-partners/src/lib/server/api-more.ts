@@ -287,10 +287,10 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
   // Natural greeting handler
   if (/^(hi|hello|hey|good\s*morning|good\s*evening|নমস্কার|হ্যালো|नमस्ते|কেমন\s*আছেন|হাই|হায়|নমস্কাৰ|ভালনে|প্রণাম)$/i.test(q)) {
     if (isBengaliOrAssamese) {
-      return `নমস্কার! আমি কিং এআই (King AI), আপনার অর্ডারকিং রেস্তোরাঁ সহযোগী। আপনার রান্নাঘরের অর্ডার, মেনু স্টক, রান্নার প্রস্তুতি সময় বা দৈনিক ব্যাংক সেটেলমেন্ট সংক্রান্ত বিষয়ে আমি কীভাবে সহায়তা করতে পারি?`;
+      return `নমস্কার! আপনার রান্নাঘরের অর্ডার, মেনু স্টক, রান্নার প্রস্তুতি সময় বা দৈনিক ব্যাংক সেটেলমেন্ট সংক্রান্ত বিষয়ে আমি কীভাবে সহায়তা করতে পারি?`;
     }
     if (isHindiOrDevanagari) {
-      return `नमस्ते! मैं किंग एआई (King AI) हूँ, आपका ऑर्डरकिंग रेस्टोरेंट पार्टनर सहायक। आज आपके किचन ऑर्डर्स, मेनू स्टॉक, प्रेप टाइमिंग या दैनिक बैंक सेटलमेंट में मैं आपकी क्या सहायता कर सकता हूँ?`;
+      return `नमस्ते! आज आपके किचन ऑर्डर्स, मेनू स्टॉक, प्रेप टाइमिंग या दैनिक बैंक सेटलमेंट में मैं आपकी क्या सहायता कर सकता हूँ?`;
     }
     return `Hello! How can I assist you with your kitchen orders, menu items, prep timing, or settlements?`;
   }
@@ -431,7 +431,7 @@ function buildVerifiedSqlAdvisorReply(question: string, snap: SqlAdvisorSnapshot
     return `Peak Order Hours (Past 7 Days) for ${snap.restaurantName}:\n• Top Demand Windows: ${peakHours || "Evenly distributed throughout the day"}\n• Recommended Kitchen Strategy: Keep high-frequency signature dishes prepped ahead during lunch (12:00–15:00) and dinner (19:00–22:00) peak hours.`;
   }
 
-  return `Hello! Here is your kitchen operational snapshot for ${snap.restaurantName}:\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "OPEN & ACCEPTING ORDERS"}\n• Today's Orders: ${snap.today.orders} placed (${snap.today.delivered} delivered), ${formatINR(snap.today.sales_paise)} gross sales\n• Kitchen Prep Buffer: ${snap.prepMinutes} mins (Peak: ${snap.peakPrepMinutes} mins)\n• Active Menu Catalog: ${snap.catalogStats.totalItems} dishes (${snap.unavailableItems.length} out of stock)\n• Daily Accrued Payout: ${formatINR(snap.today.payable_paise)} (T+1 Direct Bank Deposit)\n\nFeel free to ask any question or command me to update dish prices, toggle stock, or activate kitchen rush mode.`;
+  return `Kitchen Snapshot for ${snap.restaurantName}:\n• Storefront: ${snap.emergencyClosed ? "PAUSED" : "ONLINE & ACCEPTING ORDERS"}\n• Today: ${snap.today.orders} orders placed (${snap.today.delivered} delivered), ${formatINR(snap.today.sales_paise)} gross sales\n• Prep Buffer: ${snap.prepMinutes} mins (Peak: ${snap.peakPrepMinutes} mins)\n• Menu Catalog: ${snap.catalogStats.totalItems} dishes (${snap.unavailableItems.length} out of stock)\n• Accrued Net Payout: ${formatINR(snap.today.payable_paise)} (T+1 Bank Transfer)`;
 }
 
 export const askAssistant = createServerFn({ method: "POST" })
@@ -525,9 +525,8 @@ export const askAssistant = createServerFn({ method: "POST" })
           "  2. Add your dishes and pricing in the Menu section.\n" +
           "  3. Toggle your outlet status to Online.\n\n" +
           "Once your restaurant is verified and online, live customer orders within your delivery radius will ring directly on your Kitchen Desk."
-        : "Welcome to OrderKing Partner Support!\n" +
+        : "OrderKing Partner Operations:\n" +
           "• GST Compliance: 5% restaurant GST remitted under Section 9(5) CGST (GSTIN: 18AFXPH9838M1Z9, Assam - 788710).\n" +
-          "• Commission: 0% dine-in commission, transparent delivery rates.\n" +
           "• Settlements: T+1 direct daily bank payouts with integer paise double-entry accounting.\n" +
           "• To view live kitchen metrics, please sign in to your merchant outlet or complete onboarding at /onboarding.";
 
@@ -654,12 +653,13 @@ export const askAssistant = createServerFn({ method: "POST" })
     const openaiKey = process.env.OPENAI_API_KEY;
 
     const systemPrompt =
-      "You are King AI (OrderKing Partner Assistant), the authentic autonomous assistant for restaurant partners on OrderKing (OrderKingPay). You are deeply knowledgeable about commercial Indian restaurant kitchen operations, FSSAI regulations, 5% Section 9(5) CGST dual-bucket compliance (GSTIN: 18AFXPH9838M1Z9, Assam - 788710), double-entry paise accounting, T+1 bank payouts, prep buffers, and menu engineering.\n\n" +
-      "CRITICAL INSTRUCTIONS:\n" +
-      "1. Answer in the EXACT language used by the restaurant partner (Hindi, Bengali, Assamese, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Punjabi, or English). If the user asks in Bengali, reply completely in Bengali. If in Hindi, reply in Hindi. If in English, reply in English.\n" +
-      "2. Provide exact facts and figures from the snapshot. Never fabricate imaginary order numbers, revenues, or policies.\n" +
-      "3. Maintain a respectful, encouraging, direct human tone. Never use dead marketing slogans or filler text.\n" +
-      "4. If an image or menu photo is attached, analyze and transcribe all dish names, categories, dietary tags (VEG, NONVEG, EGG), and prices in INR accurately.";
+      "You are the authentic operational assistant for restaurant partners on OrderKing (GSTIN: 18AFXPH9838M1Z9, Assam - 788710).\n\n" +
+      "OPERATING PRINCIPLES:\n" +
+      "1. Be direct, concise, and problem-solving, working and resulting natively like ChatGPT. Zero marketing slogans, zero promotional hype, zero unnecessary text, and zero robotic greetings.\n" +
+      "2. Respond natively in the language used by the restaurant partner (Hindi, Bengali, Assamese, Gujarati, Marathi, Tamil, Telugu, Kannada, Malayalam, Punjabi, or English). If asked in Bengali, reply completely in natural Bengali. If in Hindi, reply in natural Hindi.\n" +
+      "3. Use exact real numbers from the provided snapshot. Never fabricate imaginary metrics or policies.\n" +
+      "4. Operations Context: 5% restaurant GST remitted under Section 9(5) CGST; Section 194-O TDS and Section 52 TCS apply; daily T+1 direct bank settlements; KDS prep buffers (15/20/35m); 86 dish stockout.\n" +
+      "5. If a menu photo or bill image is attached, accurately parse dish names, categories, dietary flags (VEG, NONVEG, EGG), and prices in INR.";
 
     // 1. Google Gemini 2.5 Flash / 1.5 Flash via official REST API
     if (geminiKey && geminiKey.trim().length > 10 && !geminiKey.includes("placeholder")) {

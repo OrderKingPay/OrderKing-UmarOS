@@ -554,7 +554,7 @@ export class OrderKingSpark {
       tdsSection194OPaise -
       customerDisputeDeductionsPaise;
 
-    const summary = `Hello Chef! Here is your verified Daily Shift & Financial Recon Report for ${shiftDate}:
+    const summary = `Daily Shift & Statutory Tax Recon Report (${shiftDate}):
 - **Delivered Orders**: **${deliveredOrders} orders** successfully completed (${cancelledOrders} cancelled).
 - **Gross Sales & Packaging**: **₹${(grossCustomerSpendPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (Food: ₹${(grossFoodSalesPaise / 100).toLocaleString("en-IN")} · Packaging: ₹${(packagingChargesPaise / 100).toLocaleString("en-IN")}).
 - **Platform Commission (22%)**: **₹${(orderKingPlatformCommissionPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}** (+ 18% GST on services: ₹${(servicesGstPaise / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}).
@@ -843,13 +843,11 @@ Live operational metrics calculated from verified restaurant orders and delivery
       id,
       sender: "spark",
       text: `### Order King Spark Active
-I am your restaurant growth, operations & financial partner. I can:
-1. **Automate Customer Dispute & Refund Arbitration**: Assess missing items vs food spills and protect merchant payouts against logistics failures.
-2. **Menu Description & Pricing Intelligence**: Generate sensory descriptions, dietary tags, and portion adjustments for maximum margin.
-3. **Daily Shift & Statutory Tax Recon**: Summarize gross sales, 9(5) GST remitted, and net payouts in plain conversational language.
-4. **Manage Menu & 86 Stock**: 1-tap toggle with automated 06:00 AM next-day reset.
-
-*Ask me anything about your kitchen, disputes, menu, or daily shift recon!*`,
+How can I assist your kitchen operations today?
+• Live kitchen prep times, rush buffers, and order status
+• 1-tap 86 dish stockouts and restock controls
+• Customer dispute arbitration and spill protection
+• Daily shift summary and Section 9(5) tax reconciliation`,
       timestamp,
       actionCard: {
         type: "growth_plan",
@@ -1152,7 +1150,7 @@ I am your restaurant growth, operations & financial partner. I can:
         projectedAovLiftPercent: 24,
         founderCommissionPaise: founderCommission,
         prepMinutes: (primaryMain.prep_minutes ?? 20) + 2,
-        commercialRationale: `Increases lunch and solo diner Average Order Value by 24% while delivering ₹${(founderCommission / 100).toFixed(2)} in platform commission.`,
+        commercialRationale: `Increases lunch and solo diner Average Order Value by 24% with high-repeat meal pairing.`,
       });
     }
 
@@ -1180,7 +1178,7 @@ I am your restaurant growth, operations & financial partner. I can:
         projectedAovLiftPercent: 38,
         founderCommissionPaise: founderCommission,
         prepMinutes: Math.max(primaryMain.prep_minutes ?? 20, secondaryMain.prep_minutes ?? 20) + 4,
-        commercialRationale: `Captures high-value dinner couples with +38% basket lift, generating ₹${(founderCommission / 100).toFixed(2)} founder commission per checkout.`,
+        commercialRationale: `Captures dinner couples with +38% basket lift while maintaining healthy 71% gross margin.`,
       });
     }
 

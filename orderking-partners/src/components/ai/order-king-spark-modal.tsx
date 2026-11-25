@@ -63,7 +63,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "English",
     nativeName: "English",
     voiceLang: "en-IN",
-    greeting: "Welcome to King Spark! I am your autonomous Kitchen Operations & Financial AI. How may I assist your kitchen today?",
+    greeting: "How can I help with your kitchen, orders, or payouts today?",
     placeholder: "Ask about live orders, stock 86, rush prep, disputes, or daily payout...",
   },
   {
@@ -71,7 +71,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Hindi",
     nativeName: "हिन्दी",
     voiceLang: "hi-IN",
-    greeting: "किंग स्पार्क में आपका स्वागत है! मैं आपका किचन ऑपरेशंस और वित्तीय AI साथी हूँ। आज किचन में क्या मदद करूँ?",
+    greeting: "आज किचन, ऑर्डर्स या पेआउट में क्या मदद करूँ?",
     placeholder: "ऑर्डर, 86 स्टॉक, रश मोड, विवाद या आज के पेआउट के बारे में पूछें...",
   },
   {
@@ -79,7 +79,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Bengali",
     nativeName: "বাংলা",
     voiceLang: "bn-IN",
-    greeting: "কিং স্পার্কে স্বাগতম! আমি আপনার কিচেন অপারেশনস এবং পেমেন্ট AI সহকারী। আজ কীভাবে সাহায্য করতে পারি?",
+    greeting: "আজ কিচেন, অর্ডার বা পেআউটে কী সহায়তা করতে পারি?",
     placeholder: "অর্ডার, স্টক বন্ধ, কিচেন রাশ বা দৈনিক পেআউট সম্পর্কে জানতে চান...",
   },
   {
@@ -87,7 +87,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Assamese",
     nativeName: "অসমীয়া",
     voiceLang: "as-IN",
-    greeting: "কিং স্পাৰ্কলৈ স্বাগতম! মই আপোনাৰ ৰান্ধনীশালৰ কাম-কাজ আৰু বিত্তীয় AI সহায়ক। আজি কেনেদৰে সহায় কৰিব পাৰোঁ?",
+    greeting: "আজি ৰান্ধনীশাল, অৰ্ডাৰ বা পেআউটত কি সহায় কৰিব পাৰোঁ?",
     placeholder: "অৰ্ডাৰ, ষ্টক আউট, কিচেন ৰাশ বা দৈনিক পেআউটৰ বিষয়ে সোধক...",
   },
   {
@@ -95,7 +95,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Gujarati",
     nativeName: "ગુજરાતી",
     voiceLang: "gu-IN",
-    greeting: "કિંગ સ્પાર્કમાં આપનું સ્વાગત છે! હું તમારો કિચન ઑપરેશન્સ અને નાણાકીય AI સહાયક છું.",
+    greeting: "આજે કિચન, ઑર્ડર્સ કે પેઆઉટમાં શું મદદ કરી શકું?",
     placeholder: "ઓર્ડર, સ્ટોક, રશ મોડ અથવા દૈનિક ચુકવણી વિશે પૂછો...",
   },
   {
@@ -103,7 +103,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Marathi",
     nativeName: "मराठी",
     voiceLang: "mr-IN",
-    greeting: "किंग स्पार्क मध्ये आपले स्वागत आहे! मी आपला किचन ऑपरेशन्स आणि आर्थिक AI सहाय्यक आहे.",
+    greeting: "आज किचन, ऑर्डर्स किंवा पेआउटमध्ये काय मदत हवी आहे?",
     placeholder: "ऑर्डर्स, स्टॉक, रश मोड किंवा आजच्या पेआउटबद्दल विचारा...",
   },
   {
@@ -111,7 +111,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Tamil",
     nativeName: "தமிழ்",
     voiceLang: "ta-IN",
-    greeting: "கிங் ஸ்பார்க்கிற்கு வரவேற்கிறோம்! நான் உங்கள் சமையலறை செயல்பாடுகள் மற்றும் நிதி AI உதவியாளர்.",
+    greeting: "இன்று சமையலறை, ஆர்டர்கள் அல்லது பேஅவுட்டில் என்ன உதவி வேண்டும்?",
     placeholder: "ஆர்டர்கள், ஸ்டாக், ரஷ் பயன்முறை அல்லது தினசரி செலுத்துதல் பற்றி கேளுங்கள்...",
   },
   {
@@ -119,7 +119,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Telugu",
     nativeName: "తెలుగు",
     voiceLang: "te-IN",
-    greeting: "కింగ్ స్పార్క్‌కి స్వాగతం! నేను మీ కిచెన్ ఆపరేషన్స్ మరియు ఫైనాన్షియల్ AI సహాయకుడిని.",
+    greeting: "ఈరోజు కిచెన్, ఆర్డర్లు లేదా పేఅవుట్‌లో ఎలా సహాయపడాలి?",
     placeholder: "ఆర్డర్లు, స్టాక్, రష్ మోడ్ లేదా రోజువారీ చెల్లింపుల గురించి అడగండి...",
   },
   {
@@ -127,7 +127,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Kannada",
     nativeName: "ಕನ್ನಡ",
     voiceLang: "kn-IN",
-    greeting: "ಕಿಂಗ್ ಸ್ಪಾರ್ಕ್‌ಗೆ ಸುಸ್ವಾಗತ! ನಾನು ನಿಮ್ಮ ಕಿಚನ್ ಕಾರ್ಯಾಚರಣೆ ಮತ್ತು ಹಣಕಾಸು AI ಸಹಾಯಕ.",
+    greeting: "ಇಂದು ಕಿಚನ್, ಆರ್ಡರ್‌ಗಳು ಅಥವಾ ಪಾವತಿಯಲ್ಲಿ ಹೇಗೆ ಸಹಾಯ ಮಾಡಲಿ?",
     placeholder: "ಆರ್ಡರ್‌ಗಳು, ಸ್ಟಾಕ್, ರಶ್ ಮೋಡ್ ಅಥವಾ ದೈನಂದಿನ ಪಾವತಿಗಳ ಬಗ್ಗೆ ಕೇಳಿ...",
   },
   {
@@ -135,7 +135,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Malayalam",
     nativeName: "മലയാളം",
     voiceLang: "ml-IN",
-    greeting: "കിംഗ് സ്പാർക്കിലേക്ക് സ്വാഗതം! ഞാൻ നിങ്ങളുടെ കിച്ചൺ പ്രവർത്തനങ്ങളുടെയും സാമ്പത്തിക AI അസിസ്റ്റന്റാണ്.",
+    greeting: "ഇന്ന് കിച്ചൺ, ഓർഡറുകൾ അല്ലെങ്കിൽ പേഔട്ടിൽ എന്ത് സഹായം വേണം?",
     placeholder: "ഓർഡറുകൾ, സ്റ്റോക്ക്, റഷ് മോഡ് അല്ലെങ്കിൽ പ്രതിദിന പേഔട്ട് എന്നിവയെക്കുറിച്ച് ചോദിക്കുക...",
   },
   {
@@ -143,7 +143,7 @@ export const SPARK_DIALECTS: SparkDialect[] = [
     name: "Punjabi",
     nativeName: "ਪੰਜਾਬੀ",
     voiceLang: "pa-IN",
-    greeting: "ਕਿੰਗ ਸਪਾਰਕ ਵਿੱਚ ਤੁਹਾਡਾ ਸੁਆਗਤ ਹੈ! ਮੈਂ ਤੁਹਾਡਾ ਕਿਚਨ ਓਪਰੇਸ਼ਨ ਅਤੇ ਵਿੱਤੀ AI ਸਹਾਇਕ ਹਾਂ।",
+    greeting: "ਅੱਜ ਕਿਚਨ, ਆਰਡਰ ਜਾਂ ਪੇਆਊਟ ਵਿੱਚ ਕੀ ਮਦਦ ਚਾਹੀਦੀ ਹੈ?",
     placeholder: "ਆਰਡਰ, ਸਟਾਕ, ਰਸ਼ ਮੋਡ ਜਾਂ ਰੋਜ਼ਾਨਾ ਅਦਾਇਗੀ ਬਾਰੇ ਪੁੱਛੋ...",
   },
 ];
