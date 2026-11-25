@@ -1,2 +1,3 @@
 # Cloudflare Pages & Netlify Redirects file for orderking-partners
-# Static assets are served directly; dynamic routes fall through to the edge worker / functions
+/ /login 307
+

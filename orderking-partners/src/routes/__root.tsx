@@ -242,7 +242,7 @@ function Root() {
         <Scripts />
         <script
           dangerouslySetInnerHTML={{
-            __html: `if('caches' in window){caches.keys().then(keys=>Promise.all(keys.filter(k=>!k.includes('ok-partner-v7-live')).map(k=>caches.delete(k)))).catch(()=>{});}if('serviceWorker' in navigator){let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js?v=7',{scope:'/'}).then(r=>{r.update().catch(()=>{});if(r.waiting){r.waiting.postMessage({type:'SKIP_WAITING'});}r.addEventListener('updatefound',()=>{const w=r.installing;if(w){w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){w.postMessage({type:'SKIP_WAITING'});}});}});}).catch(()=>{}));}`,
+            __html: `if('caches' in window){caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).catch(()=>{});}if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(regs=>{for(const reg of regs){reg.unregister().catch(()=>{});}}).catch(()=>{});}`,
           }}
         />
       </body>

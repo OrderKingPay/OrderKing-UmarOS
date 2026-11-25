@@ -353,16 +353,16 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
         </div>
       </div>
 
-      {/* Promoted Placement Eligibility Banner */}
+      {/* Priority Listing & Search Placement SLA */}
       <div className="rounded-2xl border border-gray-200 bg-gray-50/50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2.5">
           <TrendingUp className="size-4 text-[#E23744]" />
           <div>
-            <span className="font-bold text-gray-900">Featured Discovery Placement Eligibility: </span>
+            <span className="font-bold text-gray-900">Priority Listing Eligibility: </span>
             <span className="text-gray-600">
               {scorecard.isEligibleForPromotedPlacement
-                ? "Your outlet qualifies for 1st-page search boost and high-ranking banner placements on OrderKing."
-                : "Maintain Acceptance >= 98%, Cancellation < 0.5%, and Rating >= 4.5 to qualify for search boost."}
+                ? "Your outlet meets all operational SLAs for Top Partner priority listing in customer search results."
+                : "Maintain Acceptance >= 98%, Cancellation < 0.5%, and Rating >= 4.5 to qualify for priority listing."}
             </span>
           </div>
         </div>
@@ -375,7 +375,7 @@ export function MerchantPerformanceScorecard({ data, className }: MerchantPerfor
                 : "bg-gray-100 text-gray-600 border-gray-300"
             )}
           >
-            {scorecard.isEligibleForPromotedPlacement ? "ELIGIBLE FOR SEARCH BOOST" : "STANDARD DISCOVERY"}
+            {scorecard.isEligibleForPromotedPlacement ? "PRIORITY LISTING ELIGIBLE" : "STANDARD LISTING"}
           </span>
         </div>
       </div>

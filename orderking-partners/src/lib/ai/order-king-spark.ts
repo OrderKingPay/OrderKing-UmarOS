@@ -974,8 +974,8 @@ How can I assist your kitchen operations today?
 
   /**
    * King AI Dynamic Dish Pricing & Elasticity Optimizer:
-   * Benchmarks dish price against high-converting neighborhood market corridors,
-   * calculates projected Merchant GMV lift, and projects Founder Commission (28% platform tier).
+   * Benchmarks dish price against neighborhood market corridors and
+   * calculates projected Merchant GMV lift.
    */
   public optimizeDishPricing(item: {
     id: string;
@@ -1068,7 +1068,7 @@ How can I assist your kitchen operations today?
   /**
    * King AI High-Margin Combo & Meal Bundle Recommender:
    * Generates high-converting meal bundles that expand Average Order Value (AOV)
-   * by +20% to +45%, protects merchant food margin at 68-74%, and maximizes Founder Commission.
+   * by +20% to +45% and protects merchant food margin at 68-74%.
    */
   public generateComboRecommendations(
     items: Array<{

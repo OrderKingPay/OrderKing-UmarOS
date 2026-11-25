@@ -261,7 +261,7 @@ function PromotionsPage() {
                     </h3>
                   </div>
                   <span className="text-[11px] text-gray-500">
-                    Target off-peak kitchen capacity or boost family basket size during peak dinner hours
+                    Target off-peak kitchen capacity or increase family basket size during peak dinner hours
                   </span>
                 </div>
 

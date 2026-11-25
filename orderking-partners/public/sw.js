@@ -4,7 +4,7 @@
  * and high-volume billing counters.
  */
 
-const SW_VERSION = "ok-partner-v7-live";
+const SW_VERSION = "ok-partner-v12-purge";
 const CACHE_NAME = `ok-partner-${SW_VERSION}`;
 const STATIC_ASSETS = [
   "/offline.html",
@@ -84,7 +84,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+      Promise.all(keys.map((key) => caches.delete(key)))
     )
   );
   self.clients.claim();
@@ -118,23 +118,7 @@ self.addEventListener("fetch", (event) => {
     (event.request.method === "GET" && (event.request.headers?.get("Accept") || "").includes("text/html"));
 
   if (isHtmlRequest) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone)).catch(() => {});
-          }
-          return response;
-        })
-        .catch(async () => {
-          const offlinePage = await caches.match("/offline.html");
-          if (offlinePage) return offlinePage;
-          const cached = await caches.match(event.request);
-          if (cached) return cached;
-          return caches.match("/offline.html");
-        })
-    );
+    event.respondWith(fetch(event.request));
     return;
   }
 
