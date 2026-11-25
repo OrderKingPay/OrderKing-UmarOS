@@ -232,7 +232,7 @@ export function LoginPage() {
       {/* 1. Header (Zomato for Business Standard) */}
       <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/login" className="flex items-center gap-3 group">
             <OrderKingMark className="size-9 text-[#E23744] transition-transform group-hover:scale-105" />
             <div>
               <div className="font-display text-xl font-black tracking-tight text-gray-900 flex items-center gap-1.5">
